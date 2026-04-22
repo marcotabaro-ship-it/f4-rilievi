@@ -3,13 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clienti — F4 Rilievi</title>
+  <title>Cantieri — F4 Rilievi</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
+  <style>
+    /* Albero cantieri */
+    .tree-root { list-style: none; padding: 0; margin: 0; }
+    .tree-children { list-style: none; padding-left: 24px; margin: 0; border-left: 2px solid var(--c-border); margin-left: 12px; }
+    .tree-node-item { margin: 2px 0; }
+    .tree-node-row {
+      display: flex; align-items: center; gap: 6px; padding: 8px 10px;
+      border-radius: var(--radius); cursor: pointer;
+      transition: background var(--transition); position: relative;
+    }
+    .tree-node-row:hover { background: var(--c-bg); }
+    .tree-node-row.selected { background: var(--c-red-light); border-left: 3px solid var(--c-red); }
+    .tree-toggle-btn { background: none; border: none; width: 20px; height: 20px; font-size: .75rem; color: var(--c-text-sec); flex-shrink: 0; border-radius: 3px; }
+    .tree-toggle-btn:hover { background: var(--c-border); }
+    .tree-node-name { flex: 1; font-size: .9rem; font-weight: 500; }
+    .tree-node-addr { font-size: .78rem; color: var(--c-text-sec); display: block; }
+    .tree-node-actions { display: none; gap: 2px; }
+    .tree-node-row:hover .tree-node-actions { display: flex; }
+    .tree-node-icon { font-size: .9rem; color: var(--c-text-sec); flex-shrink: 0; }
+
+    /* Rilievi */
+    .rilievo-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px; border-bottom: 1px solid var(--c-border);
+      transition: background var(--transition); cursor: pointer;
+    }
+    .rilievo-item:last-child { border-bottom: none; }
+    .rilievo-item:hover { background: var(--c-bg); }
+    .rilievo-type-icon { font-size: 1.4rem; }
+    .rilievo-info { flex: 1; }
+    .rilievo-code-row { display: flex; align-items: center; gap: 8px; }
+    .rilievo-meta { font-size: .78rem; color: var(--c-text-sec); margin-top: 2px; }
+
+    /* Layout 2 colonne */
+    .two-col { display: grid; grid-template-columns: 320px 1fr; gap: 20px; }
+    @media(max-width:900px) { .two-col { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <header class="topbar">
   <a class="topbar-logo" href="dashboard.html">
     <img src="img/Logo_F4.jpg" alt="F4" onerror="this.style.display='none'">
@@ -24,6 +60,7 @@
       </button>
       <div class="topbar-dropdown" id="userMenu">
         <a href="dashboard.html">🏠 Dashboard</a>
+        <a href="clienti.html">👥 Clienti</a>
         <div class="dd-sep"></div>
         <a href="#" class="dd-danger" onclick="Auth.logout()">🚪 Esci</a>
       </div>
@@ -31,7 +68,6 @@
   </div>
 </header>
 
-<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <nav class="sidebar-nav">
     <a href="dashboard.html"><span class="nav-icon">🏠</span> Dashboard</a>
@@ -41,86 +77,179 @@
   </nav>
 </aside>
 
-<!-- CONTENUTO -->
 <main class="main-content">
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb">
+    <a href="clienti.html">Clienti</a> ›
+    <span id="bcCliente">—</span>
+  </div>
+
   <div class="page-header">
-    <div>
-      <h1>Clienti</h1>
-      <p class="page-subtitle">Gestione anagrafiche clienti e cantieri</p>
-    </div>
+    <h1 id="pageTitle">Cantieri</h1>
     <div class="header-actions">
-      <button class="btn btn-primary" onclick="openModalNuovoCliente()">
-        ➕ Nuovo cliente
+      <button class="btn btn-primary" onclick="openModalNuovoCantiere(null)">
+        ➕ Nuovo cantiere
       </button>
     </div>
   </div>
 
-  <!-- RICERCA -->
-  <div class="card" style="padding:16px;margin-bottom:16px;">
-    <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input class="form-control" type="text" id="searchInput"
-             placeholder="Cerca per nome cliente..."
-             oninput="filterClienti(this.value)">
+  <div class="two-col">
+    <!-- ALBERO CANTIERI -->
+    <div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--c-border);display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:600;font-size:.95rem;">🏗️ Struttura cantieri</span>
+          <button class="btn btn-sm btn-outline" onclick="openModalNuovoCantiere(null)">+ Aggiungi</button>
+        </div>
+        <div id="alberoContainer" style="padding:8px;">
+          <div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- LISTA CLIENTI -->
-  <div id="clientiList">
-    <div class="loading-state"><div class="spinner"></div><p>Caricamento clienti...</p></div>
+    <!-- DETTAGLIO CANTIERE + RILIEVI -->
+    <div>
+      <div id="dettaglioPanel">
+        <div class="card">
+          <div class="empty-state" style="padding:40px;">
+            <div class="empty-icon">🏗️</div>
+            <p>Seleziona un cantiere dall'albero per vederne i dettagli e i rilievi</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </main>
 
-<!-- MODAL: NUOVO/MODIFICA CLIENTE -->
-<div class="modal" id="modalCliente">
-  <div class="modal-box modal-box-sm">
+<!-- MODAL: CANTIERE -->
+<div class="modal" id="modalCantiere">
+  <div class="modal-box">
     <div class="modal-header">
-      <span class="modal-title" id="modalClienteTitle">Nuovo cliente</span>
-      <button class="modal-close" data-close-modal="modalCliente">✕</button>
+      <span class="modal-title" id="modalCantiereTitle">Nuovo cantiere</span>
+      <button class="modal-close" data-close-modal="modalCantiere">✕</button>
     </div>
     <div class="modal-body">
-      <form id="formCliente">
+      <form id="formCantiere">
         <div class="form-group">
-          <label class="form-label">Nome / Ragione sociale <span class="req">*</span></label>
-          <input class="form-control" type="text" name="nome" id="clienteNome"
-                 placeholder="Es. Rossi Mario oppure Costruzioni Bianchi Srl" required>
+          <label class="form-label">Nome cantiere <span class="req">*</span></label>
+          <input class="form-control" type="text" name="nome_cantiere" id="cantiereNome" placeholder="Es. Villa Rossi — Piano terra">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cantiere padre (se sotto-cantiere)</label>
+          <select class="form-control" name="ID_parent" id="cantierePadre">
+            <option value="">— Nessuno (primo livello) —</option>
+          </select>
         </div>
         <div class="form-row form-row-2">
           <div class="form-group">
-            <label class="form-label">Telefono</label>
-            <input class="form-control" type="tel" name="telefono" id="clienteTel" placeholder="+39 ...">
+            <label class="form-label">Tipo via</label>
+            <select class="form-control" name="tipo_via" id="cantiereTipoVia">
+              <option value="">—</option>
+              <option>Via</option><option>Piazza</option><option>Largo</option>
+              <option>Viale</option><option>Corso</option><option>Strada</option>
+              <option>Piazzale</option><option>Calle</option><option>Contrada</option>
+            </select>
           </div>
           <div class="form-group">
-            <label class="form-label">E-mail</label>
-            <input class="form-control" type="email" name="email" id="clienteEmail" placeholder="...@...">
+            <label class="form-label">Indirizzo</label>
+            <input class="form-control" type="text" name="indirizzo" id="cantiereIndirizzo" placeholder="Nome via e numero civico">
+          </div>
+        </div>
+        <!-- Autocomplete comune -->
+        <div class="form-group">
+          <label class="form-label">Comune <span class="req">*</span></label>
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input class="form-control" type="text" id="cantiereComuneInput"
+                   placeholder="Digita il comune..." autocomplete="off"
+                   oninput="cercaComune(this.value)">
+            <input type="hidden" name="comune" id="cantiereComune">
+            <div class="search-results" id="comuneResults"></div>
+          </div>
+        </div>
+        <div class="form-row form-row-2">
+          <div class="form-group">
+            <label class="form-label">Provincia</label>
+            <input class="form-control" type="text" name="provincia" id="cantiereProv" maxlength="2" placeholder="es. TS">
+          </div>
+          <div class="form-group">
+            <label class="form-label">CAP</label>
+            <input class="form-control" type="text" name="CAP" id="cantiereCap" placeholder="es. 34121">
+            <div class="form-hint">Puoi modificare il CAP suggerito dal database</div>
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">Note</label>
-          <textarea class="form-control" name="note" id="clienteNote" rows="2" placeholder="Note opzionali..."></textarea>
+          <textarea class="form-control" name="note" id="cantiereNote" rows="2"></textarea>
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" data-close-modal="modalCliente">Annulla</button>
-      <button class="btn btn-primary" id="btnSalvaCliente" onclick="salvaCliente()">Salva</button>
+      <button class="btn btn-outline" data-close-modal="modalCantiere">Annulla</button>
+      <button class="btn btn-primary" id="btnSalvaCantiere" onclick="salvaCantiere()">Salva</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: CONFERMA DISATTIVA -->
-<div class="modal" id="modalConfermaToggle">
-  <div class="modal-box modal-box-sm">
+<!-- MODAL: NUOVO RILIEVO -->
+<div class="modal" id="modalNuovoRilievo">
+  <div class="modal-box">
     <div class="modal-header">
-      <span class="modal-title" id="toggleTitle">Conferma operazione</span>
-      <button class="modal-close" data-close-modal="modalConfermaToggle">✕</button>
+      <span class="modal-title">Nuovo rilievo</span>
+      <button class="modal-close" data-close-modal="modalNuovoRilievo">✕</button>
     </div>
     <div class="modal-body">
-      <p id="toggleMsg">Sei sicuro di voler procedere?</p>
+      <form id="formNuovoRilievo">
+        <div class="form-group">
+          <label class="form-label">Tipo rilievo <span class="req">*</span></label>
+          <div class="radio-group">
+            <label class="radio-opt">
+              <input type="radio" name="tipo" value="SERR" checked> 🪟 Serramenti
+            </label>
+            <label class="radio-opt">
+              <input type="radio" name="tipo" value="PORTE"> 🚪 Porte interne
+            </label>
+          </div>
+        </div>
+        <div class="form-row form-row-2">
+          <div class="form-group">
+            <label class="form-label">Referente <span class="req">*</span></label>
+            <select class="form-control" name="referente" id="rilievoReferente">
+              <option value="">— Seleziona —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tipo intervento <span class="req">*</span></label>
+            <select class="form-control" name="intervento" id="rilievoIntervento">
+              <option value="">— Seleziona —</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row form-row-2">
+          <div class="form-group">
+            <label class="form-label">Data rilievo <span class="req">*</span></label>
+            <input class="form-control" type="date" name="data_rilievo" id="rilievoData">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Data posa prevista</label>
+            <input class="form-control" type="date" name="data_posa" id="rilievoPosa">
+          </div>
+        </div>
+        <div class="form-group" id="gruGroup">
+          <div class="checkbox-group">
+            <input type="checkbox" name="gru" id="rilievoGru">
+            <label for="rilievoGru">🏗️ Utilizzo gru / autoscala sul cantiere</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Note</label>
+          <textarea class="form-control" name="note" id="rilievoNote" rows="2"></textarea>
+        </div>
+      </form>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" data-close-modal="modalConfermaToggle">Annulla</button>
-      <button class="btn btn-danger" id="btnConfermaToggle">Conferma</button>
+      <button class="btn btn-outline" data-close-modal="modalNuovoRilievo">Annulla</button>
+      <button class="btn btn-primary" id="btnSalvaRilievo" onclick="salvaRilievo()">Crea rilievo</button>
     </div>
   </div>
 </div>
@@ -134,165 +263,453 @@
   if (!currentUser) throw new Error('not logged');
   Auth.populateUserUI();
 
-  let tuttiClienti = [];
-  let clienteEditId = null;
+  const idCliente = Utils.getParam('idCliente');
+  if (!idCliente) window.location.href = 'clienti.html';
 
-  // ---- INIT ----
+  let cliente       = null;
+  let alberoFlat    = [];  // lista piatta di tutti i cantieri
+  let cantiereSelId = null;
+  let cantiereEditId = null;
+  let rilievi       = [];
+  let lookupRef     = [];
+  let lookupInt     = [];
+
   async function init() {
-    await loadClienti();
-  }
+    // Carica lookups e cliente in parallelo
+    const [resCliente, resAlbero, resRef, resInt] = await Promise.all([
+      API.getCliente(idCliente),
+      API.getAlbero(idCliente),
+      API.getLookup('LK_REFERENTI'),
+      API.getLookup('LK_INTERVENTO')
+    ]);
 
-  async function loadClienti() {
-    const res = await API.getClienti();
-    if (!res.success) { Utils.showError(res.error); return; }
-    tuttiClienti = res.data;
-    renderClienti(tuttiClienti);
-  }
+    if (!resCliente.success) { Utils.showError(resCliente.error); return; }
+    cliente = resCliente.data;
+    document.getElementById('bcCliente').textContent = cliente.nome;
+    document.getElementById('pageTitle').textContent = cliente.nome;
+    document.title = cliente.nome + ' — F4 Rilievi';
 
-  function filterClienti(q) {
-    q = q.trim().toLowerCase();
-    if (!q) { renderClienti(tuttiClienti); return; }
-    const filtered = tuttiClienti.filter(c =>
-      (c.nome || '').toLowerCase().includes(q) ||
-      (c.email || '').toLowerCase().includes(q) ||
-      (c.telefono || '').toLowerCase().includes(q)
-    );
-    renderClienti(filtered);
-  }
+    // Salva lookup
+    lookupRef = resRef.success ? resRef.data : [];
+    lookupInt = resInt.success ? resInt.data : [];
 
-  function renderClienti(lista) {
-    const container = document.getElementById('clientiList');
-    if (lista.length === 0) {
-      Utils.showEmptyState(container, 'Nessun cliente trovato.', '👥');
-      return;
+    // Costruisci lista piatta dall'albero
+    if (resAlbero.success) {
+      alberoFlat = flattenTree(resAlbero.data);
+      renderAlbero(resAlbero.data);
     }
 
-    const sorted = Utils.sortByName(lista, 'nome');
-    container.innerHTML = sorted.map(c => {
-      const isAdmin = Auth.isAdmin();
-      const attivo  = c.stato === 'attivo';
-      return `
-        <div class="card" style="margin-bottom:10px;padding:0;overflow:hidden;">
-          <div style="display:flex;align-items:center;gap:0;">
-            <!-- Lettera iniziale -->
-            <div style="width:56px;min-height:64px;background:${attivo ? 'var(--c-primary)' : 'var(--c-text-sec)'};
-                        display:flex;align-items:center;justify-content:center;
-                        color:white;font-weight:700;font-size:1.3rem;flex-shrink:0;">
-              ${(c.nome || '?').charAt(0).toUpperCase()}
-            </div>
-            <!-- Info -->
-            <div style="flex:1;padding:12px 16px;cursor:pointer;"
-                 onclick="Utils.navigate('cantiere.html', { idCliente: '${c.ID_cliente}' })">
-              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                <strong style="font-size:.95rem;">${c.nome}</strong>
-                <span class="badge ${attivo ? 'badge-attivo' : 'badge-obsoleto'}">${attivo ? 'Attivo' : 'Non attivo'}</span>
-              </div>
-              <div style="font-size:.82rem;color:var(--c-text-sec);margin-top:3px;">
-                ${c.telefono ? '📞 ' + c.telefono : ''}
-                ${c.email    ? ' ✉️ ' + c.email : ''}
-                ${!c.telefono && !c.email ? 'Nessun contatto registrato' : ''}
-              </div>
-            </div>
-            <!-- Azioni -->
-            <div style="padding:0 12px;display:flex;gap:4px;flex-shrink:0;">
-              <button class="btn btn-sm btn-outline" title="Vai ai cantieri"
-                      onclick="Utils.navigate('cantiere.html', { idCliente: '${c.ID_cliente}' })">
-                🏗️ Cantieri
-              </button>
-              <button class="btn-icon" title="Modifica"
-                      onclick="openModalModificaCliente('${c.ID_cliente}')">✏️</button>
-              ${isAdmin ? `
-              <button class="btn-icon" title="${attivo ? 'Disattiva' : 'Riattiva'}"
-                      onclick="confermaToggleCliente('${c.ID_cliente}', '${c.nome}', ${attivo})">
-                ${attivo ? '🔴' : '🟢'}
-              </button>` : ''}
-            </div>
+    // Se URL ha idCantiere, selezionalo
+    const idCant = Utils.getParam('idCantiere');
+    if (idCant) selectCantiere(idCant);
+  }
+
+  // ================================================================
+  // ALBERO CANTIERI
+  // ================================================================
+  function flattenTree(nodes, parent = null) {
+    let result = [];
+    nodes.forEach(n => {
+      result.push({ ...n, _parent: parent });
+      if (n.figli && n.figli.length > 0) {
+        result = result.concat(flattenTree(n.figli, n.ID_cantiere));
+      }
+    });
+    return result;
+  }
+
+  function renderAlbero(nodes) {
+    const container = document.getElementById('alberoContainer');
+    if (!nodes || nodes.length === 0) {
+      Utils.showEmptyState(container, 'Nessun cantiere. Clicca "+ Aggiungi" per iniziare.', '🏗️');
+      return;
+    }
+    const ul = document.createElement('ul');
+    ul.className = 'tree-root';
+    renderTreeNodes(nodes, ul);
+    container.innerHTML = '';
+    container.appendChild(ul);
+  }
+
+  function renderTreeNodes(nodes, parent) {
+    nodes.forEach(node => {
+      const li  = document.createElement('li');
+      li.className = 'tree-node-item';
+      const hasFigli = node.figli && node.figli.length > 0;
+      const attivo   = node.stato === 'attivo';
+
+      li.innerHTML = `
+        <div class="tree-node-row" id="treeNode_${node.ID_cantiere}"
+             onclick="selectCantiere('${node.ID_cantiere}')">
+          <button class="tree-toggle-btn" onclick="toggleTreeNode(event, '${node.ID_cantiere}')">
+            ${hasFigli ? '▼' : '&nbsp;'}
+          </button>
+          <span class="tree-node-icon">${hasFigli ? '📁' : '📍'}</span>
+          <span class="tree-node-name" style="${!attivo ? 'opacity:.5;text-decoration:line-through;' : ''}">
+            ${node.nome_cantiere}
+            ${node.comune ? `<span class="tree-node-addr">${node.comune}</span>` : ''}
+          </span>
+          <div class="tree-node-actions">
+            <button class="btn-icon" title="Aggiungi sotto-cantiere"
+                    onclick="openModalNuovoCantiere('${node.ID_cantiere}', event)">➕</button>
+            <button class="btn-icon" title="Modifica"
+                    onclick="openModalModificaCantiere('${node.ID_cantiere}', event)">✏️</button>
           </div>
         </div>
+        ${hasFigli ? `<ul class="tree-children" id="treeChildren_${node.ID_cantiere}"></ul>` : ''}
       `;
-    }).join('');
+      parent.appendChild(li);
+
+      if (hasFigli) {
+        const childUl = li.querySelector(`#treeChildren_${node.ID_cantiere}`);
+        renderTreeNodes(node.figli, childUl);
+      }
+    });
   }
 
-  // ---- MODAL CLIENTE ----
-  function openModalNuovoCliente() {
-    clienteEditId = null;
-    document.getElementById('modalClienteTitle').textContent = 'Nuovo cliente';
-    document.getElementById('clienteNome').value  = '';
-    document.getElementById('clienteTel').value   = '';
-    document.getElementById('clienteEmail').value = '';
-    document.getElementById('clienteNote').value  = '';
-    Utils.openModal('modalCliente');
-    setTimeout(() => document.getElementById('clienteNome').focus(), 100);
+  function toggleTreeNode(e, id) {
+    e.stopPropagation();
+    const ul = document.getElementById('treeChildren_' + id);
+    if (!ul) return;
+    const btn = e.currentTarget;
+    if (ul.style.display === 'none') {
+      ul.style.display = '';
+      btn.textContent = '▼';
+    } else {
+      ul.style.display = 'none';
+      btn.textContent = '▶';
+    }
   }
 
-  function openModalModificaCliente(id) {
-    const c = tuttiClienti.find(x => x.ID_cliente == id);
+  async function selectCantiere(id) {
+    cantiereSelId = id;
+    // Evidenzia nodo selezionato
+    document.querySelectorAll('.tree-node-row.selected').forEach(el => el.classList.remove('selected'));
+    document.getElementById('treeNode_' + id)?.classList.add('selected');
+
+    // Mostra pannello dettaglio
+    await renderDettaglio(id);
+  }
+
+  // ================================================================
+  // DETTAGLIO CANTIERE + RILIEVI
+  // ================================================================
+  async function renderDettaglio(idCantiere) {
+    const panel = document.getElementById('dettaglioPanel');
+    panel.innerHTML = '<div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>';
+
+    const [resCant, resRilievi] = await Promise.all([
+      API.getCantiere(idCantiere),
+      API.getRilievi(idCantiere)
+    ]);
+
+    if (!resCant.success) { Utils.showError(resCant.error); return; }
+    const c = resCant.data;
+    rilievi = resRilievi.success ? resRilievi.data : [];
+
+    // Raggruppa per tipo
+    const serr  = rilievi.filter(r => r.tipo === 'SERR'  && r.stato !== 'eliminato');
+    const porte = rilievi.filter(r => r.tipo === 'PORTE' && r.stato !== 'eliminato');
+
+    panel.innerHTML = `
+      <!-- INFO CANTIERE -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header">
+          <span class="card-title">📍 ${c.nome_cantiere}</span>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-sm btn-outline"
+                    onclick="openModalModificaCantiere('${idCantiere}')">✏️ Modifica</button>
+          </div>
+        </div>
+        <div style="font-size:.88rem;color:var(--c-text-sec);line-height:1.7;">
+          ${c.tipo_via || ''} ${c.indirizzo || ''}<br>
+          ${c.comune ? c.comune + (c.provincia ? ' (' + c.provincia + ')' : '') + (c.CAP ? ' — ' + c.CAP : '') : 'Indirizzo non specificato'}<br>
+          ${c.breadcrumb ? '<span style="font-size:.78rem;">📂 ' + c.breadcrumb + '</span>' : ''}
+        </div>
+      </div>
+
+      <!-- RILIEVI SERRAMENTI -->
+      <div class="card" style="margin-bottom:16px;padding:0;overflow:hidden;">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--c-border);background:#E3F2FD;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:600;">🪟 Rilievi Serramenti (${serr.length})</span>
+          <button class="btn btn-sm btn-primary" onclick="openModalNuovoRilievo('${idCantiere}', 'SERR')">➕ Nuovo</button>
+        </div>
+        <div id="listaSerr">
+          ${renderRilievi(serr, 'SERR')}
+        </div>
+      </div>
+
+      <!-- RILIEVI PORTE -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--c-border);background:#FFF3E0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:600;">🚪 Rilievi Porte Interne (${porte.length})</span>
+          <button class="btn btn-sm btn-primary" onclick="openModalNuovoRilievo('${idCantiere}', 'PORTE')">➕ Nuovo</button>
+        </div>
+        <div id="listaPorte">
+          ${renderRilievi(porte, 'PORTE')}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderRilievi(lista, tipo) {
+    if (lista.length === 0) {
+      return `<div style="padding:20px;text-align:center;color:var(--c-text-sec);font-size:.85rem;">
+        Nessun rilievo presente. Clicca "+ Nuovo" per iniziare.
+      </div>`;
+    }
+    const icon = tipo === 'SERR' ? '🪟' : '🚪';
+    const page = tipo === 'SERR' ? 'rilievo_serr.html' : 'rilievo_porte.html';
+    return lista.map(r => `
+      <div class="rilievo-item" onclick="Utils.navigate('${page}', { idRilievo: '${r.ID_rilievo}' })">
+        <span class="rilievo-type-icon">${icon}</span>
+        <div class="rilievo-info">
+          <div class="rilievo-code-row">
+            <span class="rilievo-code">${r.codice || '—'}</span>
+            ${r.tipo_clone === 'REVISIONE' ? '<span class="badge badge-primary" style="font-size:.7rem;">REV</span>' : ''}
+            ${r.tipo_clone === 'COPIA'     ? '<span class="badge" style="font-size:.7rem;">COPIA</span>' : ''}
+          </div>
+          <div class="rilievo-meta">
+            ${r.intervento || ''} — ${r.data_rilievo || ''}
+            ${r.referente ? ' — Ref: ' + r.referente : ''}
+          </div>
+        </div>
+        <span style="color:var(--c-text-sec);font-size:1.2rem;">›</span>
+      </div>
+    `).join('');
+  }
+
+  // ================================================================
+  // MODAL CANTIERE
+  // ================================================================
+  function openModalNuovoCantiere(parentId, event) {
+    if (event) event.stopPropagation();
+    cantiereEditId = null;
+    document.getElementById('modalCantiereTitle').textContent = 'Nuovo cantiere';
+    document.getElementById('cantiereNome').value       = '';
+    document.getElementById('cantiereTipoVia').value    = '';
+    document.getElementById('cantiereIndirizzo').value  = '';
+    document.getElementById('cantiereComuneInput').value = '';
+    document.getElementById('cantiereComune').value     = '';
+    document.getElementById('cantiereProv').value       = '';
+    document.getElementById('cantiereCap').value        = '';
+    document.getElementById('cantiereNote').value       = '';
+    populatePadreSelect(parentId || '');
+    Utils.openModal('modalCantiere');
+    setTimeout(() => document.getElementById('cantiereNome').focus(), 100);
+  }
+
+  function openModalModificaCantiere(id, event) {
+    if (event) event.stopPropagation();
+    const c = alberoFlat.find(x => x.ID_cantiere == id);
     if (!c) return;
-    clienteEditId = id;
-    document.getElementById('modalClienteTitle').textContent = 'Modifica cliente';
-    document.getElementById('clienteNome').value  = c.nome     || '';
-    document.getElementById('clienteTel').value   = c.telefono || '';
-    document.getElementById('clienteEmail').value = c.email    || '';
-    document.getElementById('clienteNote').value  = c.note     || '';
-    Utils.openModal('modalCliente');
-    setTimeout(() => document.getElementById('clienteNome').focus(), 100);
+    cantiereEditId = id;
+    document.getElementById('modalCantiereTitle').textContent = 'Modifica cantiere';
+    document.getElementById('cantiereNome').value       = c.nome_cantiere  || '';
+    document.getElementById('cantiereTipoVia').value    = c.tipo_via       || '';
+    document.getElementById('cantiereIndirizzo').value  = c.indirizzo      || '';
+    document.getElementById('cantiereComuneInput').value = c.comune        || '';
+    document.getElementById('cantiereComune').value     = c.comune         || '';
+    document.getElementById('cantiereProv').value       = c.provincia      || '';
+    document.getElementById('cantiereCap').value        = c.CAP            || '';
+    document.getElementById('cantiereNote').value       = c.note           || '';
+    populatePadreSelect(c.ID_parent || '');
+    Utils.openModal('modalCantiere');
   }
 
-  async function salvaCliente() {
-    const nome = document.getElementById('clienteNome').value.trim();
-    if (!nome) { Utils.showWarning('Il nome è obbligatorio.'); return; }
+  function populatePadreSelect(selectedId) {
+    const sel = document.getElementById('cantierePadre');
+    sel.innerHTML = '<option value="">— Nessuno (primo livello) —</option>';
+    // Escludi se stesso e i suoi discendenti durante modifica
+    alberoFlat.forEach(c => {
+      if (cantiereEditId && (c.ID_cantiere == cantiereEditId)) return;
+      const o = document.createElement('option');
+      o.value = c.ID_cantiere;
+      o.textContent = c.breadcrumb || c.nome_cantiere;
+      if (String(c.ID_cantiere) === String(selectedId)) o.selected = true;
+      sel.appendChild(o);
+    });
+  }
+
+  async function salvaCantiere() {
+    const nome = document.getElementById('cantiereNome').value.trim();
+    const comune = document.getElementById('cantiereComuneInput').value.trim();
+    if (!nome) { Utils.showWarning('Il nome cantiere è obbligatorio.'); return; }
 
     const data = {
-      nome:     nome,
-      telefono: document.getElementById('clienteTel').value.trim(),
-      email:    document.getElementById('clienteEmail').value.trim(),
-      note:     document.getElementById('clienteNote').value.trim()
+      ID_cliente:    idCliente,
+      ID_parent:     document.getElementById('cantierePadre').value || '',
+      nome_cantiere: nome,
+      tipo_via:      document.getElementById('cantiereTipoVia').value,
+      indirizzo:     document.getElementById('cantiereIndirizzo').value.trim(),
+      comune:        comune,
+      provincia:     document.getElementById('cantiereProv').value.trim().toUpperCase(),
+      CAP:           document.getElementById('cantiereCap').value.trim(),
+      note:          document.getElementById('cantiereNote').value.trim()
     };
 
-    const btn = document.getElementById('btnSalvaCliente');
+    const btn = document.getElementById('btnSalvaCantiere');
     btn.disabled = true; btn.textContent = 'Salvataggio...';
 
     let res;
-    if (clienteEditId) {
-      res = await API.updateCliente(clienteEditId, data);
+    if (cantiereEditId) {
+      res = await API.updateCantiere(cantiereEditId, data);
     } else {
-      res = await API.createCliente(data);
+      res = await API.createCantiere(data);
     }
 
     btn.disabled = false; btn.textContent = 'Salva';
 
     if (res.success) {
-      Utils.showSuccess(clienteEditId ? 'Cliente aggiornato.' : 'Cliente creato.');
-      Utils.closeModal('modalCliente');
-      await loadClienti();
+      Utils.showSuccess(cantiereEditId ? 'Cantiere aggiornato.' : 'Cantiere creato.');
+      Utils.closeModal('modalCantiere');
+      // Ricarica albero
+      const resAlbero = await API.getAlbero(idCliente);
+      if (resAlbero.success) {
+        alberoFlat = flattenTree(resAlbero.data);
+        renderAlbero(resAlbero.data);
+        // Riseleziona cantiere corrente se c'era
+        if (cantiereSelId) selectCantiere(cantiereSelId);
+      }
     } else {
       Utils.showError(res.error);
     }
   }
 
-  // ---- TOGGLE STATO ----
-  function confermaToggleCliente(id, nome, attivo) {
-    document.getElementById('toggleTitle').textContent = attivo ? 'Disattiva cliente' : 'Riattiva cliente';
-    document.getElementById('toggleMsg').textContent   =
-      attivo
-        ? `Vuoi disattivare "${nome}"? Non sarà più visibile nelle liste attive.`
-        : `Vuoi riattivare "${nome}"?`;
-    document.getElementById('btnConfermaToggle').onclick = () => doToggle(id);
-    Utils.openModal('modalConfermaToggle');
+  // ================================================================
+  // AUTOCOMPLETE COMUNE
+  // ================================================================
+  const cercaComune = Utils.debounce(async function(q) {
+    const box = document.getElementById('comuneResults');
+    if (q.length < 2) { box.classList.remove('open'); return; }
+
+    const res = await API.getComuni(q);
+    if (!res.success || res.data.length === 0) {
+      box.classList.remove('open'); return;
+    }
+
+    box.innerHTML = res.data.map(c => `
+      <div class="search-result-item" onclick="selectComune(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+        <div class="search-result-main">${c.comune}</div>
+        <div class="search-result-sub">${c.provincia} — CAP ${c.CAP}</div>
+      </div>
+    `).join('');
+    box.classList.add('open');
+  }, 350);
+
+  function selectComune(c) {
+    document.getElementById('cantiereComuneInput').value = c.comune;
+    document.getElementById('cantiereComune').value      = c.comune;
+    document.getElementById('cantiereProv').value        = c.provincia;
+    // CAP: pre-compila ma lascia modificabile
+    const capEl = document.getElementById('cantiereCap');
+    if (!capEl.value) capEl.value = c.CAP; // solo se vuoto
+    document.getElementById('comuneResults').classList.remove('open');
   }
 
-  async function doToggle(id) {
-    Utils.closeModal('modalConfermaToggle');
-    const res = await API.toggleCliente(id);
+  // Chiudi risultati cliccando fuori
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-box'))
+      document.getElementById('comuneResults')?.classList.remove('open');
+  });
+
+  // ================================================================
+  // MODAL NUOVO RILIEVO
+  // ================================================================
+  let rilievoTargetCantiere = null;
+  let rilievoTargetTipo = null;
+
+  function openModalNuovoRilievo(idCantiere, tipo) {
+    rilievoTargetCantiere = idCantiere;
+    rilievoTargetTipo     = tipo;
+
+    // Pre-seleziona tipo
+    document.querySelectorAll('#formNuovoRilievo [name="tipo"]').forEach(r => {
+      r.checked = (r.value === tipo);
+    });
+
+    // Nascondi campo gru per porte
+    document.getElementById('gruGroup').style.display = tipo === 'SERR' ? '' : 'none';
+
+    // Data di oggi come default
+    document.getElementById('rilievoData').valueAsDate = new Date();
+    document.getElementById('rilievoPosa').value = '';
+    document.getElementById('rilievoGru').checked = false;
+    document.getElementById('rilievoNote').value = '';
+
+    // Popola referenti
+    const selRef = document.getElementById('rilievoReferente');
+    selRef.innerHTML = '<option value="">— Seleziona —</option>';
+    lookupRef.forEach(r => {
+      const o = document.createElement('option');
+      o.value = r.nome_completo;
+      o.textContent = r.nome_completo;
+      // Pre-seleziona l'utente corrente se presente
+      if (currentUser && r.nome_completo === currentUser.nome) o.selected = true;
+      selRef.appendChild(o);
+    });
+
+    // Popola interventi
+    const selInt = document.getElementById('rilievoIntervento');
+    selInt.innerHTML = '<option value="">— Seleziona —</option>';
+    lookupInt.forEach(i => {
+      const o = document.createElement('option');
+      o.value = i.descrizione;
+      o.textContent = i.descrizione;
+      selInt.appendChild(o);
+    });
+
+    Utils.openModal('modalNuovoRilievo');
+  }
+
+  async function salvaRilievo() {
+    const tipo      = document.querySelector('#formNuovoRilievo [name="tipo"]:checked')?.value;
+    const referente = document.getElementById('rilievoReferente').value;
+    const intervento= document.getElementById('rilievoIntervento').value;
+    const data_r    = document.getElementById('rilievoData').value;
+
+    if (!referente || !intervento || !data_r) {
+      Utils.showWarning('Compila tutti i campi obbligatori.');
+      return;
+    }
+
+    const data = {
+      ID_cantiere:  rilievoTargetCantiere,
+      tipo:         tipo,
+      referente:    referente,
+      intervento:   intervento,
+      data_rilievo: data_r,
+      data_posa:    document.getElementById('rilievoPosa').value || '',
+      gru:          tipo === 'SERR' && document.getElementById('rilievoGru').checked ? 'SI' : 'NO',
+      note:         document.getElementById('rilievoNote').value.trim()
+    };
+
+    const btn = document.getElementById('btnSalvaRilievo');
+    btn.disabled = true; btn.textContent = 'Creazione...';
+
+    const res = await API.createRilievo(data);
+
+    btn.disabled = false; btn.textContent = 'Crea rilievo';
+
     if (res.success) {
-      Utils.showSuccess('Stato aggiornato.');
-      await loadClienti();
+      Utils.showSuccess('Rilievo ' + res.codice + ' creato.');
+      Utils.closeModal('modalNuovoRilievo');
+      // Naviga direttamente al rilievo
+      const page = tipo === 'SERR' ? 'rilievo_serr.html' : 'rilievo_porte.html';
+      Utils.navigate(page, { idRilievo: res.id });
     } else {
       Utils.showError(res.error);
     }
   }
 
-  // ---- USER MENU ----
+  // ================================================================
+  // Aggiorna gruGroup quando cambia tipo rilievo
+  document.querySelectorAll('#formNuovoRilievo [name="tipo"]').forEach(r => {
+    r.addEventListener('change', e => {
+      document.getElementById('gruGroup').style.display = e.target.value === 'SERR' ? '' : 'none';
+    });
+  });
+
   function toggleUserMenu() {
     document.getElementById('userMenu').classList.toggle('open');
   }
@@ -301,7 +718,6 @@
       document.getElementById('userMenu')?.classList.remove('open');
   });
 
-  // ---- AVVIO ----
   init();
 </script>
 </body>

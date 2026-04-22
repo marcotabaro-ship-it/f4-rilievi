@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — F4 Rilievi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a class="topbar-logo" href="dashboard.html">
+    <img src="img/Logo_F4.jpg" alt="F4" onerror="this.style.display='none'">
+    <span class="logo-name">F4 Rilievi</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-user">
+    <div class="user-avatar" data-user-sigla>?</div>
+    <div class="topbar-menu">
+      <button class="topbar-menu-btn" onclick="toggleUserMenu()">
+        <span data-user-nome>Utente</span> ▾
+      </button>
+      <div class="topbar-dropdown" id="userMenu">
+        <a href="#" onclick="Auth.logout()">🚪 Esci</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <nav class="sidebar-nav">
+    <a href="dashboard.html" class="active"><span class="nav-icon">🏠</span> Dashboard</a>
+    <a href="clienti.html"><span class="nav-icon">👥</span> Clienti</a>
+    <div class="sidebar-sep"></div>
+    <div class="sidebar-section-label">Rilievi</div>
+    <a href="clienti.html"><span class="nav-icon">🪟</span> Serramenti</a>
+    <a href="clienti.html"><span class="nav-icon">🚪</span> Porte Interne</a>
+    <div class="sidebar-sep"></div>
+    <a href="admin.html" data-admin-only><span class="nav-icon">⚙️</span> Amministrazione</a>
+  </nav>
+</aside>
+
+<!-- CONTENUTO -->
+<main class="main-content">
+  <div class="page-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="page-subtitle">Benvenuto, <strong data-user-nome>—</strong></p>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-card">
+      <div class="kpi-value" id="kpiClienti">—</div>
+      <div class="kpi-label">Clienti attivi</div>
+    </div>
+    <div class="kpi-card kpi-red">
+      <div class="kpi-value" id="kpiRilieviSerr">—</div>
+      <div class="kpi-label">Rilievi Serramenti</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" id="kpiRilieviPorte">—</div>
+      <div class="kpi-label">Rilievi Porte</div>
+    </div>
+  </div>
+
+  <!-- ULTIMI RILIEVI -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Accesso rapido — Clienti recenti</span>
+      <a href="clienti.html" class="btn btn-sm btn-outline">Tutti i clienti →</a>
+    </div>
+    <div class="card-body" id="clientiRecenti">
+      <div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>
+    </div>
+  </div>
+
+  <!-- AZIONI RAPIDE -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Azioni rapide</span>
+    </div>
+    <div class="card-body">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="Utils.navigate('clienti.html')">
+          ➕ Nuovo cliente
+        </button>
+        <button class="btn btn-secondary" onclick="Utils.navigate('clienti.html')">
+          🔍 Cerca cantiere
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script>
+  // Verifica login
+  const currentUser = Auth.requireLogin();
+  if (currentUser) {
+    Auth.populateUserUI();
+    loadDashboard();
+  }
+
+  function toggleUserMenu() {
+    document.getElementById('userMenu').classList.toggle('open');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.topbar-menu')) {
+      document.getElementById('userMenu')?.classList.remove('open');
+    }
+  });
+
+  async function loadDashboard() {
+    // Carica clienti
+    const res = await API.getClienti();
+    if (!res.success) { Utils.showError(res.error); return; }
+
+    const clienti = res.data.filter(c => c.stato === 'attivo');
+    document.getElementById('kpiClienti').textContent = clienti.length;
+
+    // Mostra clienti recenti (max 8)
+    const container = document.getElementById('clientiRecenti');
+    if (clienti.length === 0) {
+      Utils.showEmptyState(container, 'Nessun cliente presente. Inizia creando il primo cliente.', '👥');
+      document.getElementById('kpiRilieviSerr').textContent = '0';
+      document.getElementById('kpiRilieviPorte').textContent = '0';
+      return;
+    }
+
+    const recent = Utils.sortByName(clienti, 'nome').slice(0, 8);
+    container.innerHTML = recent.map(c => `
+      <div class="pos-card" onclick="Utils.navigate('cantiere.html', { idCliente: '${c.ID_cliente}' })" style="cursor:pointer;">
+        <div class="pos-num" style="background:var(--c-red)">${(c.nome || '?').charAt(0).toUpperCase()}</div>
+        <div class="pos-info">
+          <div class="pos-title">${c.nome}</div>
+          <div class="pos-subtitle">${c.telefono || ''} ${c.email || ''}</div>
+        </div>
+        <span style="color:var(--c-text-sec);font-size:1.2rem">›</span>
+      </div>
+    `).join('');
+
+    // KPI rilievi (conta veloce)
+    document.getElementById('kpiRilieviSerr').textContent = '—';
+    document.getElementById('kpiRilieviPorte').textContent = '—';
+  }
+</script>
+</body>
+</html>

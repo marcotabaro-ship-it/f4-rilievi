@@ -19,7 +19,7 @@
       font-family: monospace; background: var(--c-red);
       padding: 4px 12px; border-radius: 20px; font-size: .9rem; font-weight: 700;
     }
-    /* STRATIGRAFIA — immagini grandi */
+    /* Stratigrafie */
     .strat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 12px; }
     .strat-card {
       border: 2px solid var(--c-border); border-radius: var(--radius);
@@ -29,7 +29,7 @@
     .strat-card.sel { border-color: var(--c-red); box-shadow: 0 0 0 3px rgba(211,47,47,.15); }
     .strat-card img { width: 100%; height: 160px; object-fit: contain; background: #F5F5F5; padding: 8px; }
     .strat-label { padding: 8px; font-size: .82rem; font-weight: 700; text-align: center; border-top: 1px solid var(--c-border); color: var(--c-primary); }
-    /* Quote — solo cerchi */
+    /* Quote - solo cerchi */
     .quote-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
     .quote-item { display: flex; align-items: center; gap: 8px; }
     .q-letter {
@@ -51,14 +51,17 @@
       background: var(--c-primary); color: white; text-align: center;
       font-weight: 700; min-width: 36px; border-radius: 4px; padding: 3px 6px;
     }
-    /* Calcolo real-time */
+    /* Pannello calcolo - 2 righe */
     .dim-calc {
       background: #E8F5E9; border: 1px solid #A5D6A7; border-radius: var(--radius);
-      padding: 8px 12px; font-size: .84rem; display: flex; gap: 16px; flex-wrap: wrap;
+      padding: 10px 14px; font-size: .84rem; margin-bottom: 16px;
     }
-    .dim-calc .dc-item { display: flex; align-items: center; gap: 6px; }
-    .dim-calc .dc-label { color: var(--c-text-sec); }
-    .dim-calc .dc-value { font-weight: 700; color: var(--c-success); }
+    .dim-calc-row { display: flex; gap: 20px; flex-wrap: wrap; }
+    .dim-calc-row + .dim-calc-row { margin-top: 8px; padding-top: 8px; border-top: 1px solid #C8E6C9; }
+    .dc-item { display: flex; align-items: center; gap: 6px; }
+    .dc-label { color: var(--c-text-sec); font-size: .8rem; }
+    .dc-value { font-weight: 700; color: var(--c-success); }
+    .dc-tub { color: #1565C0; } /* tubolare in blu */
     /* Help button */
     .lbl-with-help { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; }
     .help-btn { background: none; border: none; color: var(--c-info); font-size: .8rem; cursor: pointer; padding: 0; }
@@ -159,14 +162,26 @@
       <button class="modal-close" style="color:rgba(255,255,255,.8);" onclick="Utils.closeModal('modalPosizione')">✕</button>
     </div>
     <div class="modal-body" style="padding:16px;">
-      <div class="dim-calc" id="dimCalc" style="margin-bottom:16px;">
-        <div class="dc-item"><span class="dc-label">H calcolata:</span><span class="dc-value" id="dcH">—</span></div>
-        <div class="dc-item"><span class="dc-label">L calcolata:</span><span class="dc-value" id="dcL">—</span></div>
-        <div class="dc-item"><span class="dc-label">H architettonico:</span><span class="dc-value" id="dcHarch">—</span></div>
-        <div class="dc-item"><span class="dc-label">L architettonico:</span><span class="dc-value" id="dcLarch">—</span></div>
+
+      <!-- PANNELLO CALCOLO — 2 righe -->
+      <div class="dim-calc" id="dimCalc">
+        <div class="dim-calc-row">
+          <div class="dc-item"><span class="dc-label">H telaio:</span><span class="dc-value" id="dcH">—</span></div>
+          <div class="dc-item"><span class="dc-label">L telaio:</span><span class="dc-value" id="dcL">—</span></div>
+          <div class="dc-item"><span class="dc-label">H arch.:</span><span class="dc-value" id="dcHarch">—</span></div>
+          <div class="dc-item"><span class="dc-label">L arch.:</span><span class="dc-value" id="dcLarch">—</span></div>
+        </div>
+        <div class="dim-calc-row">
+          <div class="dc-item"><span class="dc-label" style="color:#1565C0;">H tubolare:</span><span class="dc-value dc-tub" id="dcHtub">—</span></div>
+          <div class="dc-item"><span class="dc-label" style="color:#1565C0;">L tubolare:</span><span class="dc-value dc-tub" id="dcLtub">—</span></div>
+          <div class="dc-item" id="dcAlettaInfo" style="display:none;"><span class="dc-label">Aletta:</span><span class="dc-value" id="dcAletta" style="color:#E65100;">—</span></div>
+        </div>
       </div>
+
+      <!-- ORDINE CAMPI = STESSO DELL'EXCEL -->
       <div class="form-row form-row-3" style="margin-bottom:0;">
-        <!-- COL 1 -->
+
+        <!-- COL 1: DATI GENERALI -->
         <div>
           <div style="font-weight:600;font-size:.82rem;color:var(--c-primary);margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid var(--c-red);">📋 DATI GENERALI</div>
           <div class="form-group"><label class="form-label">Piano <span class="req">*</span></label><select class="form-control" id="pPiano"></select></div>
@@ -175,24 +190,25 @@
             <div class="lbl-with-help"><label class="form-label" style="margin:0;">Tipo serramento <span class="req">*</span></label><button class="help-btn" onclick="openLegenda('tipoSerr')">ℹ️</button></div>
             <select class="form-control" id="pTipoSerr" onchange="onTipoSerrChange()"></select>
           </div>
-          <div class="form-group">
-            <div class="lbl-with-help"><label class="form-label" style="margin:0;">Tipo foro <span class="req">*</span></label><button class="help-btn" onclick="openLegenda('tipoForo')">ℹ️</button></div>
-            <select class="form-control" id="pTipoForo" onchange="ricalcolaDim()"></select>
-          </div>
-          <div class="form-row form-row-2">
-            <div class="form-group"><label class="form-label">H foro (mm) <span class="req">*</span></label><input class="form-control" type="number" id="pHmm" oninput="ricalcolaDim()"></div>
-            <div class="form-group"><label class="form-label">L foro (mm) <span class="req">*</span></label><input class="form-control" type="number" id="pLmm" oninput="ricalcolaDim()"></div>
-          </div>
           <div class="form-group"><label class="form-label">N° campi <span class="req">*</span></label><select class="form-control" id="pNCampi"></select></div>
           <div class="form-group">
             <div class="lbl-with-help"><label class="form-label" style="margin:0;">Senso apertura</label><button class="help-btn" onclick="openLegenda('sensiApertura')">ℹ️</button></div>
             <select class="form-control" id="pSensoApertura"></select>
           </div>
+          <div class="form-group">
+            <div class="lbl-with-help"><label class="form-label" style="margin:0;">Tipo foro <span class="req">*</span></label><button class="help-btn" onclick="openLegenda('tipoForo')">ℹ️</button></div>
+            <select class="form-control" id="pTipoForo" onchange="ricalcolaDim()"></select>
+          </div>
+          <div class="form-row form-row-2">
+            <div class="form-group"><label class="form-label">L foro (mm) <span class="req">*</span></label><input class="form-control" type="number" id="pLmm" oninput="ricalcolaDim()"></div>
+            <div class="form-group"><label class="form-label">H foro (mm) <span class="req">*</span></label><input class="form-control" type="number" id="pHmm" oninput="ricalcolaDim()"></div>
+          </div>
           <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pRimozione"><label for="pRimozione">Rimozione serramento esistente</label></div></div>
           <div class="form-group"><label class="form-label">Stratigrafia</label><select class="form-control" id="pStratigrafia"></select></div>
           <div class="form-group"><label class="form-label">Note</label><textarea class="form-control" id="pNote" rows="2"></textarea></div>
         </div>
-        <!-- COL 2 -->
+
+        <!-- COL 2: SERRAMENTO -->
         <div>
           <div style="font-weight:600;font-size:.82rem;color:var(--c-primary);margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid var(--c-red);">🪟 SERRAMENTO</div>
           <div class="form-group">
@@ -220,7 +236,8 @@
             <div class="form-group"><label class="form-label">Dim. est. (mm)</label><select class="form-control" id="pCopriEstDim" disabled></select></div>
           </div>
         </div>
-        <!-- COL 3 -->
+
+        <!-- COL 3: ACCESSORI -->
         <div>
           <div style="font-weight:600;font-size:.82rem;color:var(--c-primary);margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid var(--c-red);">🔧 ACCESSORI</div>
           <div class="form-group">
@@ -274,12 +291,9 @@
       <button class="modal-close" onclick="Utils.closeModal('modalStratigrafia')">✕</button>
     </div>
     <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nome <span class="req">*</span></label><input class="form-control" type="text" id="sNome" placeholder="es. Muro perimetrale"></div>
       <div class="form-group">
-        <label class="form-label">Nome stratigrafia <span class="req">*</span></label>
-        <input class="form-control" type="text" id="sNome" placeholder="es. Muro perimetrale">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Seleziona immagine <span class="req">*</span></label>
+        <label class="form-label">Immagine <span class="req">*</span></label>
         <div class="strat-grid" id="stratImgGrid"></div>
         <input type="hidden" id="sImgRef">
       </div>
@@ -298,22 +312,11 @@
 <!-- MODAL CLONA -->
 <div class="modal" id="modalClona">
   <div class="modal-box modal-box-sm">
-    <div class="modal-header">
-      <span class="modal-title">Clona / Revisione</span>
-      <button class="modal-close" onclick="Utils.closeModal('modalClona')">✕</button>
-    </div>
+    <div class="modal-header"><span class="modal-title">Clona / Revisione</span><button class="modal-close" onclick="Utils.closeModal('modalClona')">✕</button></div>
     <div class="modal-body">
-      <div class="form-group">
-        <div class="radio-group" style="flex-direction:column;gap:12px;">
-          <label class="radio-opt">
-            <input type="radio" name="tipoClona" value="COPIA" checked>
-            <div><strong>Copia</strong><br><span style="font-size:.8rem;color:var(--c-text-sec);">Variante parallela (R00C00 → R00C01)</span></div>
-          </label>
-          <label class="radio-opt">
-            <input type="radio" name="tipoClona" value="REVISIONE">
-            <div><strong>Revisione</strong><br><span style="font-size:.8rem;color:var(--c-text-sec);">Nuovo sopralluogo (R00C00 → R01C00)</span></div>
-          </label>
-        </div>
+      <div class="radio-group" style="flex-direction:column;gap:12px;">
+        <label class="radio-opt"><input type="radio" name="tipoClona" value="COPIA" checked><div><strong>Copia</strong><br><span style="font-size:.8rem;color:var(--c-text-sec);">R00C00 → R00C01</span></div></label>
+        <label class="radio-opt"><input type="radio" name="tipoClona" value="REVISIONE"><div><strong>Revisione</strong><br><span style="font-size:.8rem;color:var(--c-text-sec);">R00C00 → R01C00</span></div></label>
       </div>
     </div>
     <div class="modal-footer">
@@ -326,16 +329,8 @@
 <!-- MODAL COPIA POSIZIONE -->
 <div class="modal" id="modalCopiaPos">
   <div class="modal-box modal-box-sm">
-    <div class="modal-header">
-      <span class="modal-title">Copia posizione</span>
-      <button class="modal-close" onclick="Utils.closeModal('modalCopiaPos')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">Quante copie?</label>
-        <input class="form-control" type="number" id="nCopie" min="1" max="20" value="1">
-      </div>
-    </div>
+    <div class="modal-header"><span class="modal-title">Copia posizione</span><button class="modal-close" onclick="Utils.closeModal('modalCopiaPos')">✕</button></div>
+    <div class="modal-body"><div class="form-group"><label class="form-label">Quante copie?</label><input class="form-control" type="number" id="nCopie" min="1" max="20" value="1"></div></div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="Utils.closeModal('modalCopiaPos')">Annulla</button>
       <button class="btn btn-primary" id="btnEseguiCopia" onclick="eseguiCopiaPos()">Copia</button>
@@ -346,13 +341,8 @@
 <!-- MODAL ELIMINA -->
 <div class="modal" id="modalEliminaPos">
   <div class="modal-box modal-box-sm">
-    <div class="modal-header">
-      <span class="modal-title">Elimina posizione</span>
-      <button class="modal-close" onclick="Utils.closeModal('modalEliminaPos')">✕</button>
-    </div>
-    <div class="modal-body">
-      <p>Eliminare la posizione <strong id="posDaEliminare"></strong>?</p>
-    </div>
+    <div class="modal-header"><span class="modal-title">Elimina posizione</span><button class="modal-close" onclick="Utils.closeModal('modalEliminaPos')">✕</button></div>
+    <div class="modal-body"><p>Eliminare la posizione <strong id="posDaEliminare"></strong>?</p></div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="Utils.closeModal('modalEliminaPos')">Annulla</button>
       <button class="btn btn-danger" onclick="confEliminaPos()">Elimina</button>
@@ -389,7 +379,7 @@ let lookups = {}, datiComuni = {}, regoleLati = {};
 let posizioneEditId = null, posizioneCopiaId = null, posizioneEliminaId = null, stratEditId = null;
 
 // ================================================================
-// INIT — FIX: parsing corretto di datiComuni e regoleLati
+// INIT
 // ================================================================
 async function init() {
   try {
@@ -408,49 +398,39 @@ async function init() {
 
     if (!resRil.success) { Utils.showError(resRil.error); return; }
     rilievo = resRil.data;
-
-    // FIX: getLookupMulti restituisce { success, data: { TABLE: [...] } }
     lookups = resLK.success ? (resLK.data || {}) : {};
 
-    // FIX: getDatiComuni restituisce { success, data: [{ID, valore, ...}] }
-    // Converti array → mappa {ID: valore}
+    // FIX: parse datiComuni array → map {ID: valore}
     datiComuni = {};
     if (resDC.success) {
-      const arr = resDC.data || resDC.map || [];
+      var arr = resDC.data || resDC.map || [];
       if (Array.isArray(arr)) {
-        arr.forEach(function(d) {
-          datiComuni[parseInt(d.ID) || parseInt(d.id)] = parseFloat(d.valore) || 0;
-        });
-      } else {
-        datiComuni = arr; // era già una mappa
-      }
+        arr.forEach(function(d) { datiComuni[parseInt(d.ID)||parseInt(d.id)] = parseFloat(d.valore)||0; });
+      } else { datiComuni = arr; }
     }
 
-    // FIX: getRegoleLati restituisce { success, data: [{sigla, coprifili_lati, ...}] }
-    // Converti array → mappa {sigla: record}
+    // FIX: parse regoleLati array → map {sigla: record}
     regoleLati = {};
     if (resRL.success) {
-      const arr = resRL.data || [];
-      if (Array.isArray(arr)) {
-        arr.forEach(function(r) {
-          regoleLati[r.sigla] = r;
-        });
-      } else {
-        regoleLati = arr;
-      }
+      var arr2 = resRL.data || [];
+      if (Array.isArray(arr2)) {
+        arr2.forEach(function(r) { regoleLati[r.sigla] = r; });
+      } else { regoleLati = arr2; }
     }
 
-    dbSerr = resDB.success ? (resDB.data || []) : [];
+    // FIX: filtra solo prodotti attivi
+    dbSerr = (resDB.success ? (resDB.data || []) : [])
+      .filter(function(d) { return !d.stato || String(d.stato).toLowerCase() !== 'disattivo'; });
 
     renderTestata();
     populateTestataSel();
-    populateModalDropdowns(); // Chiamata PRIMA di loadPosizioni per evitare race condition
+    populateModalDropdowns();
     await Promise.all([loadPosizioni(), loadStratigrafie()]);
     await checkVersionePosa();
 
   } catch(err) {
     console.error('Errore init:', err);
-    Utils.showError('Errore di caricamento: ' + err.message);
+    Utils.showError('Errore caricamento: ' + err.message);
   }
 }
 
@@ -465,10 +445,10 @@ function renderTestata() {
     (rilievo.intervento||'') + ' — ' + (rilievo.data_rilievo||'') +
     (rilievo.referente ? ' — Ref: ' + rilievo.referente : '');
   if (rilievo.percorsoCantiere) {
-    const pc = rilievo.percorsoCantiere;
-    const bcC = document.getElementById('bcCliente');
+    var pc = rilievo.percorsoCantiere;
+    var bcC = document.getElementById('bcCliente');
     bcC.textContent = pc.nomeCliente; bcC.href = 'clienti.html';
-    const bcCant = document.getElementById('bcCantiere');
+    var bcCant = document.getElementById('bcCantiere');
     bcCant.textContent = pc.breadcrumb || '—';
     bcCant.href = 'cantiere.html?idCliente=' + (rilievo.ID_cantiere||'');
     document.getElementById('bcRilievo').textContent = rilievo.codice;
@@ -476,18 +456,18 @@ function renderTestata() {
 }
 
 function populateTestataSel() {
-  const selRef = document.getElementById('tReferente');
+  var selRef = document.getElementById('tReferente');
   selRef.innerHTML = '<option value="">—</option>';
   (lookups.LK_REFERENTI||[]).forEach(function(r) {
-    const o = document.createElement('option');
+    var o = document.createElement('option');
     o.value = r.nome_completo; o.textContent = r.nome_completo;
     if (r.nome_completo === rilievo.referente) o.selected = true;
     selRef.appendChild(o);
   });
-  const selInt = document.getElementById('tIntervento');
+  var selInt = document.getElementById('tIntervento');
   selInt.innerHTML = '<option value="">—</option>';
   (lookups.LK_INTERVENTO||[]).forEach(function(i) {
-    const o = document.createElement('option');
+    var o = document.createElement('option');
     o.value = i.descrizione; o.textContent = i.descrizione;
     if (i.descrizione === rilievo.intervento) o.selected = true;
     selInt.appendChild(o);
@@ -499,15 +479,15 @@ function populateTestataSel() {
 }
 
 async function salvaTestata() {
-  const data = {
-    referente:    document.getElementById('tReferente').value,
-    intervento:   document.getElementById('tIntervento').value,
+  var data = {
+    referente: document.getElementById('tReferente').value,
+    intervento: document.getElementById('tIntervento').value,
     data_rilievo: document.getElementById('tDataRilievo').value,
-    data_posa:    document.getElementById('tDataPosa').value,
-    gru:          document.getElementById('tGru').checked ? 'SI' : 'NO',
-    note:         document.getElementById('tNote').value.trim()
+    data_posa: document.getElementById('tDataPosa').value,
+    gru: document.getElementById('tGru').checked ? 'SI' : 'NO',
+    note: document.getElementById('tNote').value.trim()
   };
-  const res = await API.updateRilievo(idRilievo, data);
+  var res = await API.updateRilievo(idRilievo, data);
   if (res.success) {
     Utils.showSuccess('Dati rilievo salvati.');
     rilievo = Object.assign({}, rilievo, data);
@@ -516,12 +496,12 @@ async function salvaTestata() {
 }
 
 async function checkVersionePosa() {
-  const res = await API.checkVersionePosa(idRilievo);
+  var res = await API.checkVersionePosa(idRilievo);
   if (res.success && res.aggiornamentoDisponibile) document.getElementById('alertPosa').style.display = 'flex';
 }
 async function aggiornaVersionePosa() {
-  const res = await API.aggiornaVersionePosa(idRilievo);
-  if (res.success) { Utils.showSuccess('Tempi di posa aggiornati.'); document.getElementById('alertPosa').style.display = 'none'; }
+  var res = await API.aggiornaVersionePosa(idRilievo);
+  if (res.success) { Utils.showSuccess('Posa aggiornata.'); document.getElementById('alertPosa').style.display = 'none'; }
   else Utils.showError(res.error);
 }
 
@@ -536,43 +516,44 @@ function showTab(id, btn) {
 // POSIZIONI
 // ================================================================
 async function loadPosizioni() {
-  const res = await API.getPosizioniSerr(idRilievo);
+  var res = await API.getPosizioniSerr(idRilievo);
   if (!res.success) { Utils.showError(res.error); return; }
   posizioni = res.data;
   renderPosizioni();
 }
 
 function renderPosizioni() {
-  const c = document.getElementById('posizioniContainer');
+  var c = document.getElementById('posizioniContainer');
   document.getElementById('countPosizioni').textContent = posizioni.length + ' posizioni';
-  if (!posizioni.length) { Utils.showEmptyState(c,'Nessuna posizione. Clicca "+ Nuova posizione" per iniziare.','🪟'); return; }
+  if (!posizioni.length) { Utils.showEmptyState(c,'Nessuna posizione. Clicca "+ Nuova posizione".','🪟'); return; }
   c.innerHTML = '<div class="pos-table-wrap"><table class="pos-table"><thead><tr>' +
-    '<th>N°</th><th>Piano</th><th>Ambiente</th><th>Tipo</th><th>Materiale / Sistema</th>' +
-    '<th>H (mm)</th><th>L (mm)</th><th>Accessori</th><th style="text-align:right;">Azioni</th>' +
+    '<th>N°</th><th>Piano</th><th>Ambiente</th><th>Tipo</th>' +
+    '<th>Sistema / Variante</th><th>H (mm)</th><th>L (mm)</th>' +
+    '<th>Accessori</th><th style="text-align:right;">Azioni</th>' +
     '</tr></thead><tbody>' +
-    posizioni.map(function(p){ return renderPosizioneRow(p); }).join('') +
+    posizioni.map(function(p) { return renderPosizioneRow(p); }).join('') +
     '</tbody></table></div>';
 }
 
 function renderPosizioneRow(p) {
-  const acc = [];
-  if (p.controtelaio) acc.push(p.controtelaio==='T'?'🟦TC':'🟫CTL');
-  if (p.schermatura)  acc.push('🔲'+p.schermatura);
-  if (p.cassonetto)   acc.push('📦Cass');
-  if (p.zanzariera)   acc.push('🦟Zanz');
-  if (p.dinoxill)     acc.push('🔩'+p.dinoxill);
-  if (p.coprifilo_int_mat) acc.push('🔲CopI');
-  if (p.coprifilo_est_mat) acc.push('🔲CopE');
-  const piano = (p.piano !== undefined && p.piano !== '') ? ('P'+(p.piano>=0?'+':'')+p.piano) : '—';
+  var acc = [];
+  if (p.controtelaio) acc.push(p.controtelaio==='T'?'TC':'CTL');
+  if (p.schermatura)  acc.push(p.schermatura);
+  if (p.cassonetto)   acc.push('Cass');
+  if (p.zanzariera)   acc.push('Zanz');
+  if (p.dinoxill)     acc.push(p.dinoxill);
+  if (p.coprifilo_int_mat) acc.push('CopI');
+  if (p.coprifilo_est_mat) acc.push('CopE');
+  var piano = (p.piano !== undefined && p.piano !== '') ? ('P'+(p.piano>=0?'+':'')+p.piano) : '—';
   return '<tr>' +
     '<td><span class="pos-num-cell">'+p.numero_pos+'</span></td>' +
     '<td>'+piano+'</td>' +
-    '<td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(p.ambiente||'—')+'</td>' +
+    '<td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(p.ambiente||'—')+'</td>' +
     '<td><span class="badge badge-serr">'+(p.tipo_serramento||'—')+'</span></td>' +
-    '<td style="font-size:.8rem;max-width:140px;"><div style="font-weight:600;">'+(p.sistema||'—')+'</div>' +
-    '<div style="color:var(--c-text-sec);">'+(p.materiale||'')+' '+(p.variante_telaio||'')+'</div></td>' +
+    '<td style="font-size:.8rem;"><div style="font-weight:600;">'+(p.sistema||'—')+'</div>' +
+    '<div style="color:var(--c-text-sec);font-size:.76rem;">'+(p.variante_telaio||'')+(p.stile_design?' / '+p.stile_design:'')+'</div></td>' +
     '<td class="num">'+(p.H_mm||'—')+'</td><td class="num">'+(p.L_mm||'—')+'</td>' +
-    '<td style="font-size:.74rem;max-width:120px;">'+(acc.join(' ')||'—')+'</td>' +
+    '<td style="font-size:.74rem;">'+(acc.join(' ')||'—')+'</td>' +
     '<td class="td-actions">' +
     '<button class="btn-icon" title="Modifica" onclick="openModalPosizione(\''+p.ID_pos+'\')">✏️</button>' +
     '<button class="btn-icon" title="Copia" onclick="openModalCopiaPos(\''+p.ID_pos+'\')">📋</button>' +
@@ -589,65 +570,72 @@ function openModalPosizione(id) {
   document.getElementById('modalPosizioneTitle').textContent = id ? 'Modifica posizione' : 'Nuova posizione';
   document.getElementById('btnSalvaAggiungi').style.display = id ? 'none' : '';
   if (id) {
-    const pos = posizioni.find(function(p){ return p.ID_pos === id; });
+    var pos = posizioni.find(function(p) { return p.ID_pos === id; });
     if (pos) fillModalPosizione(pos);
   }
   Utils.openModal('modalPosizione');
 }
 
 function resetModalPosizione() {
-  ['pPiano','pTipoSerr','pTipoForo','pHmm','pLmm','pNCampi','pSensoApertura',
+  ['pPiano','pTipoSerr','pNCampi','pSensoApertura','pTipoForo','pHmm','pLmm',
    'pAmbiente','pNote','pMateriale','pColoreInt','pColoreEst',
    'pCopriIntMat','pCopriIntDim','pCopriEstMat','pCopriEstDim',
    'pSchermatura','pCassonetto','pControtelaio','pZanzariera','pDinoxill','pStratigrafia'
-  ].forEach(function(id){ const el=document.getElementById(id); if(!el)return; if(el.tagName==='SELECT') el.value=''; else el.value=''; });
+  ].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('pRimozione').checked = false;
   ['pSistema','pStileDesign','pVarianteTelaio'].forEach(function(id){
-    const el = document.getElementById(id); if(!el)return; el.value=''; el.disabled=true;
+    var el = document.getElementById(id); if(!el)return; el.value=''; el.disabled=true;
   });
-  document.getElementById('pCodiceSerr').value = '';
-  document.getElementById('pNVetri').value = '';
-  document.getElementById('pColoreInt').disabled = true;
-  document.getElementById('pColoreEst').disabled = true;
-  document.getElementById('pCopriIntDim').disabled = true;
-  document.getElementById('pCopriEstDim').disabled = true;
+  ['pCodiceSerr','pNVetri'].forEach(function(id){ document.getElementById(id).value=''; });
+  ['pColoreInt','pColoreEst','pCopriIntDim','pCopriEstDim'].forEach(function(id){
+    document.getElementById(id).disabled = true;
+  });
   document.getElementById('grpOscurante').style.display = 'none';
   document.getElementById('grpDinoxillLati').style.display = 'none';
+  document.getElementById('dcAlettaInfo').style.display = 'none';
   document.querySelector('[name="dinoxillLati"][value="3"]').checked = true;
-  ricalcolaDim();
+  // Clear calc display
+  ['dcH','dcL','dcHarch','dcLarch','dcHtub','dcLtub'].forEach(function(id){
+    document.getElementById(id).textContent = '—';
+  });
 }
 
 function fillModalPosizione(p) {
   document.getElementById('pPiano').value    = p.piano !== undefined ? p.piano : '';
-  document.getElementById('pAmbiente').value = p.ambiente   || '';
-  document.getElementById('pTipoForo').value = p.tipo_foro  || '';
-  document.getElementById('pHmm').value      = p.H_mm       || '';
-  document.getElementById('pLmm').value      = p.L_mm       || '';
+  document.getElementById('pAmbiente').value = p.ambiente    || '';
+  document.getElementById('pTipoForo').value = p.tipo_foro   || '';
+  document.getElementById('pHmm').value      = p.H_mm        || '';
+  document.getElementById('pLmm').value      = p.L_mm        || '';
   document.getElementById('pRimozione').checked = p.rimozione === 'SI';
-  document.getElementById('pNote').value     = p.note       || '';
+  document.getElementById('pNote').value     = p.note        || '';
   document.getElementById('pStratigrafia').value = p.ID_stratigrafia_override || '';
   document.getElementById('pTipoSerr').value  = p.tipo_serramento || '';
   onTipoSerrChange(true);
-  document.getElementById('pNCampi').value        = p.n_campi       || '';
+  document.getElementById('pNCampi').value        = p.n_campi        || '';
   document.getElementById('pSensoApertura').value = p.senso_apertura || '';
+  // Cascade serramento: usa materiale (nome completo)
   document.getElementById('pMateriale').value = p.materiale || '';
   onMaterialeChange(true);
+  // FIX: sistema = d.descrizione
   document.getElementById('pSistema').value = p.sistema || '';
   onSistemaChange(true);
   document.getElementById('pStileDesign').value = p.stile_design || '';
   onStileChange(true);
   document.getElementById('pVarianteTelaio').value = p.variante_telaio || '';
   onVarianteChange(true);
+  // Colori
   onColoreIntChange(true);
   document.getElementById('pColoreInt').value = p.colore_int || '';
   onColoreIntChange(true);
   document.getElementById('pColoreEst').value = p.colore_est || '';
+  // Coprifili
   document.getElementById('pCopriIntMat').value = p.coprifilo_int_mat || '';
   onCopriMatChange('int', true);
   document.getElementById('pCopriIntDim').value = p.coprifilo_int_dim || '';
   document.getElementById('pCopriEstMat').value = p.coprifilo_est_mat || '';
   onCopriMatChange('est', true);
   document.getElementById('pCopriEstDim').value = p.coprifilo_est_dim || '';
+  // Accessori
   document.getElementById('pSchermatura').value  = p.schermatura || '';
   document.getElementById('pCassonetto').value   = p.cassonetto  || '';
   document.getElementById('pControtelaio').value = p.controtelaio|| '';
@@ -661,126 +649,119 @@ function fillModalPosizione(p) {
   }
   onDinoxillChange(true);
   if (p.dinoxill_lati) {
-    const r = document.querySelector('[name="dinoxillLati"][value="'+p.dinoxill_lati+'"]');
+    var r = document.querySelector('[name="dinoxillLati"][value="'+p.dinoxill_lati+'"]');
     if (r) r.checked = true;
   }
   ricalcolaDim();
 }
 
 // ================================================================
-// DROPDOWN POPULATION
+// DROPDOWN — FIX CASCADE: usa d.descrizione per sistema
 // ================================================================
 function populateModalDropdowns() {
   // Piano
-  const pianoOpts = (lookups.LK_PIANO||[]).map(function(p){
-    return { value: p.piano, label: 'Piano '+(p.piano>=0?'+':'')+p.piano };
-  });
-  Utils.fillSelect('pPiano', pianoOpts, '— Piano —');
-
+  Utils.fillSelect('pPiano',
+    (lookups.LK_PIANO||[]).map(function(p){ return {value:p.piano,label:'Piano '+(p.piano>=0?'+':'')+p.piano}; }),
+    '— Piano —');
   // Tipo serramento
   Utils.fillSelect('pTipoSerr',
-    (lookups.LK_TIPO_SERR||[]).map(function(t){ return { value: t.sigla, label: t.sigla+' — '+t.descrizione }; }),
+    (lookups.LK_TIPO_SERR||[]).map(function(t){ return {value:t.sigla,label:t.sigla+' — '+t.descrizione}; }),
     '— Tipo —');
-
-  // Tipo foro
-  Utils.fillSelect('pTipoForo',
-    (lookups.LK_TIPO_FORO_SERR||[]).map(function(t){ return { value: t.sigla, label: t.sigla+' — '+t.descrizione }; }),
-    '— Tipo foro —');
-
   // N° campi
   Utils.fillSelect('pNCampi',
-    (lookups.LK_N_CAMPI||[]).map(function(c){ return { value: c.n_campi, label: c.n_campi+' campo/i' }; }),
+    (lookups.LK_N_CAMPI||[]).map(function(c){ return {value:c.n_campi,label:c.n_campi+' campo/i'}; }),
     '— N° campi —');
-
   // Senso apertura
   Utils.fillSelect('pSensoApertura',
-    (lookups.LK_SENSI_APERTURA||[]).map(function(s){ return { value: s.sigla, label: s.sigla+' — '+s.descrizione }; }),
+    (lookups.LK_SENSI_APERTURA||[]).map(function(s){ return {value:s.sigla,label:s.sigla+' — '+s.descrizione}; }),
     '— Senso —');
-
-  // Materiale (unici da DB)
-  const mat = [];
-  var seen = {};
-  dbSerr.forEach(function(d){ if(!seen[d.materiale]){ seen[d.materiale]=1; mat.push(d.materiale); } });
-  Utils.fillSelect('pMateriale', mat.map(function(m){ return {value:m,label:m}; }), '— Materiale —');
-
+  // Tipo foro
+  Utils.fillSelect('pTipoForo',
+    (lookups.LK_TIPO_FORO_SERR||[]).map(function(t){ return {value:t.sigla,label:t.sigla+' — '+t.descrizione}; }),
+    '— Tipo foro —');
+  // Materiale — FIX: usa d.materiale (nome completo)
+  var matSeen = {};
+  dbSerr.forEach(function(d){ matSeen[d.materiale]=1; });
+  Utils.fillSelect('pMateriale', Object.keys(matSeen).sort().map(function(m){ return {value:m,label:m}; }), '— Materiale —');
   // Schermatura
   Utils.fillSelect('pSchermatura',
-    (lookups.LK_SCHERMATURA||[]).map(function(s){ return { value: s.sigla, label: s.descrizione_completa||s.descrizione }; }),
+    (lookups.LK_SCHERMATURA||[]).map(function(s){ return {value:s.sigla,label:s.descrizione_completa||s.descrizione}; }),
     '— Nessuna —');
-
   // Cassonetto
   Utils.fillSelect('pCassonetto',
-    (lookups.LK_CASSONETTO||[]).map(function(c){ return { value: c.sigla, label: c.descrizione }; }),
+    (lookups.LK_CASSONETTO||[]).map(function(c){ return {value:c.sigla,label:c.descrizione}; }),
     '— Nessuno —');
-
   // Controtelaio
   Utils.fillSelect('pControtelaio',
-    (lookups.LK_CONTROTELAIO||[]).map(function(c){ return { value: c.sigla, label: c.descrizione }; }),
+    (lookups.LK_CONTROTELAIO||[]).map(function(c){ return {value:c.sigla,label:c.descrizione}; }),
     '— Nessuno —');
-
   // Zanzariera
   Utils.fillSelect('pZanzariera',
-    (lookups.LK_ZANZARIERA||[]).map(function(z){ return { value: z.sigla, label: z.descrizione }; }),
+    (lookups.LK_ZANZARIERA||[]).map(function(z){ return {value:z.sigla,label:z.descrizione}; }),
     '— Nessuna —');
-
   // Dinoxill
   Utils.fillSelect('pDinoxill',
-    (lookups.LK_DINOXILL||[]).map(function(d){ return { value: d.sigla, label: d.descrizione }; }),
+    (lookups.LK_DINOXILL||[]).map(function(d){ return {value:d.sigla,label:d.descrizione}; }),
     '— Nessuno —');
-
   // Coprifili mat
-  const copriSeen = {};
-  (lookups.LK_COPRIFILI||[]).forEach(function(c){ copriSeen[c.materiale_sigla]=1; });
-  const copriMat = Object.keys(copriSeen).map(function(m){ return {value:m,label:m}; });
-  Utils.fillSelect('pCopriIntMat', copriMat, '— Mat. —');
-  Utils.fillSelect('pCopriEstMat', copriMat, '— Mat. —');
-
-  // Stratigrafia select
+  var cpSeen = {};
+  (lookups.LK_COPRIFILI||[]).forEach(function(c){ cpSeen[c.materiale_sigla]=1; });
+  var cpMat = Object.keys(cpSeen).map(function(m){ return {value:m,label:m}; });
+  Utils.fillSelect('pCopriIntMat', cpMat, '— Mat. —');
+  Utils.fillSelect('pCopriEstMat', cpMat, '— Mat. —');
+  // Stratigrafia
   populateStratigrafiaSelect();
 }
 
 function onTipoSerrChange(silent) {
-  const tipo   = document.getElementById('pTipoSerr').value;
-  const regola = regoleLati[tipo] || {};
-  const hasDin = regola.dinoxill_disponibile === 'SI' || regola.dinoxill_disponibile === true;
+  var tipo = document.getElementById('pTipoSerr').value;
+  var regola = regoleLati[tipo] || {};
+  var hasDin = regola.dinoxill_disponibile === 'SI' || regola.dinoxill_disponibile === true;
   document.getElementById('grpDinoxill').style.display = hasDin ? '' : 'none';
   if (!hasDin) { document.getElementById('pDinoxill').value=''; document.getElementById('grpDinoxillLati').style.display='none'; }
+  ricalcolaDim();
 }
 
+// FIX: usa d.materiale per filtrare, d.descrizione per il valore del sistema
 function onMaterialeChange(silent) {
-  const mat = document.getElementById('pMateriale').value;
+  var mat = document.getElementById('pMateriale').value;
   if (!mat) {
     ['pSistema','pStileDesign','pVarianteTelaio'].forEach(function(id){
-      const el=document.getElementById(id); el.innerHTML='<option value="">—</option>'; el.disabled=true;
+      var el=document.getElementById(id); el.innerHTML='<option value="">—</option>'; el.disabled=true;
     });
-    document.getElementById('pCodiceSerr').value='';
-    document.getElementById('pColoreInt').innerHTML='<option value="">—</option>';
-    document.getElementById('pColoreInt').disabled=true;
-    document.getElementById('pColoreEst').innerHTML='<option value="">—</option>';
-    document.getElementById('pColoreEst').disabled=true;
+    ['pCodiceSerr','pNVetri'].forEach(function(id){ document.getElementById(id).value=''; });
+    document.getElementById('pColoreInt').innerHTML='<option value="">—</option>'; document.getElementById('pColoreInt').disabled=true;
+    document.getElementById('pColoreEst').innerHTML='<option value="">—</option>'; document.getElementById('pColoreEst').disabled=true;
     return;
   }
-  const sistemiSeen = {};
-  dbSerr.filter(function(d){ return d.materiale===mat; }).forEach(function(d){ sistemiSeen[d.sigla]=1; });
-  Utils.fillSelect('pSistema', Object.keys(sistemiSeen).map(function(s){ return {value:s,label:s}; }), '— Sistema —');
-  document.getElementById('pSistema').disabled=false;
+  // FIX: filtra per d.materiale, raggruppa per d.descrizione (nome completo sistema)
+  var sistSeen = {};
+  dbSerr.filter(function(d){ return d.materiale===mat; })
+        .forEach(function(d){ sistSeen[d.descrizione]=1; });
+  var sistemi = Object.keys(sistSeen).sort();
+  Utils.fillSelect('pSistema', sistemi.map(function(s){ return {value:s,label:s}; }), '— Sistema —');
+  document.getElementById('pSistema').disabled = false;
   document.getElementById('pStileDesign').innerHTML='<option value="">—</option>'; document.getElementById('pStileDesign').disabled=true;
   document.getElementById('pVarianteTelaio').innerHTML='<option value="">—</option>'; document.getElementById('pVarianteTelaio').disabled=true;
   document.getElementById('pCodiceSerr').value='';
-  const coloriMat = (lookups.LK_COLORI||[]).filter(function(c){ return c.materiale===mat; });
-  const colIntSeen = {};
-  coloriMat.forEach(function(c){ colIntSeen[c.colore_interno]=1; });
-  Utils.fillSelect('pColoreInt', Object.keys(colIntSeen).map(function(c){ return {value:c,label:c}; }), '— Colore int. —');
+  // Colori
+  var colSeen = {};
+  (lookups.LK_COLORI||[]).filter(function(c){ return c.materiale===mat; })
+                          .forEach(function(c){ colSeen[c.colore_interno]=1; });
+  Utils.fillSelect('pColoreInt', Object.keys(colSeen).sort().map(function(c){ return {value:c,label:c}; }), '— Colore int. —');
   document.getElementById('pColoreInt').disabled=false;
   document.getElementById('pColoreEst').innerHTML='<option value="">—</option>'; document.getElementById('pColoreEst').disabled=true;
 }
 
+// FIX: filtra per d.descrizione (nome completo)
 function onSistemaChange(silent) {
-  const mat=document.getElementById('pMateriale').value, sis=document.getElementById('pSistema').value;
+  var mat = document.getElementById('pMateriale').value;
+  var sis = document.getElementById('pSistema').value; // = d.descrizione (es. "KF 310")
   if (!sis) return;
-  const stiliSeen = {};
-  dbSerr.filter(function(d){ return d.materiale===mat&&d.sigla===sis; }).forEach(function(d){ stiliSeen[d.stile_design]=1; });
-  Utils.fillSelect('pStileDesign', Object.keys(stiliSeen).map(function(s){ return {value:s,label:s}; }), '— Stile design —');
+  var stileSeen = {};
+  dbSerr.filter(function(d){ return d.materiale===mat && d.descrizione===sis; })
+        .forEach(function(d){ stileSeen[d.stile_design]=1; });
+  Utils.fillSelect('pStileDesign', Object.keys(stileSeen).sort().map(function(s){ return {value:s,label:s}; }), '— Stile design —');
   document.getElementById('pStileDesign').disabled=false;
   document.getElementById('pVarianteTelaio').innerHTML='<option value="">—</option>'; document.getElementById('pVarianteTelaio').disabled=true;
   document.getElementById('pCodiceSerr').value='';
@@ -788,98 +769,180 @@ function onSistemaChange(silent) {
 }
 
 function onStileChange(silent) {
-  const mat=document.getElementById('pMateriale').value, sis=document.getElementById('pSistema').value, sti=document.getElementById('pStileDesign').value;
+  var mat = document.getElementById('pMateriale').value;
+  var sis = document.getElementById('pSistema').value;
+  var sti = document.getElementById('pStileDesign').value;
   if (!sti) return;
-  const varSeen = {};
-  dbSerr.filter(function(d){ return d.materiale===mat&&d.sigla===sis&&d.stile_design===sti; }).forEach(function(d){ varSeen[d.variante_telaio]=1; });
-  Utils.fillSelect('pVarianteTelaio', Object.keys(varSeen).map(function(v){ return {value:v,label:v}; }), '— Variante telaio —');
+  var varSeen = {};
+  dbSerr.filter(function(d){ return d.materiale===mat && d.descrizione===sis && d.stile_design===sti; })
+        .forEach(function(d){ varSeen[d.variante_telaio]=1; });
+  Utils.fillSelect('pVarianteTelaio', Object.keys(varSeen).sort().map(function(v){ return {value:v,label:v}; }), '— Variante —');
   document.getElementById('pVarianteTelaio').disabled=false;
   document.getElementById('pCodiceSerr').value='';
 }
 
 function onVarianteChange(silent) {
-  const mat=document.getElementById('pMateriale').value, sis=document.getElementById('pSistema').value,
-        sti=document.getElementById('pStileDesign').value, vr=document.getElementById('pVarianteTelaio').value;
-  const rec = dbSerr.find(function(d){ return d.materiale===mat&&d.sigla===sis&&d.stile_design===sti&&d.variante_telaio===vr; });
-  document.getElementById('pCodiceSerr').value = rec ? rec.codice : '';
+  var rec = _getSelectedRecord();
+  document.getElementById('pCodiceSerr').value = rec ? (rec.codice||'') : '';
+  ricalcolaDim(); // FIX: aggiorna calcolo quando cambia variante
+}
+
+function _getSelectedRecord() {
+  var mat = document.getElementById('pMateriale').value;
+  var sis = document.getElementById('pSistema').value;
+  var sti = document.getElementById('pStileDesign').value;
+  var vr  = document.getElementById('pVarianteTelaio').value;
+  if (!mat||!sis||!sti||!vr) return null;
+  return dbSerr.find(function(d){
+    return d.materiale===mat && d.descrizione===sis && d.stile_design===sti && d.variante_telaio===vr;
+  }) || null;
 }
 
 function onColoreIntChange(silent) {
-  const mat=document.getElementById('pMateriale').value, colI=document.getElementById('pColoreInt').value;
-  const colori = (lookups.LK_COLORI||[]).filter(function(c){ return c.materiale===mat&&c.colore_interno===colI; });
-  const colEstSeen = {};
+  var mat  = document.getElementById('pMateriale').value;
+  var colI = document.getElementById('pColoreInt').value;
+  var colori = (lookups.LK_COLORI||[]).filter(function(c){ return c.materiale===mat && c.colore_interno===colI; });
+  var colEstSeen = {};
   colori.forEach(function(c){ colEstSeen[c.colore_esterno]=1; });
-  Utils.fillSelect('pColoreEst', Object.keys(colEstSeen).map(function(c){ return {value:c,label:c}; }), '— Colore est. —');
+  Utils.fillSelect('pColoreEst', Object.keys(colEstSeen).sort().map(function(c){ return {value:c,label:c}; }), '— Colore est. —');
   document.getElementById('pColoreEst').disabled = colori.length===0;
 }
 
 function onCopriMatChange(tipo, silent) {
-  const matEl = document.getElementById('pCopri'+(tipo==='int'?'Int':'Est')+'Mat');
-  const dimEl = document.getElementById('pCopri'+(tipo==='int'?'Int':'Est')+'Dim');
-  const mat = matEl.value;
+  var matEl = document.getElementById('pCopri'+(tipo==='int'?'Int':'Est')+'Mat');
+  var dimEl = document.getElementById('pCopri'+(tipo==='int'?'Int':'Est')+'Dim');
+  var mat = matEl.value;
   if (!mat) { dimEl.innerHTML='<option value="">—</option>'; dimEl.disabled=true; return; }
-  const dims = (lookups.LK_COPRIFILI||[]).filter(function(c){ return c.materiale_sigla===mat; }).map(function(c){ return c.dimensione_mm; });
+  var dims = (lookups.LK_COPRIFILI||[]).filter(function(c){ return c.materiale_sigla===mat; }).map(function(c){ return c.dimensione_mm; });
   Utils.fillSelect(dimEl.id, dims.map(function(d){ return {value:d,label:d+' mm'}; }), '— Dim. —');
   dimEl.disabled=false;
 }
 
 function checkOscuranteVisibility() {
-  const sis = document.getElementById('pSistema').value;
-  const osc = (lookups.LK_OSCURANTE||[]).filter(function(o){ return o.sistema===sis; });
-  const grp = document.getElementById('grpOscurante');
+  var sis = document.getElementById('pSistema').value;
+  // Oscurante: cerco per sigla famiglia (primo token di sis = sigla famiglia)
+  var sisFamiglia = sis.split(' ')[0]; // "KF 310" → "KF"
+  var osc = (lookups.LK_OSCURANTE||[]).filter(function(o){ return o.sistema===sisFamiglia||o.sistema===sis; });
+  var grp = document.getElementById('grpOscurante');
   if (osc.length>0) {
     grp.style.display='';
-    const tipiSeen = {};
+    var tipiSeen = {};
     osc.forEach(function(o){ tipiSeen[o.oscurante_sigla]=o; });
     Utils.fillSelect('pOscuranteTipo', Object.keys(tipiSeen).map(function(t){ return {value:t,label:t+' — '+tipiSeen[t].oscurante_desc}; }), '— Tipo —');
-    document.getElementById('pOscuranteMecc').innerHTML='<option value="">— Meccanismo —</option>'; document.getElementById('pOscuranteMecc').disabled=true;
+    document.getElementById('pOscuranteMecc').innerHTML='<option value="">—</option>'; document.getElementById('pOscuranteMecc').disabled=true;
   } else grp.style.display='none';
 }
 
 function onOscuranteChange(silent) {
-  const sis=document.getElementById('pSistema').value, tipo=document.getElementById('pOscuranteTipo').value;
+  var sis = document.getElementById('pSistema').value;
+  var sisFamiglia = sis.split(' ')[0];
+  var tipo = document.getElementById('pOscuranteTipo').value;
   if (!tipo) return;
-  const meccs = (lookups.LK_OSCURANTE||[]).filter(function(o){ return o.sistema===sis&&o.oscurante_sigla===tipo; }).map(function(o){ return {value:o.meccanismo_sigla,label:o.meccanismo_desc}; });
+  var meccs = (lookups.LK_OSCURANTE||[])
+    .filter(function(o){ return (o.sistema===sisFamiglia||o.sistema===sis)&&o.oscurante_sigla===tipo; })
+    .map(function(o){ return {value:o.meccanismo_sigla,label:o.meccanismo_desc}; });
   Utils.fillSelect('pOscuranteMecc', meccs, '— Meccanismo —'); document.getElementById('pOscuranteMecc').disabled=false;
 }
 
 function onDinoxillChange(silent) {
-  const val=document.getElementById('pDinoxill').value, tipo=document.getElementById('pTipoSerr').value;
-  const regola=regoleLati[tipo]||{};
-  document.getElementById('grpDinoxillLati').style.display = (val==='I3'||val==='I4')&&(regola.dinoxill_lati_scelta==='SI'||regola.dinoxill_lati_scelta===true) ? '' : 'none';
+  var val = document.getElementById('pDinoxill').value;
+  var tipo = document.getElementById('pTipoSerr').value;
+  var regola = regoleLati[tipo]||{};
+  document.getElementById('grpDinoxillLati').style.display =
+    (val==='I3'||val==='I4') && (regola.dinoxill_lati_scelta==='SI'||regola.dinoxill_lati_scelta===true) ? '' : 'none';
 }
 
 // ================================================================
-// CALCOLO H/L REAL-TIME
+// CALCOLO H/L — FIX COMPLETO con formule Excel
+// Mostra: H/L telaio (frame), H/L architettonico, H/L tubolare
 // ================================================================
 function ricalcolaDim() {
-  const H=parseFloat(document.getElementById('pHmm').value)||0;
-  const L=parseFloat(document.getElementById('pLmm').value)||0;
-  const tipoForo=document.getElementById('pTipoForo').value;
-  const ctl=document.getElementById('pControtelaio').value;
-  const hasCtl=ctl==='L'||ctl==='T';
-  const ao=datiComuni[5]||10, at=datiComuni[6]||10, cs=datiComuni[10]||20;
-  const av=datiComuni[15]||10, as_=datiComuni[16]||10, cv=datiComuni[11]||20;
-  const ro=hasCtl?(ao+cs+at):ao, rv=hasCtl?(av+cv+as_):av;
-  let Hc,Lc,Ha,La;
-  if (tipoForo==='A') { Ha=H;La=L;Hc=H-ro*2;Lc=L-rv*2; }
-  else if (tipoForo==='P') { Hc=H;Lc=L;Ha=H+ro*2;La=L+rv*2; }
-  else { Hc=H;Lc=L;Ha=H;La=L; }
-  document.getElementById('dcH').textContent    = H ? Math.round(Hc)+' mm':'—';
-  document.getElementById('dcL').textContent    = L ? Math.round(Lc)+' mm':'—';
-  document.getElementById('dcHarch').textContent = H ? Math.round(Ha)+' mm':'—';
-  document.getElementById('dcLarch').textContent = L ? Math.round(La)+' mm':'—';
+  var H = parseFloat(document.getElementById('pHmm').value)||0;
+  var L = parseFloat(document.getElementById('pLmm').value)||0;
+  var tipoForo = document.getElementById('pTipoForo').value;
+  var tipoSerr = document.getElementById('pTipoSerr').value;
+  var ctl = document.getElementById('pControtelaio').value;
+
+  // Prodotto selezionato
+  var rec = _getSelectedRecord();
+  var nascosto = rec ? (parseFloat(rec.telaio_nascosto_mm)||0) : 0;
+  var aletta   = rec ? (parseFloat(rec.aletta_mm)||0)          : 0;
+
+  // Costanti da datiComuni (indici dal foglio Excel):
+  // 4=ARIA_grezzo_CTL_orizz, 5=ARIA_CTL_telaio_orizz, 6=CTL_sp_orizz, 7=CTL_sp_vert
+  // 8=ARIA_grezzo_CTL_vert,  9=ARIA_CTL_telaio_vert
+  var ariaCTLo = parseFloat(datiComuni[4])||10; // aria tra grezzo e CTL orizz
+  var ariaTelaioO = parseFloat(datiComuni[5])||10; // aria tra CTL e telaio orizz
+  var spCTLo   = parseFloat(datiComuni[6])||20;
+  var spCTLv   = parseFloat(datiComuni[7])||20;
+  var ariaCTLv = parseFloat(datiComuni[8])||10;
+  var ariaTelaioV = parseFloat(datiComuni[9])||10;
+
+  var hasCtl = ctl==='L' || ctl==='T';
+  // Riduzione per lato (come da Excel): con CTL = aria + sp + aria2, senza CTL = solo aria
+  var ridO = hasCtl ? (ariaCTLo + spCTLo + ariaTelaioO) : ariaCTLo;
+  var ridV = hasCtl ? (ariaCTLv + spCTLv + ariaTelaioV) : ariaCTLv;
+  // ARIA2 per tipo P
+  var ARIA2 = parseFloat(datiComuni[5])||10;
+  var ARIA52 = parseFloat(datiComuni[9])||10;
+
+  // n_aletta per altezza: F e FF hanno 2 lati aletta, gli altri 1
+  var nAlH = (tipoSerr==='F'||tipoSerr==='FF') ? 2 : 1;
+
+  var Htel=0, Ltel=0, Harch=0, Larch=0, Htub=0, Ltub=0;
+
+  if (H && L && tipoForo) {
+    if (tipoForo==='A') {
+      // Architettonico: misura = foro grezzo
+      Harch = H; Larch = L;
+      Htel  = H - 2*ridV;   // frame height: foro - 2*gap
+      Ltel  = L - 2*ridO;   // frame width:  foro - 2*gap
+      // Tubolare = frame outer assembly con parti che entrano nel muro
+      Ltub  = L + 2*nascosto + 2*aletta;
+      Htub  = H + nascosto   + nAlH*aletta;
+    } else if (tipoForo==='D') {
+      // Dimensione telaio: misura = frame nominale
+      Htel  = H; Ltel = L;
+      Harch = H + 2*ridV;   // foro grezzo = frame + 2*gap
+      Larch = L + 2*ridO;
+      Ltub  = L + 2*aletta;
+      Htub  = H + nAlH*aletta;
+    } else if (tipoForo==='P') {
+      // Posa in luce: misura = luce netta interna
+      Htel  = H; Ltel = L;
+      Harch = H + 2*ridV;
+      Larch = L + 2*ridO;
+      Ltub  = L - 2*ARIA2  + 2*aletta;
+      Htub  = H - ARIA52 + nAlH*aletta;
+    }
+  }
+
+  document.getElementById('dcH').textContent     = Htel  ? Math.round(Htel) +' mm':'—';
+  document.getElementById('dcL').textContent     = Ltel  ? Math.round(Ltel) +' mm':'—';
+  document.getElementById('dcHarch').textContent = Harch ? Math.round(Harch)+' mm':'—';
+  document.getElementById('dcLarch').textContent = Larch ? Math.round(Larch)+' mm':'—';
+  document.getElementById('dcHtub').textContent  = Htub  ? Math.round(Htub) +' mm':'—';
+  document.getElementById('dcLtub').textContent  = Ltub  ? Math.round(Ltub) +' mm':'—';
+
+  // Mostra aletta info se > 0
+  var alettaInfo = document.getElementById('dcAlettaInfo');
+  if (aletta > 0) {
+    alettaInfo.style.display='';
+    document.getElementById('dcAletta').textContent = aletta+' mm';
+  } else {
+    alettaInfo.style.display='none';
+  }
 }
 
 // ================================================================
 // SALVA POSIZIONE
 // ================================================================
 async function salvaPosizione(chiudiModal) {
-  const data = raccogliDatiPosizione();
+  var data = raccogliDatiPosizione();
   if (!data) return false;
-  const btn = document.getElementById('btnSalvaPosizione');
+  var btn = document.getElementById('btnSalvaPosizione');
   btn.disabled=true; btn.textContent='Salvataggio...';
-  let res = posizioneEditId
+  var res = posizioneEditId
     ? await API.updatePosizioneSerr(posizioneEditId, data)
     : await API.createPosizioneSerr(Object.assign({ID_rilievo: idRilievo}, data));
   btn.disabled=false; btn.textContent='💾 Salva posizione';
@@ -892,14 +955,16 @@ async function salvaPosizione(chiudiModal) {
 }
 
 async function salvaPosizioneEAggiungi() {
-  const ok = await salvaPosizione(false);
+  var ok = await salvaPosizione(false);
   if (ok) { posizioneEditId=null; resetModalPosizione(); document.getElementById('modalPosizioneTitle').textContent='Nuova posizione'; }
 }
 
 function raccogliDatiPosizione() {
-  const req = {pPiano:'Piano',pTipoSerr:'Tipo serramento',pTipoForo:'Tipo foro',pHmm:'H foro',pLmm:'L foro',pNCampi:'N° campi',pMateriale:'Materiale',pSistema:'Sistema',pStileDesign:'Stile design',pVarianteTelaio:'Variante telaio'};
+  var req = {pPiano:'Piano',pTipoSerr:'Tipo serramento',pNCampi:'N° campi',
+             pTipoForo:'Tipo foro',pHmm:'H foro',pLmm:'L foro',
+             pMateriale:'Materiale',pSistema:'Sistema',pStileDesign:'Stile design',pVarianteTelaio:'Variante telaio'};
   for (var id in req) {
-    if (!document.getElementById(id) || !document.getElementById(id).value) {
+    if (!document.getElementById(id)||!document.getElementById(id).value) {
       Utils.showWarning(req[id]+' è obbligatorio.'); return null;
     }
   }
@@ -907,7 +972,10 @@ function raccogliDatiPosizione() {
     piano: document.getElementById('pPiano').value,
     ambiente: document.getElementById('pAmbiente').value.trim(),
     tipo_serramento: document.getElementById('pTipoSerr').value,
+    n_campi: parseInt(document.getElementById('pNCampi').value)||1,
+    senso_apertura: document.getElementById('pSensoApertura').value,
     materiale: document.getElementById('pMateriale').value,
+    // FIX: sistema = descrizione (nome completo "KF 310")
     sistema: document.getElementById('pSistema').value,
     stile_design: document.getElementById('pStileDesign').value,
     variante_telaio: document.getElementById('pVarianteTelaio').value,
@@ -915,8 +983,6 @@ function raccogliDatiPosizione() {
     tipo_foro: document.getElementById('pTipoForo').value,
     H_mm: parseFloat(document.getElementById('pHmm').value)||0,
     L_mm: parseFloat(document.getElementById('pLmm').value)||0,
-    n_campi: parseInt(document.getElementById('pNCampi').value)||1,
-    senso_apertura: document.getElementById('pSensoApertura').value,
     n_vetri: document.getElementById('pNVetri').value,
     colore_int: document.getElementById('pColoreInt').value,
     colore_est: document.getElementById('pColoreEst').value,
@@ -943,29 +1009,28 @@ function raccogliDatiPosizione() {
 // ================================================================
 function openModalCopiaPos(id) { posizioneCopiaId=id; document.getElementById('nCopie').value=1; Utils.openModal('modalCopiaPos'); }
 async function eseguiCopiaPos() {
-  const n=parseInt(document.getElementById('nCopie').value)||1;
-  const btn=document.getElementById('btnEseguiCopia'); btn.disabled=true; btn.textContent='Copia...';
-  const res=await API.copyPosizioneSerr(posizioneCopiaId, n);
+  var n=parseInt(document.getElementById('nCopie').value)||1;
+  var btn=document.getElementById('btnEseguiCopia'); btn.disabled=true; btn.textContent='Copia...';
+  var res=await API.copyPosizioneSerr(posizioneCopiaId,n);
   btn.disabled=false; btn.textContent='Copia';
   if (res.success) { Utils.showSuccess(n+' copi'+(n===1?'a':'e')+' create.'); Utils.closeModal('modalCopiaPos'); await loadPosizioni(); }
   else Utils.showError(res.error);
 }
-
-function openModalEliminaPos(id, numPos) { posizioneEliminaId=id; document.getElementById('posDaEliminare').textContent=numPos; Utils.openModal('modalEliminaPos'); }
+function openModalEliminaPos(id,numPos){ posizioneEliminaId=id; document.getElementById('posDaEliminare').textContent=numPos; Utils.openModal('modalEliminaPos'); }
 async function confEliminaPos() {
-  const res=await API.deletePosizioneSerr(posizioneEliminaId);
+  var res=await API.deletePosizioneSerr(posizioneEliminaId);
   if (res.success) { Utils.showSuccess('Eliminata.'); Utils.closeModal('modalEliminaPos'); await loadPosizioni(); }
   else Utils.showError(res.error);
 }
 
 // ================================================================
-// STRATIGRAFIE — FIX: nomi brevi A/B/C/D/E, quote solo cerchi
+// STRATIGRAFIE
 // ================================================================
-const STRAT_IMAGES = APP_CONFIG.STRAT_IMAGES;
-const STRAT_QUOTE  = APP_CONFIG.STRAT_QUOTE;
+var STRAT_IMAGES = APP_CONFIG.STRAT_IMAGES;
+var STRAT_QUOTE  = APP_CONFIG.STRAT_QUOTE;
 
 async function loadStratigrafie() {
-  const res=await API.getStratigrafie(idRilievo);
+  var res=await API.getStratigrafie(idRilievo);
   if (!res.success) return;
   stratigrafie=res.data;
   renderStratigrafie();
@@ -973,37 +1038,33 @@ async function loadStratigrafie() {
 }
 
 function renderStratigrafie() {
-  const c=document.getElementById('stratContainer');
-  if (!stratigrafie.length) { Utils.showEmptyState(c,'Nessuna stratigrafia. Clicca "+ Nuova stratigrafia".','🧱'); return; }
+  var c=document.getElementById('stratContainer');
+  if (!stratigrafie.length) { Utils.showEmptyState(c,'Nessuna stratigrafia.','🧱'); return; }
   c.innerHTML=stratigrafie.map(function(s){
-    const quote=(function(){ try{return JSON.parse(s.quote_json)||[];}catch(e){return[];} })();
+    var quote=(function(){ try{return JSON.parse(s.quote_json)||[];}catch(e){return[];} })();
     return '<div class="card" style="margin-bottom:12px;">' +
       '<div class="card-header">' +
-        '<div style="display:flex;align-items:center;gap:10px;">' +
-          '<span style="font-weight:600;">'+s.nome+'</span>' +
-          (s.is_default==='SI'?'<span class="badge badge-red">Default</span>':'') +
-        '</div>' +
-        '<div style="display:flex;gap:6px;">' +
-          (s.is_default!=='SI'?'<button class="btn btn-sm btn-outline" onclick="setDefaultStrat(\''+s.ID_stratigrafia+'\')">⭐ Default</button>':'')+
-          '<button class="btn btn-sm btn-outline" onclick="openModalStratigrafia(\''+s.ID_stratigrafia+'\')">✏️</button>'+
-          (s.is_default!=='SI'?'<button class="btn btn-sm btn-danger" onclick="eliminaStrat(\''+s.ID_stratigrafia+'\')">🗑️</button>':'')+
-        '</div>' +
-      '</div>' +
+        '<div style="display:flex;align-items:center;gap:10px;"><span style="font-weight:600;">'+s.nome+'</span>' +
+        (s.is_default==='SI'?'<span class="badge badge-red">Default</span>':'')+
+        '</div><div style="display:flex;gap:6px;">' +
+        (s.is_default!=='SI'?'<button class="btn btn-sm btn-outline" onclick="setDefaultStrat(\''+s.ID_stratigrafia+'\')">⭐ Default</button>':'')+
+        '<button class="btn btn-sm btn-outline" onclick="openModalStratigrafia(\''+s.ID_stratigrafia+'\')">✏️</button>' +
+        (s.is_default!=='SI'?'<button class="btn btn-sm btn-danger" onclick="eliminaStrat(\''+s.ID_stratigrafia+'\')">🗑️</button>':'')+
+      '</div></div>' +
       '<div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">' +
         '<img src="'+(STRAT_IMAGES[s.immagine_ref]||'')+'" alt="" style="height:140px;object-fit:contain;background:#F5F5F5;padding:8px;border-radius:8px;border:1px solid var(--c-border);">' +
         '<div class="quote-grid">' +
           quote.map(function(q){ return '<div class="quote-item"><div class="q-letter">'+q.lettera+'</div><strong>'+q.mm+' mm</strong></div>'; }).join('') +
         '</div>' +
-      '</div>' +
-    '</div>';
+      '</div></div>';
   }).join('');
 }
 
 function populateStratigrafiaSelect() {
-  const sel=document.getElementById('pStratigrafia'), cur=sel.value;
+  var sel=document.getElementById('pStratigrafia'), cur=sel.value;
   sel.innerHTML='<option value="">— Default cantiere —</option>';
   stratigrafie.forEach(function(s){
-    const o=document.createElement('option');
+    var o=document.createElement('option');
     o.value=s.ID_stratigrafia; o.textContent=s.nome+(s.is_default==='SI'?' (default)':'');
     if (s.ID_stratigrafia===cur) o.selected=true;
     sel.appendChild(o);
@@ -1012,28 +1073,23 @@ function populateStratigrafiaSelect() {
 
 function openModalStratigrafia(id) {
   stratEditId=id;
-  document.getElementById('modalStratTitle').textContent = id ? 'Modifica stratigrafia' : 'Nuova stratigrafia';
+  document.getElementById('modalStratTitle').textContent=id?'Modifica stratigrafia':'Nuova stratigrafia';
   document.getElementById('sNome').value=''; document.getElementById('sImgRef').value='';
   document.getElementById('sQuoteContainer').style.display='none';
-
-  // Griglia immagini con etichette brevi A/B/C/D/E
-  const grid=document.getElementById('stratImgGrid');
+  var grid=document.getElementById('stratImgGrid');
   grid.innerHTML=Object.entries(STRAT_IMAGES).map(function(entry){
-    const code=entry[0], src=entry[1];
-    const label=code.replace('SERR_',''); // A, B, C, D, E
+    var code=entry[0], src=entry[1], label=code.replace('SERR_','');
     return '<div class="strat-card" id="simg_'+code+'" onclick="selectStratImg(\''+code+'\')">'+
-      '<img src="'+src+'" alt="'+code+'" onerror="this.src=\'\'">'+
-      '<div class="strat-label">'+label+'</div>'+
-    '</div>';
+      '<img src="'+src+'" alt="'+label+'" onerror="this.src=\'\'">'+
+      '<div class="strat-label">'+label+'</div></div>';
   }).join('');
-
   if (id) {
-    const s=stratigrafie.find(function(x){ return x.ID_stratigrafia===id; });
+    var s=stratigrafie.find(function(x){ return x.ID_stratigrafia===id; });
     if (s) {
       document.getElementById('sNome').value=s.nome;
       selectStratImg(s.immagine_ref);
-      const quote=(function(){ try{return JSON.parse(s.quote_json)||[];}catch(e){return[];} })();
-      quote.forEach(function(q){ const el=document.getElementById('sq_'+q.lettera); if(el) el.value=q.mm; });
+      var quote=(function(){ try{return JSON.parse(s.quote_json)||[];}catch(e){return[];} })();
+      quote.forEach(function(q){ var el=document.getElementById('sq_'+q.lettera); if(el) el.value=q.mm; });
     }
   }
   Utils.openModal('modalStratigrafia');
@@ -1041,42 +1097,38 @@ function openModalStratigrafia(id) {
 
 function selectStratImg(code) {
   document.querySelectorAll('.strat-card').forEach(function(c){ c.classList.remove('sel'); });
-  const card=document.getElementById('simg_'+code);
-  if (card) card.classList.add('sel');
+  var card=document.getElementById('simg_'+code); if(card) card.classList.add('sel');
   document.getElementById('sImgRef').value=code;
-  const lettere=STRAT_QUOTE[code]||[];
-  const qc=document.getElementById('sQuoteContainer'), qg=document.getElementById('sQuoteGrid');
+  var lettere=STRAT_QUOTE[code]||[];
+  var qc=document.getElementById('sQuoteContainer'), qg=document.getElementById('sQuoteGrid');
   if (!lettere.length) { qc.style.display='none'; return; }
-  // Quote: solo cerchi con lettera, senza descrizione
   qg.innerHTML=lettere.map(function(l){
-    return '<div class="quote-item">'+
-      '<div class="q-letter">'+l+'</div>'+
-      '<input class="form-control q-input" type="number" id="sq_'+l+'" placeholder="mm">'+
-    '</div>';
+    return '<div class="quote-item"><div class="q-letter">'+l+'</div>'+
+      '<input class="form-control q-input" type="number" id="sq_'+l+'" placeholder="mm"></div>';
   }).join('');
   qc.style.display='';
 }
 
 async function salvaStratigrafia() {
-  const nome=document.getElementById('sNome').value.trim(), imgRef=document.getElementById('sImgRef').value;
-  if (!nome||!imgRef) { Utils.showWarning('Nome e immagine sono obbligatori.'); return; }
-  const lettere=STRAT_QUOTE[imgRef]||[];
-  const quote=lettere.map(function(l){ return { lettera:l, mm:parseInt(document.getElementById('sq_'+l)?.value)||0 }; });
-  const data={ID_rilievo:idRilievo, nome, immagine_ref:imgRef, quote_json:JSON.stringify(quote)};
-  const btn=document.getElementById('btnSalvaStrat'); btn.disabled=true; btn.textContent='Salvataggio...';
-  const res=stratEditId ? await API.updateStratigrafia(stratEditId,data) : await API.createStratigrafia(data);
+  var nome=document.getElementById('sNome').value.trim(), imgRef=document.getElementById('sImgRef').value;
+  if (!nome||!imgRef) { Utils.showWarning('Nome e immagine obbligatori.'); return; }
+  var lettere=STRAT_QUOTE[imgRef]||[];
+  var quote=lettere.map(function(l){ return {lettera:l,mm:parseInt(document.getElementById('sq_'+l)?.value)||0}; });
+  var data={ID_rilievo:idRilievo,nome,immagine_ref:imgRef,quote_json:JSON.stringify(quote)};
+  var btn=document.getElementById('btnSalvaStrat'); btn.disabled=true; btn.textContent='Salvataggio...';
+  var res=stratEditId?await API.updateStratigrafia(stratEditId,data):await API.createStratigrafia(data);
   btn.disabled=false; btn.textContent='Salva';
   if (res.success) { Utils.showSuccess(stratEditId?'Aggiornata.':'Creata.'); Utils.closeModal('modalStratigrafia'); await loadStratigrafie(); }
   else Utils.showError(res.error);
 }
 
 async function setDefaultStrat(id) {
-  const res=await API.setDefaultStrat(id,idRilievo);
+  var res=await API.setDefaultStrat(id,idRilievo);
   if (res.success) { Utils.showSuccess('Default aggiornato.'); await loadStratigrafie(); } else Utils.showError(res.error);
 }
 async function eliminaStrat(id) {
   if (!await Utils.confirm('Eliminare questa stratigrafia?')) return;
-  const res=await API.deleteStratigrafia(id);
+  var res=await API.deleteStratigrafia(id);
   if (res.success) { Utils.showSuccess('Eliminata.'); await loadStratigrafie(); } else Utils.showError(res.error);
 }
 
@@ -1085,8 +1137,8 @@ async function eliminaStrat(id) {
 // ================================================================
 function openModalClona() { Utils.openModal('modalClona'); }
 async function eseguiClona() {
-  const tipoClone=document.querySelector('[name="tipoClona"]:checked')?.value;
-  const res=await API.cloneRilievo(idRilievo, tipoClone);
+  var tipoClone=document.querySelector('[name="tipoClona"]:checked')?.value;
+  var res=await API.cloneRilievo(idRilievo,tipoClone);
   if (res.success) {
     Utils.showSuccess((tipoClone==='REVISIONE'?'Revisione':'Copia')+' creata: '+res.codice);
     Utils.closeModal('modalClona');
@@ -1097,11 +1149,11 @@ async function eseguiClona() {
 // ================================================================
 // LEGENDA
 // ================================================================
-const LEGENDE = {
+var LEGENDE = {
   tipoSerr:{titolo:'Tipi serramento',voci:[['I','Ingresso'],['F','Finestra apribile'],['PF','Porta finestra'],['FF','Finestra fissa'],['VF','Vetrata fissa'],['S','Scorrevole']]},
-  tipoForo:{titolo:'Tipo foro',voci:[['A','Architettonico — misura foro grezzo nel muro'],['D','Dimensione telaio — misura del telaio finito'],['P','Posa in luce — luce netta interna']]},
-  materiale:{titolo:'Materiali',voci:[['A-','Alluminio'],['LA','Legno-Alluminio'],['PA','PVC-Alluminio'],['P-','PVC'],['L-','Legno']]},
-  varianteTelaio:{titolo:'Varianti telaio',voci:[['NR','Nessun riscontro'],['CR','Controriscontro'],['HR','High Reveal'],['IR','Interior Reveal'],['ZR','Zero Reveal'],['WR','Wide Reveal']]},
+  tipoForo:{titolo:'Tipo foro',voci:[['A','Architettonico — misura foro grezzo (il più comune)'],['D','Dimensione telaio — misura del frame finito'],['P','Posa in luce — misura luce netta interna']]},
+  materiale:{titolo:'Materiali',voci:[['ALLUMINIO','Telaio in alluminio'],['LEGNO-ALLUMINIO','Telaio legno interno, alluminio esterno'],['PVC-ALLUMINIO','Telaio PVC interno, alluminio esterno'],['PVC','Telaio in PVC'],['LEGNO','Telaio in legno']]},
+  varianteTelaio:{titolo:'Varianti telaio',voci:[['NR','No Reveal — standard, telaio arretrato'],['CR','Counter Reveal — telaio controriscontro'],['HR','High Reveal — telaio alto'],['IR','Interior Reveal — aletta interna'],['ZR','Zero Reveal — telaio filo muro'],['WR','Wide Reveal — telaio largo'],['SR','Shallow Reveal'],['DR','Deep Reveal']]},
   sensiApertura:{titolo:'Sensi di apertura',voci:[['D','Destra'],['S','Sinistra'],['W','Vasistas (ribalta)'],['F','Fissa']]},
   schermatura:{titolo:'Schermatura',voci:[['A','Avvolgibile manuale'],['AM','Avvolgibile meccanico'],['AE','Avvolgibile elettronico'],['AR','Avvolgibile radio'],['S','Scuretto'],['TZ','Tenda ZIP'],['TM','Tenda manuale'],['CA','Frangisole a cavo'],['CT','Frangisole a catena']]},
   cassonetto:{titolo:'Cassonetto',voci:[['P','PVC'],['L','Legno']]},
@@ -1110,7 +1162,7 @@ const LEGENDE = {
   dinoxill:{titolo:'Dinoxill',voci:[['DA','Davanzale'],['I3','Imbotte 3 lati'],['I4','Imbotte 4 lati']]}
 };
 function openLegenda(tipo) {
-  const leg=LEGENDE[tipo]; if(!leg)return;
+  var leg=LEGENDE[tipo]; if(!leg)return;
   document.getElementById('legendaTitolo').textContent=leg.titolo;
   document.getElementById('legendaContenuto').innerHTML=leg.voci.map(function(v){ return '<div class="leg-item"><span class="leg-code">'+v[0]+'</span>'+v[1]+'</div>'; }).join('');
   document.getElementById('legendaOverlay').classList.add('open');

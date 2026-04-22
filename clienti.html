@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clienti — F4 Rilievi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a class="topbar-logo" href="dashboard.html">
+    <img src="img/Logo_F4.jpg" alt="F4" onerror="this.style.display='none'">
+    <span class="logo-name">F4 Rilievi</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-user">
+    <div class="user-avatar" data-user-sigla>?</div>
+    <div class="topbar-menu">
+      <button class="topbar-menu-btn" onclick="toggleUserMenu()">
+        <span data-user-nome>Utente</span> ▾
+      </button>
+      <div class="topbar-dropdown" id="userMenu">
+        <a href="dashboard.html">🏠 Dashboard</a>
+        <div class="dd-sep"></div>
+        <a href="#" class="dd-danger" onclick="Auth.logout()">🚪 Esci</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <nav class="sidebar-nav">
+    <a href="dashboard.html"><span class="nav-icon">🏠</span> Dashboard</a>
+    <a href="clienti.html" class="active"><span class="nav-icon">👥</span> Clienti</a>
+    <div class="sidebar-sep"></div>
+    <a href="admin.html" data-admin-only><span class="nav-icon">⚙️</span> Amministrazione</a>
+  </nav>
+</aside>
+
+<!-- CONTENUTO -->
+<main class="main-content">
+  <div class="page-header">
+    <div>
+      <h1>Clienti</h1>
+      <p class="page-subtitle">Gestione anagrafiche clienti e cantieri</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" onclick="openModalNuovoCliente()">
+        ➕ Nuovo cliente
+      </button>
+    </div>
+  </div>
+
+  <!-- RICERCA -->
+  <div class="card" style="padding:16px;margin-bottom:16px;">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input class="form-control" type="text" id="searchInput"
+             placeholder="Cerca per nome cliente..."
+             oninput="filterClienti(this.value)">
+    </div>
+  </div>
+
+  <!-- LISTA CLIENTI -->
+  <div id="clientiList">
+    <div class="loading-state"><div class="spinner"></div><p>Caricamento clienti...</p></div>
+  </div>
+</main>
+
+<!-- MODAL: NUOVO/MODIFICA CLIENTE -->
+<div class="modal" id="modalCliente">
+  <div class="modal-box modal-box-sm">
+    <div class="modal-header">
+      <span class="modal-title" id="modalClienteTitle">Nuovo cliente</span>
+      <button class="modal-close" data-close-modal="modalCliente">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="formCliente">
+        <div class="form-group">
+          <label class="form-label">Nome / Ragione sociale <span class="req">*</span></label>
+          <input class="form-control" type="text" name="nome" id="clienteNome"
+                 placeholder="Es. Rossi Mario oppure Costruzioni Bianchi Srl" required>
+        </div>
+        <div class="form-row form-row-2">
+          <div class="form-group">
+            <label class="form-label">Telefono</label>
+            <input class="form-control" type="tel" name="telefono" id="clienteTel" placeholder="+39 ...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">E-mail</label>
+            <input class="form-control" type="email" name="email" id="clienteEmail" placeholder="...@...">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Note</label>
+          <textarea class="form-control" name="note" id="clienteNote" rows="2" placeholder="Note opzionali..."></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" data-close-modal="modalCliente">Annulla</button>
+      <button class="btn btn-primary" id="btnSalvaCliente" onclick="salvaCliente()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFERMA DISATTIVA -->
+<div class="modal" id="modalConfermaToggle">
+  <div class="modal-box modal-box-sm">
+    <div class="modal-header">
+      <span class="modal-title" id="toggleTitle">Conferma operazione</span>
+      <button class="modal-close" data-close-modal="modalConfermaToggle">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="toggleMsg">Sei sicuro di voler procedere?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" data-close-modal="modalConfermaToggle">Annulla</button>
+      <button class="btn btn-danger" id="btnConfermaToggle">Conferma</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script>
+  const currentUser = Auth.requireLogin();
+  if (!currentUser) throw new Error('not logged');
+  Auth.populateUserUI();
+
+  let tuttiClienti = [];
+  let clienteEditId = null;
+
+  // ---- INIT ----
+  async function init() {
+    await loadClienti();
+  }
+
+  async function loadClienti() {
+    const res = await API.getClienti();
+    if (!res.success) { Utils.showError(res.error); return; }
+    tuttiClienti = res.data;
+    renderClienti(tuttiClienti);
+  }
+
+  function filterClienti(q) {
+    q = q.trim().toLowerCase();
+    if (!q) { renderClienti(tuttiClienti); return; }
+    const filtered = tuttiClienti.filter(c =>
+      (c.nome || '').toLowerCase().includes(q) ||
+      (c.email || '').toLowerCase().includes(q) ||
+      (c.telefono || '').toLowerCase().includes(q)
+    );
+    renderClienti(filtered);
+  }
+
+  function renderClienti(lista) {
+    const container = document.getElementById('clientiList');
+    if (lista.length === 0) {
+      Utils.showEmptyState(container, 'Nessun cliente trovato.', '👥');
+      return;
+    }
+
+    const sorted = Utils.sortByName(lista, 'nome');
+    container.innerHTML = sorted.map(c => {
+      const isAdmin = Auth.isAdmin();
+      const attivo  = c.stato === 'attivo';
+      return `
+        <div class="card" style="margin-bottom:10px;padding:0;overflow:hidden;">
+          <div style="display:flex;align-items:center;gap:0;">
+            <!-- Lettera iniziale -->
+            <div style="width:56px;min-height:64px;background:${attivo ? 'var(--c-primary)' : 'var(--c-text-sec)'};
+                        display:flex;align-items:center;justify-content:center;
+                        color:white;font-weight:700;font-size:1.3rem;flex-shrink:0;">
+              ${(c.nome || '?').charAt(0).toUpperCase()}
+            </div>
+            <!-- Info -->
+            <div style="flex:1;padding:12px 16px;cursor:pointer;"
+                 onclick="Utils.navigate('cantiere.html', { idCliente: '${c.ID_cliente}' })">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <strong style="font-size:.95rem;">${c.nome}</strong>
+                <span class="badge ${attivo ? 'badge-attivo' : 'badge-obsoleto'}">${attivo ? 'Attivo' : 'Non attivo'}</span>
+              </div>
+              <div style="font-size:.82rem;color:var(--c-text-sec);margin-top:3px;">
+                ${c.telefono ? '📞 ' + c.telefono : ''}
+                ${c.email    ? ' ✉️ ' + c.email : ''}
+                ${!c.telefono && !c.email ? 'Nessun contatto registrato' : ''}
+              </div>
+            </div>
+            <!-- Azioni -->
+            <div style="padding:0 12px;display:flex;gap:4px;flex-shrink:0;">
+              <button class="btn btn-sm btn-outline" title="Vai ai cantieri"
+                      onclick="Utils.navigate('cantiere.html', { idCliente: '${c.ID_cliente}' })">
+                🏗️ Cantieri
+              </button>
+              <button class="btn-icon" title="Modifica"
+                      onclick="openModalModificaCliente('${c.ID_cliente}')">✏️</button>
+              ${isAdmin ? `
+              <button class="btn-icon" title="${attivo ? 'Disattiva' : 'Riattiva'}"
+                      onclick="confermaToggleCliente('${c.ID_cliente}', '${c.nome}', ${attivo})">
+                ${attivo ? '🔴' : '🟢'}
+              </button>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ---- MODAL CLIENTE ----
+  function openModalNuovoCliente() {
+    clienteEditId = null;
+    document.getElementById('modalClienteTitle').textContent = 'Nuovo cliente';
+    document.getElementById('clienteNome').value  = '';
+    document.getElementById('clienteTel').value   = '';
+    document.getElementById('clienteEmail').value = '';
+    document.getElementById('clienteNote').value  = '';
+    Utils.openModal('modalCliente');
+    setTimeout(() => document.getElementById('clienteNome').focus(), 100);
+  }
+
+  function openModalModificaCliente(id) {
+    const c = tuttiClienti.find(x => x.ID_cliente == id);
+    if (!c) return;
+    clienteEditId = id;
+    document.getElementById('modalClienteTitle').textContent = 'Modifica cliente';
+    document.getElementById('clienteNome').value  = c.nome     || '';
+    document.getElementById('clienteTel').value   = c.telefono || '';
+    document.getElementById('clienteEmail').value = c.email    || '';
+    document.getElementById('clienteNote').value  = c.note     || '';
+    Utils.openModal('modalCliente');
+    setTimeout(() => document.getElementById('clienteNome').focus(), 100);
+  }
+
+  async function salvaCliente() {
+    const nome = document.getElementById('clienteNome').value.trim();
+    if (!nome) { Utils.showWarning('Il nome è obbligatorio.'); return; }
+
+    const data = {
+      nome:     nome,
+      telefono: document.getElementById('clienteTel').value.trim(),
+      email:    document.getElementById('clienteEmail').value.trim(),
+      note:     document.getElementById('clienteNote').value.trim()
+    };
+
+    const btn = document.getElementById('btnSalvaCliente');
+    btn.disabled = true; btn.textContent = 'Salvataggio...';
+
+    let res;
+    if (clienteEditId) {
+      res = await API.updateCliente(clienteEditId, data);
+    } else {
+      res = await API.createCliente(data);
+    }
+
+    btn.disabled = false; btn.textContent = 'Salva';
+
+    if (res.success) {
+      Utils.showSuccess(clienteEditId ? 'Cliente aggiornato.' : 'Cliente creato.');
+      Utils.closeModal('modalCliente');
+      await loadClienti();
+    } else {
+      Utils.showError(res.error);
+    }
+  }
+
+  // ---- TOGGLE STATO ----
+  function confermaToggleCliente(id, nome, attivo) {
+    document.getElementById('toggleTitle').textContent = attivo ? 'Disattiva cliente' : 'Riattiva cliente';
+    document.getElementById('toggleMsg').textContent   =
+      attivo
+        ? `Vuoi disattivare "${nome}"? Non sarà più visibile nelle liste attive.`
+        : `Vuoi riattivare "${nome}"?`;
+    document.getElementById('btnConfermaToggle').onclick = () => doToggle(id);
+    Utils.openModal('modalConfermaToggle');
+  }
+
+  async function doToggle(id) {
+    Utils.closeModal('modalConfermaToggle');
+    const res = await API.toggleCliente(id);
+    if (res.success) {
+      Utils.showSuccess('Stato aggiornato.');
+      await loadClienti();
+    } else {
+      Utils.showError(res.error);
+    }
+  }
+
+  // ---- USER MENU ----
+  function toggleUserMenu() {
+    document.getElementById('userMenu').classList.toggle('open');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.topbar-menu'))
+      document.getElementById('userMenu')?.classList.remove('open');
+  });
+
+  // ---- AVVIO ----
+  init();
+</script>
+</body>
+</html>

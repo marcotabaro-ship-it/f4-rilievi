@@ -7,248 +7,174 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
   <style>
-    /* Albero cantieri */
-    .tree-root { list-style: none; padding: 0; margin: 0; }
-    .tree-children { list-style: none; padding-left: 24px; margin: 0; border-left: 2px solid var(--c-border); margin-left: 12px; }
-    .tree-node-item { margin: 2px 0; }
-    .tree-node-row {
-      display: flex; align-items: center; gap: 6px; padding: 8px 10px;
-      border-radius: var(--radius); cursor: pointer;
-      transition: background var(--transition); position: relative;
-    }
-    .tree-node-row:hover { background: var(--c-bg); }
-    .tree-node-row.selected { background: var(--c-red-light); border-left: 3px solid var(--c-red); }
-    .tree-toggle-btn { background: none; border: none; width: 20px; height: 20px; font-size: .75rem; color: var(--c-text-sec); flex-shrink: 0; border-radius: 3px; }
-    .tree-toggle-btn:hover { background: var(--c-border); }
-    .tree-node-name { flex: 1; font-size: .9rem; font-weight: 500; }
-    .tree-node-addr { font-size: .78rem; color: var(--c-text-sec); display: block; }
-    .tree-node-actions { display: none; gap: 2px; }
-    .tree-node-row:hover .tree-node-actions { display: flex; }
-    .tree-node-icon { font-size: .9rem; color: var(--c-text-sec); flex-shrink: 0; }
-
-    /* Rilievi */
+    .two-col { display: grid; grid-template-columns: 300px 1fr; gap: 20px; align-items: start; }
     .rilievo-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px; border-bottom: 1px solid var(--c-border);
-      transition: background var(--transition); cursor: pointer;
+      display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+      border-bottom: 1px solid var(--c-border); cursor: pointer;
+      transition: background var(--transition);
     }
     .rilievo-item:last-child { border-bottom: none; }
     .rilievo-item:hover { background: var(--c-bg); }
-    .rilievo-type-icon { font-size: 1.4rem; }
-    .rilievo-info { flex: 1; }
-    .rilievo-code-row { display: flex; align-items: center; gap: 8px; }
-    .rilievo-meta { font-size: .78rem; color: var(--c-text-sec); margin-top: 2px; }
-
-    /* Layout 2 colonne */
-    .two-col { display: grid; grid-template-columns: 320px 1fr; gap: 20px; }
-    @media(max-width:900px) { .two-col { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-
-<header class="topbar">
-  <a class="topbar-logo" href="dashboard.html">
-    <img src="img/Logo_F4.jpg" alt="F4" onerror="this.style.display='none'">
-    <span class="logo-name">F4 Rilievi</span>
-  </a>
-  <div class="topbar-spacer"></div>
-  <div class="topbar-user">
-    <div class="user-avatar" data-user-sigla>?</div>
-    <div class="topbar-menu">
-      <button class="topbar-menu-btn" onclick="toggleUserMenu()">
-        <span data-user-nome>Utente</span> ▾
-      </button>
-      <div class="topbar-dropdown" id="userMenu">
-        <a href="dashboard.html">🏠 Dashboard</a>
-        <a href="clienti.html">👥 Clienti</a>
-        <div class="dd-sep"></div>
-        <a href="#" class="dd-danger" onclick="Auth.logout()">🚪 Esci</a>
+<div class="app-layout" id="appLayout">
+  <main class="main-content">
+    <div class="breadcrumb">
+      <a href="clienti.html">Clienti</a> › <span id="bcCliente">—</span>
+    </div>
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1 id="pageTitle">Cantieri</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openModalNuovoCantiere(null)">
+          ➕ Nuovo cantiere
+        </button>
       </div>
     </div>
-  </div>
-</header>
 
-<aside class="sidebar" id="sidebar">
-  <nav class="sidebar-nav">
-    <a href="dashboard.html"><span class="nav-icon">🏠</span> Dashboard</a>
-    <a href="clienti.html" class="active"><span class="nav-icon">👥</span> Clienti</a>
-    <div class="sidebar-sep"></div>
-    <a href="admin.html" data-admin-only><span class="nav-icon">⚙️</span> Amministrazione</a>
-  </nav>
-</aside>
-
-<main class="main-content">
-  <!-- BREADCRUMB -->
-  <div class="breadcrumb">
-    <a href="clienti.html">Clienti</a> ›
-    <span id="bcCliente">—</span>
-  </div>
-
-  <div class="page-header">
-    <h1 id="pageTitle">Cantieri</h1>
-    <div class="header-actions">
-      <button class="btn btn-primary" onclick="openModalNuovoCantiere(null)">
-        ➕ Nuovo cantiere
-      </button>
-    </div>
-  </div>
-
-  <div class="two-col">
-    <!-- ALBERO CANTIERI -->
-    <div>
-      <div class="card" style="padding:0;overflow:hidden;">
-        <div style="padding:14px 16px;border-bottom:1px solid var(--c-border);display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-weight:600;font-size:.95rem;">🏗️ Struttura cantieri</span>
+    <div class="two-col">
+      <!-- ALBERO -->
+      <div class="card" style="padding:0;overflow:hidden;position:sticky;top:80px;">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--c-border);
+                    display:flex;justify-content:space-between;align-items:center;
+                    background:#F8F8F8;">
+          <strong style="font-size:.9rem;">🏗️ Struttura cantieri</strong>
           <button class="btn btn-sm btn-outline" onclick="openModalNuovoCantiere(null)">+ Aggiungi</button>
         </div>
-        <div id="alberoContainer" style="padding:8px;">
-          <div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>
+        <div id="alberoContainer" style="padding:8px;max-height:70vh;overflow-y:auto;">
+          <div class="loading-state"><div class="spinner"></div></div>
         </div>
       </div>
-    </div>
 
-    <!-- DETTAGLIO CANTIERE + RILIEVI -->
-    <div>
+      <!-- DETTAGLIO -->
       <div id="dettaglioPanel">
         <div class="card">
           <div class="empty-state" style="padding:40px;">
             <div class="empty-icon">🏗️</div>
-            <p>Seleziona un cantiere dall'albero per vederne i dettagli e i rilievi</p>
+            <p>Seleziona un cantiere</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</main>
+  </main>
+</div>
 
-<!-- MODAL: CANTIERE -->
+<!-- MODAL CANTIERE -->
 <div class="modal" id="modalCantiere">
   <div class="modal-box">
     <div class="modal-header">
       <span class="modal-title" id="modalCantiereTitle">Nuovo cantiere</span>
-      <button class="modal-close" data-close-modal="modalCantiere">✕</button>
+      <button class="modal-close" onclick="Utils.closeModal('modalCantiere')">✕</button>
     </div>
     <div class="modal-body">
-      <form id="formCantiere">
+      <div class="form-group">
+        <label class="form-label">Nome cantiere <span class="req">*</span></label>
+        <input class="form-control" type="text" id="cantiereNome" placeholder="Es. Villa Rossi">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cantiere padre (se sotto-cantiere)</label>
+        <select class="form-control" id="cantierePadre">
+          <option value="">— Nessuno (primo livello) —</option>
+        </select>
+      </div>
+      <div class="form-row form-row-2">
         <div class="form-group">
-          <label class="form-label">Nome cantiere <span class="req">*</span></label>
-          <input class="form-control" type="text" name="nome_cantiere" id="cantiereNome" placeholder="Es. Villa Rossi — Piano terra">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Cantiere padre (se sotto-cantiere)</label>
-          <select class="form-control" name="ID_parent" id="cantierePadre">
-            <option value="">— Nessuno (primo livello) —</option>
+          <label class="form-label">Tipo via</label>
+          <select class="form-control" id="cantiereTipoVia">
+            <option value="">—</option>
+            <option>Via</option><option>Piazza</option><option>Largo</option>
+            <option>Viale</option><option>Corso</option><option>Strada</option>
+            <option>Piazzale</option><option>Calle</option><option>Contrada</option>
           </select>
         </div>
-        <div class="form-row form-row-2">
-          <div class="form-group">
-            <label class="form-label">Tipo via</label>
-            <select class="form-control" name="tipo_via" id="cantiereTipoVia">
-              <option value="">—</option>
-              <option>Via</option><option>Piazza</option><option>Largo</option>
-              <option>Viale</option><option>Corso</option><option>Strada</option>
-              <option>Piazzale</option><option>Calle</option><option>Contrada</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Indirizzo</label>
-            <input class="form-control" type="text" name="indirizzo" id="cantiereIndirizzo" placeholder="Nome via e numero civico">
-          </div>
-        </div>
-        <!-- Autocomplete comune -->
         <div class="form-group">
-          <label class="form-label">Comune <span class="req">*</span></label>
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input class="form-control" type="text" id="cantiereComuneInput"
-                   placeholder="Digita il comune..." autocomplete="off"
-                   oninput="cercaComune(this.value)">
-            <input type="hidden" name="comune" id="cantiereComune">
-            <div class="search-results" id="comuneResults"></div>
-          </div>
+          <label class="form-label">Indirizzo</label>
+          <input class="form-control" type="text" id="cantiereIndirizzo">
         </div>
-        <div class="form-row form-row-2">
-          <div class="form-group">
-            <label class="form-label">Provincia</label>
-            <input class="form-control" type="text" name="provincia" id="cantiereProv" maxlength="2" placeholder="es. TS">
-          </div>
-          <div class="form-group">
-            <label class="form-label">CAP</label>
-            <input class="form-control" type="text" name="CAP" id="cantiereCap" placeholder="es. 34121">
-            <div class="form-hint">Puoi modificare il CAP suggerito dal database</div>
-          </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Comune</label>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input class="form-control" type="text" id="cantiereComuneInput"
+                 placeholder="Digita il comune..." autocomplete="off"
+                 oninput="cercaComune(this.value)">
+          <div class="search-results" id="comuneResults"></div>
+        </div>
+      </div>
+      <div class="form-row form-row-2">
+        <div class="form-group">
+          <label class="form-label">Provincia</label>
+          <input class="form-control" type="text" id="cantiereProv" maxlength="2" placeholder="es. PN">
         </div>
         <div class="form-group">
-          <label class="form-label">Note</label>
-          <textarea class="form-control" name="note" id="cantiereNote" rows="2"></textarea>
+          <label class="form-label">CAP</label>
+          <input class="form-control" type="text" id="cantiereCap" placeholder="es. 33170">
+          <div class="form-hint">Modificabile anche dopo il suggerimento automatico</div>
         </div>
-      </form>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note</label>
+        <textarea class="form-control" id="cantiereNote" rows="2"></textarea>
+      </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" data-close-modal="modalCantiere">Annulla</button>
+      <button class="btn btn-outline" onclick="Utils.closeModal('modalCantiere')">Annulla</button>
       <button class="btn btn-primary" id="btnSalvaCantiere" onclick="salvaCantiere()">Salva</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: NUOVO RILIEVO -->
+<!-- MODAL NUOVO RILIEVO -->
 <div class="modal" id="modalNuovoRilievo">
   <div class="modal-box">
     <div class="modal-header">
       <span class="modal-title">Nuovo rilievo</span>
-      <button class="modal-close" data-close-modal="modalNuovoRilievo">✕</button>
+      <button class="modal-close" onclick="Utils.closeModal('modalNuovoRilievo')">✕</button>
     </div>
     <div class="modal-body">
-      <form id="formNuovoRilievo">
+      <div class="form-group">
+        <label class="form-label">Tipo rilievo <span class="req">*</span></label>
+        <div class="radio-group">
+          <label class="radio-opt"><input type="radio" name="tipoRilievo" value="SERR" checked> 🪟 Serramenti</label>
+          <label class="radio-opt"><input type="radio" name="tipoRilievo" value="PORTE"> 🚪 Porte interne</label>
+        </div>
+      </div>
+      <div class="form-row form-row-2">
         <div class="form-group">
-          <label class="form-label">Tipo rilievo <span class="req">*</span></label>
-          <div class="radio-group">
-            <label class="radio-opt">
-              <input type="radio" name="tipo" value="SERR" checked> 🪟 Serramenti
-            </label>
-            <label class="radio-opt">
-              <input type="radio" name="tipo" value="PORTE"> 🚪 Porte interne
-            </label>
-          </div>
-        </div>
-        <div class="form-row form-row-2">
-          <div class="form-group">
-            <label class="form-label">Referente <span class="req">*</span></label>
-            <select class="form-control" name="referente" id="rilievoReferente">
-              <option value="">— Seleziona —</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Tipo intervento <span class="req">*</span></label>
-            <select class="form-control" name="intervento" id="rilievoIntervento">
-              <option value="">— Seleziona —</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-row form-row-2">
-          <div class="form-group">
-            <label class="form-label">Data rilievo <span class="req">*</span></label>
-            <input class="form-control" type="date" name="data_rilievo" id="rilievoData">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Data posa prevista</label>
-            <input class="form-control" type="date" name="data_posa" id="rilievoPosa">
-          </div>
-        </div>
-        <div class="form-group" id="gruGroup">
-          <div class="checkbox-group">
-            <input type="checkbox" name="gru" id="rilievoGru">
-            <label for="rilievoGru">🏗️ Utilizzo gru / autoscala sul cantiere</label>
-          </div>
+          <label class="form-label">Referente <span class="req">*</span></label>
+          <select class="form-control" id="rilievoReferente"><option value="">— Seleziona —</option></select>
         </div>
         <div class="form-group">
-          <label class="form-label">Note</label>
-          <textarea class="form-control" name="note" id="rilievoNote" rows="2"></textarea>
+          <label class="form-label">Tipo intervento <span class="req">*</span></label>
+          <select class="form-control" id="rilievoIntervento"><option value="">— Seleziona —</option></select>
         </div>
-      </form>
+      </div>
+      <div class="form-row form-row-2">
+        <div class="form-group">
+          <label class="form-label">Data rilievo <span class="req">*</span></label>
+          <input class="form-control" type="date" id="rilievoData">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Data posa prevista</label>
+          <input class="form-control" type="date" id="rilievoPosa">
+        </div>
+      </div>
+      <div class="form-group" id="gruGroup">
+        <div class="checkbox-group">
+          <input type="checkbox" id="rilievoGru">
+          <label for="rilievoGru">🏗️ Utilizzo gru / autoscala sul cantiere</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note</label>
+        <textarea class="form-control" id="rilievoNote" rows="2"></textarea>
+      </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" data-close-modal="modalNuovoRilievo">Annulla</button>
+      <button class="btn btn-outline" onclick="Utils.closeModal('modalNuovoRilievo')">Annulla</button>
       <button class="btn btn-primary" id="btnSalvaRilievo" onclick="salvaRilievo()">Crea rilievo</button>
     </div>
   </div>
@@ -258,243 +184,190 @@
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/utils.js"></script>
+<script src="js/layout.js"></script>
 <script>
   const currentUser = Auth.requireLogin();
   if (!currentUser) throw new Error('not logged');
-  Auth.populateUserUI();
+  Layout.init('clienti');
 
   const idCliente = Utils.getParam('idCliente');
   if (!idCliente) window.location.href = 'clienti.html';
 
-  let cliente       = null;
-  let alberoFlat    = [];  // lista piatta di tutti i cantieri
-  let cantiereSelId = null;
-  let cantiereEditId = null;
-  let rilievi       = [];
-  let lookupRef     = [];
-  let lookupInt     = [];
+  let cliente = null, alberoFlat = [], cantiereSelId = null;
+  let cantiereEditId = null, rilievoTargetCantiere = null;
+  let lookupRef = [], lookupInt = [];
 
   async function init() {
-    // Carica lookups e cliente in parallelo
-    const [resCliente, resAlbero, resRef, resInt] = await Promise.all([
-      API.getCliente(idCliente),
-      API.getAlbero(idCliente),
-      API.getLookup('LK_REFERENTI'),
-      API.getLookup('LK_INTERVENTO')
+    const [resC, resA, resR, resI] = await Promise.all([
+      API.getCliente(idCliente), API.getAlbero(idCliente),
+      API.getLookup('LK_REFERENTI'), API.getLookup('LK_INTERVENTO')
     ]);
-
-    if (!resCliente.success) { Utils.showError(resCliente.error); return; }
-    cliente = resCliente.data;
+    if (!resC.success) { Utils.showError(resC.error); return; }
+    cliente = resC.data;
     document.getElementById('bcCliente').textContent = cliente.nome;
     document.getElementById('pageTitle').textContent = cliente.nome;
     document.title = cliente.nome + ' — F4 Rilievi';
-
-    // Salva lookup
-    lookupRef = resRef.success ? resRef.data : [];
-    lookupInt = resInt.success ? resInt.data : [];
-
-    // Costruisci lista piatta dall'albero
-    if (resAlbero.success) {
-      alberoFlat = flattenTree(resAlbero.data);
-      renderAlbero(resAlbero.data);
+    lookupRef = resR.success ? resR.data : [];
+    lookupInt = resI.success ? resI.data : [];
+    if (resA.success) {
+      alberoFlat = flattenTree(resA.data);
+      renderAlbero(resA.data);
     }
-
-    // Se URL ha idCantiere, selezionalo
     const idCant = Utils.getParam('idCantiere');
     if (idCant) selectCantiere(idCant);
   }
 
-  // ================================================================
-  // ALBERO CANTIERI
-  // ================================================================
-  function flattenTree(nodes, parent = null) {
-    let result = [];
+  // ALBERO
+  function flattenTree(nodes, parent) {
+    let r = [];
     nodes.forEach(n => {
-      result.push({ ...n, _parent: parent });
-      if (n.figli && n.figli.length > 0) {
-        result = result.concat(flattenTree(n.figli, n.ID_cantiere));
-      }
+      r.push({...n, _parent: parent||null});
+      if (n.figli && n.figli.length) r = r.concat(flattenTree(n.figli, n.ID_cantiere));
     });
-    return result;
+    return r;
   }
 
   function renderAlbero(nodes) {
-    const container = document.getElementById('alberoContainer');
-    if (!nodes || nodes.length === 0) {
-      Utils.showEmptyState(container, 'Nessun cantiere. Clicca "+ Aggiungi" per iniziare.', '🏗️');
-      return;
+    const c = document.getElementById('alberoContainer');
+    if (!nodes || !nodes.length) {
+      Utils.showEmptyState(c,'Nessun cantiere.','🏗️'); return;
     }
     const ul = document.createElement('ul');
     ul.className = 'tree-root';
     renderTreeNodes(nodes, ul);
-    container.innerHTML = '';
-    container.appendChild(ul);
+    c.innerHTML = '';
+    c.appendChild(ul);
   }
 
   function renderTreeNodes(nodes, parent) {
     nodes.forEach(node => {
-      const li  = document.createElement('li');
+      const li = document.createElement('li');
       li.className = 'tree-node-item';
       const hasFigli = node.figli && node.figli.length > 0;
       const attivo   = node.stato === 'attivo';
-
       li.innerHTML = `
-        <div class="tree-node-row" id="treeNode_${node.ID_cantiere}"
+        <div class="tree-node-row" id="tn_${node.ID_cantiere}"
              onclick="selectCantiere('${node.ID_cantiere}')">
-          <button class="tree-toggle-btn" onclick="toggleTreeNode(event, '${node.ID_cantiere}')">
+          <button class="tree-toggle-btn" onclick="toggleNode(event,'${node.ID_cantiere}')">
             ${hasFigli ? '▼' : '&nbsp;'}
           </button>
           <span class="tree-node-icon">${hasFigli ? '📁' : '📍'}</span>
-          <span class="tree-node-name" style="${!attivo ? 'opacity:.5;text-decoration:line-through;' : ''}">
+          <span class="tree-node-name" style="${!attivo?'opacity:.5;text-decoration:line-through;':''}">
             ${node.nome_cantiere}
             ${node.comune ? `<span class="tree-node-addr">${node.comune}</span>` : ''}
           </span>
           <div class="tree-node-actions">
-            <button class="btn-icon" title="Aggiungi sotto-cantiere"
-                    onclick="openModalNuovoCantiere('${node.ID_cantiere}', event)">➕</button>
+            <button class="btn-icon" title="Sotto-cantiere"
+                    onclick="openModalNuovoCantiere('${node.ID_cantiere}',event)">➕</button>
             <button class="btn-icon" title="Modifica"
-                    onclick="openModalModificaCantiere('${node.ID_cantiere}', event)">✏️</button>
+                    onclick="openModalModificaCantiere('${node.ID_cantiere}',event)">✏️</button>
           </div>
         </div>
-        ${hasFigli ? `<ul class="tree-children" id="treeChildren_${node.ID_cantiere}"></ul>` : ''}
+        ${hasFigli ? `<ul class="tree-children" id="tc_${node.ID_cantiere}"></ul>` : ''}
       `;
       parent.appendChild(li);
-
       if (hasFigli) {
-        const childUl = li.querySelector(`#treeChildren_${node.ID_cantiere}`);
+        const childUl = li.querySelector(`#tc_${node.ID_cantiere}`);
         renderTreeNodes(node.figli, childUl);
       }
     });
   }
 
-  function toggleTreeNode(e, id) {
+  function toggleNode(e, id) {
     e.stopPropagation();
-    const ul = document.getElementById('treeChildren_' + id);
+    const ul = document.getElementById('tc_' + id);
     if (!ul) return;
-    const btn = e.currentTarget;
-    if (ul.style.display === 'none') {
-      ul.style.display = '';
-      btn.textContent = '▼';
-    } else {
-      ul.style.display = 'none';
-      btn.textContent = '▶';
-    }
+    const open = ul.style.display !== 'none';
+    ul.style.display = open ? 'none' : '';
+    e.currentTarget.textContent = open ? '▶' : '▼';
   }
 
   async function selectCantiere(id) {
     cantiereSelId = id;
-    // Evidenzia nodo selezionato
     document.querySelectorAll('.tree-node-row.selected').forEach(el => el.classList.remove('selected'));
-    document.getElementById('treeNode_' + id)?.classList.add('selected');
-
-    // Mostra pannello dettaglio
+    document.getElementById('tn_' + id)?.classList.add('selected');
     await renderDettaglio(id);
   }
 
-  // ================================================================
-  // DETTAGLIO CANTIERE + RILIEVI
-  // ================================================================
-  async function renderDettaglio(idCantiere) {
+  async function renderDettaglio(id) {
     const panel = document.getElementById('dettaglioPanel');
-    panel.innerHTML = '<div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>';
-
-    const [resCant, resRilievi] = await Promise.all([
-      API.getCantiere(idCantiere),
-      API.getRilievi(idCantiere)
-    ]);
-
+    panel.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
+    const [resCant, resRil] = await Promise.all([API.getCantiere(id), API.getRilievi(id)]);
     if (!resCant.success) { Utils.showError(resCant.error); return; }
     const c = resCant.data;
-    rilievi = resRilievi.success ? resRilievi.data : [];
-
-    // Raggruppa per tipo
+    const rilievi = resRil.success ? resRil.data : [];
     const serr  = rilievi.filter(r => r.tipo === 'SERR'  && r.stato !== 'eliminato');
     const porte = rilievi.filter(r => r.tipo === 'PORTE' && r.stato !== 'eliminato');
 
     panel.innerHTML = `
-      <!-- INFO CANTIERE -->
-      <div class="card" style="margin-bottom:16px;">
+      <div class="card" style="margin-bottom:14px;">
         <div class="card-header">
           <span class="card-title">📍 ${c.nome_cantiere}</span>
-          <div style="display:flex;gap:6px;">
-            <button class="btn btn-sm btn-outline"
-                    onclick="openModalModificaCantiere('${idCantiere}')">✏️ Modifica</button>
-          </div>
+          <button class="btn btn-sm btn-outline"
+                  onclick="openModalModificaCantiere('${id}')">✏️ Modifica</button>
         </div>
-        <div style="font-size:.88rem;color:var(--c-text-sec);line-height:1.7;">
-          ${c.tipo_via || ''} ${c.indirizzo || ''}<br>
-          ${c.comune ? c.comune + (c.provincia ? ' (' + c.provincia + ')' : '') + (c.CAP ? ' — ' + c.CAP : '') : 'Indirizzo non specificato'}<br>
-          ${c.breadcrumb ? '<span style="font-size:.78rem;">📂 ' + c.breadcrumb + '</span>' : ''}
+        <div style="font-size:.85rem;color:var(--c-text-sec);line-height:1.8;">
+          ${c.tipo_via||''} ${c.indirizzo||''}<br>
+          ${c.comune ? c.comune+(c.provincia?' ('+c.provincia+')':'')+(c.CAP?' — '+c.CAP:'') : '<em>Indirizzo non specificato</em>'}
+          ${c.breadcrumb ? '<br><span style="font-size:.76rem;">📂 '+c.breadcrumb+'</span>' : ''}
         </div>
       </div>
 
-      <!-- RILIEVI SERRAMENTI -->
-      <div class="card" style="margin-bottom:16px;padding:0;overflow:hidden;">
-        <div style="padding:12px 16px;border-bottom:1px solid var(--c-border);background:#E3F2FD;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-weight:600;">🪟 Rilievi Serramenti (${serr.length})</span>
-          <button class="btn btn-sm btn-primary" onclick="openModalNuovoRilievo('${idCantiere}', 'SERR')">➕ Nuovo</button>
+      <!-- RILIEVI SERR -->
+      <div class="card" style="padding:0;overflow:hidden;margin-bottom:14px;">
+        <div style="padding:11px 14px;border-bottom:1px solid var(--c-border);
+                    background:#E3F2FD;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:600;font-size:.9rem;">🪟 Rilievi Serramenti (${serr.length})</span>
+          <button class="btn btn-sm btn-primary" onclick="openModalNuovoRilievo('${id}','SERR')">➕ Nuovo</button>
         </div>
-        <div id="listaSerr">
-          ${renderRilievi(serr, 'SERR')}
-        </div>
+        <div>${renderRilieviHTML(serr,'SERR')}</div>
       </div>
 
       <!-- RILIEVI PORTE -->
       <div class="card" style="padding:0;overflow:hidden;">
-        <div style="padding:12px 16px;border-bottom:1px solid var(--c-border);background:#FFF3E0;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-weight:600;">🚪 Rilievi Porte Interne (${porte.length})</span>
-          <button class="btn btn-sm btn-primary" onclick="openModalNuovoRilievo('${idCantiere}', 'PORTE')">➕ Nuovo</button>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--c-border);
+                    background:#FFF3E0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:600;font-size:.9rem;">🚪 Rilievi Porte Interne (${porte.length})</span>
+          <button class="btn btn-sm btn-primary" onclick="openModalNuovoRilievo('${id}','PORTE')">➕ Nuovo</button>
         </div>
-        <div id="listaPorte">
-          ${renderRilievi(porte, 'PORTE')}
-        </div>
+        <div>${renderRilieviHTML(porte,'PORTE')}</div>
       </div>
     `;
   }
 
-  function renderRilievi(lista, tipo) {
-    if (lista.length === 0) {
-      return `<div style="padding:20px;text-align:center;color:var(--c-text-sec);font-size:.85rem;">
-        Nessun rilievo presente. Clicca "+ Nuovo" per iniziare.
-      </div>`;
-    }
-    const icon = tipo === 'SERR' ? '🪟' : '🚪';
+  function renderRilieviHTML(lista, tipo) {
+    if (!lista.length) return `<div style="padding:18px;text-align:center;color:var(--c-text-sec);font-size:.84rem;">
+      Nessun rilievo. Clicca "+ Nuovo" per iniziare.</div>`;
     const page = tipo === 'SERR' ? 'rilievo_serr.html' : 'rilievo_porte.html';
+    const icon = tipo === 'SERR' ? '🪟' : '🚪';
     return lista.map(r => `
-      <div class="rilievo-item" onclick="Utils.navigate('${page}', { idRilievo: '${r.ID_rilievo}' })">
-        <span class="rilievo-type-icon">${icon}</span>
-        <div class="rilievo-info">
-          <div class="rilievo-code-row">
-            <span class="rilievo-code">${r.codice || '—'}</span>
-            ${r.tipo_clone === 'REVISIONE' ? '<span class="badge badge-primary" style="font-size:.7rem;">REV</span>' : ''}
-            ${r.tipo_clone === 'COPIA'     ? '<span class="badge" style="font-size:.7rem;">COPIA</span>' : ''}
+      <div class="rilievo-item" onclick="Utils.navigate('${page}',{idRilievo:'${r.ID_rilievo}'})">
+        <span style="font-size:1.3rem;">${icon}</span>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="rilievo-code">${r.codice||'—'}</span>
+            ${r.tipo_clone==='REVISIONE'?'<span class="badge badge-primary" style="font-size:.68rem;">REV</span>':''}
+            ${r.tipo_clone==='COPIA'?'<span class="badge" style="font-size:.68rem;">COPIA</span>':''}
           </div>
-          <div class="rilievo-meta">
-            ${r.intervento || ''} — ${r.data_rilievo || ''}
-            ${r.referente ? ' — Ref: ' + r.referente : ''}
+          <div style="font-size:.78rem;color:var(--c-text-sec);margin-top:2px;">
+            ${r.intervento||''} — ${r.data_rilievo||''}${r.referente?' — '+r.referente:''}
           </div>
         </div>
-        <span style="color:var(--c-text-sec);font-size:1.2rem;">›</span>
-      </div>
-    `).join('');
+        <span style="color:var(--c-text-sec);">›</span>
+      </div>`).join('');
   }
 
-  // ================================================================
   // MODAL CANTIERE
-  // ================================================================
   function openModalNuovoCantiere(parentId, event) {
     if (event) event.stopPropagation();
     cantiereEditId = null;
     document.getElementById('modalCantiereTitle').textContent = 'Nuovo cantiere';
-    document.getElementById('cantiereNome').value       = '';
-    document.getElementById('cantiereTipoVia').value    = '';
-    document.getElementById('cantiereIndirizzo').value  = '';
-    document.getElementById('cantiereComuneInput').value = '';
-    document.getElementById('cantiereComune').value     = '';
-    document.getElementById('cantiereProv').value       = '';
-    document.getElementById('cantiereCap').value        = '';
-    document.getElementById('cantiereNote').value       = '';
-    populatePadreSelect(parentId || '');
+    ['cantiereNome','cantiereTipoVia','cantiereIndirizzo','cantiereComuneInput',
+     'cantiereProv','cantiereCap','cantiereNote'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    populatePadreSelect(parentId||'');
     Utils.openModal('modalCantiere');
     setTimeout(() => document.getElementById('cantiereNome').focus(), 100);
   }
@@ -505,14 +378,13 @@
     if (!c) return;
     cantiereEditId = id;
     document.getElementById('modalCantiereTitle').textContent = 'Modifica cantiere';
-    document.getElementById('cantiereNome').value       = c.nome_cantiere  || '';
-    document.getElementById('cantiereTipoVia').value    = c.tipo_via       || '';
-    document.getElementById('cantiereIndirizzo').value  = c.indirizzo      || '';
-    document.getElementById('cantiereComuneInput').value = c.comune        || '';
-    document.getElementById('cantiereComune').value     = c.comune         || '';
-    document.getElementById('cantiereProv').value       = c.provincia      || '';
-    document.getElementById('cantiereCap').value        = c.CAP            || '';
-    document.getElementById('cantiereNote').value       = c.note           || '';
+    document.getElementById('cantiereNome').value         = c.nome_cantiere  || '';
+    document.getElementById('cantiereTipoVia').value      = c.tipo_via       || '';
+    document.getElementById('cantiereIndirizzo').value    = c.indirizzo      || '';
+    document.getElementById('cantiereComuneInput').value  = c.comune         || '';
+    document.getElementById('cantiereProv').value         = c.provincia      || '';
+    document.getElementById('cantiereCap').value          = c.CAP            || '';
+    document.getElementById('cantiereNote').value         = c.note           || '';
     populatePadreSelect(c.ID_parent || '');
     Utils.openModal('modalCantiere');
   }
@@ -520,9 +392,8 @@
   function populatePadreSelect(selectedId) {
     const sel = document.getElementById('cantierePadre');
     sel.innerHTML = '<option value="">— Nessuno (primo livello) —</option>';
-    // Escludi se stesso e i suoi discendenti durante modifica
     alberoFlat.forEach(c => {
-      if (cantiereEditId && (c.ID_cantiere == cantiereEditId)) return;
+      if (cantiereEditId && c.ID_cantiere == cantiereEditId) return;
       const o = document.createElement('option');
       o.value = c.ID_cantiere;
       o.textContent = c.breadcrumb || c.nome_cantiere;
@@ -532,13 +403,12 @@
   }
 
   async function salvaCantiere() {
-    const nome = document.getElementById('cantiereNome').value.trim();
+    const nome   = document.getElementById('cantiereNome').value.trim();
     const comune = document.getElementById('cantiereComuneInput').value.trim();
-    if (!nome) { Utils.showWarning('Il nome cantiere è obbligatorio.'); return; }
-
+    if (!nome) { Utils.showWarning('Nome cantiere obbligatorio.'); return; }
     const data = {
       ID_cliente:    idCliente,
-      ID_parent:     document.getElementById('cantierePadre').value || '',
+      ID_parent:     document.getElementById('cantierePadre').value||'',
       nome_cantiere: nome,
       tipo_via:      document.getElementById('cantiereTipoVia').value,
       indirizzo:     document.getElementById('cantiereIndirizzo').value.trim(),
@@ -547,175 +417,109 @@
       CAP:           document.getElementById('cantiereCap').value.trim(),
       note:          document.getElementById('cantiereNote').value.trim()
     };
-
     const btn = document.getElementById('btnSalvaCantiere');
     btn.disabled = true; btn.textContent = 'Salvataggio...';
-
-    let res;
-    if (cantiereEditId) {
-      res = await API.updateCantiere(cantiereEditId, data);
-    } else {
-      res = await API.createCantiere(data);
-    }
-
+    const res = cantiereEditId
+      ? await API.updateCantiere(cantiereEditId, data)
+      : await API.createCantiere(data);
     btn.disabled = false; btn.textContent = 'Salva';
-
     if (res.success) {
       Utils.showSuccess(cantiereEditId ? 'Cantiere aggiornato.' : 'Cantiere creato.');
       Utils.closeModal('modalCantiere');
-      // Ricarica albero
-      const resAlbero = await API.getAlbero(idCliente);
-      if (resAlbero.success) {
-        alberoFlat = flattenTree(resAlbero.data);
-        renderAlbero(resAlbero.data);
-        // Riseleziona cantiere corrente se c'era
+      const resA = await API.getAlbero(idCliente);
+      if (resA.success) {
+        alberoFlat = flattenTree(resA.data);
+        renderAlbero(resA.data);
         if (cantiereSelId) selectCantiere(cantiereSelId);
       }
-    } else {
-      Utils.showError(res.error);
-    }
+    } else Utils.showError(res.error);
   }
 
-  // ================================================================
   // AUTOCOMPLETE COMUNE
-  // ================================================================
   const cercaComune = Utils.debounce(async function(q) {
     const box = document.getElementById('comuneResults');
     if (q.length < 2) { box.classList.remove('open'); return; }
-
     const res = await API.getComuni(q);
-    if (!res.success || res.data.length === 0) {
-      box.classList.remove('open'); return;
-    }
-
+    if (!res.success || !res.data.length) { box.classList.remove('open'); return; }
     box.innerHTML = res.data.map(c => `
-      <div class="search-result-item" onclick="selectComune(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+      <div class="search-result-item" onclick='selectComune(${JSON.stringify(c)})'>
         <div class="search-result-main">${c.comune}</div>
         <div class="search-result-sub">${c.provincia} — CAP ${c.CAP}</div>
-      </div>
-    `).join('');
+      </div>`).join('');
     box.classList.add('open');
   }, 350);
 
   function selectComune(c) {
     document.getElementById('cantiereComuneInput').value = c.comune;
-    document.getElementById('cantiereComune').value      = c.comune;
     document.getElementById('cantiereProv').value        = c.provincia;
-    // CAP: pre-compila ma lascia modificabile
     const capEl = document.getElementById('cantiereCap');
-    if (!capEl.value) capEl.value = c.CAP; // solo se vuoto
+    if (!capEl.value) capEl.value = c.CAP;
     document.getElementById('comuneResults').classList.remove('open');
   }
-
-  // Chiudi risultati cliccando fuori
   document.addEventListener('click', e => {
     if (!e.target.closest('.search-box'))
       document.getElementById('comuneResults')?.classList.remove('open');
   });
 
-  // ================================================================
-  // MODAL NUOVO RILIEVO
-  // ================================================================
-  let rilievoTargetCantiere = null;
-  let rilievoTargetTipo = null;
-
+  // MODAL RILIEVO
   function openModalNuovoRilievo(idCantiere, tipo) {
     rilievoTargetCantiere = idCantiere;
-    rilievoTargetTipo     = tipo;
-
-    // Pre-seleziona tipo
-    document.querySelectorAll('#formNuovoRilievo [name="tipo"]').forEach(r => {
-      r.checked = (r.value === tipo);
-    });
-
-    // Nascondi campo gru per porte
+    document.querySelectorAll('[name="tipoRilievo"]').forEach(r => r.checked = r.value === tipo);
     document.getElementById('gruGroup').style.display = tipo === 'SERR' ? '' : 'none';
-
-    // Data di oggi come default
     document.getElementById('rilievoData').valueAsDate = new Date();
-    document.getElementById('rilievoPosa').value = '';
+    document.getElementById('rilievoPosa').value  = '';
     document.getElementById('rilievoGru').checked = false;
-    document.getElementById('rilievoNote').value = '';
+    document.getElementById('rilievoNote').value  = '';
 
-    // Popola referenti
     const selRef = document.getElementById('rilievoReferente');
     selRef.innerHTML = '<option value="">— Seleziona —</option>';
     lookupRef.forEach(r => {
       const o = document.createElement('option');
-      o.value = r.nome_completo;
-      o.textContent = r.nome_completo;
-      // Pre-seleziona l'utente corrente se presente
+      o.value = r.nome_completo; o.textContent = r.nome_completo;
       if (currentUser && r.nome_completo === currentUser.nome) o.selected = true;
       selRef.appendChild(o);
     });
-
-    // Popola interventi
     const selInt = document.getElementById('rilievoIntervento');
     selInt.innerHTML = '<option value="">— Seleziona —</option>';
     lookupInt.forEach(i => {
       const o = document.createElement('option');
-      o.value = i.descrizione;
-      o.textContent = i.descrizione;
+      o.value = i.descrizione; o.textContent = i.descrizione;
       selInt.appendChild(o);
     });
-
     Utils.openModal('modalNuovoRilievo');
   }
 
   async function salvaRilievo() {
-    const tipo      = document.querySelector('#formNuovoRilievo [name="tipo"]:checked')?.value;
-    const referente = document.getElementById('rilievoReferente').value;
-    const intervento= document.getElementById('rilievoIntervento').value;
-    const data_r    = document.getElementById('rilievoData').value;
-
-    if (!referente || !intervento || !data_r) {
-      Utils.showWarning('Compila tutti i campi obbligatori.');
-      return;
-    }
+    const tipo     = document.querySelector('[name="tipoRilievo"]:checked')?.value;
+    const ref      = document.getElementById('rilievoReferente').value;
+    const interv   = document.getElementById('rilievoIntervento').value;
+    const dataR    = document.getElementById('rilievoData').value;
+    if (!ref || !interv || !dataR) { Utils.showWarning('Compila tutti i campi obbligatori.'); return; }
 
     const data = {
-      ID_cantiere:  rilievoTargetCantiere,
-      tipo:         tipo,
-      referente:    referente,
-      intervento:   intervento,
-      data_rilievo: data_r,
-      data_posa:    document.getElementById('rilievoPosa').value || '',
-      gru:          tipo === 'SERR' && document.getElementById('rilievoGru').checked ? 'SI' : 'NO',
+      ID_cantiere:  rilievoTargetCantiere, tipo, referente: ref,
+      intervento:   interv, data_rilievo: dataR,
+      data_posa:    document.getElementById('rilievoPosa').value||'',
+      gru:          tipo==='SERR' && document.getElementById('rilievoGru').checked ? 'SI' : 'NO',
       note:         document.getElementById('rilievoNote').value.trim()
     };
-
     const btn = document.getElementById('btnSalvaRilievo');
     btn.disabled = true; btn.textContent = 'Creazione...';
-
     const res = await API.createRilievo(data);
-
     btn.disabled = false; btn.textContent = 'Crea rilievo';
 
     if (res.success) {
       Utils.showSuccess('Rilievo ' + res.codice + ' creato.');
       Utils.closeModal('modalNuovoRilievo');
-      // Naviga direttamente al rilievo
-      const page = tipo === 'SERR' ? 'rilievo_serr.html' : 'rilievo_porte.html';
-      Utils.navigate(page, { idRilievo: res.id });
-    } else {
-      Utils.showError(res.error);
-    }
+      Utils.navigate(tipo==='SERR'?'rilievo_serr.html':'rilievo_porte.html', {idRilievo: res.id});
+    } else Utils.showError(res.error);
   }
 
-  // ================================================================
-  // Aggiorna gruGroup quando cambia tipo rilievo
-  document.querySelectorAll('#formNuovoRilievo [name="tipo"]').forEach(r => {
+  // Update gruGroup on tipo change
+  document.querySelectorAll('[name="tipoRilievo"]').forEach(r => {
     r.addEventListener('change', e => {
-      document.getElementById('gruGroup').style.display = e.target.value === 'SERR' ? '' : 'none';
+      document.getElementById('gruGroup').style.display = e.target.value==='SERR' ? '' : 'none';
     });
-  });
-
-  function toggleUserMenu() {
-    document.getElementById('userMenu').classList.toggle('open');
-  }
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.topbar-menu'))
-      document.getElementById('userMenu')?.classList.remove('open');
   });
 
   init();

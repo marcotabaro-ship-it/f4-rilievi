@@ -559,12 +559,12 @@ async function init() {
     // parse datiComuni array → map {id: valore}
     datiComuni = {};
     var dcArr = d.datiComuni || [];
-    if (Array.isArray(dcArr)) dcArr.forEach(function(x){ datiComuni[parseInt(x.ID)||parseInt(x.id)]=parseFloat(x.valore)||0; });
+    if (Array.isArray(dcArr)) dcArr.forEach(function(x){ if(x) datiComuni[parseInt(x.ID)||parseInt(x.id)]=parseFloat(x.valore)||0; });
     else datiComuni = dcArr;
     // parse regoleLati array → map {sigla: record}
     regoleLati = {};
     var rlArr = d.regoleLati || [];
-    if (Array.isArray(rlArr)) rlArr.forEach(function(r){ regoleLati[r.sigla]=r; });
+    if (Array.isArray(rlArr)) rlArr.forEach(function(r){ if(r && r.sigla) regoleLati[r.sigla]=r; });
     else regoleLati = rlArr;
     dbSerr = (d.dbSerramento||[]).filter(function(x){ return !x.stato||String(x.stato).toLowerCase()!=='disattivo'; });
     renderTestata();

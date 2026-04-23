@@ -609,3 +609,17 @@ input, select, textarea { font-family: inherit; }
   .modal { padding: 60px 8px 8px; }
   .two-col { grid-template-columns: 1fr !important; }
 }
+/* FIX LAYOUT ADATTIVO */
+.app-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.main-content {
+  flex: 1;
+  min-width: 0;
+  max-width: none !important;
+  width: 0; /* forza flex a calcolare */
+  box-sizing: border-box;
+}

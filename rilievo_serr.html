@@ -637,7 +637,7 @@ function onMaterialeChange(silent){
       var el=document.getElementById(id);el.innerHTML='<option value="">—</option>';el.disabled=true;
     });
     document.getElementById('pCodiceSerr').value='';
-    document.getElementById('pNVetri').value='';document.getElementById('pNVetri').disabled=true;
+    document.getElementById('pNVetri').innerHTML='<option value="">—</option>';document.getElementById('pNVetri').disabled=true;
     document.getElementById('pColoreInt').innerHTML='<option value="">— Colore int. —</option>';document.getElementById('pColoreInt').disabled=true;
     document.getElementById('pColoreEst').innerHTML='<option value="">—</option>';document.getElementById('pColoreEst').disabled=true;
     return;
@@ -650,7 +650,7 @@ function onMaterialeChange(silent){
   document.getElementById('pStileDesign').innerHTML='<option value="">—</option>';document.getElementById('pStileDesign').disabled=true;
   document.getElementById('pVarianteTelaio').innerHTML='<option value="">—</option>';document.getElementById('pVarianteTelaio').disabled=true;
   document.getElementById('pCodiceSerr').value='';
-  document.getElementById('pNVetri').value='';document.getElementById('pNVetri').disabled=true;
+  document.getElementById('pNVetri').innerHTML='<option value="">—</option>';document.getElementById('pNVetri').disabled=true;
   // Colori: usa materiale_sigla (es. "PA") per cercare in LK_COLORI
   var recMat=dbSerr.find(function(d){return d.materiale===mat;});
   var matSigla=recMat?String(recMat.materiale_sigla||'').replace(/-/g,'').trim():'';
@@ -687,46 +687,41 @@ function onStileChange(silent){
   document.getElementById('pCodiceSerr').value='';
 }
 
-function onVarianteChange(silent) {
-  var rec = _getSelectedRecord();
-  document.getElementById('pCodiceSerr').value = rec ? (rec.codice||'') : '';
-
-  // N° vetri da LK_VETRO per sistema
-  var sis = document.getElementById('pSistema').value;
-  var vetriPerSistema = (lookups.LK_VETRO||[]).filter(function(v) {
-    return v.sistema === sis;
-  });
-
-  var nVetriEl = document.getElementById('pNVetri');
-  // Ricostruisci le options
-  nVetriEl.innerHTML = '<option value="">—</option>';
-  if (vetriPerSistema.length === 1) {
+function onVarianteChange(silent){
+  var rec=_getSelectedRecord();
+  document.getElementById('pCodiceSerr').value=rec?(rec.codice||''):'';
+  // N° vetri da LK_VETRO per sistema — mostra solo opzioni compatibili
+  var sis=document.getElementById('pSistema').value;
+  var vetriPerSistema=(lookups.LK_VETRO||[]).filter(function(v){return v.sistema===sis;});
+  var nVetriEl=document.getElementById('pNVetri');
+  var prevVal=nVetriEl.value;
+  nVetriEl.innerHTML='<option value="">—</option>';
+  if(vetriPerSistema.length===1){
     // Una sola opzione: auto-compila e blocca
-    var opt = document.createElement('option');
-    var val = vetriPerSistema[0].n_vetri;
-    var lab = val === 'T' ? 'Triplo' : val === 'D' ? 'Doppio' : val;
-    opt.value = val; opt.textContent = lab; opt.selected = true;
+    var v=vetriPerSistema[0].n_vetri;
+    var opt=document.createElement('option');
+    opt.value=v; opt.textContent=v==='T'?'Triplo':v==='D'?'Doppio':v; opt.selected=true;
     nVetriEl.appendChild(opt);
-    nVetriEl.disabled = true; // bloccato, una sola scelta
-  } else if (vetriPerSistema.length > 1) {
+    nVetriEl.disabled=true;
+  } else if(vetriPerSistema.length>1){
     // Più opzioni: mostra solo quelle disponibili
-    vetriPerSistema.forEach(function(v) {
-      var opt = document.createElement('option');
-      opt.value = v.n_vetri;
-      opt.textContent = v.n_vetri === 'T' ? 'Triplo' : v.n_vetri === 'D' ? 'Doppio' : v.n_vetri;
+    vetriPerSistema.forEach(function(v){
+      var opt=document.createElement('option');
+      opt.value=v.n_vetri; opt.textContent=v.n_vetri==='T'?'Triplo':v.n_vetri==='D'?'Doppio':v.n_vetri;
+      if(v.n_vetri===prevVal) opt.selected=true;
       nVetriEl.appendChild(opt);
     });
-    nVetriEl.disabled = false; // selezionabile
+    nVetriEl.disabled=false;
   } else {
-    // Nessuna corrispondenza: mostra Doppio e Triplo
-    ['D','T'].forEach(function(v) {
-      var opt = document.createElement('option');
-      opt.value = v; opt.textContent = v === 'T' ? 'Triplo' : 'Doppio';
+    // Nessuna corrispondenza: libera scelta
+    ['D','T'].forEach(function(v){
+      var opt=document.createElement('option');
+      opt.value=v; opt.textContent=v==='T'?'Triplo':'Doppio';
+      if(v===prevVal) opt.selected=true;
       nVetriEl.appendChild(opt);
     });
-    nVetriEl.disabled = false;
+    nVetriEl.disabled=false;
   }
-
   ricalcolaDim();
 }
 

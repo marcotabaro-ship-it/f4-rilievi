@@ -7,262 +7,445 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
   <style>
+    /* LAYOUT con drawer */
+    .rilievo-wrap { display:flex; gap:0; transition:all .3s ease; min-height:calc(100vh - 120px); }
+    .rilievo-main { flex:1; min-width:0; transition:all .3s ease; }
+    .rilievo-drawer {
+      width:0; overflow:hidden; flex-shrink:0;
+      transition:width .3s ease; background:var(--c-surface);
+      border-left:1px solid var(--c-border); box-shadow:-4px 0 16px rgba(0,0,0,.08);
+    }
+    .rilievo-drawer.open { width:500px; }
+    .drawer-inner { width:500px; height:100%; overflow-y:auto; display:flex; flex-direction:column; }
+    .drawer-header {
+      position:sticky; top:0; z-index:10; background:var(--c-primary); color:white;
+      padding:14px 16px; display:flex; align-items:center; gap:10px;
+    }
+    .drawer-header h3 { flex:1; font-size:.95rem; font-weight:700; }
+    .drawer-close { background:none; border:none; color:rgba(255,255,255,.8); font-size:1.3rem; cursor:pointer; padding:2px 6px; }
+    .drawer-body { flex:1; overflow-y:auto; padding:16px; }
+    .drawer-footer {
+      position:sticky; bottom:0; background:var(--c-surface);
+      border-top:1px solid var(--c-border); padding:12px 16px;
+      display:flex; gap:8px; justify-content:flex-end;
+    }
+
+    /* Testata rilievo */
     .rilievo-header {
-      background: var(--c-primary); color: white;
-      border-radius: var(--radius-lg); padding: 20px 24px;
-      margin-bottom: 20px; display: flex; align-items: center;
-      justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      background:var(--c-primary); color:white; border-radius:var(--radius-lg);
+      padding:16px 20px; margin-bottom:16px;
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
     }
-    .rilievo-header h2 { font-size: 1.2rem; font-weight: 700; }
-    .rilievo-header .rh-meta { font-size: .82rem; opacity: .8; margin-top: 4px; }
-    .rilievo-header .rh-code {
-      font-family: monospace; background: var(--c-red);
-      padding: 4px 12px; border-radius: 20px; font-size: .9rem; font-weight: 700;
-    }
-    /* Stratigrafie */
-    .strat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 12px; }
-    .strat-card {
-      border: 2px solid var(--c-border); border-radius: var(--radius);
-      overflow: hidden; cursor: pointer; transition: border-color var(--transition); background: white;
-    }
-    .strat-card.sel { border-color: var(--c-red); box-shadow: 0 0 0 3px rgba(211,47,47,.15); }
-    .strat-card img { width: 100%; height: 160px; object-fit: contain; background: #F5F5F5; padding: 8px; }
-    .strat-label { padding: 8px; font-size: .82rem; font-weight: 700; text-align: center; border-top: 1px solid var(--c-border); color: var(--c-primary); }
-    /* Quote solo cerchi */
-    .quote-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-    .quote-item { display: flex; align-items: center; gap: 8px; }
-    .q-letter { width: 30px; height: 30px; border-radius: 50%; background: var(--c-red); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .9rem; flex-shrink: 0; }
-    .q-input { width: 80px; }
+    .rilievo-header h2 { font-size:1.1rem; font-weight:700; }
+    .rh-meta { font-size:.8rem; opacity:.8; margin-top:3px; }
+    .rh-code { font-family:monospace; background:var(--c-red); padding:3px 10px; border-radius:20px; font-size:.88rem; font-weight:700; }
+
     /* Tabella posizioni */
-    .pos-table-wrap { overflow-x: auto; }
-    .pos-table { width: 100%; border-collapse: collapse; font-size: .82rem; min-width: 900px; }
-    .pos-table th { background: var(--c-primary); color: white; padding: 8px 10px; text-align: left; font-size: .76rem; font-weight: 600; white-space: nowrap; }
-    .pos-table td { padding: 8px 10px; border-bottom: 1px solid var(--c-border); vertical-align: middle; }
-    .pos-table tr:hover td { background: #F8F9FA; }
-    .pos-num-cell { background: var(--c-primary); color: white; text-align: center; font-weight: 700; min-width: 36px; border-radius: 4px; padding: 3px 6px; }
-    /* Pannello calcolo */
-    .dim-calc { background: #E8F5E9; border: 1px solid #A5D6A7; border-radius: var(--radius); padding: 10px 14px; font-size: .84rem; margin-bottom: 16px; }
-    .dim-calc-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
-    .dim-calc-row:last-child { margin-bottom: 0; }
-    .dc-item { display: flex; align-items: center; gap: 5px; }
-    .dc-label { color: var(--c-text-sec); font-size: .8rem; }
-    .dc-value { font-weight: 700; color: var(--c-success); }
-    .dc-sep { color: #ccc; font-size: .8rem; }
-    .dc-tub { color: #1565C0; }
-    /* Help button */
-    .lbl-with-help { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; }
-    .help-btn { background: none; border: none; color: var(--c-info); font-size: .8rem; cursor: pointer; padding: 0; }
-    /* Legenda */
-    .legenda-overlay { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,.3); }
-    .legenda-overlay.open { display: block; }
-    .legenda-drawer { position: fixed; right: 0; top: 0; bottom: 0; width: 340px; background: white; box-shadow: -4px 0 20px rgba(0,0,0,.2); z-index: 501; overflow-y: auto; padding: 16px; transform: translateX(100%); transition: transform .3s ease; }
-    .legenda-overlay.open .legenda-drawer { transform: none; }
-    .legenda-drawer h3 { font-size: 1rem; color: var(--c-primary); margin-bottom: 14px; border-bottom: 2px solid var(--c-red); padding-bottom: 8px; }
-    .leg-item { margin-bottom: 8px; font-size: .84rem; }
-    .leg-code { font-family: monospace; font-weight: 700; color: var(--c-red); min-width: 48px; display: inline-block; }
+    .pos-table-wrap { overflow-x:auto; border-radius:var(--radius); }
+    .pos-table { width:100%; border-collapse:collapse; font-size:.82rem; }
+    .pos-table th {
+      background:var(--c-primary); color:white; padding:9px 10px;
+      text-align:left; font-size:.76rem; font-weight:600; white-space:nowrap;
+    }
+    .pos-table td { padding:9px 10px; border-bottom:1px solid var(--c-border); vertical-align:middle; }
+    .pos-table tr:hover td { background:#F5F7FF; cursor:pointer; }
+    .pos-table tr.row-sel td { background:#E3F2FD; border-left:3px solid var(--c-red); }
+    .pos-num-badge {
+      width:32px; height:32px; border-radius:6px; background:var(--c-primary);
+      color:white; display:inline-flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:.82rem;
+    }
+    .pos-badge-tipo {
+      display:inline-block; padding:2px 7px; border-radius:12px;
+      background:#E3F2FD; color:#1565C0; font-weight:700; font-size:.78rem;
+    }
+    .dim-cell { line-height:1.4; }
+    .dim-main { font-weight:600; }
+    .dim-sub { font-size:.72rem; color:#1565C0; }
+    .acc-chips { display:flex; flex-wrap:wrap; gap:3px; }
+    .acc-chip {
+      font-size:.7rem; padding:1px 5px; border-radius:10px;
+      background:#F0F0F0; color:var(--c-text-sec); border:1px solid var(--c-border);
+    }
+    .td-actions { white-space:nowrap; text-align:right; }
+
+    /* Stratigrafie */
+    .strat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; }
+    .strat-card { border:2px solid var(--c-border); border-radius:var(--radius); overflow:hidden; cursor:pointer; transition:border-color var(--transition); background:white; }
+    .strat-card.sel { border-color:var(--c-red); box-shadow:0 0 0 3px rgba(211,47,47,.15); }
+    .strat-card img { width:100%; height:140px; object-fit:contain; background:#F5F5F5; padding:6px; }
+    .strat-label { padding:7px; font-size:.78rem; font-weight:700; text-align:center; border-top:1px solid var(--c-border); }
+    .quote-grid { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+    .quote-item { display:flex; align-items:center; gap:8px; }
+    .q-letter { width:28px; height:28px; border-radius:50%; background:var(--c-red); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.82rem; flex-shrink:0; }
+    .q-input { width:76px; }
+
+    /* Drawer sections */
+    .dsec-title {
+      font-size:.78rem; font-weight:700; color:var(--c-primary);
+      text-transform:uppercase; letter-spacing:.5px;
+      border-bottom:2px solid var(--c-red); padding-bottom:4px; margin:14px 0 10px;
+    }
+    .dsec-title:first-child { margin-top:0; }
+
+    /* Campo con etichetta help */
+    .field-wrap { margin-bottom:12px; }
+    .field-label {
+      display:flex; align-items:center; gap:4px;
+      font-size:.8rem; font-weight:500; color:var(--c-primary); margin-bottom:4px;
+    }
+    .field-label .req { color:var(--c-red); }
+    .field-label .fi { cursor:pointer; color:var(--c-info); font-size:.78rem; background:none; border:none; padding:0; }
+    .form-control.field-invalid { border-color:var(--c-error)!important; background:#FFF5F5; }
+    .form-row-2d { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .form-row-3d { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+    /* Tooltip legenda */
+    .tip-wrap { position:relative; display:inline-block; }
+    .tip-box {
+      display:none; position:absolute; left:calc(100% + 6px); top:50%; transform:translateY(-50%);
+      background:var(--c-primary); color:white; font-size:.76rem;
+      padding:8px 10px; border-radius:var(--radius); white-space:nowrap;
+      max-width:240px; white-space:normal; line-height:1.4;
+      z-index:500; box-shadow:var(--shadow-lg);
+    }
+    .tip-wrap:hover .tip-box, .tip-wrap.open .tip-box { display:block; }
+
+    /* Calc strip */
+    .calc-strip {
+      background:#E8F5E9; border:1px solid #A5D6A7; border-radius:var(--radius);
+      padding:8px 12px; font-size:.8rem; margin-bottom:12px;
+      display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;
+    }
+    .calc-item { display:flex; flex-direction:column; }
+    .calc-lbl { color:var(--c-text-sec); font-size:.72rem; }
+    .calc-val { font-weight:700; color:var(--c-success); }
+    .calc-val.tub { color:#1565C0; }
+    .calc-val.ale { color:#E65100; }
+
+    /* Legenda overlay */
+    .legenda-overlay { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.3); }
+    .legenda-overlay.open { display:block; }
+    .legenda-drawer {
+      position:fixed; right:0; top:0; bottom:0; width:320px; background:white;
+      box-shadow:-4px 0 20px rgba(0,0,0,.2); z-index:601; overflow-y:auto; padding:16px;
+      transform:translateX(100%); transition:transform .3s ease;
+    }
+    .legenda-overlay.open .legenda-drawer { transform:none; }
+    .leg-title { font-size:.95rem; font-weight:700; color:var(--c-primary); margin-bottom:12px; border-bottom:2px solid var(--c-red); padding-bottom:6px; }
+    .leg-item { font-size:.82rem; margin-bottom:7px; display:flex; gap:8px; }
+    .leg-code { font-family:monospace; font-weight:700; color:var(--c-red); min-width:44px; flex-shrink:0; }
   </style>
 </head>
 <body>
 <div class="app-layout" id="appLayout">
- <main class="main-content">
+ <main class="main-content" style="padding-right:16px;">
+
   <div class="breadcrumb">
     <a href="clienti.html">Clienti</a> ›
     <a id="bcCliente" href="#">—</a> ›
     <a id="bcCantiere" href="#">—</a> ›
     <span id="bcRilievo">Rilievo</span>
   </div>
+
   <div class="alert alert-warning" id="alertPosa" style="display:none;">
-    ⚠️ I tempi di posa sono stati aggiornati.
-    <button class="btn btn-sm btn-outline" style="margin-left:12px;" onclick="aggiornaVersionePosa()">Aggiorna ora</button>
+    ⚠️ Tempi di posa aggiornati.
+    <button class="btn btn-sm btn-outline" style="margin-left:10px;" onclick="aggiornaVersionePosa()">Aggiorna</button>
   </div>
+
+  <!-- TESTATA -->
   <div class="rilievo-header">
     <div>
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <h2>Rilievo Serramenti</h2>
         <span class="rh-code" id="rhCodice">—</span>
-        <span id="rhGru" style="display:none;background:rgba(255,255,255,.2);padding:3px 8px;border-radius:12px;font-size:.78rem;">🏗️ Con gru</span>
+        <span id="rhGru" style="display:none;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:12px;font-size:.76rem;">🏗️ Gru</span>
       </div>
       <div class="rh-meta" id="rhMeta">—</div>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="openModalClona()">📋 Clona / Revisione</button>
-      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="Utils.navigate('report_acc.html',{idRilievo:idRilievo})">📊 Report Accessori</button>
-      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="Utils.navigate('report_posa.html',{idRilievo:idRilievo,tipo:'SERR'})">⏱️ Report Posa</button>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="openModalClona()">📋 Clona</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="Utils.navigate('report_acc.html',{idRilievo:idRilievo})">📊 Accessori</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="Utils.navigate('report_posa.html',{idRilievo:idRilievo,tipo:'SERR'})">⏱️ Posa</button>
     </div>
   </div>
+
+  <!-- TABS -->
   <div class="tabs">
     <button class="tab-btn active" onclick="showTab('tabPosizioni',this)">🪟 Posizioni</button>
     <button class="tab-btn" onclick="showTab('tabStratigrafie',this)">🧱 Stratigrafie</button>
     <button class="tab-btn" onclick="showTab('tabTestata',this)">📋 Dati rilievo</button>
   </div>
-  <div class="tab-panel active" id="tabPosizioni">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
-      <span style="font-size:.9rem;color:var(--c-text-sec);" id="countPosizioni">0 posizioni</span>
-      <button class="btn btn-primary" onclick="openModalPosizione(null)">➕ Nuova posizione</button>
-    </div>
-    <div id="posizioniContainer">
-      <div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>
-    </div>
-  </div>
-  <div class="tab-panel" id="tabStratigrafie">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <p style="font-size:.88rem;color:var(--c-text-sec);">Definisci le stratigrafie del cantiere. La prima sarà il default.</p>
-      <button class="btn btn-primary" onclick="openModalStratigrafia(null)">➕ Nuova stratigrafia</button>
-    </div>
-    <div id="stratContainer"><div class="loading-state"><div class="spinner"></div></div></div>
-  </div>
-  <div class="tab-panel" id="tabTestata">
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Modifica dati rilievo</span>
-        <button class="btn btn-primary btn-sm" onclick="salvaTestata()">💾 Salva</button>
-      </div>
-      <div class="form-row form-row-2">
-        <div class="form-group"><label class="form-label">Referente</label><select class="form-control" id="tReferente"></select></div>
-        <div class="form-group"><label class="form-label">Tipo intervento</label><select class="form-control" id="tIntervento"></select></div>
-      </div>
-      <div class="form-row form-row-2">
-        <div class="form-group"><label class="form-label">Data rilievo</label><input class="form-control" type="date" id="tDataRilievo"></div>
-        <div class="form-group"><label class="form-label">Data posa prevista</label><input class="form-control" type="date" id="tDataPosa"></div>
-      </div>
-      <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="tGru"><label for="tGru">🏗️ Utilizzo gru / autoscala</label></div></div>
-      <div class="form-group"><label class="form-label">Note</label><textarea class="form-control" id="tNote" rows="3"></textarea></div>
-    </div>
-  </div>
- </main>
-</div>
 
-<!-- MODAL POSIZIONE -->
-<div class="modal" id="modalPosizione" style="padding-top:70px;">
-  <div class="modal-box modal-box-lg">
-    <div class="modal-header" style="background:var(--c-primary);color:white;border-radius:12px 12px 0 0;">
-      <span class="modal-title" id="modalPosizioneTitle" style="color:white;">Nuova posizione</span>
-      <button class="modal-close" style="color:rgba(255,255,255,.8);" onclick="Utils.closeModal('modalPosizione')">✕</button>
-    </div>
-    <div class="modal-body" style="padding:16px;">
+  <!-- WRAPPER con drawer -->
+  <div class="rilievo-wrap">
+   <div class="rilievo-main">
 
-      <!-- PANNELLO CALCOLO -->
-      <div class="dim-calc" id="dimCalc">
-        <div class="dim-calc-row">
-          <div class="dc-item"><span class="dc-label">L arch.:</span><span class="dc-value" id="dcLarch">—</span></div>
-          <span class="dc-sep">×</span>
-          <div class="dc-item"><span class="dc-label">H arch.:</span><span class="dc-value" id="dcHarch">—</span></div>
-        </div>
-        <div class="dim-calc-row">
-          <div class="dc-item"><span class="dc-label">L telaio:</span><span class="dc-value" id="dcL">—</span></div>
-          <span class="dc-sep">×</span>
-          <div class="dc-item"><span class="dc-label">H telaio:</span><span class="dc-value" id="dcH">—</span></div>
-        </div>
-        <div class="dim-calc-row">
-          <div class="dc-item"><span class="dc-label" style="color:#1565C0;">L tubolare:</span><span class="dc-value dc-tub" id="dcLtub">—</span></div>
-          <span class="dc-sep">×</span>
-          <div class="dc-item"><span class="dc-label" style="color:#1565C0;">H tubolare:</span><span class="dc-value dc-tub" id="dcHtub">—</span></div>
-          <div class="dc-item" id="dcAlettaInfo" style="display:none;margin-left:12px;">
-            <span class="dc-label" style="color:#E65100;">Aletta:</span>
-            <span class="dc-value" id="dcAletta" style="color:#E65100;">—</span>
-          </div>
+    <!-- TAB POSIZIONI -->
+    <div class="tab-panel active" id="tabPosizioni">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <span style="font-size:.88rem;color:var(--c-text-sec);" id="countPosizioni">0 posizioni</span>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-sm btn-outline" id="btnLegendaPos" onclick="openLegenda('generale')">📖 Legenda</button>
+          <button class="btn btn-primary" onclick="nuovaPosizione()">➕ Nuova posizione</button>
         </div>
       </div>
+      <div id="posizioniContainer">
+        <div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>
+      </div>
+    </div>
 
-      <div class="form-row form-row-3" style="margin-bottom:0;">
-        <!-- COL 1 -->
-        <div>
-          <div style="font-weight:600;font-size:.82rem;color:var(--c-primary);margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid var(--c-red);">📋 DATI GENERALI</div>
-          <div class="form-group"><label class="form-label">Piano <span class="req">*</span></label><select class="form-control" id="pPiano"></select></div>
-          <div class="form-group"><label class="form-label">Ambiente</label><input class="form-control" type="text" id="pAmbiente" placeholder="es. Soggiorno"></div>
-          <div class="form-group">
-            <div class="lbl-with-help"><label class="form-label" style="margin:0;">Tipo serramento <span class="req">*</span></label><button class="help-btn" onclick="openLegenda('tipoSerr')">ℹ️</button></div>
-            <select class="form-control" id="pTipoSerr" onchange="onTipoSerrChange()"></select>
-          </div>
-          <div class="form-group"><label class="form-label">N° campi <span class="req">*</span></label><select class="form-control" id="pNCampi"></select></div>
-          <div class="form-group">
-            <div class="lbl-with-help"><label class="form-label" style="margin:0;">Senso apertura</label><button class="help-btn" onclick="openLegenda('sensiApertura')">ℹ️</button></div>
-            <select class="form-control" id="pSensoApertura"></select>
-          </div>
-          <div class="form-group">
-            <div class="lbl-with-help"><label class="form-label" style="margin:0;">Tipo foro <span class="req">*</span></label><button class="help-btn" onclick="openLegenda('tipoForo')">ℹ️</button></div>
-            <select class="form-control" id="pTipoForo" onchange="ricalcolaDim()"></select>
-          </div>
-          <div class="form-row form-row-2">
-            <div class="form-group"><label class="form-label">L foro (mm) <span class="req">*</span></label><input class="form-control" type="number" id="pLmm" oninput="ricalcolaDim()"></div>
-            <div class="form-group"><label class="form-label">H foro (mm) <span class="req">*</span></label><input class="form-control" type="number" id="pHmm" oninput="ricalcolaDim()"></div>
-          </div>
-          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pRimozione"><label for="pRimozione">Rimozione serramento esistente</label></div></div>
-          <div class="form-group"><label class="form-label">Stratigrafia</label><select class="form-control" id="pStratigrafia"></select></div>
-          <div class="form-group"><label class="form-label">Note</label><textarea class="form-control" id="pNote" rows="2"></textarea></div>
+    <!-- TAB STRATIGRAFIE -->
+    <div class="tab-panel" id="tabStratigrafie">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <p style="font-size:.86rem;color:var(--c-text-sec);">La prima stratigrafia è il default per tutte le posizioni.</p>
+        <button class="btn btn-primary" onclick="openModalStratigrafia(null)">➕ Nuova</button>
+      </div>
+      <div id="stratContainer"><div class="loading-state"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- TAB TESTATA -->
+    <div class="tab-panel" id="tabTestata">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Modifica dati rilievo</span>
+          <button class="btn btn-primary btn-sm" onclick="salvaTestata()">💾 Salva</button>
         </div>
-        <!-- COL 2 -->
-        <div>
-          <div style="font-weight:600;font-size:.82rem;color:var(--c-primary);margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid var(--c-red);">🪟 SERRAMENTO</div>
-          <div class="form-group">
-            <div class="lbl-with-help"><label class="form-label" style="margin:0;">Materiale <span class="req">*</span></label><button class="help-btn" onclick="openLegenda('materiale')">ℹ️</button></div>
-            <select class="form-control" id="pMateriale" onchange="onMaterialeChange()"></select>
+        <div class="form-row form-row-2">
+          <div class="form-group"><label class="form-label">Referente</label><select class="form-control" id="tReferente"></select></div>
+          <div class="form-group"><label class="form-label">Tipo intervento</label><select class="form-control" id="tIntervento"></select></div>
+        </div>
+        <div class="form-row form-row-2">
+          <div class="form-group"><label class="form-label">Data rilievo</label><input class="form-control" type="date" id="tDataRilievo"></div>
+          <div class="form-group"><label class="form-label">Data posa prevista</label><input class="form-control" type="date" id="tDataPosa"></div>
+        </div>
+        <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="tGru"><label for="tGru">🏗️ Utilizzo gru / autoscala</label></div></div>
+        <div class="form-group"><label class="form-label">Note</label><textarea class="form-control" id="tNote" rows="3"></textarea></div>
+      </div>
+    </div>
+
+   </div><!-- fine rilievo-main -->
+
+   <!-- DRAWER LATERALE -->
+   <div class="rilievo-drawer" id="rilievoDrawer">
+    <div class="drawer-inner">
+      <div class="drawer-header">
+        <h3 id="drawerTitle">Posizione —</h3>
+        <button class="drawer-close" onclick="closeDrawer()">✕</button>
+      </div>
+      <div class="drawer-body" id="drawerBody">
+        <!-- Calcolo real-time -->
+        <div class="calc-strip" id="calcStrip">
+          <div class="calc-item"><span class="calc-lbl">L arch. × H arch.</span><span class="calc-val" id="cLarch">—</span></div>
+          <div class="calc-item"><span class="calc-lbl">L telaio × H telaio</span><span class="calc-val" id="cLtel">—</span></div>
+          <div class="calc-item"><span class="calc-lbl">L tub. × H tub.</span><span class="calc-val tub" id="cLtub">—</span></div>
+        </div>
+
+        <!-- SEZIONE: DATI GENERALI -->
+        <div class="dsec-title">📋 Dati generali</div>
+        <div class="form-row-2d">
+          <div class="field-wrap">
+            <div class="field-label">Piano <span class="req">*</span></div>
+            <select class="form-control" id="dPiano" onchange="dSave()"></select>
           </div>
-          <div class="form-group"><label class="form-label">Sistema <span class="req">*</span></label><select class="form-control" id="pSistema" onchange="onSistemaChange()" disabled></select></div>
-          <div class="form-group"><label class="form-label">Stile design <span class="req">*</span></label><select class="form-control" id="pStileDesign" onchange="onStileChange()" disabled></select></div>
-          <div class="form-group">
-            <div class="lbl-with-help"><label class="form-label" style="margin:0;">Variante telaio <span class="req">*</span></label><button class="help-btn" onclick="openLegenda('varianteTelaio')">ℹ️</button></div>
-            <select class="form-control" id="pVarianteTelaio" onchange="onVarianteChange()" disabled></select>
-          </div>
-          <div class="form-group"><label class="form-label">Codice serramento</label><input class="form-control" type="text" id="pCodiceSerr" readonly style="background:#F5F5F5;font-family:monospace;font-size:.82rem;"></div>
-          <div class="form-group"><label class="form-label">N° vetri</label><select class="form-control" id="pNVetri" disabled><option value="">—</option></select></div>
-          <div style="font-weight:600;font-size:.82rem;color:var(--c-primary);margin:14px 0 10px;padding-bottom:4px;border-bottom:2px solid var(--c-red);">🎨 COLORI</div>
-          <div class="form-group"><label class="form-label">Colore interno</label><select class="form-control" id="pColoreInt" onchange="onColoreIntChange()" disabled><option value="">— Colore int. —</option></select></div>
-          <div class="form-group"><label class="form-label">Colore esterno</label><select class="form-control" id="pColoreEst" disabled><option value="">—</option></select></div>
-          <div style="font-weight:600;font-size:.82rem;color:var(--c-primary);margin:14px 0 10px;padding-bottom:4px;border-bottom:2px solid var(--c-red);">🔲 COPRIFILI</div>
-          <div class="form-row form-row-2">
-            <div class="form-group"><label class="form-label">Materiale int.</label><select class="form-control" id="pCopriIntMat" onchange="onCopriMatChange('int')"></select></div>
-            <div class="form-group"><label class="form-label">Dim. int. (mm)</label><select class="form-control" id="pCopriIntDim" disabled></select></div>
-          </div>
-          <div class="form-row form-row-2">
-            <div class="form-group"><label class="form-label">Materiale est.</label><select class="form-control" id="pCopriEstMat" onchange="onCopriMatChange('est')"></select></div>
-            <div class="form-group"><label class="form-label">Dim. est. (mm)</label><select class="form-control" id="pCopriEstDim" disabled></select></div>
+          <div class="field-wrap">
+            <div class="field-label">Ambiente</div>
+            <input class="form-control" type="text" id="dAmbiente" placeholder="es. Soggiorno" onchange="dSave()">
           </div>
         </div>
-        <!-- COL 3 -->
-        <div>
-          <div style="font-weight:600;font-size:.82rem;color:var(--c-primary);margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid var(--c-red);">🔧 ACCESSORI</div>
-          <div class="form-group">
-            <div class="lbl-with-help"><label class="form-label" style="margin:0;">Schermatura</label><button class="help-btn" onclick="openLegenda('schermatura')">ℹ️</button></div>
-            <select class="form-control" id="pSchermatura"></select>
-          </div>
-          <div class="form-group" id="grpOscurante" style="display:none;">
-            <label class="form-label">Oscurante integrato</label>
-            <select class="form-control" id="pOscuranteTipo" onchange="onOscuranteChange()"></select>
-            <select class="form-control" id="pOscuranteMecc" style="margin-top:6px;" disabled></select>
-          </div>
-          <div class="form-group">
-            <div class="lbl-with-help"><label class="form-label" style="margin:0;">Cassonetto</label><button class="help-btn" onclick="openLegenda('cassonetto')">ℹ️</button></div>
-            <select class="form-control" id="pCassonetto"></select>
-          </div>
-          <div class="form-group">
-            <div class="lbl-with-help"><label class="form-label" style="margin:0;">Controtelaio</label><button class="help-btn" onclick="openLegenda('controtelaio')">ℹ️</button></div>
-            <select class="form-control" id="pControtelaio" onchange="ricalcolaDim()"></select>
-          </div>
-          <div class="form-group">
-            <div class="lbl-with-help"><label class="form-label" style="margin:0;">Zanzariera</label><button class="help-btn" onclick="openLegenda('zanzariera')">ℹ️</button></div>
-            <select class="form-control" id="pZanzariera"></select>
-          </div>
-          <div class="form-group" id="grpDinoxill">
-            <div class="lbl-with-help"><label class="form-label" style="margin:0;">Dinoxill</label><button class="help-btn" onclick="openLegenda('dinoxill')">ℹ️</button></div>
-            <select class="form-control" id="pDinoxill" onchange="onDinoxillChange()"></select>
-          </div>
-          <div class="form-group" id="grpDinoxillLati" style="display:none;">
-            <label class="form-label">Imbotte — numero lati</label>
-            <div class="radio-group">
-              <label class="radio-opt"><input type="radio" name="dinoxillLati" value="3" checked> 3 lati</label>
-              <label class="radio-opt"><input type="radio" name="dinoxillLati" value="4"> 4 lati</label>
+        <div class="form-row-2d">
+          <div class="field-wrap">
+            <div class="field-label">
+              Tipo serramento <span class="req">*</span>
+              <button class="fi" onclick="openLegenda('tipoSerr')">ℹ️</button>
             </div>
+            <select class="form-control" id="dTipoSerr" onchange="dOnTipoSerrChange()"></select>
+          </div>
+          <div class="field-wrap">
+            <div class="field-label">N° campi <span class="req">*</span></div>
+            <select class="form-control" id="dNCampi" onchange="dSave()"></select>
           </div>
         </div>
+        <div class="form-row-2d">
+          <div class="field-wrap">
+            <div class="field-label">
+              Senso apertura
+              <button class="fi" onclick="openLegenda('sensiApertura')">ℹ️</button>
+            </div>
+            <select class="form-control" id="dSensoApertura" onchange="dSave()"></select>
+          </div>
+          <div class="field-wrap">
+            <div class="field-label">
+              Tipo foro <span class="req">*</span>
+              <button class="fi" onclick="openLegenda('tipoForo')">ℹ️</button>
+            </div>
+            <select class="form-control" id="dTipoForo" onchange="dOnTipoForoChange()"></select>
+          </div>
+        </div>
+        <div class="form-row-2d">
+          <div class="field-wrap">
+            <div class="field-label">L foro (mm) <span class="req">*</span></div>
+            <input class="form-control" type="number" id="dLmm" oninput="dRicalcola()">
+          </div>
+          <div class="field-wrap">
+            <div class="field-label">H foro (mm) <span class="req">*</span></div>
+            <input class="form-control" type="number" id="dHmm" oninput="dRicalcola()">
+          </div>
+        </div>
+        <div class="field-wrap">
+          <div class="field-label">Stratigrafia</div>
+          <select class="form-control" id="dStratigrafia" onchange="dSave()"></select>
+        </div>
+        <div class="field-wrap">
+          <div class="checkbox-group"><input type="checkbox" id="dRimozione" onchange="dSave()"><label for="dRimozione">Rimozione serramento esistente</label></div>
+        </div>
+        <div class="field-wrap">
+          <div class="field-label">Note</div>
+          <textarea class="form-control" id="dNote" rows="2" onchange="dSave()"></textarea>
+        </div>
+
+        <!-- SEZIONE: SERRAMENTO -->
+        <div class="dsec-title">🪟 Serramento</div>
+        <div class="field-wrap">
+          <div class="field-label">
+            Materiale <span class="req">*</span>
+            <button class="fi" onclick="openLegenda('materiale')">ℹ️</button>
+          </div>
+          <select class="form-control" id="dMateriale" onchange="dOnMaterialeChange()"></select>
+        </div>
+        <div class="field-wrap">
+          <div class="field-label">Sistema <span class="req">*</span></div>
+          <select class="form-control" id="dSistema" onchange="dOnSistemaChange()" disabled></select>
+        </div>
+        <div class="form-row-2d">
+          <div class="field-wrap">
+            <div class="field-label">Stile design <span class="req">*</span></div>
+            <select class="form-control" id="dStileDesign" onchange="dOnStileChange()" disabled></select>
+          </div>
+          <div class="field-wrap">
+            <div class="field-label">
+              Variante telaio <span class="req">*</span>
+              <button class="fi" onclick="openLegenda('varianteTelaio')">ℹ️</button>
+            </div>
+            <select class="form-control" id="dVarianteTelaio" onchange="dOnVarianteChange()" disabled></select>
+          </div>
+        </div>
+        <div class="form-row-2d">
+          <div class="field-wrap">
+            <div class="field-label">Codice</div>
+            <input class="form-control" type="text" id="dCodiceSerr" readonly style="background:#F5F5F5;font-family:monospace;font-size:.78rem;">
+          </div>
+          <div class="field-wrap">
+            <div class="field-label">N° vetri</div>
+            <select class="form-control" id="dNVetri" disabled onchange="dSave()"><option value="">—</option></select>
+          </div>
+        </div>
+
+        <!-- SEZIONE: COLORI -->
+        <div class="dsec-title">🎨 Colori</div>
+        <div class="form-row-2d">
+          <div class="field-wrap">
+            <div class="field-label">Colore interno</div>
+            <select class="form-control" id="dColoreInt" onchange="dOnColoreIntChange()" disabled><option value="">—</option></select>
+          </div>
+          <div class="field-wrap">
+            <div class="field-label">Colore esterno</div>
+            <select class="form-control" id="dColoreEst" onchange="dSave()" disabled><option value="">—</option></select>
+          </div>
+        </div>
+
+        <!-- SEZIONE: COPRIFILI -->
+        <div class="dsec-title">🔲 Coprifili</div>
+        <div class="form-row-2d">
+          <div class="field-wrap">
+            <div class="field-label">Materiale int.</div>
+            <select class="form-control" id="dCopriIntMat" onchange="dOnCopriMatChange('int')"></select>
+          </div>
+          <div class="field-wrap">
+            <div class="field-label">Dim. int. (mm)</div>
+            <select class="form-control" id="dCopriIntDim" onchange="dSave()" disabled></select>
+          </div>
+        </div>
+        <div class="form-row-2d">
+          <div class="field-wrap">
+            <div class="field-label">Materiale est.</div>
+            <select class="form-control" id="dCopriEstMat" onchange="dOnCopriMatChange('est')"></select>
+          </div>
+          <div class="field-wrap">
+            <div class="field-label">Dim. est. (mm)</div>
+            <select class="form-control" id="dCopriEstDim" onchange="dSave()" disabled></select>
+          </div>
+        </div>
+
+        <!-- SEZIONE: ACCESSORI -->
+        <div class="dsec-title">🔧 Accessori</div>
+        <div class="form-row-2d">
+          <div class="field-wrap">
+            <div class="field-label">
+              Schermatura
+              <button class="fi" onclick="openLegenda('schermatura')">ℹ️</button>
+            </div>
+            <select class="form-control" id="dSchermatura" onchange="dSave()"></select>
+          </div>
+          <div class="field-wrap">
+            <div class="field-label">
+              Cassonetto
+              <button class="fi" onclick="openLegenda('cassonetto')">ℹ️</button>
+            </div>
+            <select class="form-control" id="dCassonetto" onchange="dSave()"></select>
+          </div>
+        </div>
+        <div id="grpOscurante" style="display:none;">
+          <div class="field-wrap">
+            <div class="field-label">Oscurante integrato</div>
+            <select class="form-control" id="dOscuranteTipo" onchange="dOnOscuranteChange()"></select>
+          </div>
+          <div class="field-wrap">
+            <div class="field-label">Meccanismo oscurante</div>
+            <select class="form-control" id="dOscuranteMecc" onchange="dSave()" disabled></select>
+          </div>
+        </div>
+        <div class="form-row-2d">
+          <div class="field-wrap">
+            <div class="field-label">
+              Controtelaio
+              <button class="fi" onclick="openLegenda('controtelaio')">ℹ️</button>
+            </div>
+            <select class="form-control" id="dControtelaio" onchange="dOnControtelaioChange()"></select>
+          </div>
+          <div class="field-wrap">
+            <div class="field-label">
+              Zanzariera
+              <button class="fi" onclick="openLegenda('zanzariera')">ℹ️</button>
+            </div>
+            <select class="form-control" id="dZanzariera" onchange="dSave()"></select>
+          </div>
+        </div>
+        <div class="field-wrap" id="grpDinoxill">
+          <div class="field-label">
+            Dinoxill
+            <button class="fi" onclick="openLegenda('dinoxill')">ℹ️</button>
+          </div>
+          <select class="form-control" id="dDinoxill" onchange="dOnDinoxillChange()"></select>
+        </div>
+        <div id="grpDinoxillLati" style="display:none;">
+          <div class="field-label">Imbotte — lati</div>
+          <div class="radio-group" style="margin-bottom:10px;">
+            <label class="radio-opt"><input type="radio" name="dDinoxillLati" value="3" checked onchange="dSave()"> 3 lati</label>
+            <label class="radio-opt"><input type="radio" name="dDinoxillLati" value="4" onchange="dSave()"> 4 lati</label>
+          </div>
+        </div>
+      </div><!-- fine drawer-body -->
+      <div class="drawer-footer">
+        <button class="btn btn-outline btn-sm" onclick="closeDrawer()">Chiudi</button>
+        <button class="btn btn-secondary btn-sm" onclick="copiaDaDrawer()">📋 Copia posizione</button>
+        <button class="btn btn-primary" id="btnDrawerSalva" onclick="salvaDrawer()">💾 Salva</button>
       </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="Utils.closeModal('modalPosizione')">Annulla</button>
-      <button class="btn btn-secondary" id="btnSalvaAggiungi" onclick="salvaPosizioneEAggiungi()" style="display:none;">💾 Salva e aggiungi altra</button>
-      <button class="btn btn-primary" id="btnSalvaPosizione" onclick="salvaPosizione()">💾 Salva posizione</button>
-    </div>
-  </div>
+    </div><!-- fine drawer-inner -->
+   </div><!-- fine drawer -->
+  </div><!-- fine rilievo-wrap -->
+
+ </main>
 </div>
 
 <!-- MODAL STRATIGRAFIA -->
@@ -273,7 +456,7 @@
       <button class="modal-close" onclick="Utils.closeModal('modalStratigrafia')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-group"><label class="form-label">Nome <span class="req">*</span></label><input class="form-control" type="text" id="sNome" placeholder="es. Muro perimetrale"></div>
+      <div class="form-group"><label class="form-label">Nome <span class="req">*</span></label><input class="form-control" type="text" id="sNome"></div>
       <div class="form-group">
         <label class="form-label">Immagine <span class="req">*</span></label>
         <div class="strat-grid" id="stratImgGrid"></div>
@@ -308,18 +491,6 @@
   </div>
 </div>
 
-<!-- MODAL COPIA -->
-<div class="modal" id="modalCopiaPos">
-  <div class="modal-box modal-box-sm">
-    <div class="modal-header"><span class="modal-title">Copia posizione</span><button class="modal-close" onclick="Utils.closeModal('modalCopiaPos')">✕</button></div>
-    <div class="modal-body"><div class="form-group"><label class="form-label">Quante copie?</label><input class="form-control" type="number" id="nCopie" min="1" max="20" value="1"></div></div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="Utils.closeModal('modalCopiaPos')">Annulla</button>
-      <button class="btn btn-primary" id="btnEseguiCopia" onclick="eseguiCopiaPos()">Copia</button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL ELIMINA -->
 <div class="modal" id="modalEliminaPos">
   <div class="modal-box modal-box-sm">
@@ -332,14 +503,26 @@
   </div>
 </div>
 
+<!-- MODAL COPIA N -->
+<div class="modal" id="modalCopiaPos">
+  <div class="modal-box modal-box-sm">
+    <div class="modal-header"><span class="modal-title">Copia posizione</span><button class="modal-close" onclick="Utils.closeModal('modalCopiaPos')">✕</button></div>
+    <div class="modal-body"><div class="form-group"><label class="form-label">Quante copie?</label><input class="form-control" type="number" id="nCopie" min="1" max="20" value="1"></div></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="Utils.closeModal('modalCopiaPos')">Annulla</button>
+      <button class="btn btn-primary" id="btnEseguiCopia" onclick="eseguiCopiaPos()">Copia</button>
+    </div>
+  </div>
+</div>
+
 <!-- LEGENDA -->
 <div class="legenda-overlay" id="legendaOverlay" onclick="closeLegenda()">
   <div class="legenda-drawer" onclick="event.stopPropagation()">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <h3 id="legendaTitolo" style="margin:0;border:none;padding:0;"></h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div class="leg-title" id="legTitolo" style="margin:0;border:none;padding:0;"></div>
       <button class="btn-icon" onclick="closeLegenda()">✕</button>
     </div>
-    <div id="legendaContenuto"></div>
+    <div id="legContenuto"></div>
   </div>
 </div>
 
@@ -358,7 +541,8 @@ if (!idRilievo) window.location.href = 'clienti.html';
 
 var rilievo=null, posizioni=[], stratigrafie=[], dbSerr=[];
 var lookups={}, datiComuni={}, regoleLati={};
-var posizioneEditId=null, posizioneCopiaId=null, posizioneEliminaId=null, stratEditId=null;
+var drawerPosId=null, stratEditId=null, posizioneEliminaId=null, posizioneCopiaId=null;
+var drawerDirty=false; // flag modifiche non salvate
 
 // ================================================================
 // INIT
@@ -373,37 +557,31 @@ async function init() {
         'LK_ZANZARIERA','LK_DINOXILL','LK_OSCURANTE','LK_COLORI',
         'LK_SENSI_APERTURA','LK_N_CAMPI','LK_PIANO','LK_VETRO'
       ]),
-      API.getDatiComuni(),
-      API.getRegoleLati(),
-      API.getDbSerramento()
+      API.getDatiComuni(), API.getRegoleLati(), API.getDbSerramento()
     ]);
     if (!resRil.success) { Utils.showError(resRil.error); return; }
-    rilievo = resRil.data;
-    lookups = resLK.success ? (resLK.data||{}) : {};
-    // parse datiComuni
+    rilievo=resRil.data;
+    lookups=resLK.success?(resLK.data||{}):{};
     datiComuni={};
     if (resDC.success) {
       var arr=resDC.data||resDC.map||[];
       if (Array.isArray(arr)) arr.forEach(function(d){ datiComuni[parseInt(d.ID)||parseInt(d.id)]=parseFloat(d.valore)||0; });
       else datiComuni=arr;
     }
-    // parse regoleLati
     regoleLati={};
     if (resRL.success) {
       var arr2=resRL.data||[];
       if (Array.isArray(arr2)) arr2.forEach(function(r){ regoleLati[r.sigla]=r; });
       else regoleLati=arr2;
     }
-    dbSerr=(resDB.success?(resDB.data||[]):[])
-      .filter(function(d){ return !d.stato||String(d.stato).toLowerCase()!=='disattivo'; });
-
+    dbSerr=(resDB.success?(resDB.data||[]):[]).filter(function(d){ return !d.stato||String(d.stato).toLowerCase()!=='disattivo'; });
     renderTestata();
     populateTestataSel();
-    populateModalDropdowns();
-    await Promise.all([loadPosizioni(),loadStratigrafie()]);
+    populateDrawerDropdowns();
+    await Promise.all([loadPosizioni(), loadStratigrafie()]);
     await checkVersionePosa();
   } catch(err) {
-    console.error('Errore init:',err);
+    console.error('init error:',err);
     Utils.showError('Errore caricamento: '+err.message);
   }
 }
@@ -412,12 +590,10 @@ async function init() {
 // TESTATA
 // ================================================================
 function renderTestata() {
-  document.title = rilievo.codice+' — F4 Rilievi';
-  document.getElementById('rhCodice').textContent = rilievo.codice||'—';
+  document.title=rilievo.codice+' — F4 Rilievi';
+  document.getElementById('rhCodice').textContent=rilievo.codice||'—';
   if (rilievo.gru==='SI') document.getElementById('rhGru').style.display='';
-  document.getElementById('rhMeta').textContent =
-    (rilievo.intervento||'')+' — '+(rilievo.data_rilievo||'')+
-    (rilievo.referente?' — Ref: '+rilievo.referente:'');
+  document.getElementById('rhMeta').textContent=(rilievo.intervento||'')+' — '+(rilievo.data_rilievo||'')+(rilievo.referente?' — Ref: '+rilievo.referente:'');
   if (rilievo.percorsoCantiere) {
     var pc=rilievo.percorsoCantiere;
     var bcC=document.getElementById('bcCliente'); bcC.textContent=pc.nomeCliente; bcC.href='clienti.html';
@@ -426,36 +602,26 @@ function renderTestata() {
     document.getElementById('bcRilievo').textContent=rilievo.codice;
   }
 }
-
 function populateTestataSel() {
-  var selRef=document.getElementById('tReferente'); selRef.innerHTML='<option value="">—</option>';
-  (lookups.LK_REFERENTI||[]).forEach(function(r){
-    var o=document.createElement('option'); o.value=r.nome_completo; o.textContent=r.nome_completo;
-    if (r.nome_completo===rilievo.referente) o.selected=true; selRef.appendChild(o);
-  });
-  var selInt=document.getElementById('tIntervento'); selInt.innerHTML='<option value="">—</option>';
-  (lookups.LK_INTERVENTO||[]).forEach(function(i){
-    var o=document.createElement('option'); o.value=i.descrizione; o.textContent=i.descrizione;
-    if (i.descrizione===rilievo.intervento) o.selected=true; selInt.appendChild(o);
-  });
+  var sR=document.getElementById('tReferente'); sR.innerHTML='<option value="">—</option>';
+  (lookups.LK_REFERENTI||[]).forEach(function(r){ var o=document.createElement('option'); o.value=r.nome_completo; o.textContent=r.nome_completo; if(r.nome_completo===rilievo.referente)o.selected=true; sR.appendChild(o); });
+  var sI=document.getElementById('tIntervento'); sI.innerHTML='<option value="">—</option>';
+  (lookups.LK_INTERVENTO||[]).forEach(function(i){ var o=document.createElement('option'); o.value=i.descrizione; o.textContent=i.descrizione; if(i.descrizione===rilievo.intervento)o.selected=true; sI.appendChild(o); });
   document.getElementById('tDataRilievo').value=rilievo.data_rilievo||'';
   document.getElementById('tDataPosa').value=rilievo.data_posa||'';
   document.getElementById('tGru').checked=rilievo.gru==='SI';
   document.getElementById('tNote').value=rilievo.note||'';
 }
-
 async function salvaTestata() {
   var data={referente:document.getElementById('tReferente').value,intervento:document.getElementById('tIntervento').value,
     data_rilievo:document.getElementById('tDataRilievo').value,data_posa:document.getElementById('tDataPosa').value,
     gru:document.getElementById('tGru').checked?'SI':'NO',note:document.getElementById('tNote').value.trim()};
   var res=await API.updateRilievo(idRilievo,data);
-  if (res.success){Utils.showSuccess('Dati rilievo salvati.');rilievo=Object.assign({},rilievo,data);renderTestata();}
+  if(res.success){Utils.showSuccess('Salvato.');rilievo=Object.assign({},rilievo,data);renderTestata();}
   else Utils.showError(res.error);
 }
-
 async function checkVersionePosa(){var res=await API.checkVersionePosa(idRilievo);if(res.success&&res.aggiornamentoDisponibile)document.getElementById('alertPosa').style.display='flex';}
 async function aggiornaVersionePosa(){var res=await API.aggiornaVersionePosa(idRilievo);if(res.success){Utils.showSuccess('Posa aggiornata.');document.getElementById('alertPosa').style.display='none';}else Utils.showError(res.error);}
-
 function showTab(id,btn){
   document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
@@ -463,298 +629,363 @@ function showTab(id,btn){
 }
 
 // ================================================================
-// POSIZIONI
+// POSIZIONI — TABELLA
 // ================================================================
-async function loadPosizioni(){
+async function loadPosizioni() {
   var res=await API.getPosizioniSerr(idRilievo);
   if(!res.success){Utils.showError(res.error);return;}
   posizioni=res.data; renderPosizioni();
 }
 
-function renderPosizioni(){
+function renderPosizioni() {
   var c=document.getElementById('posizioniContainer');
   document.getElementById('countPosizioni').textContent=posizioni.length+' posizioni';
   if(!posizioni.length){Utils.showEmptyState(c,'Nessuna posizione. Clicca "+ Nuova posizione".','🪟');return;}
-  c.innerHTML='<div class="pos-table-wrap"><table class="pos-table"><thead><tr>'+
-    '<th>N°</th><th>Piano</th><th>Ambiente</th><th>Tipo</th>'+
-    '<th>Sistema / Variante</th><th>H (mm)</th><th>L (mm)</th>'+
-    '<th>Accessori</th><th style="text-align:right;">Azioni</th>'+
-    '</tr></thead><tbody>'+posizioni.map(function(p){return renderPosizioneRow(p);}).join('')+'</tbody></table></div>';
-}
-
-function renderPosizioneRow(p){
-  var acc=[];
-  if(p.controtelaio) acc.push(p.controtelaio==='T'?'TC':'CTL');
-  if(p.schermatura)  acc.push(p.schermatura);
-  if(p.cassonetto)   acc.push('Cass');
-  if(p.zanzariera)   acc.push('Zanz');
-  if(p.dinoxill)     acc.push(p.dinoxill);
-  if(p.coprifilo_int_mat) acc.push('CopI');
-  if(p.coprifilo_est_mat) acc.push('CopE');
-  var piano=(p.piano!==undefined&&p.piano!=='')?('P'+(p.piano>=0?'+':'')+p.piano):'—';
-  return '<tr>'+
-    '<td><span class="pos-num-cell">'+p.numero_pos+'</span></td>'+
-    '<td>'+piano+'</td>'+
-    '<td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(p.ambiente||'—')+'</td>'+
-    '<td><span class="badge badge-serr">'+(p.tipo_serramento||'—')+'</span></td>'+
-    '<td style="font-size:.8rem;"><div style="font-weight:600;">'+(p.sistema||'—')+'</div>'+
-    '<div style="color:var(--c-text-sec);font-size:.76rem;">'+(p.variante_telaio||'')+(p.stile_design?' / '+p.stile_design:'')+'</div></td>'+
-    '<td class="num">'+(p.H_mm||'—')+'</td><td class="num">'+(p.L_mm||'—')+'</td>'+
-    '<td style="font-size:.74rem;">'+(acc.join(' ')||'—')+'</td>'+
-    '<td class="td-actions">'+
-    '<button class="btn-icon" title="Modifica" onclick="openModalPosizione(\''+p.ID_pos+'\')">✏️</button>'+
-    '<button class="btn-icon" title="Copia" onclick="openModalCopiaPos(\''+p.ID_pos+'\')">📋</button>'+
-    '<button class="btn-icon" title="Elimina" onclick="openModalEliminaPos(\''+p.ID_pos+'\',\''+p.numero_pos+'\')">🗑️</button>'+
-    '</td></tr>';
-}
-
-// ================================================================
-// MODAL POSIZIONE
-// ================================================================
-function openModalPosizione(id){
-  posizioneEditId=id;
-  resetModalPosizione();
-  document.getElementById('modalPosizioneTitle').textContent=id?'Modifica posizione':'Nuova posizione';
-  document.getElementById('btnSalvaAggiungi').style.display=id?'none':'';
-  if(id){var pos=posizioni.find(function(p){return p.ID_pos===id;});if(pos)fillModalPosizione(pos);}
-  Utils.openModal('modalPosizione');
-}
-
-function resetModalPosizione(){
-  ['pPiano','pTipoSerr','pNCampi','pSensoApertura','pTipoForo','pHmm','pLmm',
-   'pAmbiente','pNote','pMateriale','pCopriIntMat','pCopriIntDim',
-   'pCopriEstMat','pCopriEstDim','pSchermatura','pCassonetto','pControtelaio',
-   'pZanzariera','pDinoxill','pStratigrafia'
-  ].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('pRimozione').checked=false;
-  ['pSistema','pStileDesign','pVarianteTelaio'].forEach(function(id){
-    var el=document.getElementById(id);if(!el)return;el.value='';el.disabled=true;
+  var html='<div class="pos-table-wrap"><table class="pos-table"><thead><tr>'+
+    '<th style="width:44px;">N°</th>'+
+    '<th>Piano</th>'+
+    '<th>Ambiente</th>'+
+    '<th>Tipo</th>'+
+    '<th>L (mm)</th>'+
+    '<th>H (mm)</th>'+
+    '<th>Foro</th>'+
+    '<th>Sistema / Variante</th>'+
+    '<th>Accessori</th>'+
+    '<th style="text-align:right;">Azioni</th>'+
+    '</tr></thead><tbody>';
+  posizioni.forEach(function(p){
+    // Calcola tubolare per mostrarlo
+    var dimCalc=calcolaRealtime(p);
+    var piano=(p.piano!==undefined&&p.piano!=='')?('P'+(p.piano>=0?'+':'')+p.piano):'—';
+    var acc=[];
+    if(p.controtelaio) acc.push(p.controtelaio==='T'?'TC':'CTL');
+    if(p.schermatura)  acc.push(p.schermatura);
+    if(p.cassonetto)   acc.push('Cass');
+    if(p.zanzariera)   acc.push('Zanz');
+    if(p.dinoxill)     acc.push(p.dinoxill);
+    if(p.coprifilo_int_mat) acc.push('CopI');
+    if(p.coprifilo_est_mat) acc.push('CopE');
+    var isSel=drawerPosId===p.ID_pos?'row-sel':'';
+    html+='<tr class="'+isSel+'" onclick="openDrawer(\''+p.ID_pos+'\')">'+
+      '<td><span class="pos-num-badge">'+p.numero_pos+'</span></td>'+
+      '<td>'+piano+'</td>'+
+      '<td style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(p.ambiente||'—')+'</td>'+
+      '<td><span class="pos-badge-tipo">'+(p.tipo_serramento||'—')+'</span></td>'+
+      '<td class="dim-cell"><div class="dim-main">'+(p.L_mm||'—')+'</div>'+
+        (dimCalc.Ltub?'<div class="dim-sub">('+Math.round(dimCalc.Ltub)+')</div>':'')+'</td>'+
+      '<td class="dim-cell"><div class="dim-main">'+(p.H_mm||'—')+'</div>'+
+        (dimCalc.Htub?'<div class="dim-sub">('+Math.round(dimCalc.Htub)+')</div>':'')+'</td>'+
+      '<td style="font-size:.78rem;">'+(p.tipo_foro||'—')+'</td>'+
+      '<td style="font-size:.8rem;"><div style="font-weight:600;">'+(p.sistema||'—')+'</div>'+
+        '<div style="color:var(--c-text-sec);font-size:.74rem;">'+(p.variante_telaio||'—')+(p.stile_design?' / '+p.stile_design:'')+'</div></td>'+
+      '<td><div class="acc-chips">'+acc.map(function(a){return'<span class="acc-chip">'+a+'</span>';}).join('')+'</div></td>'+
+      '<td class="td-actions" onclick="event.stopPropagation()">'+
+        '<button class="btn-icon" title="Copia" onclick="openModalCopiaPos(\''+p.ID_pos+'\')">📋</button>'+
+        '<button class="btn-icon" title="Elimina" onclick="openModalEliminaPos(\''+p.ID_pos+'\',\''+p.numero_pos+'\')">🗑️</button>'+
+      '</td></tr>';
   });
-  document.getElementById('pCodiceSerr').value='';
-  document.getElementById('pNVetri').innerHTML='<option value="">—</option>';
-  document.getElementById('pNVetri').disabled=true;
-  document.getElementById('pColoreInt').innerHTML='<option value="">— Colore int. —</option>';
-  document.getElementById('pColoreInt').disabled=true;
-  document.getElementById('pColoreEst').innerHTML='<option value="">—</option>';
-  document.getElementById('pColoreEst').disabled=true;
-  document.getElementById('pCopriIntDim').disabled=true;
-  document.getElementById('pCopriEstDim').disabled=true;
-  document.getElementById('grpOscurante').style.display='none';
-  document.getElementById('grpDinoxillLati').style.display='none';
-  document.getElementById('dcAlettaInfo').style.display='none';
-  document.querySelector('[name="dinoxillLati"][value="3"]').checked=true;
-  ['dcH','dcL','dcHarch','dcLarch','dcHtub','dcLtub'].forEach(function(id){document.getElementById(id).textContent='—';});
+  html+='</tbody></table></div>';
+  c.innerHTML=html;
 }
 
-function fillModalPosizione(p){
-  document.getElementById('pPiano').value=p.piano!==undefined?p.piano:'';
-  document.getElementById('pAmbiente').value=p.ambiente||'';
-  document.getElementById('pTipoForo').value=p.tipo_foro||'';
-  document.getElementById('pHmm').value=p.H_mm||'';
-  document.getElementById('pLmm').value=p.L_mm||'';
-  document.getElementById('pRimozione').checked=p.rimozione==='SI';
-  document.getElementById('pNote').value=p.note||'';
-  document.getElementById('pStratigrafia').value=p.ID_stratigrafia_override||'';
-  document.getElementById('pTipoSerr').value=p.tipo_serramento||'';
-  onTipoSerrChange(true);
-  document.getElementById('pNCampi').value=p.n_campi||'';
-  document.getElementById('pSensoApertura').value=p.senso_apertura||'';
-  document.getElementById('pMateriale').value=p.materiale||'';
-  onMaterialeChange(true);
-  document.getElementById('pSistema').value=p.sistema||'';
-  onSistemaChange(true);
-  document.getElementById('pStileDesign').value=p.stile_design||'';
-  onStileChange(true);
-  document.getElementById('pVarianteTelaio').value=p.variante_telaio||'';
-  onVarianteChange(true);
-  // Colori
-  document.getElementById('pColoreInt').value=p.colore_int||'';
-  onColoreIntChange(true);
-  document.getElementById('pColoreEst').value=p.colore_est||'';
-  // Coprifili
-  document.getElementById('pCopriIntMat').value=p.coprifilo_int_mat||'';
-  onCopriMatChange('int',true);
-  document.getElementById('pCopriIntDim').value=p.coprifilo_int_dim||'';
-  document.getElementById('pCopriEstMat').value=p.coprifilo_est_mat||'';
-  onCopriMatChange('est',true);
-  document.getElementById('pCopriEstDim').value=p.coprifilo_est_dim||'';
-  // Accessori
-  document.getElementById('pSchermatura').value=p.schermatura||'';
-  document.getElementById('pCassonetto').value=p.cassonetto||'';
-  document.getElementById('pControtelaio').value=p.controtelaio||'';
-  document.getElementById('pZanzariera').value=p.zanzariera||'';
-  document.getElementById('pDinoxill').value=p.dinoxill||'';
-  checkOscuranteVisibility();
-  if(p.oscurante_tipo){
-    document.getElementById('pOscuranteTipo').value=p.oscurante_tipo;
-    onOscuranteChange(true);
-    document.getElementById('pOscuranteMecc').value=p.oscurante_meccanismo||'';
+// Calcolo real-time per dati tabella (senza UI)
+function calcolaRealtime(p) {
+  var H=parseFloat(p.H_mm)||0, L=parseFloat(p.L_mm)||0;
+  if(!H||!L||!p.tipo_foro) return {Htub:0,Ltub:0};
+  var rec=dbSerr.find(function(d){return d.materiale===p.materiale&&d.descrizione===p.sistema&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio;});
+  var nascosto=rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
+  var aletta=rec?(parseFloat(rec.aletta_mm)||0):0;
+  var ao=parseFloat(datiComuni[4])||10, at=parseFloat(datiComuni[5])||10;
+  var so=parseFloat(datiComuni[6])||20, sv=parseFloat(datiComuni[7])||20;
+  var av=parseFloat(datiComuni[8])||10, atv=parseFloat(datiComuni[9])||10;
+  var hasCtl=p.controtelaio==='L'||p.controtelaio==='T';
+  var ridO=hasCtl?(ao+so+at):ao, ridV=hasCtl?(av+sv+atv):av;
+  var nAlH=(p.tipo_serramento==='F'||p.tipo_serramento==='FF')?2:1;
+  var tf=p.tipo_foro, Ltub=0, Htub=0;
+  if(tf==='A'){Ltub=L+2*nascosto+2*aletta;Htub=H+nascosto+nAlH*aletta;}
+  else if(tf==='D'){Ltub=L+2*aletta;Htub=H+nAlH*aletta;}
+  else if(tf==='P'){Ltub=L-2*at+2*aletta;Htub=H-atv+nAlH*aletta;}
+  return {Ltub:Ltub,Htub:Htub};
+}
+
+// ================================================================
+// DRAWER — apertura e chiusura
+// ================================================================
+function openDrawer(id) {
+  if(drawerDirty && drawerPosId && drawerPosId!==id) {
+    // ci sono modifiche non salvate
+    if(!confirm('Ci sono modifiche non salvate. Continuare?')) return;
   }
-  onDinoxillChange(true);
-  if(p.dinoxill_lati){var r=document.querySelector('[name="dinoxillLati"][value="'+p.dinoxill_lati+'"]');if(r)r.checked=true;}
-  ricalcolaDim();
+  drawerPosId=id;
+  drawerDirty=false;
+  var pos=posizioni.find(function(p){return p.ID_pos===id;});
+  if(!pos) return;
+  document.getElementById('drawerTitle').textContent='Posizione '+pos.numero_pos;
+  fillDrawer(pos);
+  document.getElementById('rilievoDrawer').classList.add('open');
+  renderPosizioni(); // aggiorna evidenziazione riga
+}
+
+function closeDrawer() {
+  if(drawerDirty) { if(!confirm('Modifiche non salvate. Chiudere?')) return; }
+  drawerPosId=null; drawerDirty=false;
+  document.getElementById('rilievoDrawer').classList.remove('open');
+  renderPosizioni();
+}
+
+function nuovaPosizione() {
+  if(drawerDirty){if(!confirm('Modifiche non salvate. Continuare?'))return;}
+  drawerPosId=null; drawerDirty=false;
+  resetDrawer();
+  document.getElementById('drawerTitle').textContent='Nuova posizione';
+  document.getElementById('rilievoDrawer').classList.add('open');
 }
 
 // ================================================================
-// DROPDOWN
+// DRAWER — populate e reset
 // ================================================================
-function populateModalDropdowns(){
-  Utils.fillSelect('pPiano',(lookups.LK_PIANO||[]).map(function(p){return{value:p.piano,label:'Piano '+(p.piano>=0?'+':'')+p.piano};}), '— Piano —');
-  Utils.fillSelect('pTipoSerr',(lookups.LK_TIPO_SERR||[]).map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo —');
-  Utils.fillSelect('pNCampi',(lookups.LK_N_CAMPI||[]).map(function(c){return{value:c.n_campi,label:c.n_campi+' campo/i'};}), '— N° campi —');
-  Utils.fillSelect('pSensoApertura',(lookups.LK_SENSI_APERTURA||[]).map(function(s){return{value:s.sigla,label:s.sigla+' — '+s.descrizione};}), '— Senso —');
-  Utils.fillSelect('pTipoForo',(lookups.LK_TIPO_FORO_SERR||[]).map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo foro —');
-  // Materiale: usa materiale (nome completo) unico
+function populateDrawerDropdowns() {
+  Utils.fillSelect('dPiano',(lookups.LK_PIANO||[]).map(function(p){return{value:p.piano,label:'Piano '+(p.piano>=0?'+':'')+p.piano};}), '— Piano —');
+  Utils.fillSelect('dTipoSerr',(lookups.LK_TIPO_SERR||[]).map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo —');
+  Utils.fillSelect('dNCampi',(lookups.LK_N_CAMPI||[]).map(function(c){return{value:c.n_campi,label:c.n_campi+' campo/i'};}), '— N° campi —');
+  Utils.fillSelect('dSensoApertura',(lookups.LK_SENSI_APERTURA||[]).map(function(s){return{value:s.sigla,label:s.sigla+' — '+s.descrizione};}), '— Senso —');
+  Utils.fillSelect('dTipoForo',(lookups.LK_TIPO_FORO_SERR||[]).map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo foro —');
   var matSeen={};
   dbSerr.forEach(function(d){matSeen[d.materiale]=1;});
-  Utils.fillSelect('pMateriale',Object.keys(matSeen).sort().map(function(m){return{value:m,label:m};}), '— Materiale —');
-  Utils.fillSelect('pSchermatura',(lookups.LK_SCHERMATURA||[]).map(function(s){return{value:s.sigla,label:s.descrizione_completa||s.descrizione};}), '— Nessuna —');
-  Utils.fillSelect('pCassonetto',(lookups.LK_CASSONETTO||[]).map(function(c){return{value:c.sigla,label:c.descrizione};}), '— Nessuno —');
-  Utils.fillSelect('pControtelaio',(lookups.LK_CONTROTELAIO||[]).map(function(c){return{value:c.sigla,label:c.descrizione};}), '— Nessuno —');
-  Utils.fillSelect('pZanzariera',(lookups.LK_ZANZARIERA||[]).map(function(z){return{value:z.sigla,label:z.descrizione};}), '— Nessuna —');
-  Utils.fillSelect('pDinoxill',(lookups.LK_DINOXILL||[]).map(function(d){return{value:d.sigla,label:d.descrizione};}), '— Nessuno —');
+  Utils.fillSelect('dMateriale',Object.keys(matSeen).sort().map(function(m){return{value:m,label:m};}),'— Materiale —');
+  Utils.fillSelect('dSchermatura',(lookups.LK_SCHERMATURA||[]).map(function(s){return{value:s.sigla,label:s.descrizione_completa||s.descrizione};}), '— Nessuna —');
+  Utils.fillSelect('dCassonetto',(lookups.LK_CASSONETTO||[]).map(function(c){return{value:c.sigla,label:c.descrizione};}), '— Nessuno —');
+  Utils.fillSelect('dControtelaio',(lookups.LK_CONTROTELAIO||[]).map(function(c){return{value:c.sigla,label:c.descrizione};}), '— Nessuno —');
+  Utils.fillSelect('dZanzariera',(lookups.LK_ZANZARIERA||[]).map(function(z){return{value:z.sigla,label:z.descrizione};}), '— Nessuna —');
+  Utils.fillSelect('dDinoxill',(lookups.LK_DINOXILL||[]).map(function(d){return{value:d.sigla,label:d.descrizione};}), '— Nessuno —');
   var cpSeen={};
   (lookups.LK_COPRIFILI||[]).forEach(function(c){cpSeen[c.materiale_sigla]=1;});
   var cpMat=Object.keys(cpSeen).map(function(m){return{value:m,label:m};});
-  Utils.fillSelect('pCopriIntMat',cpMat,'— Mat. —');
-  Utils.fillSelect('pCopriEstMat',cpMat,'— Mat. —');
-  populateStratigrafiaSelect();
+  Utils.fillSelect('dCopriIntMat',cpMat,'— Mat. —');
+  Utils.fillSelect('dCopriEstMat',cpMat,'— Mat. —');
 }
 
-function onTipoSerrChange(silent){
-  var tipo=document.getElementById('pTipoSerr').value;
+function resetDrawer() {
+  ['dPiano','dTipoSerr','dNCampi','dSensoApertura','dTipoForo','dHmm','dLmm',
+   'dAmbiente','dNote','dMateriale','dCopriIntMat','dCopriEstMat',
+   'dSchermatura','dCassonetto','dControtelaio','dZanzariera','dDinoxill','dStratigrafia'
+  ].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('dRimozione').checked=false;
+  ['dSistema','dStileDesign','dVarianteTelaio'].forEach(function(id){
+    var el=document.getElementById(id);if(!el)return;el.value='';el.disabled=true;
+  });
+  document.getElementById('dCodiceSerr').value='';
+  document.getElementById('dNVetri').innerHTML='<option value="">—</option>';
+  document.getElementById('dNVetri').disabled=true;
+  document.getElementById('dColoreInt').innerHTML='<option value="">—</option>';
+  document.getElementById('dColoreInt').disabled=true;
+  document.getElementById('dColoreEst').innerHTML='<option value="">—</option>';
+  document.getElementById('dColoreEst').disabled=true;
+  document.getElementById('dCopriIntDim').innerHTML='<option value="">—</option>';
+  document.getElementById('dCopriIntDim').disabled=true;
+  document.getElementById('dCopriEstDim').innerHTML='<option value="">—</option>';
+  document.getElementById('dCopriEstDim').disabled=true;
+  document.getElementById('grpOscurante').style.display='none';
+  document.getElementById('grpDinoxill').style.display='';
+  document.getElementById('grpDinoxillLati').style.display='none';
+  document.querySelector('[name="dDinoxillLati"][value="3"]').checked=true;
+  // rimuovi evidenziazioni
+  document.querySelectorAll('.field-invalid').forEach(function(el){el.classList.remove('field-invalid');});
+  // reset calc
+  document.getElementById('cLarch').textContent='—';
+  document.getElementById('cLtel').textContent='—';
+  document.getElementById('cLtub').textContent='—';
+  populateStratigrafiaSelectDrawer();
+}
+
+function fillDrawer(p) {
+  resetDrawer();
+  document.getElementById('dPiano').value=p.piano!==undefined?p.piano:'';
+  document.getElementById('dAmbiente').value=p.ambiente||'';
+  document.getElementById('dTipoSerr').value=p.tipo_serramento||'';
+  dOnTipoSerrChange(true);
+  document.getElementById('dNCampi').value=p.n_campi||'';
+  document.getElementById('dSensoApertura').value=p.senso_apertura||'';
+  document.getElementById('dTipoForo').value=p.tipo_foro||'';
+  document.getElementById('dLmm').value=p.L_mm||'';
+  document.getElementById('dHmm').value=p.H_mm||'';
+  document.getElementById('dRimozione').checked=p.rimozione==='SI';
+  document.getElementById('dNote').value=p.note||'';
+  // Serramento cascade
+  document.getElementById('dMateriale').value=p.materiale||'';
+  dOnMaterialeChange(true);
+  document.getElementById('dSistema').value=p.sistema||'';
+  dOnSistemaChange(true);
+  document.getElementById('dStileDesign').value=p.stile_design||'';
+  dOnStileChange(true);
+  document.getElementById('dVarianteTelaio').value=p.variante_telaio||'';
+  dOnVarianteChange(true);
+  // Colori
+  document.getElementById('dColoreInt').value=p.colore_int||'';
+  dOnColoreIntChange(true);
+  document.getElementById('dColoreEst').value=p.colore_est||'';
+  // Coprifili
+  document.getElementById('dCopriIntMat').value=p.coprifilo_int_mat||'';
+  dOnCopriMatChange('int',true);
+  document.getElementById('dCopriIntDim').value=p.coprifilo_int_dim||'';
+  document.getElementById('dCopriEstMat').value=p.coprifilo_est_mat||'';
+  dOnCopriMatChange('est',true);
+  document.getElementById('dCopriEstDim').value=p.coprifilo_est_dim||'';
+  // Accessori
+  document.getElementById('dSchermatura').value=p.schermatura||'';
+  document.getElementById('dCassonetto').value=p.cassonetto||'';
+  document.getElementById('dControtelaio').value=p.controtelaio||'';
+  dOnControtelaioChange(true);
+  document.getElementById('dZanzariera').value=p.zanzariera||'';
+  document.getElementById('dDinoxill').value=p.dinoxill||'';
+  dOnDinoxillChange(true);
+  if(p.dinoxill_lati){var r=document.querySelector('[name="dDinoxillLati"][value="'+p.dinoxill_lati+'"]');if(r)r.checked=true;}
+  if(p.oscurante_tipo){dOnOscuranteChange(true);document.getElementById('dOscuranteMecc').value=p.oscurante_meccanismo||'';}
+  // Stratigrafia
+  document.getElementById('dStratigrafia').value=p.ID_stratigrafia_override||'';
+  dRicalcola();
+}
+
+// ================================================================
+// DRAWER — cascate dropdown
+// ================================================================
+function dOnTipoSerrChange(silent) {
+  var tipo=document.getElementById('dTipoSerr').value;
   var regola=regoleLati[tipo]||{};
   var hasDin=regola.dinoxill_disponibile==='SI'||regola.dinoxill_disponibile===true;
   document.getElementById('grpDinoxill').style.display=hasDin?'':'none';
-  if(!hasDin){document.getElementById('pDinoxill').value='';document.getElementById('grpDinoxillLati').style.display='none';}
-  ricalcolaDim();
+  if(!hasDin){document.getElementById('dDinoxill').value='';document.getElementById('grpDinoxillLati').style.display='none';}
+  if(!silent){drawerDirty=true;dRicalcola();}
 }
 
-function onMaterialeChange(silent){
-  var mat=document.getElementById('pMateriale').value;
-  if(!mat){
-    ['pSistema','pStileDesign','pVarianteTelaio'].forEach(function(id){
-      var el=document.getElementById(id);el.innerHTML='<option value="">—</option>';el.disabled=true;
-    });
-    document.getElementById('pCodiceSerr').value='';
-    document.getElementById('pNVetri').innerHTML='<option value="">—</option>';document.getElementById('pNVetri').disabled=true;
-    document.getElementById('pColoreInt').innerHTML='<option value="">— Colore int. —</option>';document.getElementById('pColoreInt').disabled=true;
-    document.getElementById('pColoreEst').innerHTML='<option value="">—</option>';document.getElementById('pColoreEst').disabled=true;
-    return;
-  }
-  // Sistema: usa d.descrizione (nome completo es. "KF 310")
+function dOnTipoForoChange() { drawerDirty=true; dRicalcola(); }
+
+function dOnMaterialeChange(silent) {
+  var mat=document.getElementById('dMateriale').value;
+  // Reset campi dipendenti
+  ['dSistema','dStileDesign','dVarianteTelaio'].forEach(function(id){
+    var el=document.getElementById(id);el.innerHTML='<option value="">—</option>';el.disabled=true;
+  });
+  document.getElementById('dCodiceSerr').value='';
+  document.getElementById('dNVetri').innerHTML='<option value="">—</option>';
+  document.getElementById('dNVetri').disabled=true;
+  document.getElementById('dColoreInt').innerHTML='<option value="">—</option>';
+  document.getElementById('dColoreInt').disabled=true;
+  document.getElementById('dColoreEst').innerHTML='<option value="">—</option>';
+  document.getElementById('dColoreEst').disabled=true;
+  if(!silent) drawerDirty=true;
+  if(!mat) return;
   var sistSeen={};
   dbSerr.filter(function(d){return d.materiale===mat;}).forEach(function(d){sistSeen[d.descrizione]=1;});
-  Utils.fillSelect('pSistema',Object.keys(sistSeen).sort().map(function(s){return{value:s,label:s};}),'— Sistema —');
-  document.getElementById('pSistema').disabled=false;
-  document.getElementById('pStileDesign').innerHTML='<option value="">—</option>';document.getElementById('pStileDesign').disabled=true;
-  document.getElementById('pVarianteTelaio').innerHTML='<option value="">—</option>';document.getElementById('pVarianteTelaio').disabled=true;
-  document.getElementById('pCodiceSerr').value='';
-  document.getElementById('pNVetri').innerHTML='<option value="">—</option>';document.getElementById('pNVetri').disabled=true;
-  // Colori: usa materiale_sigla (es. "PA") per cercare in LK_COLORI
+  Utils.fillSelect('dSistema',Object.keys(sistSeen).sort().map(function(s){return{value:s,label:s};}),'— Sistema —');
+  document.getElementById('dSistema').disabled=false;
+  // Segna come da compilare
+  if(!silent) document.getElementById('dSistema').classList.add('field-invalid');
+  // Colori
   var recMat=dbSerr.find(function(d){return d.materiale===mat;});
   var matSigla=recMat?String(recMat.materiale_sigla||'').replace(/-/g,'').trim():'';
   var colSeen={};
   (lookups.LK_COLORI||[]).filter(function(c){return c.materiale===matSigla;}).forEach(function(c){colSeen[c.colore_interno]=1;});
-  var colKeys=Object.keys(colSeen).sort();
-  Utils.fillSelect('pColoreInt',colKeys.map(function(c){return{value:c,label:c};}),'— Colore int. —');
-  document.getElementById('pColoreInt').disabled=colKeys.length===0;
-  document.getElementById('pColoreEst').innerHTML='<option value="">—</option>';document.getElementById('pColoreEst').disabled=true;
+  Utils.fillSelect('dColoreInt',Object.keys(colSeen).sort().map(function(c){return{value:c,label:c};}),'—');
+  document.getElementById('dColoreInt').disabled=Object.keys(colSeen).length===0;
 }
 
-function onSistemaChange(silent){
-  var mat=document.getElementById('pMateriale').value;
-  var sis=document.getElementById('pSistema').value;
-  if(!sis)return;
+function dOnSistemaChange(silent) {
+  var mat=document.getElementById('dMateriale').value;
+  var sis=document.getElementById('dSistema').value;
+  document.getElementById('dSistema').classList.remove('field-invalid');
+  // Reset dipendenti
+  ['dStileDesign','dVarianteTelaio'].forEach(function(id){
+    var el=document.getElementById(id);el.innerHTML='<option value="">—</option>';el.disabled=true;
+  });
+  document.getElementById('dCodiceSerr').value='';
+  document.getElementById('dNVetri').innerHTML='<option value="">—</option>';
+  document.getElementById('dNVetri').disabled=true;
+  if(!silent) drawerDirty=true;
+  if(!sis) return;
   var stileSeen={};
   dbSerr.filter(function(d){return d.materiale===mat&&d.descrizione===sis;}).forEach(function(d){stileSeen[d.stile_design]=1;});
-  Utils.fillSelect('pStileDesign',Object.keys(stileSeen).sort().map(function(s){return{value:s,label:s};}),'— Stile design —');
-  document.getElementById('pStileDesign').disabled=false;
-  document.getElementById('pVarianteTelaio').innerHTML='<option value="">—</option>';document.getElementById('pVarianteTelaio').disabled=true;
-  document.getElementById('pCodiceSerr').value='';
-  // Reset N° vetri quando cambia sistema
-  document.getElementById('pNVetri').innerHTML='<option value="">—</option>';
-  document.getElementById('pNVetri').disabled=true;
-  checkOscuranteVisibility();
+  Utils.fillSelect('dStileDesign',Object.keys(stileSeen).sort().map(function(s){return{value:s,label:s};}),'— Stile —');
+  document.getElementById('dStileDesign').disabled=false;
+  if(!silent) document.getElementById('dStileDesign').classList.add('field-invalid');
+  dCheckOscurante();
 }
 
-function onStileChange(silent){
-  var mat=document.getElementById('pMateriale').value;
-  var sis=document.getElementById('pSistema').value;
-  var sti=document.getElementById('pStileDesign').value;
-  if(!sti)return;
+function dOnStileChange(silent) {
+  var mat=document.getElementById('dMateriale').value;
+  var sis=document.getElementById('dSistema').value;
+  var sti=document.getElementById('dStileDesign').value;
+  document.getElementById('dStileDesign').classList.remove('field-invalid');
+  document.getElementById('dVarianteTelaio').innerHTML='<option value="">—</option>';
+  document.getElementById('dVarianteTelaio').disabled=true;
+  document.getElementById('dCodiceSerr').value='';
+  document.getElementById('dNVetri').innerHTML='<option value="">—</option>';
+  document.getElementById('dNVetri').disabled=true;
+  if(!silent) drawerDirty=true;
+  if(!sti) return;
   var varSeen={};
   dbSerr.filter(function(d){return d.materiale===mat&&d.descrizione===sis&&d.stile_design===sti;}).forEach(function(d){varSeen[d.variante_telaio]=1;});
-  Utils.fillSelect('pVarianteTelaio',Object.keys(varSeen).sort().map(function(v){return{value:v,label:v};}),'— Variante —');
-  document.getElementById('pVarianteTelaio').disabled=false;
-  document.getElementById('pCodiceSerr').value='';
-  // Reset N° vetri quando cambia stile
-  document.getElementById('pNVetri').innerHTML='<option value="">—</option>';
-  document.getElementById('pNVetri').disabled=true;
+  Utils.fillSelect('dVarianteTelaio',Object.keys(varSeen).sort().map(function(v){return{value:v,label:v};}),'— Variante —');
+  document.getElementById('dVarianteTelaio').disabled=false;
+  if(!silent) document.getElementById('dVarianteTelaio').classList.add('field-invalid');
 }
 
-function onVarianteChange(silent){
-  var rec=_getSelectedRecord();
-  document.getElementById('pCodiceSerr').value=rec?(rec.codice||''):'';
-  // N° vetri da LK_VETRO per sistema — mostra solo opzioni compatibili
-  var sis=document.getElementById('pSistema').value;
-  var vetriPerSistema=(lookups.LK_VETRO||[]).filter(function(v){return v.sistema===sis;});
-  var nVetriEl=document.getElementById('pNVetri');
-  var prevVal=nVetriEl.value;
-  nVetriEl.innerHTML='<option value="">—</option>';
-  if(vetriPerSistema.length===1){
-    // Una sola opzione: auto-compila e blocca
-    var v=vetriPerSistema[0].n_vetri;
+function dOnVarianteChange(silent) {
+  document.getElementById('dVarianteTelaio').classList.remove('field-invalid');
+  if(!silent) drawerDirty=true;
+  var rec=dGetRec();
+  document.getElementById('dCodiceSerr').value=rec?(rec.codice||''):'';
+  // N° vetri
+  var sis=document.getElementById('dSistema').value;
+  var vetriPerSis=(lookups.LK_VETRO||[]).filter(function(v){return v.sistema===sis;});
+  var nv=document.getElementById('dNVetri');
+  var prevNv=nv.value;
+  nv.innerHTML='<option value="">—</option>';
+  if(vetriPerSis.length===1){
     var opt=document.createElement('option');
-    opt.value=v; opt.textContent=v==='T'?'Triplo':v==='D'?'Doppio':v; opt.selected=true;
-    nVetriEl.appendChild(opt);
-    nVetriEl.disabled=true;
-  } else if(vetriPerSistema.length>1){
-    // Più opzioni: mostra solo quelle disponibili
-    vetriPerSistema.forEach(function(v){
+    opt.value=vetriPerSis[0].n_vetri;
+    opt.textContent=vetriPerSis[0].n_vetri==='T'?'Triplo':'Doppio';
+    opt.selected=true; nv.appendChild(opt); nv.disabled=true;
+  } else if(vetriPerSis.length>1){
+    vetriPerSis.forEach(function(v){
       var opt=document.createElement('option');
-      opt.value=v.n_vetri; opt.textContent=v.n_vetri==='T'?'Triplo':v.n_vetri==='D'?'Doppio':v.n_vetri;
-      if(v.n_vetri===prevVal) opt.selected=true;
-      nVetriEl.appendChild(opt);
+      opt.value=v.n_vetri; opt.textContent=v.n_vetri==='T'?'Triplo':'Doppio';
+      if(v.n_vetri===prevNv)opt.selected=true; nv.appendChild(opt);
     });
-    nVetriEl.disabled=false;
+    nv.disabled=false;
   } else {
-    // Nessuna corrispondenza: libera scelta
-    ['D','T'].forEach(function(v){
-      var opt=document.createElement('option');
-      opt.value=v; opt.textContent=v==='T'?'Triplo':'Doppio';
-      if(v===prevVal) opt.selected=true;
-      nVetriEl.appendChild(opt);
-    });
-    nVetriEl.disabled=false;
+    ['D','T'].forEach(function(v){var opt=document.createElement('option');opt.value=v;opt.textContent=v==='T'?'Triplo':'Doppio';if(v===prevNv)opt.selected=true;nv.appendChild(opt);});
+    nv.disabled=false;
   }
-  ricalcolaDim();
+  dRicalcola();
 }
 
-function _getSelectedRecord(){
-  var mat=document.getElementById('pMateriale').value;
-  var sis=document.getElementById('pSistema').value;
-  var sti=document.getElementById('pStileDesign').value;
-  var vr=document.getElementById('pVarianteTelaio').value;
-  if(!mat||!sis||!sti||!vr)return null;
+function dGetRec() {
+  var mat=document.getElementById('dMateriale').value;
+  var sis=document.getElementById('dSistema').value;
+  var sti=document.getElementById('dStileDesign').value;
+  var vr=document.getElementById('dVarianteTelaio').value;
+  if(!mat||!sis||!sti||!vr) return null;
   return dbSerr.find(function(d){return d.materiale===mat&&d.descrizione===sis&&d.stile_design===sti&&d.variante_telaio===vr;})||null;
 }
 
-function onColoreIntChange(silent){
-  var mat=document.getElementById('pMateriale').value;
-  var colI=document.getElementById('pColoreInt').value;
+function dOnColoreIntChange(silent) {
+  if(!silent) drawerDirty=true;
+  var mat=document.getElementById('dMateriale').value;
+  var colI=document.getElementById('dColoreInt').value;
   var recMat=dbSerr.find(function(d){return d.materiale===mat;});
   var matSigla=recMat?String(recMat.materiale_sigla||'').replace(/-/g,'').trim():'';
   var colori=(lookups.LK_COLORI||[]).filter(function(c){return c.materiale===matSigla&&c.colore_interno===colI;});
   var colEstSeen={};
   colori.forEach(function(c){colEstSeen[c.colore_esterno]=1;});
-  Utils.fillSelect('pColoreEst',Object.keys(colEstSeen).sort().map(function(c){return{value:c,label:c};}),'—');
-  document.getElementById('pColoreEst').disabled=colori.length===0;
+  Utils.fillSelect('dColoreEst',Object.keys(colEstSeen).sort().map(function(c){return{value:c,label:c};}),'—');
+  document.getElementById('dColoreEst').disabled=colori.length===0;
 }
 
-function onCopriMatChange(tipo,silent){
-  var matEl=document.getElementById('pCopri'+(tipo==='int'?'Int':'Est')+'Mat');
-  var dimEl=document.getElementById('pCopri'+(tipo==='int'?'Int':'Est')+'Dim');
+function dOnCopriMatChange(tipo,silent) {
+  if(!silent) drawerDirty=true;
+  var matEl=document.getElementById('dCopri'+(tipo==='int'?'Int':'Est')+'Mat');
+  var dimEl=document.getElementById('dCopri'+(tipo==='int'?'Int':'Est')+'Dim');
   var mat=matEl.value;
   if(!mat){dimEl.innerHTML='<option value="">—</option>';dimEl.disabled=true;return;}
   var dims=(lookups.LK_COPRIFILI||[]).filter(function(c){return c.materiale_sigla===mat;}).map(function(c){return c.dimensione_mm;});
@@ -762,146 +993,146 @@ function onCopriMatChange(tipo,silent){
   dimEl.disabled=false;
 }
 
-function checkOscuranteVisibility(){
-  var sis=document.getElementById('pSistema').value;
+function dCheckOscurante() {
+  var sis=document.getElementById('dSistema').value;
   var sisFam=sis.split(' ')[0];
   var osc=(lookups.LK_OSCURANTE||[]).filter(function(o){return o.sistema===sisFam||o.sistema===sis;});
   var grp=document.getElementById('grpOscurante');
   if(osc.length>0){
     grp.style.display='';
     var tipiSeen={};osc.forEach(function(o){tipiSeen[o.oscurante_sigla]=o;});
-    Utils.fillSelect('pOscuranteTipo',Object.keys(tipiSeen).map(function(t){return{value:t,label:t+' — '+tipiSeen[t].oscurante_desc};}),'— Tipo —');
-    document.getElementById('pOscuranteMecc').innerHTML='<option value="">—</option>';document.getElementById('pOscuranteMecc').disabled=true;
+    Utils.fillSelect('dOscuranteTipo',Object.keys(tipiSeen).map(function(t){return{value:t,label:t+' — '+tipiSeen[t].oscurante_desc};}),'—');
+    document.getElementById('dOscuranteMecc').innerHTML='<option value="">—</option>';
+    document.getElementById('dOscuranteMecc').disabled=true;
   } else grp.style.display='none';
 }
 
-function onOscuranteChange(silent){
-  var sis=document.getElementById('pSistema').value, sisFam=sis.split(' ')[0];
-  var tipo=document.getElementById('pOscuranteTipo').value; if(!tipo)return;
+function dOnOscuranteChange(silent) {
+  if(!silent) drawerDirty=true;
+  var sis=document.getElementById('dSistema').value, sisFam=sis.split(' ')[0];
+  var tipo=document.getElementById('dOscuranteTipo').value; if(!tipo)return;
   var meccs=(lookups.LK_OSCURANTE||[]).filter(function(o){return(o.sistema===sisFam||o.sistema===sis)&&o.oscurante_sigla===tipo;}).map(function(o){return{value:o.meccanismo_sigla,label:o.meccanismo_desc};});
-  Utils.fillSelect('pOscuranteMecc',meccs,'—');document.getElementById('pOscuranteMecc').disabled=false;
+  Utils.fillSelect('dOscuranteMecc',meccs,'—'); document.getElementById('dOscuranteMecc').disabled=false;
 }
 
-function onDinoxillChange(silent){
-  var val=document.getElementById('pDinoxill').value;
-  var tipo=document.getElementById('pTipoSerr').value;
+function dOnControtelaioChange(silent) {
+  if(!silent) drawerDirty=true;
+  dRicalcola();
+}
+
+function dOnDinoxillChange(silent) {
+  if(!silent) drawerDirty=true;
+  var val=document.getElementById('dDinoxill').value;
+  var tipo=document.getElementById('dTipoSerr').value;
   var regola=regoleLati[tipo]||{};
   document.getElementById('grpDinoxillLati').style.display=
     (val==='I3'||val==='I4')&&(regola.dinoxill_lati_scelta==='SI'||regola.dinoxill_lati_scelta===true)?'':'none';
 }
 
+function dSave() { drawerDirty=true; } // marca come modificato
+
 // ================================================================
-// CALCOLO H/L — formule Excel corrette
+// CALCOLO REAL-TIME nel drawer
 // ================================================================
-function ricalcolaDim(){
-  var H=parseFloat(document.getElementById('pHmm').value)||0;
-  var L=parseFloat(document.getElementById('pLmm').value)||0;
-  var tipoForo=document.getElementById('pTipoForo').value;
-  var tipoSerr=document.getElementById('pTipoSerr').value;
-  var ctl=document.getElementById('pControtelaio').value;
-  var rec=_getSelectedRecord();
+function dRicalcola() {
+  var H=parseFloat(document.getElementById('dHmm').value)||0;
+  var L=parseFloat(document.getElementById('dLmm').value)||0;
+  var tf=document.getElementById('dTipoForo').value;
+  var ts=document.getElementById('dTipoSerr').value;
+  var ctl=document.getElementById('dControtelaio').value;
+  var rec=dGetRec();
   var nascosto=rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
   var aletta=rec?(parseFloat(rec.aletta_mm)||0):0;
-  // Costanti datiComuni
-  var ariaCTLo=parseFloat(datiComuni[4])||10;
-  var ariaTelaioO=parseFloat(datiComuni[5])||10;
-  var spCTLo=parseFloat(datiComuni[6])||20;
-  var spCTLv=parseFloat(datiComuni[7])||20;
-  var ariaCTLv=parseFloat(datiComuni[8])||10;
-  var ariaTelaioV=parseFloat(datiComuni[9])||10;
+  var ao=parseFloat(datiComuni[4])||10, at=parseFloat(datiComuni[5])||10;
+  var so=parseFloat(datiComuni[6])||20, sv=parseFloat(datiComuni[7])||20;
+  var av=parseFloat(datiComuni[8])||10, atv=parseFloat(datiComuni[9])||10;
   var hasCtl=ctl==='L'||ctl==='T';
-  var ridO=hasCtl?(ariaCTLo+spCTLo+ariaTelaioO):ariaCTLo;
-  var ridV=hasCtl?(ariaCTLv+spCTLv+ariaTelaioV):ariaCTLv;
-  var ARIA2=ariaTelaioO, ARIA52=ariaTelaioV;
-  // n aletta H: 2 per F e FF, 1 per gli altri
-  var nAlH=(tipoSerr==='F'||tipoSerr==='FF')?2:1;
+  var ridO=hasCtl?(ao+so+at):ao, ridV=hasCtl?(av+sv+atv):av;
+  var nAlH=(ts==='F'||ts==='FF')?2:1;
   var Htel=0,Ltel=0,Harch=0,Larch=0,Htub=0,Ltub=0;
-  if(H&&L&&tipoForo){
-    if(tipoForo==='A'){
-      Harch=H;Larch=L;
-      Htel=H-2*ridV;Ltel=L-2*ridO;
-      Ltub=L+2*nascosto+2*aletta;
-      Htub=H+nascosto+nAlH*aletta;
-    } else if(tipoForo==='D'){
-      Htel=H;Ltel=L;Harch=H+2*ridV;Larch=L+2*ridO;
-      Ltub=L+2*aletta;Htub=H+nAlH*aletta;
-    } else if(tipoForo==='P'){
-      Htel=H;Ltel=L;Harch=H+2*ridV;Larch=L+2*ridO;
-      Ltub=L-2*ARIA2+2*aletta;Htub=H-ARIA52+nAlH*aletta;
+  if(H&&L&&tf){
+    if(tf==='A'){Harch=H;Larch=L;Htel=H-2*ridV;Ltel=L-2*ridO;Ltub=L+2*nascosto+2*aletta;Htub=H+nascosto+nAlH*aletta;}
+    else if(tf==='D'){Htel=H;Ltel=L;Harch=H+2*ridV;Larch=L+2*ridO;Ltub=L+2*aletta;Htub=H+nAlH*aletta;}
+    else if(tf==='P'){Htel=H;Ltel=L;Harch=H+2*ridV;Larch=L+2*ridO;Ltub=L-2*at+2*aletta;Htub=H-atv+nAlH*aletta;}
+  }
+  var fmtLH=function(l,h){return l&&h?Math.round(l)+' × '+Math.round(h)+' mm':'—';};
+  document.getElementById('cLarch').textContent=fmtLH(Larch,Harch);
+  document.getElementById('cLtel').textContent=fmtLH(Ltel,Htel);
+  document.getElementById('cLtub').textContent=fmtLH(Ltub,Htub)+(aletta>0?' [al.'+aletta+']':'');
+}
+
+// ================================================================
+// SALVA DRAWER
+// ================================================================
+async function salvaDrawer() {
+  var data=raccogliDrawer(); if(!data)return;
+  var btn=document.getElementById('btnDrawerSalva'); btn.disabled=true; btn.textContent='Salvataggio...';
+  var res=drawerPosId
+    ?await API.updatePosizioneSerr(drawerPosId,data)
+    :await API.createPosizioneSerr(Object.assign({ID_rilievo:idRilievo},data));
+  btn.disabled=false; btn.textContent='💾 Salva';
+  if(res.success){
+    Utils.showSuccess(drawerPosId?'Posizione aggiornata.':'Posizione '+(res.numero_pos||'')+' creata.');
+    drawerDirty=false;
+    if(!drawerPosId) drawerPosId=res.id;
+    document.getElementById('drawerTitle').textContent='Posizione '+(res.numero_pos||'');
+    await loadPosizioni();
+  } else Utils.showError(res.error);
+}
+
+function raccogliDrawer() {
+  var req={dPiano:'Piano',dTipoSerr:'Tipo serramento',dNCampi:'N° campi',
+           dTipoForo:'Tipo foro',dHmm:'H foro',dLmm:'L foro',
+           dMateriale:'Materiale',dSistema:'Sistema',dStileDesign:'Stile design',dVarianteTelaio:'Variante telaio'};
+  var ok=true;
+  for(var id in req){
+    var el=document.getElementById(id);
+    if(!el||!el.value){
+      el&&el.classList.add('field-invalid');
+      ok=false;
+    } else {
+      el.classList.remove('field-invalid');
     }
   }
-  document.getElementById('dcLarch').textContent=Larch?Math.round(Larch)+' mm':'—';
-  document.getElementById('dcHarch').textContent=Harch?Math.round(Harch)+' mm':'—';
-  document.getElementById('dcL').textContent=Ltel?Math.round(Ltel)+' mm':'—';
-  document.getElementById('dcH').textContent=Htel?Math.round(Htel)+' mm':'—';
-  document.getElementById('dcLtub').textContent=Ltub?Math.round(Ltub)+' mm':'—';
-  document.getElementById('dcHtub').textContent=Htub?Math.round(Htub)+' mm':'—';
-  var alInfo=document.getElementById('dcAlettaInfo');
-  if(aletta>0){alInfo.style.display='';document.getElementById('dcAletta').textContent=aletta+' mm';}
-  else alInfo.style.display='none';
-}
-
-// ================================================================
-// SALVA POSIZIONE
-// ================================================================
-async function salvaPosizione(chiudiModal){
-  var data=raccogliDatiPosizione(); if(!data)return false;
-  var btn=document.getElementById('btnSalvaPosizione'); btn.disabled=true;btn.textContent='Salvataggio...';
-  var res=posizioneEditId
-    ?await API.updatePosizioneSerr(posizioneEditId,data)
-    :await API.createPosizioneSerr(Object.assign({ID_rilievo:idRilievo},data));
-  btn.disabled=false;btn.textContent='💾 Salva posizione';
-  if(res.success){
-    Utils.showSuccess(posizioneEditId?'Posizione aggiornata.':'Posizione '+(res.numero_pos||'')+' creata.');
-    await loadPosizioni();
-    if(chiudiModal!==false)Utils.closeModal('modalPosizione');
-    return true;
-  } else {Utils.showError(res.error);return false;}
-}
-
-async function salvaPosizioneEAggiungi(){
-  var ok=await salvaPosizione(false);
-  if(ok){posizioneEditId=null;resetModalPosizione();document.getElementById('modalPosizioneTitle').textContent='Nuova posizione';}
-}
-
-function raccogliDatiPosizione(){
-  var req={pPiano:'Piano',pTipoSerr:'Tipo serramento',pNCampi:'N° campi',pTipoForo:'Tipo foro',
-           pHmm:'H foro',pLmm:'L foro',pMateriale:'Materiale',pSistema:'Sistema',
-           pStileDesign:'Stile design',pVarianteTelaio:'Variante telaio'};
-  for(var id in req){if(!document.getElementById(id)||!document.getElementById(id).value){Utils.showWarning(req[id]+' è obbligatorio.');return null;}}
+  if(!ok){Utils.showWarning('Compila i campi evidenziati in rosso.');return null;}
   return{
-    piano:document.getElementById('pPiano').value,
-    ambiente:document.getElementById('pAmbiente').value.trim(),
-    tipo_serramento:document.getElementById('pTipoSerr').value,
-    n_campi:parseInt(document.getElementById('pNCampi').value)||1,
-    senso_apertura:document.getElementById('pSensoApertura').value,
-    materiale:document.getElementById('pMateriale').value,
-    sistema:document.getElementById('pSistema').value,
-    stile_design:document.getElementById('pStileDesign').value,
-    variante_telaio:document.getElementById('pVarianteTelaio').value,
-    codice_serramento:document.getElementById('pCodiceSerr').value,
-    tipo_foro:document.getElementById('pTipoForo').value,
-    H_mm:parseFloat(document.getElementById('pHmm').value)||0,
-    L_mm:parseFloat(document.getElementById('pLmm').value)||0,
-    n_vetri:document.getElementById('pNVetri').value,
-    colore_int:document.getElementById('pColoreInt').value,
-    colore_est:document.getElementById('pColoreEst').value,
-    coprifilo_int_mat:document.getElementById('pCopriIntMat').value,
-    coprifilo_int_dim:document.getElementById('pCopriIntDim').value,
-    coprifilo_est_mat:document.getElementById('pCopriEstMat').value,
-    coprifilo_est_dim:document.getElementById('pCopriEstDim').value,
-    cassonetto:document.getElementById('pCassonetto').value,
-    schermatura:document.getElementById('pSchermatura').value,
-    oscurante_tipo:document.getElementById('pOscuranteTipo').value,
-    oscurante_meccanismo:document.getElementById('pOscuranteMecc').value,
-    controtelaio:document.getElementById('pControtelaio').value,
-    zanzariera:document.getElementById('pZanzariera').value,
-    dinoxill:document.getElementById('pDinoxill').value,
-    dinoxill_lati:(document.querySelector('[name="dinoxillLati"]:checked')||{value:'3'}).value,
-    rimozione:document.getElementById('pRimozione').checked?'SI':'NO',
-    note:document.getElementById('pNote').value.trim(),
-    ID_stratigrafia_override:document.getElementById('pStratigrafia').value
+    piano:document.getElementById('dPiano').value,
+    ambiente:document.getElementById('dAmbiente').value.trim(),
+    tipo_serramento:document.getElementById('dTipoSerr').value,
+    n_campi:parseInt(document.getElementById('dNCampi').value)||1,
+    senso_apertura:document.getElementById('dSensoApertura').value,
+    tipo_foro:document.getElementById('dTipoForo').value,
+    H_mm:parseFloat(document.getElementById('dHmm').value)||0,
+    L_mm:parseFloat(document.getElementById('dLmm').value)||0,
+    materiale:document.getElementById('dMateriale').value,
+    sistema:document.getElementById('dSistema').value,
+    stile_design:document.getElementById('dStileDesign').value,
+    variante_telaio:document.getElementById('dVarianteTelaio').value,
+    codice_serramento:document.getElementById('dCodiceSerr').value,
+    n_vetri:document.getElementById('dNVetri').value,
+    colore_int:document.getElementById('dColoreInt').value,
+    colore_est:document.getElementById('dColoreEst').value,
+    coprifilo_int_mat:document.getElementById('dCopriIntMat').value,
+    coprifilo_int_dim:document.getElementById('dCopriIntDim').value,
+    coprifilo_est_mat:document.getElementById('dCopriEstMat').value,
+    coprifilo_est_dim:document.getElementById('dCopriEstDim').value,
+    schermatura:document.getElementById('dSchermatura').value,
+    oscurante_tipo:document.getElementById('dOscuranteTipo').value,
+    oscurante_meccanismo:document.getElementById('dOscuranteMecc').value,
+    cassonetto:document.getElementById('dCassonetto').value,
+    controtelaio:document.getElementById('dControtelaio').value,
+    zanzariera:document.getElementById('dZanzariera').value,
+    dinoxill:document.getElementById('dDinoxill').value,
+    dinoxill_lati:(document.querySelector('[name="dDinoxillLati"]:checked')||{value:'3'}).value,
+    rimozione:document.getElementById('dRimozione').checked?'SI':'NO',
+    note:document.getElementById('dNote').value.trim(),
+    ID_stratigrafia_override:document.getElementById('dStratigrafia').value
   };
+}
+
+function copiaDaDrawer() {
+  if(drawerPosId) openModalCopiaPos(drawerPosId);
+  else Utils.showWarning('Salva prima la posizione.');
 }
 
 // ================================================================
@@ -919,8 +1150,11 @@ async function eseguiCopiaPos(){
 function openModalEliminaPos(id,numPos){posizioneEliminaId=id;document.getElementById('posDaEliminare').textContent=numPos;Utils.openModal('modalEliminaPos');}
 async function confEliminaPos(){
   var res=await API.deletePosizioneSerr(posizioneEliminaId);
-  if(res.success){Utils.showSuccess('Eliminata.');Utils.closeModal('modalEliminaPos');await loadPosizioni();}
-  else Utils.showError(res.error);
+  if(res.success){
+    Utils.showSuccess('Eliminata.'); Utils.closeModal('modalEliminaPos');
+    if(drawerPosId===posizioneEliminaId){drawerDirty=false;closeDrawer();}
+    await loadPosizioni();
+  } else Utils.showError(res.error);
 }
 
 // ================================================================
@@ -930,7 +1164,7 @@ var STRAT_IMAGES=APP_CONFIG.STRAT_IMAGES, STRAT_QUOTE=APP_CONFIG.STRAT_QUOTE;
 
 async function loadStratigrafie(){
   var res=await API.getStratigrafie(idRilievo); if(!res.success)return;
-  stratigrafie=res.data; renderStratigrafie(); populateStratigrafiaSelect();
+  stratigrafie=res.data; renderStratigrafie(); populateStratigrafiaSelectDrawer();
 }
 
 function renderStratigrafie(){
@@ -938,7 +1172,7 @@ function renderStratigrafie(){
   if(!stratigrafie.length){Utils.showEmptyState(c,'Nessuna stratigrafia.','🧱');return;}
   c.innerHTML=stratigrafie.map(function(s){
     var quote=(function(){try{return JSON.parse(s.quote_json)||[];}catch(e){return[];}})();
-    return '<div class="card" style="margin-bottom:12px;">'+
+    return'<div class="card" style="margin-bottom:12px;">'+
       '<div class="card-header">'+
         '<div style="display:flex;align-items:center;gap:10px;"><span style="font-weight:600;">'+s.nome+'</span>'+
         (s.is_default==='SI'?'<span class="badge badge-red">Default</span>':'')+
@@ -946,18 +1180,17 @@ function renderStratigrafie(){
         (s.is_default!=='SI'?'<button class="btn btn-sm btn-outline" onclick="setDefaultStrat(\''+s.ID_stratigrafia+'\')">⭐ Default</button>':'')+
         '<button class="btn btn-sm btn-outline" onclick="openModalStratigrafia(\''+s.ID_stratigrafia+'\')">✏️</button>'+
         (s.is_default!=='SI'?'<button class="btn btn-sm btn-danger" onclick="eliminaStrat(\''+s.ID_stratigrafia+'\')">🗑️</button>':'')+
-      '</div></div>'+
+        '</div></div>'+
       '<div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">'+
-        '<img src="'+(STRAT_IMAGES[s.immagine_ref]||'')+'" alt="" style="height:140px;object-fit:contain;background:#F5F5F5;padding:8px;border-radius:8px;border:1px solid var(--c-border);">'+
-        '<div class="quote-grid">'+
-          quote.map(function(q){return'<div class="quote-item"><div class="q-letter">'+q.lettera+'</div><strong>'+q.mm+' mm</strong></div>';}).join('')+
-        '</div>'+
+        '<img src="'+(STRAT_IMAGES[s.immagine_ref]||'')+'" alt="" style="height:130px;object-fit:contain;background:#F5F5F5;padding:8px;border-radius:8px;border:1px solid var(--c-border);">'+
+        '<div class="quote-grid">'+quote.map(function(q){return'<div class="quote-item"><div class="q-letter">'+q.lettera+'</div><strong>'+q.mm+' mm</strong></div>';}).join('')+'</div>'+
       '</div></div>';
   }).join('');
 }
 
-function populateStratigrafiaSelect(){
-  var sel=document.getElementById('pStratigrafia'),cur=sel.value;
+function populateStratigrafiaSelectDrawer(){
+  var sel=document.getElementById('dStratigrafia'), cur=sel?sel.value:'';
+  if(!sel)return;
   sel.innerHTML='<option value="">— Default cantiere —</option>';
   stratigrafie.forEach(function(s){
     var o=document.createElement('option');o.value=s.ID_stratigrafia;
@@ -969,22 +1202,16 @@ function populateStratigrafiaSelect(){
 function openModalStratigrafia(id){
   stratEditId=id;
   document.getElementById('modalStratTitle').textContent=id?'Modifica stratigrafia':'Nuova stratigrafia';
-  document.getElementById('sNome').value='';document.getElementById('sImgRef').value='';
+  document.getElementById('sNome').value=''; document.getElementById('sImgRef').value='';
   document.getElementById('sQuoteContainer').style.display='none';
   var grid=document.getElementById('stratImgGrid');
-  grid.innerHTML=Object.entries(STRAT_IMAGES).map(function(entry){
-    var code=entry[0],src=entry[1],label=code.replace('SERR_','');
-    return'<div class="strat-card" id="simg_'+code+'" onclick="selectStratImg(\''+code+'\')">'+
-      '<img src="'+src+'" alt="'+label+'" onerror="this.src=\'\'">'+
-      '<div class="strat-label">'+label+'</div></div>';
+  grid.innerHTML=Object.entries(STRAT_IMAGES).map(function(e){
+    var code=e[0],src=e[1],label=code.replace('SERR_','');
+    return'<div class="strat-card" id="simg_'+code+'" onclick="selectStratImg(\''+code+'\')"><img src="'+src+'" alt="'+label+'" onerror="this.src=\'\'"><div class="strat-label">'+label+'</div></div>';
   }).join('');
   if(id){
     var s=stratigrafie.find(function(x){return x.ID_stratigrafia===id;});
-    if(s){
-      document.getElementById('sNome').value=s.nome; selectStratImg(s.immagine_ref);
-      var quote=(function(){try{return JSON.parse(s.quote_json)||[];}catch(e){return[];}})();
-      quote.forEach(function(q){var el=document.getElementById('sq_'+q.lettera);if(el)el.value=q.mm;});
-    }
+    if(s){document.getElementById('sNome').value=s.nome;selectStratImg(s.immagine_ref);var q=(function(){try{return JSON.parse(s.quote_json)||[];}catch(e){return[];}})();q.forEach(function(q){var el=document.getElementById('sq_'+q.lettera);if(el)el.value=q.mm;});}
   }
   Utils.openModal('modalStratigrafia');
 }
@@ -1021,9 +1248,9 @@ async function eliminaStrat(id){if(!await Utils.confirm('Eliminare?'))return;var
 // ================================================================
 function openModalClona(){Utils.openModal('modalClona');}
 async function eseguiClona(){
-  var tipoClone=document.querySelector('[name="tipoClona"]:checked')?.value;
-  var res=await API.cloneRilievo(idRilievo,tipoClone);
-  if(res.success){Utils.showSuccess((tipoClone==='REVISIONE'?'Revisione':'Copia')+' creata: '+res.codice);Utils.closeModal('modalClona');Utils.navigate('rilievo_serr.html',{idRilievo:res.id});}
+  var tc=document.querySelector('[name="tipoClona"]:checked')?.value;
+  var res=await API.cloneRilievo(idRilievo,tc);
+  if(res.success){Utils.showSuccess((tc==='REVISIONE'?'Revisione':'Copia')+' creata: '+res.codice);Utils.closeModal('modalClona');Utils.navigate('rilievo_serr.html',{idRilievo:res.id});}
   else Utils.showError(res.error);
 }
 
@@ -1031,21 +1258,31 @@ async function eseguiClona(){
 // LEGENDA
 // ================================================================
 var LEGENDE={
-  tipoSerr:{titolo:'Tipi serramento',voci:[['I','Ingresso'],['F','Finestra apribile'],['PF','Porta finestra'],['FF','Finestra fissa'],['VF','Vetrata fissa'],['S','Scorrevole']]},
-  tipoForo:{titolo:'Tipo foro',voci:[['A','Architettonico — misura foro grezzo (il più comune)'],['D','Dimensione telaio — misura del frame finito'],['P','Posa in luce — misura luce netta interna']]},
-  materiale:{titolo:'Materiali',voci:[['ALLUMINIO','Telaio in alluminio'],['LEGNO-ALLUMINIO','Legno interno + alluminio esterno'],['PVC-ALLUMINIO','PVC interno + alluminio esterno'],['PVC','Telaio in PVC'],['LEGNO','Telaio in legno']]},
+  generale:{titolo:'Legenda generale',voci:[
+    ['N°','Numero posizione — assegnato automaticamente'],
+    ['Tipo','I=Ingresso, F=Finestra, PF=Porta Finestra, FF=Fin.Fissa, VF=Vetrata, S=Scorrevole'],
+    ['L / H','Larghezza e altezza del foro misurate secondo il tipo foro'],
+    ['(L) / (H)','Larghezza e altezza tubolare: dimensione reale dell\'assembly nel muro'],
+    ['Foro','A=Architettonico (foro grezzo), D=Dim.telaio, P=Posa in luce'],
+    ['CTL','Controtelaio in legno'],['TC','Termocassa'],
+    ['Cass','Cassonetto'],['Zanz','Zanzariera'],['CopI/E','Coprifilo interno/esterno']
+  ]},
+  tipoSerr:{titolo:'Tipo serramento',voci:[['I','Ingresso'],['F','Finestra apribile'],['PF','Porta finestra'],['FF','Finestra fissa'],['VF','Vetrata fissa'],['S','Scorrevole']]},
+  tipoForo:{titolo:'Tipo foro',voci:[['A','Architettonico — misura foro grezzo nel muro (il più comune)'],['D','Dimensione telaio — misura del frame finito'],['P','Posa in luce — misura luce netta interna']]},
+  materiale:{titolo:'Materiali',voci:[['ALLUMINIO','Telaio in alluminio'],['LEGNO-ALLUMINIO','Legno interno, alluminio esterno'],['PVC-ALLUMINIO','PVC interno, alluminio esterno'],['PVC','Telaio in PVC'],['LEGNO','Telaio in legno']]},
   varianteTelaio:{titolo:'Varianti telaio',voci:[['NR','No Reveal — standard'],['CR','Counter Reveal — controriscontro'],['HR','High Reveal'],['IR','Interior Reveal — aletta interna'],['ZR','Zero Reveal — filo muro'],['WR','Wide Reveal'],['SR','Shallow Reveal'],['DR','Deep Reveal']]},
   sensiApertura:{titolo:'Sensi di apertura',voci:[['D','Destra'],['S','Sinistra'],['W','Vasistas (ribalta)'],['F','Fissa']]},
-  schermatura:{titolo:'Schermatura',voci:[['A','Avvolgibile manuale'],['AM','Avvolgibile meccanico'],['AE','Avvolgibile elettronico'],['AR','Avvolgibile radio'],['S','Scuretto'],['TZ','Tenda ZIP'],['TM','Tenda manuale'],['CA','Frangisole a cavo'],['CT','Frangisole a catena']]},
+  schermatura:{titolo:'Schermatura',voci:[['A','Avvolgibile manuale'],['AM','Meccanico'],['AE','Elettronico'],['AR','Radio'],['S','Scuretto'],['TZ','Tenda ZIP'],['TM','Tenda manuale'],['CA','Frangisole a cavo'],['CT','Frangisole a catena']]},
   cassonetto:{titolo:'Cassonetto',voci:[['P','PVC'],['L','Legno']]},
   controtelaio:{titolo:'Controtelaio',voci:[['L','Controtelaio in legno'],['T','Termocassa']]},
   zanzariera:{titolo:'Zanzariera',voci:[['V','Verticale'],['O','Orizzontale']]},
   dinoxill:{titolo:'Dinoxill',voci:[['DA','Davanzale'],['I3','Imbotte 3 lati'],['I4','Imbotte 4 lati']]}
 };
+
 function openLegenda(tipo){
-  var leg=LEGENDE[tipo];if(!leg)return;
-  document.getElementById('legendaTitolo').textContent=leg.titolo;
-  document.getElementById('legendaContenuto').innerHTML=leg.voci.map(function(v){return'<div class="leg-item"><span class="leg-code">'+v[0]+'</span>'+v[1]+'</div>';}).join('');
+  var leg=LEGENDE[tipo]; if(!leg)return;
+  document.getElementById('legTitolo').textContent=leg.titolo;
+  document.getElementById('legContenuto').innerHTML=leg.voci.map(function(v){return'<div class="leg-item"><span class="leg-code">'+v[0]+'</span>'+v[1]+'</div>';}).join('');
   document.getElementById('legendaOverlay').classList.add('open');
 }
 function closeLegenda(){document.getElementById('legendaOverlay').classList.remove('open');}

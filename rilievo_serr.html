@@ -672,6 +672,9 @@ function onSistemaChange(silent){
   document.getElementById('pStileDesign').disabled=false;
   document.getElementById('pVarianteTelaio').innerHTML='<option value="">—</option>';document.getElementById('pVarianteTelaio').disabled=true;
   document.getElementById('pCodiceSerr').value='';
+  // Reset N° vetri quando cambia sistema
+  document.getElementById('pNVetri').innerHTML='<option value="">—</option>';
+  document.getElementById('pNVetri').disabled=true;
   checkOscuranteVisibility();
 }
 
@@ -685,6 +688,9 @@ function onStileChange(silent){
   Utils.fillSelect('pVarianteTelaio',Object.keys(varSeen).sort().map(function(v){return{value:v,label:v};}),'— Variante —');
   document.getElementById('pVarianteTelaio').disabled=false;
   document.getElementById('pCodiceSerr').value='';
+  // Reset N° vetri quando cambia stile
+  document.getElementById('pNVetri').innerHTML='<option value="">—</option>';
+  document.getElementById('pNVetri').disabled=true;
 }
 
 function onVarianteChange(silent){

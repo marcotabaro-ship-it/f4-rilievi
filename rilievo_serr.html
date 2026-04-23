@@ -722,7 +722,6 @@ function onTipoSerrChange(silent) {
   ricalcolaDim();
 }
 
-// FIX: usa d.materiale per filtrare, d.descrizione per il valore del sistema
 function onMaterialeChange(silent) {
   var mat = document.getElementById('pMateriale').value;
   if (!mat) {
@@ -734,22 +733,23 @@ function onMaterialeChange(silent) {
     document.getElementById('pColoreEst').innerHTML='<option value="">—</option>'; document.getElementById('pColoreEst').disabled=true;
     return;
   }
-  // FIX: filtra per d.materiale, raggruppa per d.descrizione (nome completo sistema)
   var sistSeen = {};
   dbSerr.filter(function(d){ return d.materiale===mat; })
         .forEach(function(d){ sistSeen[d.descrizione]=1; });
-  var sistemi = Object.keys(sistSeen).sort();
-  Utils.fillSelect('pSistema', sistemi.map(function(s){ return {value:s,label:s}; }), '— Sistema —');
-  document.getElementById('pSistema').disabled = false;
+  Utils.fillSelect('pSistema', Object.keys(sistSeen).sort().map(function(s){ return {value:s,label:s}; }), '— Sistema —');
+  document.getElementById('pSistema').disabled=false;
   document.getElementById('pStileDesign').innerHTML='<option value="">—</option>'; document.getElementById('pStileDesign').disabled=true;
   document.getElementById('pVarianteTelaio').innerHTML='<option value="">—</option>'; document.getElementById('pVarianteTelaio').disabled=true;
   document.getElementById('pCodiceSerr').value='';
-  // Colori
+
+  // FIX COLORI: ricava sigla corta (PA, LA, P, A) da materiale_sigla del DB
+  var recMat = dbSerr.find(function(d){ return d.materiale===mat; });
+  var matSigla = recMat ? String(recMat.materiale_sigla||'').replace(/-/g,'').trim() : '';
   var colSeen = {};
-  (lookups.LK_COLORI||[]).filter(function(c){ return c.materiale===mat; })
+  (lookups.LK_COLORI||[]).filter(function(c){ return c.materiale===matSigla; })
                           .forEach(function(c){ colSeen[c.colore_interno]=1; });
   Utils.fillSelect('pColoreInt', Object.keys(colSeen).sort().map(function(c){ return {value:c,label:c}; }), '— Colore int. —');
-  document.getElementById('pColoreInt').disabled=false;
+  document.getElementById('pColoreInt').disabled = Object.keys(colSeen).length===0;
   document.getElementById('pColoreEst').innerHTML='<option value="">—</option>'; document.getElementById('pColoreEst').disabled=true;
 }
 
@@ -784,7 +784,15 @@ function onStileChange(silent) {
 function onVarianteChange(silent) {
   var rec = _getSelectedRecord();
   document.getElementById('pCodiceSerr').value = rec ? (rec.codice||'') : '';
-  ricalcolaDim(); // FIX: aggiorna calcolo quando cambia variante
+  // N° vetri da LK_VETRO per sistema (descrizione)
+  var sis = document.getElementById('pSistema').value;
+  var vetroRec = (lookups.LK_VETRO||[]).find(function(v){ return v.sistema===sis; });
+  if (vetroRec) {
+    document.getElementById('pNVetri').value = vetroRec.n_vetri==='T' ? 'Triplo' : vetroRec.n_vetri==='D' ? 'Doppio' : vetroRec.n_vetri;
+  } else {
+    document.getElementById('pNVetri').value = '';
+  }
+  ricalcolaDim();
 }
 
 function _getSelectedRecord() {
@@ -799,9 +807,11 @@ function _getSelectedRecord() {
 }
 
 function onColoreIntChange(silent) {
-  var mat  = document.getElementById('pMateriale').value;
+  var mat = document.getElementById('pMateriale').value;
   var colI = document.getElementById('pColoreInt').value;
-  var colori = (lookups.LK_COLORI||[]).filter(function(c){ return c.materiale===mat && c.colore_interno===colI; });
+  var recMat = dbSerr.find(function(d){ return d.materiale===mat; });
+  var matSigla = recMat ? String(recMat.materiale_sigla||'').replace(/-/g,'').trim() : '';
+  var colori = (lookups.LK_COLORI||[]).filter(function(c){ return c.materiale===matSigla && c.colore_interno===colI; });
   var colEstSeen = {};
   colori.forEach(function(c){ colEstSeen[c.colore_esterno]=1; });
   Utils.fillSelect('pColoreEst', Object.keys(colEstSeen).sort().map(function(c){ return {value:c,label:c}; }), '— Colore est. —');

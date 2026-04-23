@@ -7,42 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
   <style>
-    /* Override layout per occupare tutto lo spazio disponibile */
-    .main-content {
-      max-width: none !important;
-      padding-right: 0 !important;
-      width: 100% !important;
-      box-sizing: border-box;
-    }
-    .rilievo-wrap {
-      width: 100%;
-      min-width: 0;
-    }
-    .rilievo-main {
-      min-width: 0;
-      overflow: hidden;
-    }
-    .pos-table-wrap {
-      width: 100%;
-    }
-    .pos-table {
-      width: 100%;
-      table-layout: fixed;
-    }
-    /* Colonne tabella con larghezze proporzionate */
-    .pos-table th:nth-child(1) { width: 48px; }
-    .pos-table th:nth-child(2) { width: 60px; }
-    .pos-table th:nth-child(3) { width: 100px; }
-    .pos-table th:nth-child(4) { width: 55px; }
-    .pos-table th:nth-child(5) { width: 80px; }
-    .pos-table th:nth-child(6) { width: 80px; }
-    .pos-table th:nth-child(7) { width: 50px; }
-    .pos-table th:nth-child(8) { width: 160px; }
-    .pos-table th:nth-child(9) { min-width: 0; }
-    .pos-table th:nth-child(10) { width: 80px; }
-    /* Drawer si adatta allo spazio */
-    .rilievo-drawer.open { width: 380px; }
-    @media (min-width: 1400px) { .rilievo-drawer.open { width: 460px; } }
     /* LAYOUT con drawer */
     .rilievo-wrap { display:flex; gap:0; transition:all .3s ease; min-height:calc(100vh - 120px); }
     .rilievo-main { flex:1; min-width:0; transition:all .3s ease; }
@@ -585,32 +549,24 @@ var drawerDirty=false; // flag modifiche non salvate
 // ================================================================
 async function init() {
   try {
-    var [resRil,resLK,resDC,resRL,resDB] = await Promise.all([
-      API.getRilievo(idRilievo),
-      API.getLookupMulti([
-        'LK_REFERENTI','LK_INTERVENTO','LK_TIPO_SERR','LK_TIPO_FORO_SERR',
-        'LK_SCHERMATURA','LK_COPRIFILI','LK_CASSONETTO','LK_CONTROTELAIO',
-        'LK_ZANZARIERA','LK_DINOXILL','LK_OSCURANTE','LK_COLORI',
-        'LK_SENSI_APERTURA','LK_N_CAMPI','LK_PIANO','LK_VETRO'
-      ]),
-      API.getDatiComuni(), API.getRegoleLati(), API.getDbSerramento()
-    ]);
-    if (!resRil.success) { Utils.showError(resRil.error); return; }
-    rilievo=resRil.data;
-    lookups=resLK.success?(resLK.data||{}):{};
-    datiComuni={};
-    if (resDC.success) {
-      var arr=resDC.data||resDC.map||[];
-      if (Array.isArray(arr)) arr.forEach(function(d){ datiComuni[parseInt(d.ID)||parseInt(d.id)]=parseFloat(d.valore)||0; });
-      else datiComuni=arr;
-    }
-    regoleLati={};
-    if (resRL.success) {
-      var arr2=resRL.data||[];
-      if (Array.isArray(arr2)) arr2.forEach(function(r){ regoleLati[r.sigla]=r; });
-      else regoleLati=arr2;
-    }
-    dbSerr=(resDB.success?(resDB.data||[]):[]).filter(function(d){ return !d.stato||String(d.stato).toLowerCase()!=='disattivo'; });
+    // SINGOLA CHIAMATA GAS — dati statici in cache sessionStorage 30 min
+    var res = await API.getInitData(idRilievo);
+    if (!res.success) { Utils.showError(res.error||'Errore caricamento dati'); return; }
+    var d = res.data;
+    if (!d.rilievo) { Utils.showError(d.rilievoError||'Rilievo non trovato'); return; }
+    rilievo = d.rilievo;
+    lookups = d.lookups || {};
+    // parse datiComuni array → map {id: valore}
+    datiComuni = {};
+    var dcArr = d.datiComuni || [];
+    if (Array.isArray(dcArr)) dcArr.forEach(function(x){ datiComuni[parseInt(x.ID)||parseInt(x.id)]=parseFloat(x.valore)||0; });
+    else datiComuni = dcArr;
+    // parse regoleLati array → map {sigla: record}
+    regoleLati = {};
+    var rlArr = d.regoleLati || [];
+    if (Array.isArray(rlArr)) rlArr.forEach(function(r){ regoleLati[r.sigla]=r; });
+    else regoleLati = rlArr;
+    dbSerr = (d.dbSerramento||[]).filter(function(x){ return !x.stato||String(x.stato).toLowerCase()!=='disattivo'; });
     renderTestata();
     populateTestataSel();
     populateDrawerDropdowns();
@@ -670,7 +626,7 @@ function showTab(id,btn){
 async function loadPosizioni() {
   var res=await API.getPosizioniSerr(idRilievo);
   if(!res.success){Utils.showError(res.error);return;}
-  posizioni=res.data.sort(function(a,b){return (parseInt(a.numero_pos)||0)-(parseInt(b.numero_pos)||0);}); renderPosizioni();
+  posizioni=res.data; renderPosizioni();
 }
 
 function renderPosizioni() {
@@ -1110,9 +1066,8 @@ async function salvaDrawer() {
   if(res.success){
     Utils.showSuccess(drawerPosId?'Posizione aggiornata.':'Posizione '+(res.numero_pos||'')+' creata.');
     drawerDirty=false;
-    drawerDirty=false;
-    drawerPosId=null;
-    document.getElementById('rilievoDrawer').classList.remove('open');
+    if(!drawerPosId) drawerPosId=res.id;
+    document.getElementById('drawerTitle').textContent='Posizione '+(res.numero_pos||'');
     await loadPosizioni();
   } else Utils.showError(res.error);
 }

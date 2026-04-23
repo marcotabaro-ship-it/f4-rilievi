@@ -7,6 +7,42 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
   <style>
+    /* Override layout per occupare tutto lo spazio disponibile */
+    .main-content {
+      max-width: none !important;
+      padding-right: 0 !important;
+      width: 100% !important;
+      box-sizing: border-box;
+    }
+    .rilievo-wrap {
+      width: 100%;
+      min-width: 0;
+    }
+    .rilievo-main {
+      min-width: 0;
+      overflow: hidden;
+    }
+    .pos-table-wrap {
+      width: 100%;
+    }
+    .pos-table {
+      width: 100%;
+      table-layout: fixed;
+    }
+    /* Colonne tabella con larghezze proporzionate */
+    .pos-table th:nth-child(1) { width: 48px; }
+    .pos-table th:nth-child(2) { width: 60px; }
+    .pos-table th:nth-child(3) { width: 100px; }
+    .pos-table th:nth-child(4) { width: 55px; }
+    .pos-table th:nth-child(5) { width: 80px; }
+    .pos-table th:nth-child(6) { width: 80px; }
+    .pos-table th:nth-child(7) { width: 50px; }
+    .pos-table th:nth-child(8) { width: 160px; }
+    .pos-table th:nth-child(9) { min-width: 0; }
+    .pos-table th:nth-child(10) { width: 80px; }
+    /* Drawer si adatta allo spazio */
+    .rilievo-drawer.open { width: 380px; }
+    @media (min-width: 1400px) { .rilievo-drawer.open { width: 460px; } }
     /* LAYOUT con drawer */
     .rilievo-wrap { display:flex; gap:0; transition:all .3s ease; min-height:calc(100vh - 120px); }
     .rilievo-main { flex:1; min-width:0; transition:all .3s ease; }

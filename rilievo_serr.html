@@ -670,7 +670,7 @@ function showTab(id,btn){
 async function loadPosizioni() {
   var res=await API.getPosizioniSerr(idRilievo);
   if(!res.success){Utils.showError(res.error);return;}
-  posizioni=res.data; renderPosizioni();
+  posizioni=res.data.sort(function(a,b){return (parseInt(a.numero_pos)||0)-(parseInt(b.numero_pos)||0);}); renderPosizioni();
 }
 
 function renderPosizioni() {
@@ -1110,8 +1110,9 @@ async function salvaDrawer() {
   if(res.success){
     Utils.showSuccess(drawerPosId?'Posizione aggiornata.':'Posizione '+(res.numero_pos||'')+' creata.');
     drawerDirty=false;
-    if(!drawerPosId) drawerPosId=res.id;
-    document.getElementById('drawerTitle').textContent='Posizione '+(res.numero_pos||'');
+    drawerDirty=false;
+    drawerPosId=null;
+    document.getElementById('rilievoDrawer').classList.remove('open');
     await loadPosizioni();
   } else Utils.showError(res.error);
 }

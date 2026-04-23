@@ -738,10 +738,10 @@ function nuovaPosizione() {
 // ================================================================
 function populateDrawerDropdowns() {
   Utils.fillSelect('dPiano',(lookups.LK_PIANO||[]).map(function(p){return{value:p.piano,label:'Piano '+(p.piano>=0?'+':'')+p.piano};}), '— Piano —');
-  Utils.fillSelect('dTipoSerr',(lookups.LK_TIPO_SERR||[]).map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo —');
+  Utils.fillSelect('dTipoSerr',(lookups.LK_TIPO_SERR||[]).filter(function(t){return t&&t.sigla;}).map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo —');
   Utils.fillSelect('dNCampi',(lookups.LK_N_CAMPI||[]).map(function(c){return{value:c.n_campi,label:c.n_campi+' campo/i'};}), '— N° campi —');
-  Utils.fillSelect('dSensoApertura',(lookups.LK_SENSI_APERTURA||[]).map(function(s){return{value:s.sigla,label:s.sigla+' — '+s.descrizione};}), '— Senso —');
-  Utils.fillSelect('dTipoForo',(lookups.LK_TIPO_FORO_SERR||[]).map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo foro —');
+  Utils.fillSelect('dSensoApertura',(lookups.LK_SENSI_APERTURA||[]).filter(function(s){return s&&s.sigla;}).map(function(s){return{value:s.sigla,label:s.sigla+' — '+s.descrizione};}), '— Senso —');
+  Utils.fillSelect('dTipoForo',(lookups.LK_TIPO_FORO_SERR||[]).filter(function(t){return t&&t.sigla;}).map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo foro —');
   var matSeen={};
   dbSerr.forEach(function(d){matSeen[d.materiale]=1;});
   Utils.fillSelect('dMateriale',Object.keys(matSeen).sort().map(function(m){return{value:m,label:m};}),'— Materiale —');

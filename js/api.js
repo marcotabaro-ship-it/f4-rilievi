@@ -1,165 +1,187 @@
 // ================================================================
-// FILE: js/api.js — VERSIONE 2 (fix CORS: solo GET per tutto)
-// PROGETTO: F4 Rilievi - Frontend GitHub Pages
-// ================================================================
-// ISTRUZIONI:
-//   Nel repository GitHub, cartella js/
-//   Clicca su api.js → matita ✏️ → seleziona tutto → incolla
-//   → Commit changes
-// ================================================================
-// NOTA TECNICA:
-//   Google Apps Script web app accetta chiamate cross-origin
-//   SOLO tramite GET con redirect:follow.
-//   Tutte le azioni (lettura E scrittura) vengono inviate
-//   come GET con i parametri in URL.
+// FILE: api.js v3
+// PROGETTO: F4 Rilievi — GitHub Pages frontend
+// NOVITA': cache sessionStorage per dati statici + getInitData
 // ================================================================
 
-const API = {
+const API = (() => {
 
-  // ================================================================
-  // Chiamata principale — SEMPRE GET, payload in URL
-  // ================================================================
-  async call(action, data = {}) {
-    const token = localStorage.getItem(APP_CONFIG.TOKEN_KEY);
-    const payload = token ? { token, ...data } : { ...data };
+  const BASE_URL = 'https://script.google.com/macros/s/AKfycbxZAQn_4lpl_jaFUG4yJOQ8F0uDVZZAHV25XHRfS9avhwNBeFljX6eFU1Twn-fzLo7qCg/exec';
+  const CACHE_KEY = 'f4r_static_v1';
+  const CACHE_TTL = 30 * 60 * 1000; // 30 minuti
 
-    const url = APP_CONFIG.GAS_URL
-      + '?action=' + encodeURIComponent(action)
-      + '&payload=' + encodeURIComponent(JSON.stringify(payload));
-
+  // ── CACHE ────────────────────────────────────────────────────
+  function cacheGet() {
     try {
-      const response = await fetch(url, {
-        method: 'GET',
-        redirect: 'follow'
-      });
+      var raw = sessionStorage.getItem(CACHE_KEY);
+      if (!raw) return null;
+      var obj = JSON.parse(raw);
+      if (Date.now() - obj.ts > CACHE_TTL) { sessionStorage.removeItem(CACHE_KEY); return null; }
+      return obj.data;
+    } catch(e) { return null; }
+  }
 
-      if (!response.ok) {
-        throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-      }
+  function cacheSet(data) {
+    try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch(e) {}
+  }
 
-      const text = await response.text();
+  function cacheClear() {
+    try { sessionStorage.removeItem(CACHE_KEY); } catch(e) {}
+  }
 
-      // Rimuovi eventuale BOM o testo extra
-      const clean = text.trim().replace(/^[^{[]*/, '').replace(/[^}\]]*$/, '');
-
-      try {
-        return JSON.parse(clean);
-      } catch (e) {
-        console.error('Risposta non JSON:', text.substring(0, 200));
-        return { success: false, error: 'Risposta server non valida. Verifica il deployment GAS.' };
-      }
-
-    } catch (err) {
-      console.error('API error [' + action + ']:', err);
-      if (err.message && err.message.includes('Failed to fetch')) {
-        return { success: false, error: 'Impossibile contattare il server. Verifica la connessione e il deployment GAS.' };
-      }
-      return { success: false, error: err.message || 'Errore di rete.' };
+  // ── HTTP GET ─────────────────────────────────────────────────
+  async function get(params) {
+    var qs = Object.entries(params).map(function(e) {
+      return encodeURIComponent(e[0]) + '=' + encodeURIComponent(e[1]);
+    }).join('&');
+    var url = BASE_URL + '?' + qs;
+    try {
+      var res = await fetch(url, { method:'GET', redirect:'follow' });
+      var text = await res.text();
+      return JSON.parse(text);
+    } catch(e) {
+      return { success: false, error: 'Errore rete: ' + e.message };
     }
-  },
+  }
 
-  // ================================================================
-  // AUTH
-  // ================================================================
-  async login(email, password) { return this.call('login', { email, password }); },
-  async logout()               { return this.call('logout'); },
-  async getUser()              { return this.call('getCurrentUser'); },
+  // ── TOKEN ─────────────────────────────────────────────────────
+  function getToken() { return localStorage.getItem('f4r_token') || ''; }
 
-  // ================================================================
-  // LOOKUP
-  // ================================================================
-  async getLookup(table)       { return this.call('getLookup', { table }); },
-  async getLookupMulti(tables) { return this.call('getLookupMulti', { tables }); },
-  async getComuni(query)       { return this.call('getComuni', { query }); },
-  async getDatiComuni()        { return this.call('getDatiComuni'); },
-  async getRegoleLati()        { return this.call('getRegoleLati'); },
+  function withAuth(params) { return Object.assign({ token: getToken() }, params); }
 
-  // ================================================================
-  // CLIENTI
-  // ================================================================
-  async getClienti()              { return this.call('getClienti'); },
-  async getCliente(id)            { return this.call('getCliente', { id }); },
-  async createCliente(data)       { return this.call('createCliente', { data }); },
-  async updateCliente(id, data)   { return this.call('updateCliente', { id, data }); },
-  async toggleCliente(id)         { return this.call('toggleStatoCliente', { id }); },
+  // ── INIT DATA (nuova chiamata unica) ─────────────────────────
+  // Carica TUTTO in una sola richiesta GAS.
+  // I dati statici vengono memorizzati in sessionStorage per 30 min.
+  // idRilievo è opzionale — se passato include anche i dati del rilievo.
+  async function getInitData(idRilievo) {
+    // 1. Controlla cache per dati statici
+    var cached = cacheGet();
 
-  // ================================================================
-  // CANTIERI
-  // ================================================================
-  async getAlbero(idCliente)      { return this.call('getAlberoCliente', { idCliente }); },
-  async getCantiere(id)           { return this.call('getCantiere', { id }); },
-  async createCantiere(data)      { return this.call('createCantiere', { data }); },
-  async updateCantiere(id, data)  { return this.call('updateCantiere', { id, data }); },
-  async toggleCantiere(id)        { return this.call('toggleStatoCantiere', { id }); },
+    // 2. Se non in cache, chiama GAS
+    if (!cached) {
+      var params = withAuth({ action: 'getInitData' });
+      if (idRilievo) params.idRilievo = idRilievo;
+      var res = await get(params);
+      if (!res.success) return res;
+      // Salva in cache solo i dati statici (lookup, db, costanti)
+      var staticData = {
+        lookups:      res.data.lookups      || {},
+        datiComuni:   res.data.datiComuni   || [],
+        regoleLati:   res.data.regoleLati   || [],
+        dbSerramento: res.data.dbSerramento || [],
+        dbPorte:      res.data.dbPorte      || []
+      };
+      cacheSet(staticData);
+      return { success: true, data: res.data };
+    }
 
-  // ================================================================
-  // RILIEVI
-  // ================================================================
-  async getRilievi(idCantiere)    { return this.call('getRilieviCantiere', { idCantiere }); },
-  async getRilievo(id)            { return this.call('getRilievo', { id }); },
-  async createRilievo(data)       { return this.call('createRilievo', { data }); },
-  async updateRilievo(id, data)   { return this.call('updateRilievo', { id, data }); },
-  async cloneRilievo(id, tipoClone){ return this.call('cloneRilievo', { id, tipoClone }); },
-  async deleteRilievo(id)         { return this.call('deleteRilievo', { id }); },
+    // 3. Cache valida: integra con dati dinamici del rilievo specifico
+    if (idRilievo) {
+      var res2 = await get(withAuth({ action: 'getRilievo', idRilievo: idRilievo }));
+      return {
+        success: true,
+        data: Object.assign({}, cached, {
+          rilievo:      res2.success ? res2.data : null,
+          rilievoError: res2.success ? null : res2.error
+        })
+      };
+    }
 
-  // ================================================================
-  // STRATIGRAFIE
-  // ================================================================
-  async getStratigrafie(idRilievo)  { return this.call('getStratigrafie', { idRilievo }); },
-  async createStratigrafia(data)    { return this.call('createStratigrafia', { data }); },
-  async updateStratigrafia(id, data){ return this.call('updateStratigrafia', { id, data }); },
-  async deleteStratigrafia(id)      { return this.call('deleteStratigrafia', { id }); },
-  async setDefaultStrat(id, idRilievo){ return this.call('setDefaultStratigrafia', { id, idRilievo }); },
+    return { success: true, data: cached };
+  }
 
-  // ================================================================
-  // POSIZIONI SERRAMENTI
-  // ================================================================
-  async getPosizioniSerr(idRilievo)   { return this.call('getPosizioniSerr', { idRilievo }); },
-  async createPosizioneSerr(data)     { return this.call('createPosizioneSerr', { data }); },
-  async updatePosizioneSerr(id, data) { return this.call('updatePosizioneSerr', { id, data }); },
-  async copyPosizioneSerr(id, count)  { return this.call('copyPosizioneSerr', { id, count }); },
-  async deletePosizioneSerr(id)       { return this.call('deletePosizioneSerr', { id }); },
+  // ── SINGOLI ENDPOINT (fallback e chiamate specifiche) ─────────
 
-  // ================================================================
-  // POSIZIONI PORTE
-  // ================================================================
-  async getPosizioniPorte(idRilievo)   { return this.call('getPosizioniPorte', { idRilievo }); },
-  async createPosizionePorta(data)     { return this.call('createPosizionePorta', { data }); },
-  async updatePosizionePorta(id, data) { return this.call('updatePosizionePorta', { id, data }); },
-  async copyPosizionePorta(id, count)  { return this.call('copyPosizionePorta', { id, count }); },
-  async deletePosizionePorta(id)       { return this.call('deletePosizionePorta', { id }); },
+  async function getRilievo(id) { return get(withAuth({ action:'getRilievo', idRilievo:id })); }
+  async function updateRilievo(id, data) { return get(withAuth(Object.assign({ action:'updateRilievo', idRilievo:id }, data))); }
+  async function cloneRilievo(id, tipo) { return get(withAuth({ action:'cloneRilievo', idRilievo:id, tipo:tipo })); }
 
-  // ================================================================
-  // CALCOLI
-  // ================================================================
-  async calcolaDim(posizione)       { return this.call('calcolaDimensioniTelaio', { posizione }); },
-  async calcolaAcc(posizione)       { return this.call('calcolaAccessoriPosizione', { posizione }); },
-  async reportAccessori(idRilievo)  { return this.call('calcolaReportAccessori', { idRilievo }); },
-  async reportPosa(idRilievo, tipo) { return this.call('calcolaReportPosa', { idRilievo, tipo }); },
+  async function getLookup(table) { return get(withAuth({ action:'getLookup', table:table })); }
+  async function getLookupMulti(tables) { return get(withAuth({ action:'getLookupMulti', tables:tables.join(',') })); }
 
-  // ================================================================
-  // ORE POSA
-  // ================================================================
-  async aggiornaOre(idRilievo, servizio, delta, note){ return this.call('aggiornaOre', { idRilievo, servizio, delta, note }); },
-  async getLogOre(idRilievo)        { return this.call('getLogOre', { idRilievo }); },
-  async checkVersionePosa(idRilievo){ return this.call('checkVersionePosa', { idRilievo }); },
-  async aggiornaVersionePosa(idRilievo){ return this.call('aggiornaVersionePosa', { idRilievo }); },
+  async function getDatiComuni() { return get(withAuth({ action:'getDatiComuni' })); }
+  async function getRegoleLati() { return get(withAuth({ action:'getRegoleLati' })); }
+  async function getDbSerramento() { return get(withAuth({ action:'getDbSerramento' })); }
+  async function getDbPorte() { return get(withAuth({ action:'getDbPorte' })); }
 
-  // ================================================================
-  // ADMIN
-  // ================================================================
-  async adminGetLookup(table)           { return this.call('adminGetLookup', { table }); },
-  async adminAddLookup(table, data)     { return this.call('adminAddLookup', { table, data }); },
-  async adminUpdateLookup(table, rowId, data){ return this.call('adminUpdateLookup', { table, rowId, data }); },
-  async adminToggleLookup(table, id)    { return this.call('adminToggleLookup', { table, id }); },
-  async adminGetPosa(tipo)              { return this.call('adminGetPosa', { tipo }); },
-  async adminUpdatePosa(tipo, id, data) { return this.call('adminUpdatePosa', { tipo, id, data }); },
-  async adminNuovaVersionePosa(tipo, note){ return this.call('adminNuovaVersionePosa', { tipo, note }); },
-  async adminGetDatiComuni()            { return this.call('adminGetDatiComuni'); },
-  async adminUpdateDatiComuni(id, valore){ return this.call('adminUpdateDatiComuni', { id, valore }); },
-  async adminGetRegoleLati()            { return this.call('adminGetRegoleLati'); },
-  async adminUpdateRegoleLati(sigla, data){ return this.call('adminUpdateRegoleLati', { sigla, data }); },
-  async adminGetUtenti()                { return this.call('adminGetUtenti'); },
-  async getDbSerramento()               { return this.call('getDbSerramento'); },
-  async getDbPorte()                    { return this.call('getDbPorte'); }
-};
+  // Posizioni serramenti
+  async function getPosizioniSerr(idRilievo) { return get(withAuth({ action:'getPosizioniSerr', idRilievo:idRilievo })); }
+  async function createPosizioneSerr(data) { return get(withAuth(Object.assign({ action:'createPosizioneSerr' }, data))); }
+  async function updatePosizioneSerr(id, data) { return get(withAuth(Object.assign({ action:'updatePosizioneSerr', idPos:id }, data))); }
+  async function deletePosizioneSerr(id) { return get(withAuth({ action:'deletePosizioneSerr', idPos:id })); }
+  async function copyPosizioneSerr(id, n) { return get(withAuth({ action:'copyPosizioneSerr', idPos:id, n:n })); }
+
+  // Posizioni porte
+  async function getPosizioniPorte(idRilievo) { return get(withAuth({ action:'getPosizioniPorte', idRilievo:idRilievo })); }
+  async function createPosizionePorte(data) { return get(withAuth(Object.assign({ action:'createPosizionePorte' }, data))); }
+  async function updatePosizionePorte(id, data) { return get(withAuth(Object.assign({ action:'updatePosizionePorte', idPos:id }, data))); }
+  async function deletePosizionePorte(id) { return get(withAuth({ action:'deletePosizionePorte', idPos:id })); }
+  async function copyPosizionePorte(id, n) { return get(withAuth({ action:'copyPosizionePorte', idPos:id, n:n })); }
+
+  // Stratigrafie
+  async function getStratigrafie(idRilievo) { return get(withAuth({ action:'getStratigrafie', idRilievo:idRilievo })); }
+  async function createStratigrafia(data) { return get(withAuth(Object.assign({ action:'createStratigrafia' }, data))); }
+  async function updateStratigrafia(id, data) { return get(withAuth(Object.assign({ action:'updateStratigrafia', idStrat:id }, data))); }
+  async function deleteStratigrafia(id) { return get(withAuth({ action:'deleteStratigrafia', idStrat:id })); }
+  async function setDefaultStrat(id, idRilievo) { return get(withAuth({ action:'setDefaultStrat', idStrat:id, idRilievo:idRilievo })); }
+
+  // Clienti
+  async function getClienti() { return get(withAuth({ action:'getClienti' })); }
+  async function createCliente(data) { return get(withAuth(Object.assign({ action:'createCliente' }, data))); }
+  async function updateCliente(id, data) { return get(withAuth(Object.assign({ action:'updateCliente', idCliente:id }, data))); }
+  async function deleteCliente(id) { return get(withAuth({ action:'deleteCliente', idCliente:id })); }
+
+  // Cantieri
+  async function getCantieri(idCliente) { return get(withAuth({ action:'getCantieri', idCliente:idCliente })); }
+  async function createCantiere(data) { return get(withAuth(Object.assign({ action:'createCantiere' }, data))); }
+  async function updateCantiere(id, data) { return get(withAuth(Object.assign({ action:'updateCantiere', idCantiere:id }, data))); }
+  async function deleteCantiere(id) { return get(withAuth({ action:'deleteCantiere', idCantiere:id })); }
+  async function getRilievi(idCantiere) { return get(withAuth({ action:'getRilievi', idCantiere:idCantiere })); }
+  async function createRilievo(data) { return get(withAuth(Object.assign({ action:'createRilievo' }, data))); }
+  async function deleteRilievo(id) { return get(withAuth({ action:'deleteRilievo', idRilievo:id })); }
+
+  // Posa
+  async function checkVersionePosa(idRilievo) { return get(withAuth({ action:'checkVersionePosa', idRilievo:idRilievo })); }
+  async function aggiornaVersionePosa(idRilievo) { return get(withAuth({ action:'aggiornaVersionePosa', idRilievo:idRilievo })); }
+
+  // Auth
+  async function login(username, password) {
+    cacheClear(); // reset cache al login
+    return get({ action:'login', username:username, password:password });
+  }
+  async function logout() {
+    cacheClear();
+    return get(withAuth({ action:'logout' }));
+  }
+  async function checkAuth() { return get(withAuth({ action:'checkAuth' })); }
+
+  // Dashboard
+  async function getDashboard() { return get(withAuth({ action:'getDashboard' })); }
+
+  // Admin
+  async function getUtenti() { return get(withAuth({ action:'getUtenti' })); }
+  async function createUtente(data) { return get(withAuth(Object.assign({ action:'createUtente' }, data))); }
+  async function updateUtente(id, data) { return get(withAuth(Object.assign({ action:'updateUtente', idUtente:id }, data))); }
+
+  // Utilità cache (esporta per permettere invalidazione manuale)
+  function invalidaCache() { cacheClear(); }
+
+  // ── EXPORT ───────────────────────────────────────────────────
+  return {
+    getInitData,
+    getRilievo, updateRilievo, cloneRilievo,
+    getLookup, getLookupMulti,
+    getDatiComuni, getRegoleLati, getDbSerramento, getDbPorte,
+    getPosizioniSerr, createPosizioneSerr, updatePosizioneSerr, deletePosizioneSerr, copyPosizioneSerr,
+    getPosizioniPorte, createPosizionePorte, updatePosizionePorte, deletePosizionePorte, copyPosizionePorte,
+    getStratigrafie, createStratigrafia, updateStratigrafia, deleteStratigrafia, setDefaultStrat,
+    getClienti, createCliente, updateCliente, deleteCliente,
+    getCantieri, createCantiere, updateCantiere, deleteCantiere,
+    getRilievi, createRilievo, deleteRilievo,
+    checkVersionePosa, aggiornaVersionePosa,
+    login, logout, checkAuth,
+    getDashboard,
+    getUtenti, createUtente, updateUtente,
+    invalidaCache
+  };
+})();

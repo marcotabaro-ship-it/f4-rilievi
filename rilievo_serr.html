@@ -668,8 +668,9 @@ function populateDrawerDropdowns() {
   dbSerr.forEach(function(d){if(d&&d.materiale)matSeen[d.materiale]=1;});
   Utils.fillSelect('dMateriale',Object.keys(matSeen).sort().map(function(m){return{value:m,label:m};}),'— Materiale —');
 
-  // Schermatura: sigla — descrizione
-  Utils.fillSelect('dSchermatura',(lookups.LK_SCHERMATURA||[]).filter(function(s){return s&&s.sigla;}).map(function(s){var desc=s.descrizione_completa||s.descrizione||s.sigla;return{value:s.sigla,label:s.sigla+' — '+desc};}), '— Nessuna —');
+  // Schermatura: ordine Excel A, AM, AE, AR, S, TZ, TM, CA, CT
+  var ordineScherm=['A','AM','AE','AR','S','TZ','TM','CA','CT'];
+  Utils.fillSelect('dSchermatura',(lookups.LK_SCHERMATURA||[]).filter(function(s){return s&&s.sigla;}).sort(function(a,b){var ia=ordineScherm.indexOf(a.sigla),ib=ordineScherm.indexOf(b.sigla);return (ia<0?99:ia)-(ib<0?99:ib);}).map(function(s){var desc=s.descrizione_completa||s.descrizione||s.sigla;return{value:s.sigla,label:s.sigla+' — '+desc};}), '— Nessuna —');
   Utils.fillSelect('dCassonetto',(lookups.LK_CASSONETTO||[]).filter(function(c){return c&&c.sigla;}).map(function(c){return{value:c.sigla,label:c.sigla+' — '+c.descrizione};}), '— Nessuno —');
   Utils.fillSelect('dControtelaio',(lookups.LK_CONTROTELAIO||[]).filter(function(c){return c&&c.sigla;}).map(function(c){return{value:c.sigla,label:c.sigla+' — '+c.descrizione};}), '— Nessuno —');
   Utils.fillSelect('dZanzariera',(lookups.LK_ZANZARIERA||[]).filter(function(z){return z&&z.sigla;}).map(function(z){return{value:z.sigla,label:z.sigla+' — '+z.descrizione};}), '— Nessuna —');
@@ -677,8 +678,11 @@ function populateDrawerDropdowns() {
 
   // Coprifili materiali
   var cpSeen={};
-  (lookups.LK_COPRIFILI||[]).filter(function(c){return c&&c.materiale_sigla;}).forEach(function(c){cpSeen[c.materiale_sigla]=1;});
-  var cpMat=Object.keys(cpSeen).map(function(m){return{value:m,label:m};});
+  (lookups.LK_COPRIFILI||[]).filter(function(c){return c&&c.materiale_sigla;}).forEach(function(c){
+    if(!cpSeen[c.materiale_sigla]) cpSeen[c.materiale_sigla]=c.materiale||c.materiale_sigla;
+  });
+  var cpMatDesc={'P':'PVC','L':'LEGNO','A':'ALLUMINIO'};
+  var cpMat=Object.keys(cpSeen).sort().map(function(m){var desc=cpMatDesc[m]||cpSeen[m]||m;return{value:m,label:m+' — '+desc};});
   Utils.fillSelect('dCopriIntMat',cpMat,'— Mat. —');
   Utils.fillSelect('dCopriEstMat',cpMat,'— Mat. —');
 }

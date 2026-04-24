@@ -6,23 +6,96 @@
   <title>Report Posa — F4 Rilievi</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
+  <style>
+    .rep-header {
+      background: var(--c-primary); color: white;
+      border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 20px;
+      display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .rep-header h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+    .rep-meta { font-size: .78rem; opacity: .85; line-height: 1.8; }
+    .rep-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .section-title {
+      font-size: .78rem; font-weight: 700; color: var(--c-primary);
+      text-transform: uppercase; letter-spacing: .5px;
+      border-bottom: 2px solid var(--c-red); padding-bottom: 4px; margin: 20px 0 14px;
+    }
+    /* Tabella posa */
+    .posa-table { width: 100%; border-collapse: collapse; font-size: .8rem; margin-bottom: 16px; }
+    .posa-table th {
+      background: var(--c-primary); color: white; padding: 8px 10px;
+      text-align: left; font-size: .74rem; font-weight: 600; white-space: nowrap;
+    }
+    .posa-table th.num { text-align: right; }
+    .posa-table td { padding: 7px 10px; border-bottom: 1px solid var(--c-border); vertical-align: top; }
+    .posa-table td.num { text-align: right; font-weight: 600; font-family: monospace; }
+    .posa-table tr.group-row td { background: #F5F7FF; font-weight: 700; color: var(--c-primary); font-size: .78rem; }
+    .posa-table tr.total-row td { background: #E8F5E9; font-weight: 700; font-size: .84rem; border-top: 2px solid #4CAF50; }
+    .posa-table tr:hover td { background: #F9F9FF; }
+    /* Box totale */
+    .totale-box {
+      border: 2px solid var(--c-primary); border-radius: var(--radius-lg);
+      padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px; margin-bottom: 20px; background: #F0F4FF;
+    }
+    .totale-label { font-size: .88rem; color: var(--c-primary); font-weight: 500; }
+    .totale-ore { font-size: 2rem; font-weight: 700; color: var(--c-primary); }
+    .totale-giorni { font-size: .82rem; color: var(--c-text-sec); }
+    /* Aggiustamento manuale */
+    .adj-section { margin-bottom: 20px; }
+    .adj-row {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 10px 0; border-bottom: 1px solid var(--c-border);
+    }
+    .adj-row:last-child { border-bottom: none; }
+    .adj-desc { flex: 1; font-size: .84rem; min-width: 200px; }
+    .adj-controls { display: flex; align-items: center; gap: 6px; }
+    .adj-btn {
+      width: 28px; height: 28px; border: none; border-radius: 4px;
+      cursor: pointer; font-size: 1rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    }
+    .adj-btn.minus { background: #FFEBEE; color: #C62828; }
+    .adj-btn.plus  { background: #E8F5E9; color: #2E7D32; }
+    .adj-val {
+      min-width: 60px; text-align: center; font-weight: 700; font-size: .84rem;
+      padding: 4px 8px; border: 1px solid var(--c-border); border-radius: 4px;
+      font-family: monospace; background: white;
+    }
+    .adj-val.positivo { color: #2E7D32; }
+    .adj-val.negativo { color: #C62828; }
+    .adj-unit { font-size: .74rem; color: var(--c-text-sec); }
+    .btn-add-adj {
+      margin-top: 10px; font-size: .82rem;
+    }
+    /* Voce custom */
+    .custom-adj-row { background: #FFFDE7; }
+    @media print {
+      @page { size: A4 landscape; margin: 10mm; }
+      body { background: white; }
+      .sidebar, .top-bar, .rep-actions, .adj-controls, .btn-add-adj, .breadcrumb { display: none !important; }
+      .main-content { padding: 0 !important; }
+      .rep-header { border-radius: 0; break-inside: avoid; }
+      .posa-table tr.group-row td { background: #EEEEEE !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .posa-table tr.total-row td { background: #E8F5E9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .totale-box { break-inside: avoid; background: #F0F4FF !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
 </head>
 <body>
 <div class="app-layout" id="appLayout">
   <main class="main-content">
     <div class="breadcrumb">
       <a href="clienti.html">Clienti</a> ›
-      <span>Report Posa</span>
+      <a id="bcCliente" href="#">—</a> ›
+      <a id="bcCantiere" href="#">—</a> ›
+      <span id="bcRilievo">Report Posa</span>
     </div>
-    <div class="card" style="text-align:center;padding:60px 20px;">
-      <div style="font-size:3rem;margin-bottom:16px;">&#9201;&#65039;</div>
-      <h2 style="color:var(--c-primary);margin-bottom:8px;">Report Posa</h2>
-      <p style="color:var(--c-text-sec);margin-bottom:24px;">Questa sezione è in fase di sviluppo e sarà disponibile a breve.</p>
-      <button class="btn btn-outline" onclick="history.back()">&#8592; Torna al rilievo</button>
-    </div>
+    <div id="repContent"><div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div></div>
   </main>
 </div>
+
 <script src="js/config.js"></script>
+<script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/layout.js"></script>
@@ -30,6 +103,305 @@
 const currentUser = Auth.requireLogin();
 if (!currentUser) throw new Error('not logged');
 Layout.init('clienti');
+
+const idRilievo = Utils.getParam('idRilievo');
+if (!idRilievo) window.location.href = 'clienti.html';
+
+var esc = function(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+
+// Delta manuale: {servizio: ore} — delta in ore da aggiungere (positivo o negativo)
+var deltaManuali = {};
+
+// Dati globali
+var _pos = [], _datiPosa = [], _ril = null;
+
+var TIPO_DESC = { 'I':'Ingresso','F':'Finestra','PF':'Porta finestra','FF':'Finestra fissa','VF':'Vetrata fissa','S':'Scorrevole' };
+
+// Coefficienti di piano per posizionamento (h/pos)
+var ORE_PIANO = {'-1':0.6667, '0':0.3333, '1':0.5, '2':0.6667, '3':0.8333,
+  '4':1.0, '5':1.1667, '6':1.3333, '7':1.5, '8':1.6667, '9':1.8333, '10':2.0};
+
+async function init() {
+  try {
+    var results = await Promise.all([
+      API.getRilievo(idRilievo),
+      API.getPosizioniSerr(idRilievo)
+    ]);
+    var rilRes = results[0], posRes = results[1];
+    if (!rilRes.success) { Utils.showError(rilRes.error); return; }
+    _ril = rilRes.data;
+    _pos = posRes.success ? posRes.data : [];
+
+    // Carica delta manuali salvati (localStorage per ora)
+    var saved = localStorage.getItem('posa_delta_' + idRilievo);
+    if (saved) { try { deltaManuali = JSON.parse(saved); } catch(e) {} }
+
+    var cp = _ril.percorsoCantiere || {};
+    document.getElementById('bcCliente').textContent = cp.nomeCliente || '—';
+    document.getElementById('bcCantiere').textContent = cp.breadcrumb || '—';
+    document.getElementById('bcRilievo').textContent = _ril.codice_completo || '—';
+    document.title = 'Posa ' + (_ril.codice_completo||'');
+
+    renderAll();
+  } catch(e) { Utils.showError(e.message||'Errore'); }
+}
+
+function renderAll() {
+  var cp = _ril.percorsoCantiere || {};
+  var html = '';
+
+  // HEADER
+  html += '<div class="rep-header">' +
+    '<div>' +
+      '<h2>&#9201;&#65039; Report Posa &mdash; ' + esc(_ril.codice_completo||'') + '</h2>' +
+      '<div class="rep-meta">' +
+        '<strong>' + esc(cp.nomeCliente||'—') + '</strong> &mdash; ' + esc(cp.breadcrumb||'—') + '<br>' +
+        'Intervento: ' + esc(_ril.intervento||'—') + ' &nbsp;|&nbsp; ' +
+        'Referente: ' + esc(_ril.referente||'—') + ' &nbsp;|&nbsp; ' +
+        'Posizioni: <strong>' + _pos.length + '</strong>' +
+      '</div>' +
+    '</div>' +
+    '<div class="rep-actions">' +
+      '<button class="btn btn-sm" style="background:rgba(255,255,255,.2);color:white;" onclick="window.print()">&#128438; Stampa</button>' +
+      '<button class="btn btn-sm" style="background:rgba(255,255,255,.2);color:white;" onclick="history.back()">&#8592; Torna</button>' +
+    '</div>' +
+  '</div>';
+
+  if (!_pos.length) {
+    html += '<div style="text-align:center;padding:60px;color:var(--c-text-sec);">Nessuna posizione nel rilievo.</div>';
+    document.getElementById('repContent').innerHTML = html;
+    return;
+  }
+
+  // Calcola ore
+  var voci = calcolaVoci(_pos);
+
+  // TOTALE BOX
+  var totOre = 0;
+  voci.forEach(function(v){ totOre += v.ore; });
+  // Applica delta
+  Object.values(deltaManuali).forEach(function(d){ totOre += d.delta; });
+  var totGiorni = (totOre / 8).toFixed(1);
+
+  html += '<div class="totale-box">' +
+    '<div>' +
+      '<div class="totale-label">Totale ore stimate (inclusi aggiustamenti)</div>' +
+      '<div class="totale-giorni">Equivalente a circa <strong>' + totGiorni + '</strong> giornate da 8h</div>' +
+    '</div>' +
+    '<div class="totale-ore" id="totaleOre">' + totOre.toFixed(2) + ' h</div>' +
+  '</div>';
+
+  // TABELLA VOCI
+  html += '<div class="section-title">&#128203; Dettaglio ore per voce</div>';
+  html += '<div style="overflow-x:auto;"><table class="posa-table"><thead><tr>' +
+    '<th>Voce</th><th>Dettaglio</th><th class="num">N</th><th class="num">h/unit</th><th class="num">Ore tot.</th>' +
+    '</tr></thead><tbody>';
+
+  var lastGruppo = '';
+  voci.forEach(function(v) {
+    if (v.gruppo !== lastGruppo) {
+      html += '<tr class="group-row"><td colspan="5">&#9654; ' + esc(v.gruppo) + '</td></tr>';
+      lastGruppo = v.gruppo;
+    }
+    html += '<tr>' +
+      '<td>' + esc(v.voce) + '</td>' +
+      '<td style="color:var(--c-text-sec);font-size:.76rem;">' + esc(v.dettaglio||'') + '</td>' +
+      '<td class="num">' + (v.n !== undefined ? v.n : '—') + '</td>' +
+      '<td class="num">' + (v.hUnit !== undefined ? v.hUnit.toFixed(4) : '—') + '</td>' +
+      '<td class="num">' + v.ore.toFixed(2) + '</td>' +
+    '</tr>';
+  });
+
+  // Subtotale base
+  var baseOre = 0; voci.forEach(function(v){ baseOre += v.ore; });
+  html += '<tr class="total-row"><td colspan="4"><strong>Subtotale ore base</strong></td><td class="num"><strong>' + baseOre.toFixed(2) + '</strong></td></tr>';
+  html += '</tbody></table></div>';
+
+  // AGGIUSTAMENTI MANUALI
+  html += '<div class="section-title">&#9881;&#65039; Aggiustamenti manuali</div>';
+  html += '<div class="adj-section" id="adjSection">';
+
+  var vociAdj = [
+    { key:'trasferta', desc:'Trasferta / viaggio' },
+    { key:'attesa', desc:'Ore di attesa in cantiere' },
+    { key:'imprevisti', desc:'Imprevisti / lavori extra' },
+    { key:'scarico_extra', desc:'Scarico/carico aggiuntivo' }
+  ];
+
+  // Aggiunge voci custom salvate
+  Object.keys(deltaManuali).forEach(function(k) {
+    if (!vociAdj.find(function(v){return v.key===k;})) {
+      vociAdj.push({ key:k, desc:deltaManuali[k].desc||k, custom:true });
+    }
+  });
+
+  vociAdj.forEach(function(v) {
+    var delta = deltaManuali[v.key] ? deltaManuali[v.key].delta : 0;
+    var cls = delta > 0 ? 'positivo' : delta < 0 ? 'negativo' : '';
+    html += '<div class="adj-row' + (v.custom?' custom-adj-row':'') + '" id="adjrow_' + v.key + '">' +
+      '<div class="adj-desc">' + esc(v.desc) + (v.custom ? ' <span style="font-size:.72rem;color:var(--c-text-sec);">(personalizzato)</span>' : '') + '</div>' +
+      '<div class="adj-controls">' +
+        '<button class="adj-btn minus" onclick="aggAdj(\'' + v.key + '\',-0.5,\'' + esc(v.desc) + '\')">&#8722;</button>' +
+        '<div class="adj-val ' + cls + '" id="adjval_' + v.key + '">' + (delta >= 0 ? '+' : '') + delta.toFixed(1) + '</div>' +
+        '<button class="adj-btn plus" onclick="aggAdj(\'' + v.key + '\',+0.5,\'' + esc(v.desc) + '\')">+</button>' +
+        '<span class="adj-unit">ore</span>' +
+        (v.custom ? '<button class="btn btn-xs btn-danger" onclick="rimuoviAdj(\'' + v.key + '\')" style="margin-left:6px;">&#10005;</button>' : '') +
+      '</div>' +
+    '</div>';
+  });
+
+  html += '</div>';
+  html += '<button class="btn btn-outline btn-sm btn-add-adj" onclick="aggiungiVoce()">+ Aggiungi voce personalizzata</button>';
+
+  document.getElementById('repContent').innerHTML = html;
+  aggiornaRiepilogo();
+}
+
+function calcolaVoci(pos) {
+  var voci = [];
+  var nPos = pos.length;
+
+  // 1. UFFICIO TECNICO
+  voci.push({ gruppo:'Ufficio tecnico', voce:'Progettazione', dettaglio:'per posizione', n:nPos, hUnit:0.3333, ore:nPos*0.3333 });
+  voci.push({ gruppo:'Ufficio tecnico', voce:'Gestione ordini', dettaglio:'per posizione', n:nPos, hUnit:0.3333, ore:nPos*0.3333 });
+
+  // 2. LOGISTICA
+  voci.push({ gruppo:'Logistica', voce:'Scarico/carico serramenti', dettaglio:'per posizione', n:nPos, hUnit:0.1667, ore:nPos*0.1667 });
+  voci.push({ gruppo:'Logistica', voce:'Trasporto serramenti', dettaglio:'per posizione', n:nPos, hUnit:0.1667, ore:nPos*0.1667 });
+
+  // Controtelaio / termocasse
+  var ctlPos = pos.filter(function(p){return p.controtelaio;});
+  if (ctlPos.length) {
+    voci.push({ gruppo:'Logistica', voce:'Scarico/carico controtelai', dettaglio:'pos. con controtelaio', n:ctlPos.length, hUnit:0.1667, ore:ctlPos.length*0.1667 });
+    voci.push({ gruppo:'Logistica', voce:'Trasporto controtelai', dettaglio:'pos. con controtelaio', n:ctlPos.length, hUnit:0.1667, ore:ctlPos.length*0.1667 });
+  }
+
+  // 3. INSTALLAZIONE — per piano (coefficiente variabile)
+  var pianoMap = {};
+  pos.forEach(function(p) {
+    var piano = String(p.piano !== undefined ? p.piano : 0);
+    if (!pianoMap[piano]) pianoMap[piano] = 0;
+    pianoMap[piano]++;
+  });
+  var pianiOrdinati = Object.keys(pianoMap).sort(function(a,b){return parseFloat(a)-parseFloat(b);});
+  var oreInstTot = 0;
+  pianiOrdinati.forEach(function(piano) {
+    var n = pianoMap[piano];
+    var coeff = ORE_PIANO[piano] !== undefined ? ORE_PIANO[piano] : 0.3333 + parseFloat(piano)*0.1667;
+    var ore = n * coeff;
+    oreInstTot += ore;
+    voci.push({ gruppo:'Installazione', voce:'Posizionamento Piano '+(parseFloat(piano)>=0?'+':'')+piano, dettaglio:n+' pos. x '+coeff.toFixed(4)+' h', n:n, hUnit:coeff, ore:ore });
+  });
+
+  // Installazione per tipo serramento
+  var tipoMap = {};
+  var ORE_TIPO = { 'I':4, 'F':2, 'PF':3, 'FF':2, 'VF':3, 'S':3 };
+  pos.forEach(function(p) {
+    var t = p.tipo_serramento || 'F';
+    if (!tipoMap[t]) tipoMap[t] = 0;
+    tipoMap[t]++;
+  });
+  var ordTipo = ['I','F','PF','FF','VF','S'];
+  ordTipo.filter(function(t){return tipoMap[t];}).forEach(function(t) {
+    var n = tipoMap[t];
+    var h = ORE_TIPO[t] || 2;
+    voci.push({ gruppo:'Installazione', voce:'Installazione ' + (TIPO_DESC[t]||t), dettaglio:n+' pos.', n:n, hUnit:h, ore:n*h });
+  });
+
+  // Controtelaio assemblaggio + installazione
+  if (ctlPos.length) {
+    var legnoPos = ctlPos.filter(function(p){return p.controtelaio==='L';}).length;
+    var termPos  = ctlPos.filter(function(p){return p.controtelaio==='T';}).length;
+    if (legnoPos) voci.push({ gruppo:'Installazione', voce:'Assemblaggio controtelaio legno', n:legnoPos, hUnit:1.0, ore:legnoPos*1.0 });
+    if (termPos)  voci.push({ gruppo:'Installazione', voce:'Assemblaggio termocassa', n:termPos, hUnit:1.5, ore:termPos*1.5 });
+    voci.push({ gruppo:'Installazione', voce:'Installazione controtelai', n:ctlPos.length, hUnit:0.5, ore:ctlPos.length*0.5 });
+  }
+
+  // 4. RIMOZIONE
+  var rimSerPos = pos.filter(function(p){return p.rimozione==='SI'||p.rimozione===true;});
+  var rimAccPos = pos.filter(function(p){return p.rimozione_accessori===true;});
+  if (rimSerPos.length) voci.push({ gruppo:'Rimozione', voce:'Rimozione serramenti esistenti', n:rimSerPos.length, hUnit:0.5, ore:rimSerPos.length*0.5 });
+  if (rimAccPos.length) voci.push({ gruppo:'Rimozione', voce:'Rimozione accessori esistenti', n:rimAccPos.length, hUnit:0.3333, ore:rimAccPos.length*0.3333 });
+  var taglioPos = pos.filter(function(p){return p.taglio_marmo===true;});
+  if (taglioPos.length) voci.push({ gruppo:'Rimozione', voce:'Taglio piani marmo', n:taglioPos.length, hUnit:0.5, ore:taglioPos.length*0.5 });
+
+  // 5. ACCESSORI
+  var schermPos = pos.filter(function(p){return p.schermatura;});
+  var cassonPos = pos.filter(function(p){return p.cassonetto;});
+  var zanzPos   = pos.filter(function(p){return p.zanzariera;});
+  var copiPos   = pos.filter(function(p){return p.coprifilo_int_mat;});
+  var copePos   = pos.filter(function(p){return p.coprifilo_est_mat;});
+  var dinPos    = pos.filter(function(p){return p.dinoxill;});
+  var angPos    = pos.filter(function(p){return p.angolari_pvc===true;});
+
+  if (schermPos.length) {
+    var avv = schermPos.filter(function(p){return ['A','AM','AE','AR'].includes(p.schermatura);}).length;
+    var scu = schermPos.filter(function(p){return p.schermatura==='S';}).length;
+    var ten = schermPos.filter(function(p){return ['TZ','TM','CA','CT'].includes(p.schermatura);}).length;
+    if (avv) voci.push({ gruppo:'Accessori', voce:'Installazione avvolgibili', n:avv, hUnit:1.0, ore:avv*1.0 });
+    if (scu) voci.push({ gruppo:'Accessori', voce:'Installazione scuretti', n:scu, hUnit:0.5, ore:scu*0.5 });
+    if (ten) voci.push({ gruppo:'Accessori', voce:'Installazione tende/frangisole', n:ten, hUnit:0.8333, ore:ten*0.8333 });
+  }
+  if (cassonPos.length) voci.push({ gruppo:'Accessori', voce:'Installazione cassonetti', n:cassonPos.length, hUnit:0.5, ore:cassonPos.length*0.5 });
+  if (zanzPos.length)   voci.push({ gruppo:'Accessori', voce:'Installazione zanzariere', n:zanzPos.length, hUnit:0.3333, ore:zanzPos.length*0.3333 });
+  if (copiPos.length)   voci.push({ gruppo:'Accessori', voce:'Installazione coprifili interni', n:copiPos.length, hUnit:0.3333, ore:copiPos.length*0.3333 });
+  if (copePos.length)   voci.push({ gruppo:'Accessori', voce:'Installazione coprifili esterni', n:copePos.length, hUnit:0.3333, ore:copePos.length*0.3333 });
+  if (dinPos.length)    voci.push({ gruppo:'Accessori', voce:'Installazione Dinoxill', n:dinPos.length, hUnit:1.0, ore:dinPos.length*1.0 });
+  if (angPos.length)    voci.push({ gruppo:'Accessori', voce:'Installazione angolari PVC', n:angPos.length, hUnit:0.1667, ore:angPos.length*0.1667 });
+
+  // 6. CHIUSURA
+  voci.push({ gruppo:'Chiusura', voce:'Registrazione e collaudo', n:nPos, hUnit:0.3333, ore:nPos*0.3333 });
+  voci.push({ gruppo:'Chiusura', voce:'Pulizia cantiere', n:nPos, hUnit:0.1667, ore:nPos*0.1667 });
+  if (rimSerPos.length) voci.push({ gruppo:'Chiusura', voce:'Smaltimento serramenti', n:rimSerPos.length, hUnit:0.1667, ore:rimSerPos.length*0.1667 });
+  if (rimAccPos.length) voci.push({ gruppo:'Chiusura', voce:'Smaltimento accessori', n:rimAccPos.length, hUnit:0.1667, ore:rimAccPos.length*0.1667 });
+
+  return voci;
+}
+
+function aggAdj(key, delta, desc) {
+  if (!deltaManuali[key]) deltaManuali[key] = { delta: 0, desc: desc };
+  deltaManuali[key].delta = Math.round((deltaManuali[key].delta + delta) * 10) / 10;
+  salvaLocale();
+  aggiornaRiepilogo();
+  var el = document.getElementById('adjval_' + key);
+  if (el) {
+    var v = deltaManuali[key].delta;
+    el.textContent = (v >= 0 ? '+' : '') + v.toFixed(1);
+    el.className = 'adj-val ' + (v > 0 ? 'positivo' : v < 0 ? 'negativo' : '');
+  }
+}
+
+function rimuoviAdj(key) {
+  delete deltaManuali[key];
+  salvaLocale();
+  renderAll();
+}
+
+function aggiungiVoce() {
+  var desc = prompt('Nome della voce personalizzata:');
+  if (!desc || !desc.trim()) return;
+  var key = 'custom_' + Date.now();
+  deltaManuali[key] = { delta: 0, desc: desc.trim() };
+  salvaLocale();
+  renderAll();
+}
+
+function aggiornaRiepilogo() {
+  // Ricalcola totale
+  var voci = calcolaVoci(_pos);
+  var base = 0; voci.forEach(function(v){ base += v.ore; });
+  var totDelta = 0;
+  Object.values(deltaManuali).forEach(function(d){ totDelta += d.delta; });
+  var tot = base + totDelta;
+  var el = document.getElementById('totaleOre');
+  if (el) el.textContent = tot.toFixed(2) + ' h';
+}
+
+function salvaLocale() {
+  localStorage.setItem('posa_delta_' + idRilievo, JSON.stringify(deltaManuali));
+}
+
+init();
 </script>
 </body>
 </html>

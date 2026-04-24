@@ -211,6 +211,9 @@ const _map = {
       dinoxill:                 row.dinoxill              || '',
       dinoxill_lati:            row.dinoxill_lati         || '3',
       rimozione:                row.rimozione ? 'SI' : 'NO',
+      rimozione_accessori:      row.rimozione_accessori === true,
+      taglio_marmo:             row.taglio_marmo === true,
+      angolari_pvc:             row.angolari_pvc === true,
       note:                     row.note                  || '',
       ID_stratigrafia_override: row.id_stratigrafia_override || '',
       stato:                    row.stato
@@ -346,6 +349,9 @@ const _in = {
       dinoxill:                 data.dinoxill             || null,
       dinoxill_lati:            data.dinoxill_lati        || null,
       rimozione:                data.rimozione === 'SI',
+      rimozione_accessori:      data.rimozione_accessori === true,
+      taglio_marmo:             data.taglio_marmo === true,
+      angolari_pvc:             data.angolari_pvc === true,
       note:                     data.note                 || null,
       id_stratigrafia_override: data.ID_stratigrafia_override || null
     };

@@ -591,9 +591,9 @@ function calcolaRealtime(p) {
   var rec=dbSerr.find(function(d){return d&&d.materiale===p.materiale&&d.descrizione===p.sistema&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio;});
   var nascosto=rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
   var aletta=rec?(parseFloat(rec.aletta_mm)||0):0;
-  var ao=parseFloat(datiComuni[4])||10, at=parseFloat(datiComuni[5])||10;
-  var so=parseFloat(datiComuni[6])||20, sv=parseFloat(datiComuni[7])||20;
-  var av=parseFloat(datiComuni[8])||10, atv=parseFloat(datiComuni[9])||10;
+  var ao=parseFloat(datiComuni[5])||10, at=parseFloat(datiComuni[6])||10;
+  var so=parseFloat(datiComuni[10])||20, sv=parseFloat(datiComuni[11])||20;
+  var av=parseFloat(datiComuni[15])||10, atv=parseFloat(datiComuni[16])||10;
   var hasCtl=p.controtelaio==='L'||p.controtelaio==='T';
   var ridO=hasCtl?(ao+so+at):ao, ridV=hasCtl?(av+sv+atv):av;
   var nAlH=(p.tipo_serramento==='F'||p.tipo_serramento==='FF')?2:1;
@@ -897,9 +897,9 @@ function dRicalcola() {
   var rec=dGetRec();
   var nascosto=rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
   var aletta=rec?(parseFloat(rec.aletta_mm)||0):0;
-  var ao=parseFloat(datiComuni[4])||10, at=parseFloat(datiComuni[5])||10;
-  var so=parseFloat(datiComuni[6])||20, sv=parseFloat(datiComuni[7])||20;
-  var av=parseFloat(datiComuni[8])||10, atv=parseFloat(datiComuni[9])||10;
+  var ao=parseFloat(datiComuni[5])||10, at=parseFloat(datiComuni[6])||10;
+  var so=parseFloat(datiComuni[10])||20, sv=parseFloat(datiComuni[11])||20;
+  var av=parseFloat(datiComuni[15])||10, atv=parseFloat(datiComuni[16])||10;
   var hasCtl=ctl==='L'||ctl==='T';
   var ridO=hasCtl?(ao+so+at):ao, ridV=hasCtl?(av+sv+atv):av;
   var nAlH=(ts==='F'||ts==='FF')?2:1;

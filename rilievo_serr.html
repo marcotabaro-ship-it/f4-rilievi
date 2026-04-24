@@ -149,7 +149,7 @@
     </div>
   </div>
   <div class="tabs">
-    <button class="tab-btn active" onclick="showTab('tabPosizioni',this)">&#127oning; Posizioni</button>
+    <button class="tab-btn active" onclick="showTab('tabPosizioni',this)">&#128205; Posizioni</button>
     <button class="tab-btn" onclick="showTab('tabStratigrafie',this)">&#129521; Stratigrafie</button>
     <button class="tab-btn" onclick="showTab('tabTestata',this)">&#128203; Dati rilievo</button>
   </div>
@@ -200,10 +200,9 @@
         <button class="drawer-close" onclick="closeDrawer()">&#10005;</button>
       </div>
       <div class="drawer-body" id="drawerBody">
-        <div class="calc-strip" id="calcStrip">
-          <div class="calc-item"><span class="calc-lbl">L arch. x H arch.</span><span class="calc-val" id="cLarch">—</span></div>
-          <div class="calc-item"><span class="calc-lbl">L telaio x H telaio</span><span class="calc-val" id="cLtel">—</span></div>
-          <div class="calc-item"><span class="calc-lbl">L tub. x H tub.</span><span class="calc-val tub" id="cLtub">—</span></div>
+        <div class="calc-strip" id="calcStrip" style="grid-template-columns:1fr 1fr;">
+          <div class="calc-item"><span class="calc-lbl">L inserita x H inserita</span><span class="calc-val" id="cLarch">—</span></div>
+          <div class="calc-item"><span class="calc-lbl">L ordine x H ordine</span><span class="calc-val tub" id="cLtub">—</span></div>
         </div>
         <div class="dsec-title">&#128203; Dati generali</div>
         <div class="form-row-2d">
@@ -223,13 +222,15 @@
           </div>
           <div class="field-wrap">
             <div class="field-label">N campi <span class="req">*</span></div>
-            <select class="form-control" id="dNCampi" onchange="dSave()"></select>
+            <select class="form-control" id="dNCampi" onchange="dOnNCampiChange()"></select>
           </div>
         </div>
         <div class="form-row-2d">
           <div class="field-wrap">
             <div class="field-label">Senso apertura <button class="fi" onclick="openLegenda('sensiApertura')">&#8505;&#65039;</button></div>
-            <select class="form-control" id="dSensoApertura" onchange="dSave()"></select>
+            <div id="grpSensiApertura">
+              <select class="form-control" id="dSensoApertura" onchange="dSave()"></select>
+            </div>
           </div>
           <div class="field-wrap">
             <div class="field-label">Tipo foro <span class="req">*</span> <button class="fi" onclick="openLegenda('tipoForo')">&#8505;&#65039;</button></div>
@@ -254,10 +255,19 @@
           <div class="checkbox-group"><input type="checkbox" id="dRimozione" onchange="dSave()"><label for="dRimozione">Rimozione serramento esistente</label></div>
         </div>
         <div class="field-wrap">
+          <div class="checkbox-group"><input type="checkbox" id="dRimozioneAcc" onchange="dSave()"><label for="dRimozioneAcc">Rimozione accessori esistenti</label></div>
+        </div>
+        <div class="field-wrap">
+          <div class="checkbox-group"><input type="checkbox" id="dTaglioMarmo" onchange="dSave()"><label for="dTaglioMarmo">Taglio piani marmo</label></div>
+        </div>
+        <div class="field-wrap">
+          <div class="checkbox-group"><input type="checkbox" id="dAngolariPvc" onchange="dSave()"><label for="dAngolariPvc">Angolari PVC</label></div>
+        </div>
+        <div class="field-wrap">
           <div class="field-label">Note</div>
           <textarea class="form-control" id="dNote" rows="2" onchange="dSave()"></textarea>
         </div>
-        <div class="dsec-title">&#127oning; Serramento</div>
+        <div class="dsec-title">&#128295; Serramento</div>
         <div class="field-wrap">
           <div class="field-label">Materiale <span class="req">*</span> <button class="fi" onclick="openLegenda('materiale')">&#8505;&#65039;</button></div>
           <select class="form-control" id="dMateriale" onchange="dOnMaterialeChange()"></select>
@@ -548,7 +558,7 @@ async function loadPosizioni() {
 function renderPosizioni() {
   var c=document.getElementById('posizioniContainer');
   document.getElementById('countPosizioni').textContent=posizioni.length+' posizioni';
-  if(!posizioni.length){Utils.showEmptyState(c,'Nessuna posizione. Clicca "+ Nuova posizione".','&#127oning;');return;}
+  if(!posizioni.length){Utils.showEmptyState(c,'Nessuna posizione. Clicca "+ Nuova posizione".','&#128295;');return;}
   var html='<div class="pos-table-wrap"><table class="pos-table"><thead><tr>'+
     '<th style="width:44px;">N</th><th>Piano</th><th>Ambiente</th><th>Tipo</th>'+
     '<th>L (mm)</th><th>H (mm)</th><th>Foro</th><th>Sistema / Variante</th>'+
@@ -591,9 +601,9 @@ function calcolaRealtime(p) {
   var rec=dbSerr.find(function(d){return d&&d.materiale===p.materiale&&d.descrizione===p.sistema&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio;});
   var nascosto=rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
   var aletta=rec?(parseFloat(rec.aletta_mm)||0):0;
-  var ao=parseFloat(datiComuni[5])||10, at=parseFloat(datiComuni[6])||10;
-  var so=parseFloat(datiComuni[10])||20, sv=parseFloat(datiComuni[11])||20;
-  var av=parseFloat(datiComuni[15])||10, atv=parseFloat(datiComuni[16])||10;
+  var ao=parseFloat(datiComuni[4])||10, at=parseFloat(datiComuni[5])||10;
+  var so=parseFloat(datiComuni[6])||20, sv=parseFloat(datiComuni[7])||20;
+  var av=parseFloat(datiComuni[8])||10, atv=parseFloat(datiComuni[9])||10;
   var hasCtl=p.controtelaio==='L'||p.controtelaio==='T';
   var ridO=hasCtl?(ao+so+at):ao, ridV=hasCtl?(av+sv+atv):av;
   var nAlH=(p.tipo_serramento==='F'||p.tipo_serramento==='FF')?2:1;
@@ -633,19 +643,39 @@ function nuovaPosizione() {
 }
 
 function populateDrawerDropdowns() {
-  Utils.fillSelect('dPiano',(lookups.LK_PIANO||[]).filter(function(p){return p;}).map(function(p){return{value:p.piano,label:'Piano '+(p.piano>=0?'+':'')+p.piano};}), '— Piano —');
-  Utils.fillSelect('dTipoSerr',(lookups.LK_TIPO_SERR||[]).filter(function(t){return t&&t.sigla;}).map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo —');
-  Utils.fillSelect('dNCampi',(lookups.LK_N_CAMPI||[]).filter(function(c){return c&&c.n_campi;}).map(function(c){return{value:c.n_campi,label:c.n_campi+' campo/i'};}), '— N campi —');
-  Utils.fillSelect('dSensoApertura',(lookups.LK_SENSI_APERTURA||[]).filter(function(s){return s&&s.sigla;}).map(function(s){return{value:s.sigla,label:s.sigla+' — '+s.descrizione};}), '— Senso —');
-  Utils.fillSelect('dTipoForo',(lookups.LK_TIPO_FORO_SERR||[]).filter(function(t){return t&&t.sigla;}).map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo foro —');
+  var ordineSerr=['I','F','PF','FF','VF','S'];
+  var ordineSensi=['D','S','W','F'];
+  var ordineForo=['A','D','P'];
+
+  // Piani ordinati numericamente
+  Utils.fillSelect('dPiano',(lookups.LK_PIANO||[]).filter(function(p){return p;}).sort(function(a,b){return a.piano-b.piano;}).map(function(p){return{value:p.piano,label:'Piano '+(p.piano>=0?'+':'')+p.piano};}), '— Piano —');
+
+  // Tipo serramento ordine fisso I,F,PF,FF,VF,S
+  var tipoSerrOrdered=(lookups.LK_TIPO_SERR||[]).filter(function(t){return t&&t.sigla;}).sort(function(a,b){return ordineSerr.indexOf(a.sigla)-ordineSerr.indexOf(b.sigla);});
+  Utils.fillSelect('dTipoSerr',tipoSerrOrdered.map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo —');
+
+  // N campi 1→5 crescente
+  Utils.fillSelect('dNCampi',(lookups.LK_N_CAMPI||[]).filter(function(c){return c&&c.n_campi;}).sort(function(a,b){return a.n_campi-b.n_campi;}).map(function(c){return{value:c.n_campi,label:c.n_campi+' campo/i'};}), '— N campi —');
+
+  // Senso apertura ordine D,S,W,F
+  Utils.fillSelect('dSensoApertura',(lookups.LK_SENSI_APERTURA||[]).filter(function(s){return s&&s.sigla;}).sort(function(a,b){return ordineSensi.indexOf(a.sigla)-ordineSensi.indexOf(b.sigla);}).map(function(s){return{value:s.sigla,label:s.sigla+' — '+s.descrizione};}), '— Senso —');
+
+  // Tipo foro ordine A,D,P — senza testo tra parentesi
+  var foroOrdered=(lookups.LK_TIPO_FORO_SERR||[]).filter(function(t){return t&&t.sigla;}).sort(function(a,b){return ordineForo.indexOf(a.sigla)-ordineForo.indexOf(b.sigla);});
+  Utils.fillSelect('dTipoForo',foroOrdered.map(function(t){var desc=(t.descrizione||t.sigla).replace(/\s*\(.*?\)/g,'').trim();return{value:t.sigla,label:t.sigla+' — '+desc};}), '— Tipo foro —');
+
   var matSeen={};
   dbSerr.forEach(function(d){if(d&&d.materiale)matSeen[d.materiale]=1;});
   Utils.fillSelect('dMateriale',Object.keys(matSeen).sort().map(function(m){return{value:m,label:m};}),'— Materiale —');
-  Utils.fillSelect('dSchermatura',(lookups.LK_SCHERMATURA||[]).filter(function(s){return s&&s.sigla;}).map(function(s){return{value:s.sigla,label:s.descrizione_completa||s.descrizione};}), '— Nessuna —');
-  Utils.fillSelect('dCassonetto',(lookups.LK_CASSONETTO||[]).filter(function(c){return c&&c.sigla;}).map(function(c){return{value:c.sigla,label:c.descrizione};}), '— Nessuno —');
-  Utils.fillSelect('dControtelaio',(lookups.LK_CONTROTELAIO||[]).filter(function(c){return c&&c.sigla;}).map(function(c){return{value:c.sigla,label:c.descrizione};}), '— Nessuno —');
-  Utils.fillSelect('dZanzariera',(lookups.LK_ZANZARIERA||[]).filter(function(z){return z&&z.sigla;}).map(function(z){return{value:z.sigla,label:z.descrizione};}), '— Nessuna —');
-  Utils.fillSelect('dDinoxill',(lookups.LK_DINOXILL||[]).filter(function(d){return d&&d.sigla;}).map(function(d){return{value:d.sigla,label:d.descrizione};}), '— Nessuno —');
+
+  // Schermatura: sigla — descrizione
+  Utils.fillSelect('dSchermatura',(lookups.LK_SCHERMATURA||[]).filter(function(s){return s&&s.sigla;}).map(function(s){var desc=s.descrizione_completa||s.descrizione||s.sigla;return{value:s.sigla,label:s.sigla+' — '+desc};}), '— Nessuna —');
+  Utils.fillSelect('dCassonetto',(lookups.LK_CASSONETTO||[]).filter(function(c){return c&&c.sigla;}).map(function(c){return{value:c.sigla,label:c.sigla+' — '+c.descrizione};}), '— Nessuno —');
+  Utils.fillSelect('dControtelaio',(lookups.LK_CONTROTELAIO||[]).filter(function(c){return c&&c.sigla;}).map(function(c){return{value:c.sigla,label:c.sigla+' — '+c.descrizione};}), '— Nessuno —');
+  Utils.fillSelect('dZanzariera',(lookups.LK_ZANZARIERA||[]).filter(function(z){return z&&z.sigla;}).map(function(z){return{value:z.sigla,label:z.sigla+' — '+z.descrizione};}), '— Nessuna —');
+  Utils.fillSelect('dDinoxill',(lookups.LK_DINOXILL||[]).filter(function(d){return d&&d.sigla;}).map(function(d){return{value:d.sigla,label:d.sigla+' — '+d.descrizione};}), '— Nessuno —');
+
+  // Coprifili materiali
   var cpSeen={};
   (lookups.LK_COPRIFILI||[]).filter(function(c){return c&&c.materiale_sigla;}).forEach(function(c){cpSeen[c.materiale_sigla]=1;});
   var cpMat=Object.keys(cpSeen).map(function(m){return{value:m,label:m};});
@@ -659,6 +689,9 @@ function resetDrawer() {
    'dSchermatura','dCassonetto','dControtelaio','dZanzariera','dDinoxill','dStratigrafia'
   ].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('dRimozione').checked=false;
+  document.getElementById('dRimozioneAcc').checked=false;
+  document.getElementById('dTaglioMarmo').checked=false;
+  document.getElementById('dAngolariPvc').checked=false;
   ['dSistema','dStileDesign','dVarianteTelaio'].forEach(function(id){
     var el=document.getElementById(id);if(!el)return;el.value='';el.disabled=true;
   });
@@ -679,8 +712,8 @@ function resetDrawer() {
   document.querySelector('[name="dDinoxillLati"][value="3"]').checked=true;
   document.querySelectorAll('.field-invalid').forEach(function(el){el.classList.remove('field-invalid');});
   document.getElementById('cLarch').textContent='—';
-  document.getElementById('cLtel').textContent='—';
   document.getElementById('cLtub').textContent='—';
+  dOnNCampiChange();
   populateStratigrafiaSelectDrawer();
 }
 
@@ -691,11 +724,15 @@ function fillDrawer(p) {
   document.getElementById('dTipoSerr').value=p.tipo_serramento||'';
   dOnTipoSerrChange(true);
   document.getElementById('dNCampi').value=p.n_campi||'';
-  document.getElementById('dSensoApertura').value=p.senso_apertura||'';
+  dOnNCampiChange();
+  setSensoAperturaValue(p.senso_apertura||'');
   document.getElementById('dTipoForo').value=p.tipo_foro||'';
   document.getElementById('dLmm').value=p.L_mm||'';
   document.getElementById('dHmm').value=p.H_mm||'';
-  document.getElementById('dRimozione').checked=p.rimozione==='SI';
+  document.getElementById('dRimozione').checked=p.rimozione==='SI'||p.rimozione===true;
+  document.getElementById('dRimozioneAcc').checked=p.rimozione_accessori===true||p.rimozione_accessori==='SI';
+  document.getElementById('dTaglioMarmo').checked=p.taglio_marmo===true||p.taglio_marmo==='SI';
+  document.getElementById('dAngolariPvc').checked=p.angolari_pvc===true||p.angolari_pvc==='SI';
   document.getElementById('dNote').value=p.note||'';
   document.getElementById('dMateriale').value=p.materiale||'';
   dOnMaterialeChange(true);
@@ -725,6 +762,64 @@ function fillDrawer(p) {
   if(p.oscurante_tipo){dOnOscuranteChange(true);document.getElementById('dOscuranteMecc').value=p.oscurante_meccanismo||'';}
   document.getElementById('dStratigrafia').value=p.ID_stratigrafia_override||'';
   dRicalcola();
+}
+
+function dOnNCampiChange() {
+  drawerDirty=true;
+  var n=parseInt(document.getElementById('dNCampi').value)||1;
+  var grp=document.getElementById('grpSensiApertura');
+  var ordineSensi=['D','S','W','F'];
+  var opzioni=(lookups.LK_SENSI_APERTURA||[]).filter(function(s){return s&&s.sigla;}).sort(function(a,b){return ordineSensi.indexOf(a.sigla)-ordineSensi.indexOf(b.sigla);});
+
+  if(n<=2){
+    // 1-2 campi: un solo select
+    grp.innerHTML='<select class="form-control" id="dSensoApertura" onchange="dSave()"><option value="">— Senso —</option>'
+      +opzioni.map(function(s){return '<option value="'+s.sigla+'">'+s.sigla+' — '+s.descrizione+'</option>';}).join('')
+      +'</select>';
+  } else {
+    // 3-5 campi: N select, uno per campo
+    var html='';
+    for(var i=1;i<=n;i++){
+      html+='<div style="margin-bottom:4px;">'
+        +'<label style="font-size:.72rem;color:var(--c-text-sec);">Campo '+i+'</label>'
+        +'<select class="form-control senso-campo" id="dSensoApertura_'+i+'" data-campo="'+i+'" onchange="dSave()" style="margin-top:2px;">'
+        +'<option value="">— Senso —</option>'
+        +opzioni.map(function(s){return '<option value="'+s.sigla+'">'+s.sigla+' — '+s.descrizione+'</option>';}).join('')
+        +'</select></div>';
+    }
+    // mantieni dSensoApertura nascosto per compatibilità con raccogliDrawer
+    html+='<input type="hidden" id="dSensoApertura" value="">';
+    grp.innerHTML=html;
+  }
+}
+
+function getSensoAperturaValue() {
+  var n=parseInt(document.getElementById('dNCampi').value)||1;
+  if(n<=2){
+    var el=document.getElementById('dSensoApertura');
+    return el?el.value:'';
+  } else {
+    var vals=[];
+    for(var i=1;i<=n;i++){
+      var el=document.getElementById('dSensoApertura_'+i);
+      vals.push(el?el.value:'');
+    }
+    return vals.join(',');
+  }
+}
+
+function setSensoAperturaValue(val) {
+  var n=parseInt(document.getElementById('dNCampi').value)||1;
+  if(n<=2){
+    var el=document.getElementById('dSensoApertura');
+    if(el) el.value=val||'';
+  } else {
+    var parts=(val||'').split(',');
+    for(var i=1;i<=n;i++){
+      var el=document.getElementById('dSensoApertura_'+i);
+      if(el) el.value=parts[i-1]||'';
+    }
+  }
 }
 
 function dOnTipoSerrChange(silent) {
@@ -853,7 +948,7 @@ function dOnCopriMatChange(tipo,silent) {
   var dimEl=document.getElementById('dCopri'+(tipo==='int'?'Int':'Est')+'Dim');
   var mat=matEl.value;
   if(!mat){dimEl.innerHTML='<option value="">—</option>';dimEl.disabled=true;return;}
-  var dims=(lookups.LK_COPRIFILI||[]).filter(function(c){return c&&c.materiale_sigla===mat;}).map(function(c){return c.dimensione_mm;});
+  var dims=(lookups.LK_COPRIFILI||[]).filter(function(c){return c&&c.materiale_sigla===mat;}).map(function(c){return c.dimensione_mm;}).sort(function(a,b){return (parseFloat(a)||0)-(parseFloat(b)||0);});
   Utils.fillSelect(dimEl.id,dims.map(function(d){return{value:d,label:d+' mm'};}), '— Dim. —');
   dimEl.disabled=false;
 }
@@ -897,9 +992,9 @@ function dRicalcola() {
   var rec=dGetRec();
   var nascosto=rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
   var aletta=rec?(parseFloat(rec.aletta_mm)||0):0;
-  var ao=parseFloat(datiComuni[5])||10, at=parseFloat(datiComuni[6])||10;
-  var so=parseFloat(datiComuni[10])||20, sv=parseFloat(datiComuni[11])||20;
-  var av=parseFloat(datiComuni[15])||10, atv=parseFloat(datiComuni[16])||10;
+  var ao=parseFloat(datiComuni[4])||10, at=parseFloat(datiComuni[5])||10;
+  var so=parseFloat(datiComuni[6])||20, sv=parseFloat(datiComuni[7])||20;
+  var av=parseFloat(datiComuni[8])||10, atv=parseFloat(datiComuni[9])||10;
   var hasCtl=ctl==='L'||ctl==='T';
   var ridO=hasCtl?(ao+so+at):ao, ridV=hasCtl?(av+sv+atv):av;
   var nAlH=(ts==='F'||ts==='FF')?2:1;
@@ -911,7 +1006,6 @@ function dRicalcola() {
   }
   var fmtLH=function(l,h){return l&&h?Math.round(l)+' x '+Math.round(h)+' mm':'—';};
   document.getElementById('cLarch').textContent=fmtLH(Larch,Harch);
-  document.getElementById('cLtel').textContent=fmtLH(Ltel,Htel);
   document.getElementById('cLtub').textContent=fmtLH(Ltub,Htub)+(aletta>0?' [al.'+aletta+']':'');
 }
 
@@ -928,6 +1022,7 @@ async function salvaDrawer() {
     if(!drawerPosId) drawerPosId=res.id;
     document.getElementById('drawerTitle').textContent='Posizione '+(res.numero_pos||'');
     await loadPosizioni();
+    closeDrawer();
   } else Utils.showError(res.error);
 }
 
@@ -947,7 +1042,7 @@ function raccogliDrawer() {
     ambiente:document.getElementById('dAmbiente').value.trim(),
     tipo_serramento:document.getElementById('dTipoSerr').value,
     n_campi:parseInt(document.getElementById('dNCampi').value)||1,
-    senso_apertura:document.getElementById('dSensoApertura').value,
+    senso_apertura:getSensoAperturaValue(),
     tipo_foro:document.getElementById('dTipoForo').value,
     H_mm:parseFloat(document.getElementById('dHmm').value)||0,
     L_mm:parseFloat(document.getElementById('dLmm').value)||0,
@@ -972,6 +1067,9 @@ function raccogliDrawer() {
     dinoxill:document.getElementById('dDinoxill').value,
     dinoxill_lati:(document.querySelector('[name="dDinoxillLati"]:checked')||{value:'3'}).value,
     rimozione:document.getElementById('dRimozione').checked?'SI':'NO',
+    rimozione_accessori:document.getElementById('dRimozioneAcc').checked,
+    taglio_marmo:document.getElementById('dTaglioMarmo').checked,
+    angolari_pvc:document.getElementById('dAngolariPvc').checked,
     note:document.getElementById('dNote').value.trim(),
     ID_stratigrafia_override:document.getElementById('dStratigrafia').value
   };

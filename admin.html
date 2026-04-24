@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amministrazione — F4 Rilievi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .adm-tabs { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:20px; border-bottom:2px solid var(--c-border); padding-bottom:0; }
+    .adm-tab { padding:9px 18px; border:none; background:none; cursor:pointer; font-size:.85rem; font-weight:500; color:var(--c-text-sec); border-bottom:3px solid transparent; margin-bottom:-2px; border-radius:4px 4px 0 0; transition:all .2s; }
+    .adm-tab.active { color:var(--c-primary); border-bottom-color:var(--c-primary); background:#EEF2FF; }
+    .adm-tab:hover:not(.active) { background:var(--c-bg); }
+    .adm-panel { display:none; }
+    .adm-panel.active { display:block; }
+    .data-table { width:100%; border-collapse:collapse; font-size:.82rem; }
+    .data-table th { background:var(--c-primary); color:white; padding:9px 10px; text-align:left; font-size:.76rem; font-weight:600; white-space:nowrap; }
+    .data-table td { padding:9px 10px; border-bottom:1px solid var(--c-border); vertical-align:middle; }
+    .data-table tr:hover td { background:#F5F7FF; }
+    .badge-attivo   { background:#E8F5E9; color:#2E7D32; padding:2px 8px; border-radius:20px; font-size:.74rem; font-weight:600; }
+    .badge-disattivo{ background:#FFEBEE; color:#C62828; padding:2px 8px; border-radius:20px; font-size:.74rem; font-weight:600; }
+    .lk-selector { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
+    .inline-edit { display:flex; align-items:center; gap:6px; }
+    .inline-edit input { width:90px; padding:4px 6px; border:1px solid var(--c-border); border-radius:4px; font-size:.82rem; }
+    .btn-xs { padding:3px 10px; font-size:.75rem; }
+    .form-section { background:var(--c-bg); border:1px solid var(--c-border); border-radius:var(--radius); padding:16px; margin-bottom:16px; }
+    .form-section-title { font-size:.82rem; font-weight:700; color:var(--c-primary); text-transform:uppercase; letter-spacing:.5px; margin-bottom:12px; }
+    .pass-toggle { background:none; border:none; cursor:pointer; color:var(--c-text-sec); padding:0 6px; }
+    .mail-btn { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; background:#E3F2FD; color:#1565C0; border:none; border-radius:4px; cursor:pointer; font-size:.78rem; font-weight:500; text-decoration:none; }
+    .mail-btn:hover { background:#BBDEFB; }
+  </style>
+</head>
+<body>
+<div class="app-layout" id="appLayout">
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1>Amministrazione</h1>
+        <p class="page-subtitle">Gestione utenti, tabelle di configurazione e dati tecnici</p>
+      </div>
+    </div>
+
+    <div class="adm-tabs">
+      <button class="adm-tab active" onclick="showTab('utenti',this)">👥 Utenti</button>
+      <button class="adm-tab" onclick="showTab('lookup',this)">📋 Lookup</button>
+      <button class="adm-tab" onclick="showTab('dati',this)">⚙️ Dati Tecnici</button>
+      <button class="adm-tab" onclick="showTab('db',this)">🗄️ DB Prodotti</button>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- TAB: UTENTI -->
+    <!-- ======================================================= -->
+    <div id="panel-utenti" class="adm-panel active">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+        <strong>Utenti dell applicazione</strong>
+        <button class="btn btn-primary" onclick="openModalNuovoUtente()">➕ Nuovo utente</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div id="tabellaUtenti"><div class="loading-state"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- TAB: LOOKUP -->
+    <!-- ======================================================= -->
+    <div id="panel-lookup" class="adm-panel">
+      <div class="lk-selector">
+        <label class="form-label" style="margin:0;">Tabella:</label>
+        <select class="form-control" id="lkSelect" style="width:260px;" onchange="loadLookup(this.value)">
+          <option value="">— Seleziona —</option>
+          <optgroup label="Serramenti">
+            <option value="lk_tipo_serr">Tipi serramento</option>
+            <option value="lk_tipo_foro_serr">Tipi foro serramento</option>
+            <option value="lk_sensi_apertura">Sensi apertura</option>
+            <option value="lk_n_campi">N campi</option>
+            <option value="lk_vetro">Vetri</option>
+            <option value="lk_colori">Colori</option>
+            <option value="lk_schermatura">Schermature</option>
+            <option value="lk_oscurante">Oscuranti</option>
+            <option value="lk_cassonetto">Cassonetti</option>
+            <option value="lk_controtelaio">Controtelai</option>
+            <option value="lk_zanzariera">Zanzariere</option>
+            <option value="lk_dinoxill">Dinoxill</option>
+            <option value="lk_coprifili">Coprifili</option>
+          </optgroup>
+          <optgroup label="Porte interne">
+            <option value="lk_tipo_porta">Tipi porta</option>
+            <option value="lk_sistema_porte">Sistemi porte</option>
+            <option value="lk_tipo_foro_porte">Tipi foro porte</option>
+            <option value="lk_fornitore_porte">Fornitori porte</option>
+          </optgroup>
+          <optgroup label="Generali">
+            <option value="lk_referenti">Referenti</option>
+            <option value="lk_intervento">Tipi intervento</option>
+            <option value="lk_piano">Piani</option>
+          </optgroup>
+        </select>
+        <button class="btn btn-outline btn-sm" id="btnAddLk" onclick="openModalAddLk()" style="display:none;">➕ Aggiungi voce</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div id="lkContainer"><div style="padding:20px;color:var(--c-text-sec);text-align:center;">Seleziona una tabella per gestirla</div></div>
+      </div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- TAB: DATI TECNICI -->
+    <!-- ======================================================= -->
+    <div id="panel-dati" class="adm-panel">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header"><span class="card-title">⚙️ Dati Comuni (parametri motore calcolo)</span></div>
+        <div id="tabellaComuni"><div class="loading-state"><div class="spinner"></div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">📐 Regole Lati per tipo serramento</span></div>
+        <div id="tabellaRegole"><div class="loading-state"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- TAB: DB PRODOTTI (read-only overview) -->
+    <!-- ======================================================= -->
+    <div id="panel-db" class="adm-panel">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header">
+          <span class="card-title">🪟 DB Serramenti</span>
+          <span id="cntSerr" style="color:var(--c-text-sec);font-size:.82rem;"></span>
+        </div>
+        <div id="tabellaDbSerr"><div class="loading-state"><div class="spinner"></div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">🚪 DB Porte</span>
+          <span id="cntPorte" style="color:var(--c-text-sec);font-size:.82rem;"></span>
+        </div>
+        <div id="tabellaDbPorte"><div class="loading-state"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ======================================================= -->
+<!-- MODAL: NUOVO / MODIFICA UTENTE -->
+<!-- ======================================================= -->
+<div class="modal" id="modalUtente">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modalUtenteTitle">Nuovo utente</span>
+      <button class="modal-close" onclick="Utils.closeModal('modalUtente')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row form-row-2">
+        <div class="form-group">
+          <label class="form-label">Nome completo <span class="req">*</span></label>
+          <input class="form-control" type="text" id="uNome" placeholder="Es. Rossi Mario">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sigla</label>
+          <input class="form-control" type="text" id="uSigla" placeholder="Es. MR" maxlength="4" style="text-transform:uppercase;">
+        </div>
+      </div>
+      <div class="form-row form-row-2">
+        <div class="form-group">
+          <label class="form-label">E-mail <span class="req">*</span></label>
+          <input class="form-control" type="email" id="uEmail" placeholder="nome@gruppof4.it">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Reparto</label>
+          <input class="form-control" type="text" id="uReparto" placeholder="Es. Ufficio Tecnico">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ruolo <span class="req">*</span></label>
+        <select class="form-control" id="uRuolo">
+          <option value="agente">Agente / Consulente vendite</option>
+          <option value="ufficio_preventivi">Ufficio Preventivi</option>
+          <option value="responsabile_commerciale">Responsabile Commerciale</option>
+          <option value="titolare">Titolare</option>
+          <option value="administrator">Administrator</option>
+          <option value="altro">Altro (sola lettura)</option>
+        </select>
+      </div>
+      <div id="passGroup" class="form-group">
+        <label class="form-label">Password <span class="req">*</span></label>
+        <div style="display:flex;gap:6px;">
+          <input class="form-control" type="password" id="uPass" placeholder="Minimo 8 caratteri" style="flex:1;">
+          <button class="pass-toggle" type="button" onclick="togglePass('uPass',this)" title="Mostra/Nascondi">👁</button>
+        </div>
+      </div>
+      <div id="passNuovaGroup" class="form-group" style="display:none;">
+        <label class="form-label">Nuova password (lascia vuota per non cambiare)</label>
+        <div style="display:flex;gap:6px;">
+          <input class="form-control" type="password" id="uPassNuova" placeholder="Lascia vuota per non cambiare" style="flex:1;">
+          <button class="pass-toggle" type="button" onclick="togglePass('uPassNuova',this)" title="Mostra/Nascondi">👁</button>
+        </div>
+      </div>
+      <div id="statoGroup" class="form-group" style="display:none;">
+        <label class="form-label">Stato</label>
+        <select class="form-control" id="uStato">
+          <option value="attivo">Attivo</option>
+          <option value="disattivo">Disattivo</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="Utils.closeModal('modalUtente')">Annulla</button>
+      <button class="btn btn-primary" id="btnSalvaUtente" onclick="salvaUtente()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFERMA TOGGLE UTENTE -->
+<div class="modal" id="modalToggleUtente">
+  <div class="modal-box modal-box-sm">
+    <div class="modal-header">
+      <span class="modal-title" id="toggleUtenteTitle">Conferma</span>
+      <button class="modal-close" onclick="Utils.closeModal('modalToggleUtente')">✕</button>
+    </div>
+    <div class="modal-body"><p id="toggleUtenteMsg"></p></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="Utils.closeModal('modalToggleUtente')">Annulla</button>
+      <button class="btn btn-danger" id="btnConfermaToggleUtente">Conferma</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: AGGIUNGI VOCE LOOKUP -->
+<div class="modal" id="modalAddLk">
+  <div class="modal-box modal-box-sm">
+    <div class="modal-header">
+      <span class="modal-title">Aggiungi voce</span>
+      <button class="modal-close" onclick="Utils.closeModal('modalAddLk')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Sigla</label>
+        <input class="form-control" type="text" id="lkNewSigla" placeholder="Es. TS">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descrizione <span class="req">*</span></label>
+        <input class="form-control" type="text" id="lkNewDesc" placeholder="Testo descrittivo">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="Utils.closeModal('modalAddLk')">Annulla</button>
+      <button class="btn btn-primary" id="btnSalvaLk" onclick="salvaLk()">Aggiungi</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/layout.js"></script>
+<script>
+  const currentUser = Auth.requireLogin();
+  if (!currentUser || !Auth.isAdmin()) {
+    Utils.showError('Accesso riservato agli administrator.');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+    throw new Error('not admin');
+  }
+  Layout.init('');
+
+  // ================================================================
+  // TAB NAVIGATION
+  // ================================================================
+  function showTab(name, btn) {
+    document.querySelectorAll('.adm-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.adm-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    btn.classList.add('active');
+    if (name === 'utenti')  loadUtenti();
+    if (name === 'dati')    loadDatiTecnici();
+    if (name === 'db')      loadDbProdotti();
+  }
+
+  // ================================================================
+  // UTILITIES
+  // ================================================================
+  function togglePass(id, btn) {
+    const el = document.getElementById(id);
+    const show = el.type === 'password';
+    el.type = show ? 'text' : 'password';
+    btn.textContent = show ? '🙈' : '👁';
+  }
+
+  function roleBadge(ruolo) {
+    const map = {
+      administrator: 'Admin', titolare: 'Titolare',
+      responsabile_commerciale: 'Resp. Comm.',
+      ufficio_preventivi: 'Uff. Prev.',
+      agente: 'Agente', altro: 'Altro'
+    };
+    return map[ruolo] || ruolo;
+  }
+
+  function buildMailtoLink(utente) {
+    const app = encodeURIComponent('https://marcotabaro-ship-it.github.io/f4-rilievi/');
+    const sogg = encodeURIComponent('Accesso app F4 Rilievi Preliminari');
+    const corpo = encodeURIComponent(
+      'Ciao ' + (utente.nome || '') + ',\n\n' +
+      'Puoi accedere all app F4 Rilievi Preliminari al seguente indirizzo:\n' +
+      'https://marcotabaro-ship-it.github.io/f4-rilievi/\n\n' +
+      'Email di accesso: ' + utente.email + '\n' +
+      'Password: (quella comunicata separatamente)\n\n' +
+      'Gruppo F4'
+    );
+    return 'mailto:' + encodeURIComponent(utente.email) +
+           '?subject=' + sogg + '&body=' + corpo;
+  }
+
+  // ================================================================
+  // GESTIONE UTENTI
+  // ================================================================
+  let tuttiUtenti = [];
+  let utenteEditId = null;
+
+  async function loadUtenti() {
+    const container = document.getElementById('tabellaUtenti');
+    Utils.showLoading(container);
+    const res = await API.adminGetUtenti();
+    if (!res.success) { Utils.showError(res.error); return; }
+    tuttiUtenti = res.data;
+    renderUtenti();
+  }
+
+  function renderUtenti() {
+    const container = document.getElementById('tabellaUtenti');
+    if (!tuttiUtenti.length) { Utils.showEmptyState(container, 'Nessun utente.', '👥'); return; }
+    const sorted = [...tuttiUtenti].sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'it'));
+    container.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr>' +
+      '<th>Nome</th><th>Email</th><th>Ruolo</th><th>Sigla</th><th>Reparto</th><th>Stato</th><th style="text-align:right;">Azioni</th>' +
+      '</tr></thead><tbody>' +
+      sorted.map(u => {
+        const attivo = u.stato === 'attivo';
+        return '<tr>' +
+          '<td><strong>' + (u.nome || '—') + '</strong></td>' +
+          '<td style="color:var(--c-text-sec);">' + (u.email || '—') + '</td>' +
+          '<td>' + roleBadge(u.ruolo) + '</td>' +
+          '<td><code>' + (u.sigla || '—') + '</code></td>' +
+          '<td style="color:var(--c-text-sec);">' + (u.reparto || '—') + '</td>' +
+          '<td><span class="badge-' + (attivo ? 'attivo' : 'disattivo') + '">' + (attivo ? 'Attivo' : 'Disattivo') + '</span></td>' +
+          '<td style="text-align:right;white-space:nowrap;">' +
+            '<a class="mail-btn" href="' + buildMailtoLink(u) + '" title="Invia link app per email">✉️ Invia link</a>&nbsp;' +
+            '<button class="btn btn-sm btn-outline" onclick="openModalModificaUtente(' + JSON.stringify(u.id) + ')" title="Modifica">✏️</button>&nbsp;' +
+            '<button class="btn btn-sm ' + (attivo ? 'btn-danger' : 'btn-outline') + '" ' +
+              'onclick="confermaToggleUtente(' + JSON.stringify(u.id) + ',' + JSON.stringify(u.nome || u.email) + ',' + attivo + ')" ' +
+              'title="' + (attivo ? 'Disattiva' : 'Riattiva') + '">' +
+              (attivo ? '🔴' : '🟢') + '</button>' +
+          '</td>' +
+          '</tr>';
+      }).join('') +
+      '</tbody></table></div>';
+  }
+
+  function openModalNuovoUtente() {
+    utenteEditId = null;
+    document.getElementById('modalUtenteTitle').textContent = 'Nuovo utente';
+    ['uNome','uSigla','uEmail','uReparto','uPass','uPassNuova'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('uRuolo').value = 'agente';
+    document.getElementById('passGroup').style.display = '';
+    document.getElementById('passNuovaGroup').style.display = 'none';
+    document.getElementById('statoGroup').style.display = 'none';
+    document.getElementById('uEmail').disabled = false;
+    Utils.openModal('modalUtente');
+    setTimeout(() => document.getElementById('uNome').focus(), 100);
+  }
+
+  function openModalModificaUtente(id) {
+    const u = tuttiUtenti.find(x => x.id === id);
+    if (!u) return;
+    utenteEditId = id;
+    document.getElementById('modalUtenteTitle').textContent = 'Modifica utente';
+    document.getElementById('uNome').value    = u.nome    || '';
+    document.getElementById('uSigla').value   = u.sigla   || '';
+    document.getElementById('uEmail').value   = u.email   || '';
+    document.getElementById('uReparto').value = u.reparto || '';
+    document.getElementById('uRuolo').value   = u.ruolo   || 'altro';
+    document.getElementById('uStato').value   = u.stato   || 'attivo';
+    document.getElementById('passGroup').style.display = 'none';
+    document.getElementById('passNuovaGroup').style.display = '';
+    document.getElementById('statoGroup').style.display = '';
+    document.getElementById('uEmail').disabled = true;
+    Utils.openModal('modalUtente');
+    setTimeout(() => document.getElementById('uNome').focus(), 100);
+  }
+
+  async function salvaUtente() {
+    const nome   = document.getElementById('uNome').value.trim();
+    const email  = document.getElementById('uEmail').value.trim();
+    const ruolo  = document.getElementById('uRuolo').value;
+    const sigla  = document.getElementById('uSigla').value.trim().toUpperCase();
+    const reparto= document.getElementById('uReparto').value.trim();
+    const pass   = document.getElementById('uPass').value;
+    const passN  = document.getElementById('uPassNuova').value;
+
+    if (!nome) { Utils.showWarning('Nome obbligatorio.'); return; }
+    if (!email && !utenteEditId) { Utils.showWarning('Email obbligatoria.'); return; }
+    if (!utenteEditId && !pass) { Utils.showWarning('Password obbligatoria per il nuovo utente.'); return; }
+    if (!utenteEditId && pass.length < 8) { Utils.showWarning('Password minimo 8 caratteri.'); return; }
+
+    const btn = document.getElementById('btnSalvaUtente');
+    btn.disabled = true; btn.textContent = 'Salvataggio...';
+
+    let res;
+    if (!utenteEditId) {
+      res = await _sb.adminCall('create_user', { email, password: pass, nome, ruolo, sigla, reparto });
+    } else {
+      res = await _sb.adminCall('update_user', { id: utenteEditId, nome, ruolo, sigla, reparto,
+        stato: document.getElementById('uStato').value });
+      if (res.success && passN && passN.length >= 8) {
+        await _sb.adminCall('reset_password', { id: utenteEditId, new_password: passN });
+      }
+    }
+
+    btn.disabled = false; btn.textContent = 'Salva';
+
+    if (res.success) {
+      Utils.showSuccess(utenteEditId ? 'Utente aggiornato.' : 'Utente creato.');
+      Utils.closeModal('modalUtente');
+      await loadUtenti();
+    } else {
+      Utils.showError(res.error || 'Errore sconosciuto.');
+    }
+  }
+
+  function confermaToggleUtente(id, nome, attivo) {
+    document.getElementById('toggleUtenteTitle').textContent = attivo ? 'Disattiva utente' : 'Riattiva utente';
+    document.getElementById('toggleUtenteMsg').textContent = attivo
+      ? 'Disattivare "' + nome + '"? Non potra piu accedere all app.'
+      : 'Riattivare "' + nome + '"?';
+    document.getElementById('btnConfermaToggleUtente').onclick = async () => {
+      Utils.closeModal('modalToggleUtente');
+      const res = await _sb.adminCall('toggle_stato', { id });
+      if (res.success) { Utils.showSuccess('Stato aggiornato.'); await loadUtenti(); }
+      else Utils.showError(res.error);
+    };
+    Utils.openModal('modalToggleUtente');
+  }
+
+  // ================================================================
+  // GESTIONE LOOKUP
+  // ================================================================
+  let currentLk = null;
+  let lkData = [];
+
+  async function loadLookup(table) {
+    if (!table) return;
+    currentLk = table;
+    document.getElementById('btnAddLk').style.display = '';
+    const container = document.getElementById('lkContainer');
+    Utils.showLoading(container);
+    const res = await API.adminGetLookup(table);
+    if (!res.success) { Utils.showError(res.error); return; }
+    lkData = res.data;
+    renderLookup(lkData);
+  }
+
+  function renderLookup(rows) {
+    const container = document.getElementById('lkContainer');
+    if (!rows.length) {
+      container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--c-text-sec);">Tabella vuota. Clicca "Aggiungi voce".</div>';
+      return;
+    }
+    // Determina colonne da mostrare (escludi id, created_at, updated_at, updated_by)
+    const skip = new Set(['id','created_at','updated_at','updated_by']);
+    const cols = Object.keys(rows[0]).filter(c => !skip.has(c));
+    container.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr>' +
+      cols.map(c => '<th>' + c + '</th>').join('') +
+      '<th style="text-align:right;">Stato</th></tr></thead><tbody>' +
+      rows.map(r => '<tr>' +
+        cols.map(c => c === 'stato' ? '' : '<td>' + (r[c] !== null && r[c] !== undefined ? String(r[c]) : '—') + '</td>').join('') +
+        '<td style="text-align:right;">' +
+          '<span class="badge-' + (r.stato === 'attivo' ? 'attivo' : 'disattivo') + '">' + r.stato + '</span>' +
+          '&nbsp;<button class="btn btn-xs ' + (r.stato === 'attivo' ? 'btn-danger' : 'btn-outline') + '" ' +
+          'onclick="toggleLk(' + JSON.stringify(r.id) + ')">' +
+          (r.stato === 'attivo' ? 'Disattiva' : 'Riattiva') + '</button>' +
+        '</td></tr>'
+      ).join('') +
+      '</tbody></table></div>';
+  }
+
+  async function toggleLk(id) {
+    const res = await API.adminToggleLookup(currentLk, id);
+    if (res.success) { Utils.showSuccess('Stato aggiornato.'); await loadLookup(currentLk); }
+    else Utils.showError(res.error);
+  }
+
+  function openModalAddLk() {
+    document.getElementById('lkNewSigla').value = '';
+    document.getElementById('lkNewDesc').value  = '';
+    Utils.openModal('modalAddLk');
+    setTimeout(() => document.getElementById('lkNewSigla').focus(), 100);
+  }
+
+  async function salvaLk() {
+    const sigla = document.getElementById('lkNewSigla').value.trim();
+    const desc  = document.getElementById('lkNewDesc').value.trim();
+    if (!desc) { Utils.showWarning('Descrizione obbligatoria.'); return; }
+    const btn = document.getElementById('btnSalvaLk');
+    btn.disabled = true; btn.textContent = 'Salvataggio...';
+    const data = { descrizione: desc, stato: 'attivo' };
+    if (sigla) data.sigla = sigla;
+    const res = await API.adminAddLookup(currentLk, data);
+    btn.disabled = false; btn.textContent = 'Aggiungi';
+    if (res.success) {
+      Utils.showSuccess('Voce aggiunta.');
+      Utils.closeModal('modalAddLk');
+      await loadLookup(currentLk);
+    } else Utils.showError(res.error);
+  }
+
+  // ================================================================
+  // DATI TECNICI
+  // ================================================================
+  async function loadDatiTecnici() {
+    await Promise.all([loadDatiComuni(), loadRegoleLati()]);
+  }
+
+  async function loadDatiComuni() {
+    const res = await API.adminGetDatiComuni();
+    const container = document.getElementById('tabellaComuni');
+    if (!res.success) { Utils.showError(res.error); return; }
+    const data = res.data;
+    if (!data.length) { Utils.showEmptyState(container, 'Nessun dato.'); return; }
+    container.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr>' +
+      '<th>ID</th><th>Categoria</th><th>Parametro</th><th>Descrizione</th>' +
+      '<th style="width:140px;">Valore (mm)</th></tr></thead><tbody>' +
+      data.map(r => '<tr>' +
+        '<td><code>' + r.id + '</code></td>' +
+        '<td style="color:var(--c-text-sec);">' + r.categoria + ' / ' + r.sottocategoria + '</td>' +
+        '<td>' + r.parametro + '</td>' +
+        '<td style="color:var(--c-text-sec);font-size:.78rem;">' + r.descrizione + '</td>' +
+        '<td><div class="inline-edit">' +
+          '<input type="number" value="' + r.valore_mm + '" id="dc_' + r.id + '" step="0.01">' +
+          '<button class="btn btn-xs btn-primary" onclick="salvaDatoComune(' + r.id + ')">💾</button>' +
+        '</div></td></tr>'
+      ).join('') + '</tbody></table></div>';
+  }
+
+  async function salvaDatoComune(id) {
+    const val = parseFloat(document.getElementById('dc_' + id).value);
+    if (isNaN(val)) { Utils.showWarning('Valore non valido.'); return; }
+    const res = await API.adminUpdateDatiComuni(id, val);
+    if (res.success) Utils.showSuccess('Salvato.');
+    else Utils.showError(res.error);
+  }
+
+  async function loadRegoleLati() {
+    const res = await API.adminGetRegoleLati();
+    const container = document.getElementById('tabellaRegole');
+    if (!res.success) { Utils.showError(res.error); return; }
+    const data = res.data;
+    container.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr>' +
+      '<th>Sigla</th><th>Tipo serramento</th><th>Lati coprifilo</th>' +
+      '<th>Dinoxill disponibile</th><th>Lati scelta</th></tr></thead><tbody>' +
+      data.map(r => '<tr>' +
+        '<td><strong>' + r.sigla + '</strong></td>' +
+        '<td>' + r.tipo_serramento + '</td>' +
+        '<td><select id="rl_lati_' + r.sigla + '" class="form-control" style="width:70px;">' +
+          [0,3,4].map(n => '<option value="' + n + '"' + (r.coprifili_lati == n ? ' selected' : '') + '>' + n + '</option>').join('') +
+        '</select></td>' +
+        '<td><input type="checkbox" id="rl_din_' + r.sigla + '"' + (r.dinoxill_disponibile ? ' checked' : '') + '></td>' +
+        '<td style="display:flex;align-items:center;gap:8px;">' +
+          '<input type="checkbox" id="rl_lsc_' + r.sigla + '"' + (r.dinoxill_lati_scelta ? ' checked' : '') + '>' +
+          '<button class="btn btn-xs btn-primary" onclick="salvaRegoleLati(' + JSON.stringify(r.sigla) + ')">💾</button>' +
+        '</td></tr>'
+      ).join('') + '</tbody></table></div>';
+  }
+
+  async function salvaRegoleLati(sigla) {
+    const data = {
+      coprifili_lati:     parseInt(document.getElementById('rl_lati_' + sigla).value),
+      dinoxill_disponibile: document.getElementById('rl_din_' + sigla).checked,
+      dinoxill_lati_scelta: document.getElementById('rl_lsc_' + sigla).checked
+    };
+    const res = await API.adminUpdateRegoleLati(sigla, data);
+    if (res.success) Utils.showSuccess('Salvato.');
+    else Utils.showError(res.error);
+  }
+
+  // ================================================================
+  // DB PRODOTTI (read-only overview + toggle stato)
+  // ================================================================
+  async function loadDbProdotti() {
+    const [resS, resP] = await Promise.all([API.getDbSerramento(), API.getDbPorte()]);
+    renderDbSerr(resS.success ? resS.data : []);
+    renderDbPorte(resP.success ? resP.data : []);
+  }
+
+  function renderDbSerr(rows) {
+    document.getElementById('cntSerr').textContent = rows.length + ' codici';
+    const c = document.getElementById('tabellaDbSerr');
+    if (!rows.length) { Utils.showEmptyState(c, 'Nessun prodotto.'); return; }
+    c.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr>' +
+      '<th>Codice</th><th>Materiale</th><th>Sistema</th><th>Stile</th><th>Variante</th>' +
+      '<th>Nasc.(mm)</th><th>Aletta(mm)</th><th>Stato</th></tr></thead><tbody>' +
+      rows.slice(0, 50).map(r =>
+        '<tr><td><code>' + r.codice + '</code></td><td>' + r.materiale + '</td><td>' +
+        (r.descrizione || '—') + '</td><td>' + (r.stile_design || '—') + '</td><td>' +
+        (r.variante_telaio || '—') + '</td><td>' + (r.telaio_nascosto_mm || 0) + '</td><td>' +
+        (r.aletta_mm || 0) + '</td><td><span class="badge-' + r.stato + '">' + r.stato + '</span></td></tr>'
+      ).join('') +
+      (rows.length > 50 ? '<tr><td colspan="8" style="text-align:center;color:var(--c-text-sec);">... e altri ' + (rows.length - 50) + ' codici</td></tr>' : '') +
+      '</tbody></table></div>';
+  }
+
+  function renderDbPorte(rows) {
+    document.getElementById('cntPorte').textContent = rows.length + ' codici';
+    const c = document.getElementById('tabellaDbPorte');
+    if (!rows.length) { Utils.showEmptyState(c, 'Nessun prodotto.'); return; }
+    c.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr>' +
+      '<th>Codice</th><th>Fornitore</th><th>Tipo</th><th>Sistema</th><th>Foro</th><th>Sopraluce</th><th>Stato</th></tr></thead><tbody>' +
+      rows.slice(0, 50).map(r =>
+        '<tr><td><code>' + r.codice + '</code></td><td>' + r.fornitore + '</td><td>' +
+        r.tipo_porta + '</td><td>' + r.sistema + '</td><td>' + (r.tipo_foro || '—') + '</td><td>' +
+        (r.sopraluce ? 'SI' : 'NO') + '</td><td><span class="badge-' + r.stato + '">' + r.stato + '</span></td></tr>'
+      ).join('') +
+      (rows.length > 50 ? '<tr><td colspan="7" style="text-align:center;color:var(--c-text-sec);">... e altri ' + (rows.length - 50) + ' codici</td></tr>' : '') +
+      '</tbody></table></div>';
+  }
+
+  // ================================================================
+  // INIT
+  // ================================================================
+  loadUtenti();
+</script>
+</body>
+</html>

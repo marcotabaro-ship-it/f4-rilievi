@@ -575,6 +575,10 @@ function renderPosizioni() {
     if(p.dinoxill)     acc.push(p.dinoxill);
     if(p.coprifilo_int_mat) acc.push('CopI');
     if(p.coprifilo_est_mat) acc.push('CopE');
+    if(p.rimozione==='SI'||p.rimozione===true) acc.push('RimS');
+    if(p.rimozione_accessori===true) acc.push('RimA');
+    if(p.taglio_marmo===true) acc.push('Mrm');
+    if(p.angolari_pvc===true) acc.push('PVC');
     var isSel=drawerPosId===p.ID_pos?'row-sel':'';
     html+='<tr class="'+isSel+'" onclick="openDrawer(\''+p.ID_pos+'\')">'+
       '<td><span class="pos-num-badge">'+p.numero_pos+'</span></td>'+

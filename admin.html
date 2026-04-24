@@ -465,14 +465,32 @@
       container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--c-text-sec);">Tabella vuota. Clicca "Aggiungi voce".</div>';
       return;
     }
-    // Determina colonne da mostrare (escludi id, created_at, updated_at, updated_by)
-    const skip = new Set(['id','created_at','updated_at','updated_by']);
+    const ordiniCustom = {
+      'LK_TIPO_SERR':       ['I','F','PF','FF','VF','S'],
+      'LK_SCHERMATURA':     ['A','AM','AE','AR','S','TZ','TM','CA','CT'],
+      'LK_SENSI_APERTURA':  ['D','S','W','F'],
+      'LK_TIPO_FORO_SERR':  ['A','D','P'],
+      'LK_TIPO_FORO_PORTE': ['A','D','P']
+    };
+    const ordineN = {'LK_N_CAMPI': true, 'LK_PIANO': true};
+    let sorted = [...rows];
+    if (ordiniCustom[currentLk]) {
+      const ord = ordiniCustom[currentLk];
+      sorted.sort((a, b) => {
+        const ia = ord.indexOf(a.sigla), ib = ord.indexOf(b.sigla);
+        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+      });
+    } else if (ordineN[currentLk]) {
+      const key = currentLk === 'LK_PIANO' ? 'piano' : 'n_campi';
+      sorted.sort((a, b) => (parseFloat(a[key]) || 0) - (parseFloat(b[key]) || 0));
+    }
+    const skip = new Set(['id','created_at','updated_at','updated_by','stato']);
     const cols = Object.keys(rows[0]).filter(c => !skip.has(c));
     container.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr>' +
       cols.map(c => '<th>' + c + '</th>').join('') +
       '<th style="text-align:right;">Stato</th></tr></thead><tbody>' +
-      rows.map(r => '<tr>' +
-        cols.map(c => c === 'stato' ? '' : '<td>' + (r[c] !== null && r[c] !== undefined ? String(r[c]) : '—') + '</td>').join('') +
+      sorted.map(r => '<tr>' +
+        cols.map(c => '<td>' + (r[c] !== null && r[c] !== undefined ? String(r[c]) : '—') + '</td>').join('') +
         '<td style="text-align:right;">' +
           '<span class="badge-' + (r.stato === 'attivo' ? 'attivo' : 'disattivo') + '">' + r.stato + '</span>' +
           '&nbsp;<button class="btn btn-xs ' + (r.stato === 'attivo' ? 'btn-danger' : 'btn-outline') + '" ' +

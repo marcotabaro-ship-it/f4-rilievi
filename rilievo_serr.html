@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
   <style>
-    /* LAYOUT con drawer */
     .rilievo-wrap { display:flex; gap:0; transition:all .3s ease; min-height:calc(100vh - 120px); }
     .rilievo-main { flex:1; min-width:0; transition:all .3s ease; }
     .rilievo-drawer {
@@ -29,8 +28,6 @@
       border-top:1px solid var(--c-border); padding:12px 16px;
       display:flex; gap:8px; justify-content:flex-end;
     }
-
-    /* Testata rilievo */
     .rilievo-header {
       background:var(--c-primary); color:white; border-radius:var(--radius-lg);
       padding:16px 20px; margin-bottom:16px;
@@ -39,8 +36,6 @@
     .rilievo-header h2 { font-size:1.1rem; font-weight:700; }
     .rh-meta { font-size:.8rem; opacity:.8; margin-top:3px; }
     .rh-code { font-family:monospace; background:var(--c-red); padding:3px 10px; border-radius:20px; font-size:.88rem; font-weight:700; }
-
-    /* Tabella posizioni */
     .pos-table-wrap { overflow-x:auto; border-radius:var(--radius); }
     .pos-table { width:100%; border-collapse:collapse; font-size:.82rem; }
     .pos-table th {
@@ -68,8 +63,6 @@
       background:#F0F0F0; color:var(--c-text-sec); border:1px solid var(--c-border);
     }
     .td-actions { white-space:nowrap; text-align:right; }
-
-    /* Stratigrafie */
     .strat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; }
     .strat-card { border:2px solid var(--c-border); border-radius:var(--radius); overflow:hidden; cursor:pointer; transition:border-color var(--transition); background:white; }
     .strat-card.sel { border-color:var(--c-red); box-shadow:0 0 0 3px rgba(211,47,47,.15); }
@@ -79,16 +72,12 @@
     .quote-item { display:flex; align-items:center; gap:8px; }
     .q-letter { width:28px; height:28px; border-radius:50%; background:var(--c-red); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.82rem; flex-shrink:0; }
     .q-input { width:76px; }
-
-    /* Drawer sections */
     .dsec-title {
       font-size:.78rem; font-weight:700; color:var(--c-primary);
       text-transform:uppercase; letter-spacing:.5px;
       border-bottom:2px solid var(--c-red); padding-bottom:4px; margin:14px 0 10px;
     }
     .dsec-title:first-child { margin-top:0; }
-
-    /* Campo con etichetta help */
     .field-wrap { margin-bottom:12px; }
     .field-label {
       display:flex; align-items:center; gap:4px;
@@ -99,8 +88,6 @@
     .form-control.field-invalid { border-color:var(--c-error)!important; background:#FFF5F5; }
     .form-row-2d { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .form-row-3d { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
-
-    /* Tooltip legenda */
     .tip-wrap { position:relative; display:inline-block; }
     .tip-box {
       display:none; position:absolute; left:calc(100% + 6px); top:50%; transform:translateY(-50%);
@@ -110,8 +97,6 @@
       z-index:500; box-shadow:var(--shadow-lg);
     }
     .tip-wrap:hover .tip-box, .tip-wrap.open .tip-box { display:block; }
-
-    /* Calc strip */
     .calc-strip {
       background:#E8F5E9; border:1px solid #A5D6A7; border-radius:var(--radius);
       padding:8px 12px; font-size:.8rem; margin-bottom:12px;
@@ -122,8 +107,6 @@
     .calc-val { font-weight:700; color:var(--c-success); }
     .calc-val.tub { color:#1565C0; }
     .calc-val.ale { color:#E65100; }
-
-    /* Legenda overlay */
     .legenda-overlay { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.3); }
     .legenda-overlay.open { display:block; }
     .legenda-drawer {
@@ -140,76 +123,62 @@
 <body>
 <div class="app-layout" id="appLayout">
  <main class="main-content" style="padding-right:16px;">
-
   <div class="breadcrumb">
     <a href="clienti.html">Clienti</a> ›
     <a id="bcCliente" href="#">—</a> ›
     <a id="bcCantiere" href="#">—</a> ›
     <span id="bcRilievo">Rilievo</span>
   </div>
-
   <div class="alert alert-warning" id="alertPosa" style="display:none;">
-    ⚠️ Tempi di posa aggiornati.
+    &#9888;&#65039; Tempi di posa aggiornati.
     <button class="btn btn-sm btn-outline" style="margin-left:10px;" onclick="aggiornaVersionePosa()">Aggiorna</button>
   </div>
-
-  <!-- TESTATA -->
   <div class="rilievo-header">
     <div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <h2>Rilievo Serramenti</h2>
         <span class="rh-code" id="rhCodice">—</span>
-        <span id="rhGru" style="display:none;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:12px;font-size:.76rem;">🏗️ Gru</span>
+        <span id="rhGru" style="display:none;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:12px;font-size:.76rem;">&#127959;&#65039; Gru</span>
       </div>
       <div class="rh-meta" id="rhMeta">—</div>
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="openModalClona()">📋 Clona</button>
-      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="Utils.navigate('report_acc.html',{idRilievo:idRilievo})">📊 Accessori</button>
-      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="Utils.navigate('report_posa.html',{idRilievo:idRilievo,tipo:'SERR'})">⏱️ Posa</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="openModalClona()">&#128203; Clona</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="Utils.navigate('report_acc.html',{idRilievo:idRilievo})">&#128202; Accessori</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="Utils.navigate('report_posa.html',{idRilievo:idRilievo,tipo:'SERR'})">&#9201;&#65039; Posa</button>
     </div>
   </div>
-
-  <!-- TABS -->
   <div class="tabs">
-    <button class="tab-btn active" onclick="showTab('tabPosizioni',this)">🪟 Posizioni</button>
-    <button class="tab-btn" onclick="showTab('tabStratigrafie',this)">🧱 Stratigrafie</button>
-    <button class="tab-btn" onclick="showTab('tabTestata',this)">📋 Dati rilievo</button>
+    <button class="tab-btn active" onclick="showTab('tabPosizioni',this)">&#127oning; Posizioni</button>
+    <button class="tab-btn" onclick="showTab('tabStratigrafie',this)">&#129521; Stratigrafie</button>
+    <button class="tab-btn" onclick="showTab('tabTestata',this)">&#128203; Dati rilievo</button>
   </div>
-
-  <!-- WRAPPER con drawer -->
   <div class="rilievo-wrap">
    <div class="rilievo-main">
-
-    <!-- TAB POSIZIONI -->
     <div class="tab-panel active" id="tabPosizioni">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
         <span style="font-size:.88rem;color:var(--c-text-sec);" id="countPosizioni">0 posizioni</span>
         <div style="display:flex;gap:6px;">
-          <button class="btn btn-sm btn-outline" id="btnLegendaPos" onclick="openLegenda('generale')">📖 Legenda</button>
-          <button class="btn btn-primary" onclick="nuovaPosizione()">➕ Nuova posizione</button>
+          <button class="btn btn-sm btn-outline" id="btnLegendaPos" onclick="openLegenda('generale')">&#128218; Legenda</button>
+          <button class="btn btn-primary" onclick="nuovaPosizione()">&#10133; Nuova posizione</button>
         </div>
       </div>
       <div id="posizioniContainer">
         <div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>
       </div>
     </div>
-
-    <!-- TAB STRATIGRAFIE -->
     <div class="tab-panel" id="tabStratigrafie">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-        <p style="font-size:.86rem;color:var(--c-text-sec);">La prima stratigrafia è il default per tutte le posizioni.</p>
-        <button class="btn btn-primary" onclick="openModalStratigrafia(null)">➕ Nuova</button>
+        <p style="font-size:.86rem;color:var(--c-text-sec);">La prima stratigrafia e il default per tutte le posizioni.</p>
+        <button class="btn btn-primary" onclick="openModalStratigrafia(null)">&#10133; Nuova</button>
       </div>
       <div id="stratContainer"><div class="loading-state"><div class="spinner"></div></div></div>
     </div>
-
-    <!-- TAB TESTATA -->
     <div class="tab-panel" id="tabTestata">
       <div class="card">
         <div class="card-header">
           <span class="card-title">Modifica dati rilievo</span>
-          <button class="btn btn-primary btn-sm" onclick="salvaTestata()">💾 Salva</button>
+          <button class="btn btn-primary btn-sm" onclick="salvaTestata()">&#128190; Salva</button>
         </div>
         <div class="form-row form-row-2">
           <div class="form-group"><label class="form-label">Referente</label><select class="form-control" id="tReferente"></select></div>
@@ -219,30 +188,24 @@
           <div class="form-group"><label class="form-label">Data rilievo</label><input class="form-control" type="date" id="tDataRilievo"></div>
           <div class="form-group"><label class="form-label">Data posa prevista</label><input class="form-control" type="date" id="tDataPosa"></div>
         </div>
-        <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="tGru"><label for="tGru">🏗️ Utilizzo gru / autoscala</label></div></div>
+        <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="tGru"><label for="tGru">&#127959;&#65039; Utilizzo gru / autoscala</label></div></div>
         <div class="form-group"><label class="form-label">Note</label><textarea class="form-control" id="tNote" rows="3"></textarea></div>
       </div>
     </div>
-
-   </div><!-- fine rilievo-main -->
-
-   <!-- DRAWER LATERALE -->
+   </div>
    <div class="rilievo-drawer" id="rilievoDrawer">
     <div class="drawer-inner">
       <div class="drawer-header">
         <h3 id="drawerTitle">Posizione —</h3>
-        <button class="drawer-close" onclick="closeDrawer()">✕</button>
+        <button class="drawer-close" onclick="closeDrawer()">&#10005;</button>
       </div>
       <div class="drawer-body" id="drawerBody">
-        <!-- Calcolo real-time -->
         <div class="calc-strip" id="calcStrip">
-          <div class="calc-item"><span class="calc-lbl">L arch. × H arch.</span><span class="calc-val" id="cLarch">—</span></div>
-          <div class="calc-item"><span class="calc-lbl">L telaio × H telaio</span><span class="calc-val" id="cLtel">—</span></div>
-          <div class="calc-item"><span class="calc-lbl">L tub. × H tub.</span><span class="calc-val tub" id="cLtub">—</span></div>
+          <div class="calc-item"><span class="calc-lbl">L arch. x H arch.</span><span class="calc-val" id="cLarch">—</span></div>
+          <div class="calc-item"><span class="calc-lbl">L telaio x H telaio</span><span class="calc-val" id="cLtel">—</span></div>
+          <div class="calc-item"><span class="calc-lbl">L tub. x H tub.</span><span class="calc-val tub" id="cLtub">—</span></div>
         </div>
-
-        <!-- SEZIONE: DATI GENERALI -->
-        <div class="dsec-title">📋 Dati generali</div>
+        <div class="dsec-title">&#128203; Dati generali</div>
         <div class="form-row-2d">
           <div class="field-wrap">
             <div class="field-label">Piano <span class="req">*</span></div>
@@ -255,30 +218,21 @@
         </div>
         <div class="form-row-2d">
           <div class="field-wrap">
-            <div class="field-label">
-              Tipo serramento <span class="req">*</span>
-              <button class="fi" onclick="openLegenda('tipoSerr')">ℹ️</button>
-            </div>
+            <div class="field-label">Tipo serramento <span class="req">*</span> <button class="fi" onclick="openLegenda('tipoSerr')">&#8505;&#65039;</button></div>
             <select class="form-control" id="dTipoSerr" onchange="dOnTipoSerrChange()"></select>
           </div>
           <div class="field-wrap">
-            <div class="field-label">N° campi <span class="req">*</span></div>
+            <div class="field-label">N campi <span class="req">*</span></div>
             <select class="form-control" id="dNCampi" onchange="dSave()"></select>
           </div>
         </div>
         <div class="form-row-2d">
           <div class="field-wrap">
-            <div class="field-label">
-              Senso apertura
-              <button class="fi" onclick="openLegenda('sensiApertura')">ℹ️</button>
-            </div>
+            <div class="field-label">Senso apertura <button class="fi" onclick="openLegenda('sensiApertura')">&#8505;&#65039;</button></div>
             <select class="form-control" id="dSensoApertura" onchange="dSave()"></select>
           </div>
           <div class="field-wrap">
-            <div class="field-label">
-              Tipo foro <span class="req">*</span>
-              <button class="fi" onclick="openLegenda('tipoForo')">ℹ️</button>
-            </div>
+            <div class="field-label">Tipo foro <span class="req">*</span> <button class="fi" onclick="openLegenda('tipoForo')">&#8505;&#65039;</button></div>
             <select class="form-control" id="dTipoForo" onchange="dOnTipoForoChange()"></select>
           </div>
         </div>
@@ -303,14 +257,9 @@
           <div class="field-label">Note</div>
           <textarea class="form-control" id="dNote" rows="2" onchange="dSave()"></textarea>
         </div>
-
-        <!-- SEZIONE: SERRAMENTO -->
-        <div class="dsec-title">🪟 Serramento</div>
+        <div class="dsec-title">&#127oning; Serramento</div>
         <div class="field-wrap">
-          <div class="field-label">
-            Materiale <span class="req">*</span>
-            <button class="fi" onclick="openLegenda('materiale')">ℹ️</button>
-          </div>
+          <div class="field-label">Materiale <span class="req">*</span> <button class="fi" onclick="openLegenda('materiale')">&#8505;&#65039;</button></div>
           <select class="form-control" id="dMateriale" onchange="dOnMaterialeChange()"></select>
         </div>
         <div class="field-wrap">
@@ -323,10 +272,7 @@
             <select class="form-control" id="dStileDesign" onchange="dOnStileChange()" disabled></select>
           </div>
           <div class="field-wrap">
-            <div class="field-label">
-              Variante telaio <span class="req">*</span>
-              <button class="fi" onclick="openLegenda('varianteTelaio')">ℹ️</button>
-            </div>
+            <div class="field-label">Variante telaio <span class="req">*</span> <button class="fi" onclick="openLegenda('varianteTelaio')">&#8505;&#65039;</button></div>
             <select class="form-control" id="dVarianteTelaio" onchange="dOnVarianteChange()" disabled></select>
           </div>
         </div>
@@ -336,13 +282,11 @@
             <input class="form-control" type="text" id="dCodiceSerr" readonly style="background:#F5F5F5;font-family:monospace;font-size:.78rem;">
           </div>
           <div class="field-wrap">
-            <div class="field-label">N° vetri</div>
+            <div class="field-label">N vetri</div>
             <select class="form-control" id="dNVetri" disabled onchange="dSave()"><option value="">—</option></select>
           </div>
         </div>
-
-        <!-- SEZIONE: COLORI -->
-        <div class="dsec-title">🎨 Colori</div>
+        <div class="dsec-title">&#127912; Colori</div>
         <div class="form-row-2d">
           <div class="field-wrap">
             <div class="field-label">Colore interno</div>
@@ -353,9 +297,7 @@
             <select class="form-control" id="dColoreEst" onchange="dSave()" disabled><option value="">—</option></select>
           </div>
         </div>
-
-        <!-- SEZIONE: COPRIFILI -->
-        <div class="dsec-title">🔲 Coprifili</div>
+        <div class="dsec-title">&#11035; Coprifili</div>
         <div class="form-row-2d">
           <div class="field-wrap">
             <div class="field-label">Materiale int.</div>
@@ -376,22 +318,14 @@
             <select class="form-control" id="dCopriEstDim" onchange="dSave()" disabled></select>
           </div>
         </div>
-
-        <!-- SEZIONE: ACCESSORI -->
-        <div class="dsec-title">🔧 Accessori</div>
+        <div class="dsec-title">&#128295; Accessori</div>
         <div class="form-row-2d">
           <div class="field-wrap">
-            <div class="field-label">
-              Schermatura
-              <button class="fi" onclick="openLegenda('schermatura')">ℹ️</button>
-            </div>
+            <div class="field-label">Schermatura <button class="fi" onclick="openLegenda('schermatura')">&#8505;&#65039;</button></div>
             <select class="form-control" id="dSchermatura" onchange="dSave()"></select>
           </div>
           <div class="field-wrap">
-            <div class="field-label">
-              Cassonetto
-              <button class="fi" onclick="openLegenda('cassonetto')">ℹ️</button>
-            </div>
+            <div class="field-label">Cassonetto <button class="fi" onclick="openLegenda('cassonetto')">&#8505;&#65039;</button></div>
             <select class="form-control" id="dCassonetto" onchange="dSave()"></select>
           </div>
         </div>
@@ -407,25 +341,16 @@
         </div>
         <div class="form-row-2d">
           <div class="field-wrap">
-            <div class="field-label">
-              Controtelaio
-              <button class="fi" onclick="openLegenda('controtelaio')">ℹ️</button>
-            </div>
+            <div class="field-label">Controtelaio <button class="fi" onclick="openLegenda('controtelaio')">&#8505;&#65039;</button></div>
             <select class="form-control" id="dControtelaio" onchange="dOnControtelaioChange()"></select>
           </div>
           <div class="field-wrap">
-            <div class="field-label">
-              Zanzariera
-              <button class="fi" onclick="openLegenda('zanzariera')">ℹ️</button>
-            </div>
+            <div class="field-label">Zanzariera <button class="fi" onclick="openLegenda('zanzariera')">&#8505;&#65039;</button></div>
             <select class="form-control" id="dZanzariera" onchange="dSave()"></select>
           </div>
         </div>
         <div class="field-wrap" id="grpDinoxill">
-          <div class="field-label">
-            Dinoxill
-            <button class="fi" onclick="openLegenda('dinoxill')">ℹ️</button>
-          </div>
+          <div class="field-label">Dinoxill <button class="fi" onclick="openLegenda('dinoxill')">&#8505;&#65039;</button></div>
           <select class="form-control" id="dDinoxill" onchange="dOnDinoxillChange()"></select>
         </div>
         <div id="grpDinoxillLati" style="display:none;">
@@ -435,16 +360,15 @@
             <label class="radio-opt"><input type="radio" name="dDinoxillLati" value="4" onchange="dSave()"> 4 lati</label>
           </div>
         </div>
-      </div><!-- fine drawer-body -->
+      </div>
       <div class="drawer-footer">
         <button class="btn btn-outline btn-sm" onclick="closeDrawer()">Chiudi</button>
-        <button class="btn btn-secondary btn-sm" onclick="copiaDaDrawer()">📋 Copia posizione</button>
-        <button class="btn btn-primary" id="btnDrawerSalva" onclick="salvaDrawer()">💾 Salva</button>
+        <button class="btn btn-secondary btn-sm" onclick="copiaDaDrawer()">&#128203; Copia posizione</button>
+        <button class="btn btn-primary" id="btnDrawerSalva" onclick="salvaDrawer()">&#128190; Salva</button>
       </div>
-    </div><!-- fine drawer-inner -->
-   </div><!-- fine drawer -->
-  </div><!-- fine rilievo-wrap -->
-
+    </div>
+   </div>
+  </div>
  </main>
 </div>
 
@@ -453,7 +377,7 @@
   <div class="modal-box">
     <div class="modal-header">
       <span class="modal-title" id="modalStratTitle">Nuova stratigrafia</span>
-      <button class="modal-close" onclick="Utils.closeModal('modalStratigrafia')">✕</button>
+      <button class="modal-close" onclick="Utils.closeModal('modalStratigrafia')">&#10005;</button>
     </div>
     <div class="modal-body">
       <div class="form-group"><label class="form-label">Nome <span class="req">*</span></label><input class="form-control" type="text" id="sNome"></div>
@@ -477,11 +401,11 @@
 <!-- MODAL CLONA -->
 <div class="modal" id="modalClona">
   <div class="modal-box modal-box-sm">
-    <div class="modal-header"><span class="modal-title">Clona / Revisione</span><button class="modal-close" onclick="Utils.closeModal('modalClona')">✕</button></div>
+    <div class="modal-header"><span class="modal-title">Clona / Revisione</span><button class="modal-close" onclick="Utils.closeModal('modalClona')">&#10005;</button></div>
     <div class="modal-body">
       <div class="radio-group" style="flex-direction:column;gap:12px;">
-        <label class="radio-opt"><input type="radio" name="tipoClona" value="COPIA" checked><div><strong>Copia</strong><br><span style="font-size:.8rem;color:var(--c-text-sec);">R00C00 → R00C01</span></div></label>
-        <label class="radio-opt"><input type="radio" name="tipoClona" value="REVISIONE"><div><strong>Revisione</strong><br><span style="font-size:.8rem;color:var(--c-text-sec);">R00C00 → R01C00</span></div></label>
+        <label class="radio-opt"><input type="radio" name="tipoClona" value="COPIA" checked><div><strong>Copia</strong><br><span style="font-size:.8rem;color:var(--c-text-sec);">R00C00 &#8594; R00C01</span></div></label>
+        <label class="radio-opt"><input type="radio" name="tipoClona" value="REVISIONE"><div><strong>Revisione</strong><br><span style="font-size:.8rem;color:var(--c-text-sec);">R00C00 &#8594; R01C00</span></div></label>
       </div>
     </div>
     <div class="modal-footer">
@@ -494,7 +418,7 @@
 <!-- MODAL ELIMINA -->
 <div class="modal" id="modalEliminaPos">
   <div class="modal-box modal-box-sm">
-    <div class="modal-header"><span class="modal-title">Elimina posizione</span><button class="modal-close" onclick="Utils.closeModal('modalEliminaPos')">✕</button></div>
+    <div class="modal-header"><span class="modal-title">Elimina posizione</span><button class="modal-close" onclick="Utils.closeModal('modalEliminaPos')">&#10005;</button></div>
     <div class="modal-body"><p>Eliminare la posizione <strong id="posDaEliminare"></strong>?</p></div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="Utils.closeModal('modalEliminaPos')">Annulla</button>
@@ -506,7 +430,7 @@
 <!-- MODAL COPIA N -->
 <div class="modal" id="modalCopiaPos">
   <div class="modal-box modal-box-sm">
-    <div class="modal-header"><span class="modal-title">Copia posizione</span><button class="modal-close" onclick="Utils.closeModal('modalCopiaPos')">✕</button></div>
+    <div class="modal-header"><span class="modal-title">Copia posizione</span><button class="modal-close" onclick="Utils.closeModal('modalCopiaPos')">&#10005;</button></div>
     <div class="modal-body"><div class="form-group"><label class="form-label">Quante copie?</label><input class="form-control" type="number" id="nCopie" min="1" max="20" value="1"></div></div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="Utils.closeModal('modalCopiaPos')">Annulla</button>
@@ -520,7 +444,7 @@
   <div class="legenda-drawer" onclick="event.stopPropagation()">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
       <div class="leg-title" id="legTitolo" style="margin:0;border:none;padding:0;"></div>
-      <button class="btn-icon" onclick="closeLegenda()">✕</button>
+      <button class="btn-icon" onclick="closeLegenda()">&#10005;</button>
     </div>
     <div id="legContenuto"></div>
   </div>
@@ -532,19 +456,6 @@
 <script src="js/utils.js"></script>
 <script src="js/layout.js"></script>
 <script>
-
-// ================================================================
-// SCRIPT COMPLETO per rilievo_serr.html
-// ISTRUZIONI:
-//   1. Apri rilievo_serr.html su GitHub → matita
-//   2. Scorri fino in fondo al file
-//   3. Trova "<script src="js/config.js"></script>" 
-//   4. Seleziona TUTTO il blocco <script>...</script> finale
-//      (dall'ultimo <script> aperto fino a </script> finale)
-//   5. Cancella e incolla questo file intero
-//   6. Commit: "fix: rilievo_serr.html script difensivo v2"
-// ================================================================
-
 const currentUser = Auth.requireLogin();
 if (!currentUser) throw new Error('not logged');
 Layout.init('clienti');
@@ -557,9 +468,6 @@ var lookups={}, datiComuni={}, regoleLati={};
 var drawerPosId=null, stratEditId=null, posizioneEliminaId=null, posizioneCopiaId=null;
 var drawerDirty=false;
 
-// ================================================================
-// INIT — con difese su tutti gli array
-// ================================================================
 async function init() {
   try {
     var res = await API.getInitData(idRilievo);
@@ -568,19 +476,14 @@ async function init() {
     if (!d.rilievo) { Utils.showError(d.rilievoError||'Rilievo non trovato'); return; }
     rilievo = d.rilievo;
     lookups = d.lookups || {};
-
-    // FIX: difensivo su datiComuni
     datiComuni = {};
     var dcArr = d.datiComuni || [];
     if (Array.isArray(dcArr)) dcArr.forEach(function(x){ if(x) datiComuni[parseInt(x.ID)||parseInt(x.id)]=parseFloat(x.valore)||0; });
     else datiComuni = dcArr;
-
-    // FIX: difensivo su regoleLati
     regoleLati = {};
     var rlArr = d.regoleLati || [];
     if (Array.isArray(rlArr)) rlArr.forEach(function(r){ if(r && r.sigla) regoleLati[r.sigla]=r; });
     else regoleLati = rlArr;
-
     dbSerr = (d.dbSerramento||[]).filter(function(x){ return x && (!x.stato||String(x.stato).toLowerCase()!=='disattivo'); });
     renderTestata();
     populateTestataSel();
@@ -593,9 +496,6 @@ async function init() {
   }
 }
 
-// ================================================================
-// TESTATA
-// ================================================================
 function renderTestata() {
   document.title=rilievo.codice+' — F4 Rilievi';
   document.getElementById('rhCodice').textContent=rilievo.codice||'—';
@@ -639,9 +539,6 @@ function showTab(id,btn){
   document.getElementById(id).classList.add('active'); btn.classList.add('active');
 }
 
-// ================================================================
-// POSIZIONI
-// ================================================================
 async function loadPosizioni() {
   var res=await API.getPosizioniSerr(idRilievo);
   if(!res.success){Utils.showError(res.error);return;}
@@ -651,9 +548,9 @@ async function loadPosizioni() {
 function renderPosizioni() {
   var c=document.getElementById('posizioniContainer');
   document.getElementById('countPosizioni').textContent=posizioni.length+' posizioni';
-  if(!posizioni.length){Utils.showEmptyState(c,'Nessuna posizione. Clicca "+ Nuova posizione".','🪟');return;}
+  if(!posizioni.length){Utils.showEmptyState(c,'Nessuna posizione. Clicca "+ Nuova posizione".','&#127oning;');return;}
   var html='<div class="pos-table-wrap"><table class="pos-table"><thead><tr>'+
-    '<th style="width:44px;">N°</th><th>Piano</th><th>Ambiente</th><th>Tipo</th>'+
+    '<th style="width:44px;">N</th><th>Piano</th><th>Ambiente</th><th>Tipo</th>'+
     '<th>L (mm)</th><th>H (mm)</th><th>Foro</th><th>Sistema / Variante</th>'+
     '<th>Accessori</th><th style="text-align:right;">Azioni</th>'+
     '</tr></thead><tbody>';
@@ -674,17 +571,14 @@ function renderPosizioni() {
       '<td>'+piano+'</td>'+
       '<td style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(p.ambiente||'—')+'</td>'+
       '<td><span class="pos-badge-tipo">'+(p.tipo_serramento||'—')+'</span></td>'+
-      '<td class="dim-cell"><div class="dim-main">'+(p.L_mm||'—')+'</div>'+
-        (dimCalc.Ltub?'<div class="dim-sub">('+Math.round(dimCalc.Ltub)+')</div>':'')+'</td>'+
-      '<td class="dim-cell"><div class="dim-main">'+(p.H_mm||'—')+'</div>'+
-        (dimCalc.Htub?'<div class="dim-sub">('+Math.round(dimCalc.Htub)+')</div>':'')+'</td>'+
+      '<td class="dim-cell"><div class="dim-main">'+(p.L_mm||'—')+'</div>'+(dimCalc.Ltub?'<div class="dim-sub">('+Math.round(dimCalc.Ltub)+')</div>':'')+'</td>'+
+      '<td class="dim-cell"><div class="dim-main">'+(p.H_mm||'—')+'</div>'+(dimCalc.Htub?'<div class="dim-sub">('+Math.round(dimCalc.Htub)+')</div>':'')+'</td>'+
       '<td style="font-size:.78rem;">'+(p.tipo_foro||'—')+'</td>'+
-      '<td style="font-size:.8rem;"><div style="font-weight:600;">'+(p.sistema||'—')+'</div>'+
-        '<div style="color:var(--c-text-sec);font-size:.74rem;">'+(p.variante_telaio||'—')+(p.stile_design?' / '+p.stile_design:'')+'</div></td>'+
+      '<td style="font-size:.8rem;"><div style="font-weight:600;">'+(p.sistema||'—')+'</div><div style="color:var(--c-text-sec);font-size:.74rem;">'+(p.variante_telaio||'—')+(p.stile_design?' / '+p.stile_design:'')+'</div></td>'+
       '<td><div class="acc-chips">'+acc.map(function(a){return'<span class="acc-chip">'+a+'</span>';}).join('')+'</div></td>'+
       '<td class="td-actions" onclick="event.stopPropagation()">'+
-        '<button class="btn-icon" title="Copia" onclick="openModalCopiaPos(\''+p.ID_pos+'\')">📋</button>'+
-        '<button class="btn-icon" title="Elimina" onclick="openModalEliminaPos(\''+p.ID_pos+'\',\''+p.numero_pos+'\')">🗑️</button>'+
+        '<button class="btn-icon" title="Copia" onclick="openModalCopiaPos(\''+p.ID_pos+'\')">&#128203;</button>'+
+        '<button class="btn-icon" title="Elimina" onclick="openModalEliminaPos(\''+p.ID_pos+'\',\''+p.numero_pos+'\')">&#128465;&#65039;</button>'+
       '</td></tr>';
   });
   html+='</tbody></table></div>';
@@ -694,7 +588,7 @@ function renderPosizioni() {
 function calcolaRealtime(p) {
   var H=parseFloat(p.H_mm)||0, L=parseFloat(p.L_mm)||0;
   if(!H||!L||!p.tipo_foro) return {Htub:0,Ltub:0};
-  var rec=dbSerr.find(function(d){return d.materiale===p.materiale&&d.descrizione===p.sistema&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio;});
+  var rec=dbSerr.find(function(d){return d&&d.materiale===p.materiale&&d.descrizione===p.sistema&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio;});
   var nascosto=rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
   var aletta=rec?(parseFloat(rec.aletta_mm)||0):0;
   var ao=parseFloat(datiComuni[4])||10, at=parseFloat(datiComuni[5])||10;
@@ -710,9 +604,6 @@ function calcolaRealtime(p) {
   return {Ltub:Ltub,Htub:Htub};
 }
 
-// ================================================================
-// DRAWER
-// ================================================================
 function openDrawer(id) {
   if(drawerDirty && drawerPosId && drawerPosId!==id) {
     if(!confirm('Ci sono modifiche non salvate. Continuare?')) return;
@@ -741,13 +632,10 @@ function nuovaPosizione() {
   document.getElementById('rilievoDrawer').classList.add('open');
 }
 
-// ================================================================
-// DRAWER POPULATE — FIX: .filter() prima di ogni .map() con .sigla
-// ================================================================
 function populateDrawerDropdowns() {
   Utils.fillSelect('dPiano',(lookups.LK_PIANO||[]).filter(function(p){return p;}).map(function(p){return{value:p.piano,label:'Piano '+(p.piano>=0?'+':'')+p.piano};}), '— Piano —');
   Utils.fillSelect('dTipoSerr',(lookups.LK_TIPO_SERR||[]).filter(function(t){return t&&t.sigla;}).map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo —');
-  Utils.fillSelect('dNCampi',(lookups.LK_N_CAMPI||[]).filter(function(c){return c;}).map(function(c){return{value:c.n_campi,label:c.n_campi+' campo/i'};}), '— N° campi —');
+  Utils.fillSelect('dNCampi',(lookups.LK_N_CAMPI||[]).filter(function(c){return c&&c.n_campi;}).map(function(c){return{value:c.n_campi,label:c.n_campi+' campo/i'};}), '— N campi —');
   Utils.fillSelect('dSensoApertura',(lookups.LK_SENSI_APERTURA||[]).filter(function(s){return s&&s.sigla;}).map(function(s){return{value:s.sigla,label:s.sigla+' — '+s.descrizione};}), '— Senso —');
   Utils.fillSelect('dTipoForo',(lookups.LK_TIPO_FORO_SERR||[]).filter(function(t){return t&&t.sigla;}).map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo foro —');
   var matSeen={};
@@ -839,9 +727,6 @@ function fillDrawer(p) {
   dRicalcola();
 }
 
-// ================================================================
-// CASCATE DROPDOWN
-// ================================================================
 function dOnTipoSerrChange(silent) {
   var tipo=document.getElementById('dTipoSerr').value;
   var regola=regoleLati[tipo]||{};
@@ -866,11 +751,11 @@ function dOnMaterialeChange(silent) {
   if(!silent) drawerDirty=true;
   if(!mat) return;
   var sistSeen={};
-  dbSerr.filter(function(d){return d.materiale===mat;}).forEach(function(d){sistSeen[d.descrizione]=1;});
+  dbSerr.filter(function(d){return d&&d.materiale===mat;}).forEach(function(d){sistSeen[d.descrizione]=1;});
   Utils.fillSelect('dSistema',Object.keys(sistSeen).sort().map(function(s){return{value:s,label:s};}),'— Sistema —');
   document.getElementById('dSistema').disabled=false;
   if(!silent) document.getElementById('dSistema').classList.add('field-invalid');
-  var recMat=dbSerr.find(function(d){return d.materiale===mat;});
+  var recMat=dbSerr.find(function(d){return d&&d.materiale===mat;});
   var matSigla=recMat?String(recMat.materiale_sigla||'').replace(/-/g,'').trim():'';
   var colSeen={};
   (lookups.LK_COLORI||[]).filter(function(c){return c&&c.materiale===matSigla;}).forEach(function(c){colSeen[c.colore_interno]=1;});
@@ -890,7 +775,7 @@ function dOnSistemaChange(silent) {
   if(!silent) drawerDirty=true;
   if(!sis) return;
   var stileSeen={};
-  dbSerr.filter(function(d){return d.materiale===mat&&d.descrizione===sis;}).forEach(function(d){stileSeen[d.stile_design]=1;});
+  dbSerr.filter(function(d){return d&&d.materiale===mat&&d.descrizione===sis;}).forEach(function(d){stileSeen[d.stile_design]=1;});
   Utils.fillSelect('dStileDesign',Object.keys(stileSeen).sort().map(function(s){return{value:s,label:s};}),'— Stile —');
   document.getElementById('dStileDesign').disabled=false;
   if(!silent) document.getElementById('dStileDesign').classList.add('field-invalid');
@@ -909,7 +794,7 @@ function dOnStileChange(silent) {
   if(!silent) drawerDirty=true;
   if(!sti) return;
   var varSeen={};
-  dbSerr.filter(function(d){return d.materiale===mat&&d.descrizione===sis&&d.stile_design===sti;}).forEach(function(d){varSeen[d.variante_telaio]=1;});
+  dbSerr.filter(function(d){return d&&d.materiale===mat&&d.descrizione===sis&&d.stile_design===sti;}).forEach(function(d){varSeen[d.variante_telaio]=1;});
   Utils.fillSelect('dVarianteTelaio',Object.keys(varSeen).sort().map(function(v){return{value:v,label:v};}),'— Variante —');
   document.getElementById('dVarianteTelaio').disabled=false;
   if(!silent) document.getElementById('dVarianteTelaio').classList.add('field-invalid');
@@ -948,13 +833,13 @@ function dGetRec() {
   var sti=document.getElementById('dStileDesign').value;
   var vr=document.getElementById('dVarianteTelaio').value;
   if(!mat||!sis||!sti||!vr) return null;
-  return dbSerr.find(function(d){return d.materiale===mat&&d.descrizione===sis&&d.stile_design===sti&&d.variante_telaio===vr;})||null;
+  return dbSerr.find(function(d){return d&&d.materiale===mat&&d.descrizione===sis&&d.stile_design===sti&&d.variante_telaio===vr;})||null;
 }
 function dOnColoreIntChange(silent) {
   if(!silent) drawerDirty=true;
   var mat=document.getElementById('dMateriale').value;
   var colI=document.getElementById('dColoreInt').value;
-  var recMat=dbSerr.find(function(d){return d.materiale===mat;});
+  var recMat=dbSerr.find(function(d){return d&&d.materiale===mat;});
   var matSigla=recMat?String(recMat.materiale_sigla||'').replace(/-/g,'').trim():'';
   var colori=(lookups.LK_COLORI||[]).filter(function(c){return c&&c.materiale===matSigla&&c.colore_interno===colI;});
   var colEstSeen={};
@@ -1003,9 +888,6 @@ function dOnDinoxillChange(silent) {
 }
 function dSave() { drawerDirty=true; }
 
-// ================================================================
-// CALCOLO REAL-TIME
-// ================================================================
 function dRicalcola() {
   var H=parseFloat(document.getElementById('dHmm').value)||0;
   var L=parseFloat(document.getElementById('dLmm').value)||0;
@@ -1033,9 +915,6 @@ function dRicalcola() {
   document.getElementById('cLtub').textContent=fmtLH(Ltub,Htub)+(aletta>0?' [al.'+aletta+']':'');
 }
 
-// ================================================================
-// SALVA DRAWER
-// ================================================================
 async function salvaDrawer() {
   var data=raccogliDrawer(); if(!data)return;
   var btn=document.getElementById('btnDrawerSalva'); btn.disabled=true; btn.textContent='Salvataggio...';
@@ -1103,9 +982,6 @@ function copiaDaDrawer() {
   else Utils.showWarning('Salva prima la posizione.');
 }
 
-// ================================================================
-// COPIA / ELIMINA
-// ================================================================
 function openModalCopiaPos(id){posizioneCopiaId=id;document.getElementById('nCopie').value=1;Utils.openModal('modalCopiaPos');}
 async function eseguiCopiaPos(){
   var n=parseInt(document.getElementById('nCopie').value)||1;
@@ -1125,9 +1001,6 @@ async function confEliminaPos(){
   } else Utils.showError(res.error);
 }
 
-// ================================================================
-// STRATIGRAFIE
-// ================================================================
 var STRAT_IMAGES=APP_CONFIG.STRAT_IMAGES, STRAT_QUOTE=APP_CONFIG.STRAT_QUOTE;
 
 async function loadStratigrafie(){
@@ -1199,7 +1072,7 @@ async function salvaStratigrafia(){
   var nome=document.getElementById('sNome').value.trim(),imgRef=document.getElementById('sImgRef').value;
   if(!nome||!imgRef){Utils.showWarning('Nome e immagine obbligatori.');return;}
   var lettere=STRAT_QUOTE[imgRef]||[];
-  var quote=lettere.map(function(l){return{lettera:l,mm:parseInt(document.getElementById('sq_'+l)?.value)||0};});
+  var quote=lettere.map(function(l){var el=document.getElementById('sq_'+l);return{lettera:l,mm:parseInt(el?el.value:0)||0};});
   var data={ID_rilievo:idRilievo,nome:nome,immagine_ref:imgRef,quote_json:JSON.stringify(quote)};
   var btn=document.getElementById('btnSalvaStrat');btn.disabled=true;btn.textContent='Salvataggio...';
   var res=stratEditId?await API.updateStratigrafia(stratEditId,data):await API.createStratigrafia(data);
@@ -1211,34 +1084,29 @@ async function salvaStratigrafia(){
 async function setDefaultStrat(id){var res=await API.setDefaultStrat(id,idRilievo);if(res.success){Utils.showSuccess('Default aggiornato.');await loadStratigrafie();}else Utils.showError(res.error);}
 async function eliminaStrat(id){if(!await Utils.confirm('Eliminare?'))return;var res=await API.deleteStratigrafia(id);if(res.success){Utils.showSuccess('Eliminata.');await loadStratigrafie();}else Utils.showError(res.error);}
 
-// ================================================================
-// CLONA
-// ================================================================
 function openModalClona(){Utils.openModal('modalClona');}
 async function eseguiClona(){
-  var tc=document.querySelector('[name="tipoClona"]:checked')?.value;
-  var res=await API.cloneRilievo(idRilievo,tc);
-  if(res.success){Utils.showSuccess((tc==='REVISIONE'?'Revisione':'Copia')+' creata: '+res.codice);Utils.closeModal('modalClona');Utils.navigate('rilievo_serr.html',{idRilievo:res.id});}
+  var tc=document.querySelector('[name="tipoClona"]:checked');
+  var tcVal=tc?tc.value:'COPIA';
+  var res=await API.cloneRilievo(idRilievo,tcVal);
+  if(res.success){Utils.showSuccess((tcVal==='REVISIONE'?'Revisione':'Copia')+' creata: '+res.codice);Utils.closeModal('modalClona');Utils.navigate('rilievo_serr.html',{idRilievo:res.id});}
   else Utils.showError(res.error);
 }
 
-// ================================================================
-// LEGENDA
-// ================================================================
 var LEGENDE={
   generale:{titolo:'Legenda generale',voci:[
-    ['N','Numero posizione — assegnato automaticamente'],
+    ['N','Numero posizione'],
     ['Tipo','I=Ingresso, F=Finestra, PF=Porta Finestra, FF=Fin.Fissa, VF=Vetrata, S=Scorrevole'],
-    ['L / H','Larghezza e altezza del foro misurate secondo il tipo foro'],
-    ['(L) / (H)','Larghezza e altezza tubolare: dimensione reale nel muro'],
+    ['L / H','Larghezza e altezza foro'],
+    ['(L) / (H)','Dimensione tubolare nel muro'],
     ['Foro','A=Architettonico, D=Dim.telaio, P=Posa in luce'],
     ['CTL','Controtelaio in legno'],['TC','Termocassa'],
     ['Cass','Cassonetto'],['Zanz','Zanzariera'],['CopI/E','Coprifilo interno/esterno']
   ]},
   tipoSerr:{titolo:'Tipo serramento',voci:[['I','Ingresso'],['F','Finestra apribile'],['PF','Porta finestra'],['FF','Finestra fissa'],['VF','Vetrata fissa'],['S','Scorrevole']]},
-  tipoForo:{titolo:'Tipo foro',voci:[['A','Architettonico — misura foro grezzo nel muro'],['D','Dimensione telaio — misura del frame finito'],['P','Posa in luce — misura luce netta interna']]},
+  tipoForo:{titolo:'Tipo foro',voci:[['A','Architettonico — foro grezzo nel muro'],['D','Dimensione telaio'],['P','Posa in luce']]},
   materiale:{titolo:'Materiali',voci:[['ALLUMINIO','Telaio in alluminio'],['LEGNO-ALLUMINIO','Legno interno, alluminio esterno'],['PVC-ALLUMINIO','PVC interno, alluminio esterno'],['PVC','Telaio in PVC'],['LEGNO','Telaio in legno']]},
-  varianteTelaio:{titolo:'Varianti telaio',voci:[['NR','No Reveal — standard'],['CR','Counter Reveal'],['HR','High Reveal'],['IR','Interior Reveal'],['ZR','Zero Reveal'],['WR','Wide Reveal'],['SR','Shallow Reveal'],['DR','Deep Reveal']]},
+  varianteTelaio:{titolo:'Varianti telaio',voci:[['NR','No Reveal'],['CR','Counter Reveal'],['HR','High Reveal'],['IR','Interior Reveal'],['ZR','Zero Reveal'],['WR','Wide Reveal'],['SR','Shallow Reveal'],['DR','Deep Reveal']]},
   sensiApertura:{titolo:'Sensi di apertura',voci:[['D','Destra'],['S','Sinistra'],['W','Vasistas'],['F','Fissa']]},
   schermatura:{titolo:'Schermatura',voci:[['A','Avvolgibile manuale'],['AM','Meccanico'],['AE','Elettronico'],['AR','Radio'],['S','Scuretto'],['TZ','Tenda ZIP'],['TM','Tenda manuale'],['CA','Frangisole a cavo'],['CT','Frangisole a catena']]},
   cassonetto:{titolo:'Cassonetto',voci:[['P','PVC'],['L','Legno']]},
@@ -1246,6 +1114,7 @@ var LEGENDE={
   zanzariera:{titolo:'Zanzariera',voci:[['V','Verticale'],['O','Orizzontale']]},
   dinoxill:{titolo:'Dinoxill',voci:[['DA','Davanzale'],['I3','Imbotte 3 lati'],['I4','Imbotte 4 lati']]}
 };
+
 function openLegenda(tipo){
   var leg=LEGENDE[tipo]; if(!leg)return;
   document.getElementById('legTitolo').textContent=leg.titolo;

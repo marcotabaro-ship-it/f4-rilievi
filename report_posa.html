@@ -678,7 +678,7 @@ function init() {
       // 2) carica posizioni
       supaFetch(
         "posizioni_serr?id_rilievo=eq." + ID_RILIEVO +
-        "\"&stato=neq.eliminato" +stato=eq.attivo" +
+        "&stato=eq.attivo" +
         "&select=*" +
         "&order=numero_pos.asc",
         function(posizioni) {

@@ -653,7 +653,7 @@ function showReport() {
 // ---- init ----
 function init() {
   var params = new URLSearchParams(window.location.search);
-  ID_RILIEVO = params.get("id");
+  ID_RILIEVO = params.get("idRilievo") || params.get("id");
   if (!ID_RILIEVO) {
     setStato("Parametro id mancante nell'URL. Aprire da dashboard o cantiere.", true);
     return;

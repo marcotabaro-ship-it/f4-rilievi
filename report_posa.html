@@ -329,14 +329,14 @@
 
 <script src="js/config.js"></script>
 <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
 <script>
 // ================================================================
 // report_posa.html — Calcolo ore posa reali
 // F4 Rilievi — backend Supabase REST
 // ================================================================
-
-var SUPA_URL = (typeof SUPABASE_URL !== "undefined" && SUPABASE_URL) ? SUPABASE_URL : "https://yqjnszswhvfbqjlbspon.supabase.co";
-var SUPA_KEY = (typeof SUPABASE_ANON_KEY !== "undefined" && SUPABASE_ANON_KEY) ? SUPABASE_ANON_KEY : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxam5zenN3aHZmYnFqbGJzcG9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMTc3MDgsImV4cCI6MjA5MjU5MzcwOH0.movW9tLfZprCE7t6Zsbox3IZvTYlaS5UrSL2LN3Z7kM";
+var SUPA_URL = APP_CONFIG.SUPABASE_URL;
+var SUPA_KEY = APP_CONFIG.SUPABASE_ANON_KEY;
 var ID_RILIEVO   = null;
 var ADJ_LS_KEY   = "";
 var VOCI_GLOBALI = [];
@@ -615,9 +615,7 @@ function cambiaAdj(id, delta) {
 
 // ---- fetch helper ----
 function supaFetch(path, callback, errback) {
-  var token = "";
-  if (typeof window.getToken === "function") token = window.getToken();
-  if (!token) token = SUPA_KEY;
+  var token = Auth.getToken() || SUPA_KEY;
 
   var xhr = new XMLHttpRequest();
   xhr.open("GET", SUPA_URL + "/rest/v1/" + path, true);
@@ -652,6 +650,8 @@ function showReport() {
 
 // ---- init ----
 function init() {
+  var currentUser = Auth.requireLogin();
+  if (!currentUser) return;
   var params = new URLSearchParams(window.location.search);
   ID_RILIEVO = params.get("idRilievo") || params.get("id");
   if (!ID_RILIEVO) {
@@ -678,7 +678,7 @@ function init() {
       // 2) carica posizioni
       supaFetch(
         "posizioni_serr?id_rilievo=eq." + ID_RILIEVO +
-        "&stato=neq.eliminato" +
+        "\"&stato=neq.eliminato" +stato=eq.attivo" +
         "&select=*" +
         "&order=numero_pos.asc",
         function(posizioni) {

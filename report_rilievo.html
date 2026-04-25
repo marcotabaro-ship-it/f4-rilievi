@@ -6,22 +6,11 @@
   <title>Report Rilievo &mdash; F4 Rilievi</title>
   <link rel="stylesheet" href="css/main.css" />
   <style>
-    /* ============================================================
-       REPORT RILIEVO SERRAMENTI — stili specifici
-    ============================================================ */
     body { background: #f5f6fa; }
-
-    /* ---- toolbar ---- */
     #toolbar {
-      background: #1a1a2e;
-      color: #ffffff;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      background: #1a1a2e; color: #ffffff; padding: 12px 20px;
+      display: flex; align-items: center; gap: 10px;
+      position: sticky; top: 0; z-index: 100;
       box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     }
     #toolbar h1 { font-size: 15px; margin: 0; flex: 1; font-weight: 600; }
@@ -30,19 +19,12 @@
     .btn-tb-primary:hover { background: #4338ca; }
     .btn-tb-neutral { background: #374151; }
     .btn-tb-neutral:hover { background: #1f2937; }
-
-    /* ---- layout ---- */
     #wrap { max-width: 1000px; margin: 24px auto; padding: 0 16px 48px; }
     #stato-msg { text-align: center; padding: 64px 20px; color: #6b7280; font-size: 15px; }
     #stato-msg.errore { color: #dc2626; }
-
-    /* ---- report header ---- */
     .r-header {
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 20px 24px;
-      margin-bottom: 14px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      background: #ffffff; border-radius: 10px; padding: 20px 24px;
+      margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
     .r-header-top { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
     .r-header-top h2 { margin: 0; font-size: 18px; color: #1a1a2e; font-weight: 700; }
@@ -50,93 +32,56 @@
     .r-meta { display: flex; gap: 24px; flex-wrap: wrap; }
     .r-meta-item { font-size: 13px; color: #6b7280; }
     .r-meta-item strong { color: #1a1a2e; }
-
-    /* ---- sezione titolo ---- */
     .sez-titolo {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: #4f46e5;
-      margin: 18px 0 8px;
-      padding-bottom: 4px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.6px; color: #4f46e5;
+      margin: 18px 0 8px; padding-bottom: 4px;
       border-bottom: 2px solid #ede9fe;
     }
-
-    /* ---- stratigrafie ---- */
     .strat-grid { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
     .strat-card {
-      background: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      padding: 14px;
-      flex: 1;
-      min-width: 200px;
-      max-width: 280px;
+      background: #ffffff; border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 14px;
+      flex: 1; min-width: 200px; max-width: 280px;
     }
     .strat-card h4 { margin: 0 0 8px; font-size: 13px; color: #1a1a2e; }
     .strat-card img { width: 100%; max-height: 110px; object-fit: contain; border: 1px solid #e5e7eb; border-radius: 4px; margin-bottom: 8px; }
-    .strat-card .no-img { width: 100%; height: 80px; background: #f3f4f6; border: 1px dashed #d1d5db; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #9ca3af; }
-    .strat-quote { font-size: 11px; }
-    .strat-quote tr td:first-child { color: #6b7280; padding-right: 8px; }
-    .strat-quote tr td:last-child { font-weight: 600; color: #1a1a2e; }
-    .strat-default-badge { font-size: 10px; background: #d1fae5; color: #065f46; padding: 1px 6px; border-radius: 8px; margin-left: 6px; }
-
-    /* ---- tabelle posizioni ---- */
+    .strat-no-img { width: 100%; height: 80px; background: #f3f4f6; border: 1px dashed #d1d5db; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #9ca3af; }
+    .strat-quote-tbl { font-size: 11px; border-collapse: collapse; }
+    .strat-quote-tbl td { padding: 1px 4px; }
+    .strat-quote-tbl td:first-child { color: #6b7280; }
+    .strat-quote-tbl td:last-child { font-weight: 600; color: #1a1a2e; }
+    .strat-def-badge { font-size: 10px; background: #d1fae5; color: #065f46; padding: 1px 6px; border-radius: 8px; margin-left: 6px; }
     .table-wrap {
-      background: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      overflow-x: auto;
-      margin-bottom: 14px;
+      background: #ffffff; border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow-x: auto; margin-bottom: 14px;
     }
-    table.t-ril {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-      white-space: nowrap;
-    }
-    table.t-ril thead th {
-      background: #1a1a2e;
-      color: #ffffff;
-      padding: 9px 10px;
-      text-align: left;
-      font-weight: 600;
-      font-size: 11px;
-    }
+    table.t-ril { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
+    table.t-ril thead th { background: #1a1a2e; color: #ffffff; padding: 9px 10px; text-align: left; font-weight: 600; font-size: 11px; }
     table.t-ril thead th.c { text-align: center; }
     table.t-ril td { padding: 7px 10px; border-bottom: 1px solid #f0f0f6; color: #374151; }
     table.t-ril td.c { text-align: center; }
-    table.t-ril td.num { text-align: center; font-weight: 600; color: #1a1a2e; }
-    table.t-ril td.dim { text-align: center; font-weight: 700; color: #4f46e5; font-size: 11px; }
+    table.t-ril td.num { text-align: center; font-weight: 700; color: #1a1a2e; }
+    table.t-ril td.dim { text-align: center; font-weight: 700; color: #4f46e5; }
     table.t-ril tr:hover { background: #fafafe; }
     table.t-ril td.note-cell { white-space: normal; max-width: 160px; font-size: 11px; color: #6b7280; }
-
     .flag { display: inline-block; font-size: 10px; background: #fef3c7; color: #92400e; border-radius: 4px; padding: 1px 5px; margin: 1px; font-weight: 600; }
     .flag.blue { background: #dbeafe; color: #1e40af; }
     .flag.red  { background: #fee2e2; color: #991b1b; }
-
-    /* ---- print ---- */
     @media print {
       @page { size: A4 portrait; margin: 10mm 8mm 10mm 8mm; }
       body { background: #ffffff; }
       #toolbar { display: none !important; }
       #wrap { margin: 0; padding: 0; max-width: none; }
-
       .r-header { box-shadow: none; border: 1px solid #cccccc; border-radius: 0; padding: 8px 10px; margin-bottom: 6px; page-break-inside: avoid; }
       .r-header-top h2 { font-size: 13px; }
-      .r-badge { font-size: 8px; }
       .r-meta-item { font-size: 9px; }
-
       .sez-titolo { font-size: 9px; margin: 10px 0 5px; }
-
       .strat-grid { gap: 8px; }
-      .strat-card { box-shadow: none; border: 1px solid #cccccc; border-radius: 0; padding: 8px; min-width: 140px; max-width: 200px; }
+      .strat-card { box-shadow: none; border: 1px solid #cccccc; border-radius: 0; padding: 8px; min-width: 140px; max-width: 190px; }
       .strat-card h4 { font-size: 9px; }
       .strat-card img { max-height: 70px; }
-      .strat-card .no-img { height: 50px; font-size: 9px; }
-      .strat-quote { font-size: 8px; }
-
+      .strat-quote-tbl { font-size: 8px; }
       .table-wrap { box-shadow: none; border: 1px solid #cccccc; border-radius: 0; overflow: visible; margin-bottom: 8px; }
       table.t-ril { font-size: 7.5px; white-space: normal; }
       table.t-ril thead th { padding: 4px 5px; font-size: 7px; }
@@ -159,7 +104,6 @@
   <div id="stato-msg">Caricamento dati in corso&hellip;</div>
   <div id="report-content" style="display:none">
 
-    <!-- intestazione -->
     <div class="r-header">
       <div class="r-header-top">
         <h2 id="rh-titolo">Rilievo Serramenti</h2>
@@ -177,16 +121,14 @@
       </div>
     </div>
 
-    <!-- stratigrafie -->
     <div class="sez-titolo">Stratigrafie</div>
     <div class="strat-grid" id="strat-grid">
       <div style="color:#9ca3af;font-size:13px;padding:8px">Nessuna stratigrafia registrata.</div>
     </div>
 
-    <!-- tabella 1: geometria -->
-    <div class="sez-titolo">Posizioni — Geometria e Tipologia</div>
+    <div class="sez-titolo">Posizioni &mdash; Geometria e Tipologia</div>
     <div class="table-wrap">
-      <table class="t-ril" id="t-geom">
+      <table class="t-ril">
         <thead>
           <tr>
             <th class="c" style="width:30px">N&deg;</th>
@@ -194,7 +136,7 @@
             <th style="width:110px">Ambiente</th>
             <th class="c" style="width:36px">Tipo</th>
             <th class="c" style="width:36px">N.C.</th>
-            <th class="c" style="width:50px">Senso ap.</th>
+            <th class="c" style="width:60px">Senso ap.</th>
             <th class="c" style="width:36px">Foro</th>
             <th class="c" style="width:55px">L (mm)</th>
             <th class="c" style="width:55px">H (mm)</th>
@@ -208,10 +150,9 @@
       </table>
     </div>
 
-    <!-- tabella 2: finiture -->
-    <div class="sez-titolo">Posizioni — Finiture e Colori</div>
+    <div class="sez-titolo">Posizioni &mdash; Finiture e Colori</div>
     <div class="table-wrap">
-      <table class="t-ril" id="t-fin">
+      <table class="t-ril">
         <thead>
           <tr>
             <th class="c" style="width:30px">N&deg;</th>
@@ -230,17 +171,16 @@
       </table>
     </div>
 
-    <!-- tabella 3: accessori e note -->
-    <div class="sez-titolo">Posizioni — Accessori, Flag e Note</div>
+    <div class="sez-titolo">Posizioni &mdash; Accessori, Flag e Note</div>
     <div class="table-wrap">
-      <table class="t-ril" id="t-acc">
+      <table class="t-ril">
         <thead>
           <tr>
             <th class="c" style="width:30px">N&deg;</th>
             <th style="width:70px">Controtelaio</th>
             <th style="width:70px">Zanzariera</th>
             <th style="width:70px">Dinoxill</th>
-            <th class="c" style="width:50px">Lati Din.</th>
+            <th class="c" style="width:50px">Lati</th>
             <th style="width:130px">Flag attivi</th>
             <th>Note</th>
           </tr>
@@ -249,8 +189,8 @@
       </table>
     </div>
 
-  </div><!-- /report-content -->
-</div><!-- /wrap -->
+  </div>
+</div>
 
 <script src="js/config.js"></script>
 <script src="js/auth.js"></script>
@@ -266,79 +206,81 @@ var SUPA_KEY = APP_CONFIG.SUPABASE_ANON_KEY;
 var ID_RILIEVO = null;
 
 function setStato(msg, isErr) {
-  var el = document.getElementById("stato-msg");
-  el.textContent = msg;
-  el.className   = isErr ? "errore" : "";
-  el.style.display = "";
-  document.getElementById("report-content").style.display = "none";
+  var el = document.getElementById('stato-msg');
+  el.textContent   = msg;
+  el.className     = isErr ? 'errore' : '';
+  el.style.display = '';
+  document.getElementById('report-content').style.display = 'none';
 }
 
 function showReport() {
-  document.getElementById("stato-msg").style.display    = "none";
-  document.getElementById("report-content").style.display = "";
+  document.getElementById('stato-msg').style.display    = 'none';
+  document.getElementById('report-content').style.display = '';
 }
 
 function supaFetch(path, callback, errback) {
   var token = Auth.getToken() || SUPA_KEY;
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", SUPA_URL + "/rest/v1/" + path, true);
-  xhr.setRequestHeader("apikey",        SUPA_KEY);
-  xhr.setRequestHeader("Authorization", "Bearer " + token);
-  xhr.setRequestHeader("Content-Type",  "application/json");
+  var xhr   = new XMLHttpRequest();
+  xhr.open('GET', SUPA_URL + '/rest/v1/' + path, true);
+  xhr.setRequestHeader('apikey',        SUPA_KEY);
+  xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+  xhr.setRequestHeader('Content-Type',  'application/json');
   xhr.onload = function() {
     if (xhr.status >= 200 && xhr.status < 300) {
       try { callback(JSON.parse(xhr.responseText)); }
-      catch(e) { errback("Errore parsing: " + e.message); }
+      catch(e) { errback('Errore parsing: ' + e.message); }
     } else {
-      errback("HTTP " + xhr.status);
+      errback('HTTP ' + xhr.status);
     }
   };
-  xhr.onerror = function() { errback("Errore di rete"); };
+  xhr.onerror = function() { errback('Errore di rete'); };
   xhr.send();
 }
 
 function esc(s) {
-  if (!s && s !== 0) return "";
+  if (!s && s !== 0) return '';
   return String(s)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;");
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
-function vuoto(v) { return (!v && v !== 0) ? "" : String(v); }
+function vuoto(v) { return (!v && v !== 0) ? '' : String(v); }
 
 // ---- render stratigrafie ----
 function renderStratigrafie(strats) {
-  var grid = document.getElementById("strat-grid");
   if (!strats || !strats.length) return;
-
-  var QUOTE_DESC = APP_CONFIG.STRAT_QUOTE_DESC || {};
-  var html = "";
+  var grid     = document.getElementById('strat-grid');
+  var QDESC    = APP_CONFIG.STRAT_QUOTE_DESC || {};
+  var SIMAGES  = APP_CONFIG.STRAT_IMAGES     || {};
+  var SQUOTE   = APP_CONFIG.STRAT_QUOTE      || {};
+  var html = '';
 
   strats.forEach(function(s) {
-    var imgKey = s.immagine_ref || "";
-    var imgSrc = (APP_CONFIG.STRAT_IMAGES && APP_CONFIG.STRAT_IMAGES[imgKey]) ? APP_CONFIG.STRAT_IMAGES[imgKey] : "";
-    var quoteJson = s.quote_json || {};
-    var keys = (APP_CONFIG.STRAT_QUOTE && APP_CONFIG.STRAT_QUOTE[imgKey]) ? APP_CONFIG.STRAT_QUOTE[imgKey] : Object.keys(quoteJson);
+    var imgKey   = s.immagine_ref || '';
+    var imgSrc   = SIMAGES[imgKey] || '';
+    var qJson    = s.quote_json || {};
+    var keys     = SQUOTE[imgKey] ? SQUOTE[imgKey] : Object.keys(qJson);
+    var defBadge = s.is_default ? '<span class="strat-def-badge">Default</span>' : '';
 
-    html += "<div class="strat-card">";
-    html +=   "<h4>" + esc(s.nome) + (s.is_default ? "<span class="strat-default-badge">Default</span>" : "") + "</h4>";
+    html += '<div class="strat-card">';
+    html +=   '<h4>' + esc(s.nome) + defBadge + '</h4>';
     if (imgSrc) {
-      html += "<img src="" + esc(imgSrc) + "" alt="" + esc(imgKey) + "" />";
+      html += '<img src="' + esc(imgSrc) + '" alt="' + esc(imgKey) + '" />';
     } else {
-      html += "<div class="no-img">Nessuna immagine</div>";
+      html += '<div class="strat-no-img">Nessuna immagine</div>';
     }
     if (keys.length) {
-      html += "<table class="strat-quote"><tbody>";
+      html += '<table class="strat-quote-tbl"><tbody>';
       keys.forEach(function(k) {
-        var desc = QUOTE_DESC[k] || k;
-        var val  = quoteJson[k] !== undefined ? quoteJson[k] : "—";
-        html += "<tr><td>" + esc(desc) + "</td><td>" + esc(val) + " mm</td></tr>";
+        var desc = QDESC[k] || k;
+        var val  = (qJson[k] !== undefined) ? qJson[k] : '—';
+        html += '<tr><td>' + esc(desc) + '</td><td>' + esc(val) + ' mm</td></tr>';
       });
-      html += "</tbody></table>";
+      html += '</tbody></table>';
     }
-    html += "</div>";
+    html += '</div>';
   });
 
   grid.innerHTML = html;
@@ -346,161 +288,147 @@ function renderStratigrafie(strats) {
 
 // ---- render tabelle posizioni ----
 function renderPosizioni(posizioni) {
-  var TIPO_LBL = APP_CONFIG.TIPO_SERR_LABEL || {};
+  var TIPO_LBL = APP_CONFIG.TIPO_SERR_LABEL      || {};
   var FORO_LBL = APP_CONFIG.TIPO_FORO_SERR_LABEL || {};
-
-  var htmlGeom = "";
-  var htmlFin  = "";
-  var htmlAcc  = "";
+  var hG = '', hF = '', hA = '';
 
   posizioni.forEach(function(p) {
-    var n    = p.numero_pos || "—";
+    var n    = vuoto(p.numero_pos) || '—';
     var tipo = vuoto(p.tipo_serramento);
-    var tipoLbl = tipo ? (tipo + (TIPO_LBL[tipo] ? " — " + TIPO_LBL[tipo] : "")) : "—";
-    var foroLbl = vuoto(p.tipo_foro);
-    var lStr = p.l_mm ? String(p.l_mm) : "—";
-    var hStr = p.h_mm ? String(p.h_mm) : "—";
+    var lStr = p.l_mm ? String(p.l_mm) : '—';
+    var hStr = p.h_mm ? String(p.h_mm) : '—';
 
-    // ---- GEOM ----
-    htmlGeom += "<tr>";
-    htmlGeom += "<td class="num">" + esc(n) + "</td>";
-    htmlGeom += "<td class="c">" + esc(vuoto(p.piano)) + "</td>";
-    htmlGeom += "<td>" + esc(vuoto(p.ambiente)) + "</td>";
-    htmlGeom += "<td class="c"><strong>" + esc(tipo) + "</strong></td>";
-    htmlGeom += "<td class="c">" + esc(vuoto(p.n_campi)) + "</td>";
-    htmlGeom += "<td class="c">" + esc(vuoto(p.senso_apertura)) + "</td>";
-    htmlGeom += "<td class="c">" + esc(foroLbl) + "</td>";
-    htmlGeom += "<td class="dim">" + lStr + "</td>";
-    htmlGeom += "<td class="dim">" + hStr + "</td>";
-    htmlGeom += "<td>" + esc(vuoto(p.materiale)) + "</td>";
-    htmlGeom += "<td>" + esc(vuoto(p.sistema)) + "</td>";
-    htmlGeom += "<td>" + esc(vuoto(p.stile_design)) + "</td>";
-    htmlGeom += "<td>" + esc(vuoto(p.variante_telaio)) + "</td>";
-    htmlGeom += "</tr>";
+    // GEOMETRIA
+    hG += '<tr>';
+    hG += '<td class="num">'  + esc(n)                       + '</td>';
+    hG += '<td class="c">'    + esc(vuoto(p.piano))           + '</td>';
+    hG += '<td>'              + esc(vuoto(p.ambiente))         + '</td>';
+    hG += '<td class="c"><strong>' + esc(tipo) + '</strong></td>';
+    hG += '<td class="c">'   + esc(vuoto(p.n_campi))          + '</td>';
+    hG += '<td class="c">'   + esc(vuoto(p.senso_apertura))   + '</td>';
+    hG += '<td class="c">'   + esc(vuoto(p.tipo_foro))        + '</td>';
+    hG += '<td class="dim">'  + lStr                           + '</td>';
+    hG += '<td class="dim">'  + hStr                           + '</td>';
+    hG += '<td>'              + esc(vuoto(p.materiale))        + '</td>';
+    hG += '<td>'              + esc(vuoto(p.sistema))          + '</td>';
+    hG += '<td>'              + esc(vuoto(p.stile_design))     + '</td>';
+    hG += '<td>'              + esc(vuoto(p.variante_telaio))  + '</td>';
+    hG += '</tr>';
 
-    // ---- FINITURE ----
-    var coprInt = [vuoto(p.coprifilo_int_mat), vuoto(p.coprifilo_int_dim)].filter(Boolean).join(" ");
-    var coprEst = [vuoto(p.coprifilo_est_mat), vuoto(p.coprifilo_est_dim)].filter(Boolean).join(" ");
+    // FINITURE
+    var coprInt = [vuoto(p.coprifilo_int_mat), vuoto(p.coprifilo_int_dim)].filter(Boolean).join(' ');
+    var coprEst = [vuoto(p.coprifilo_est_mat), vuoto(p.coprifilo_est_dim)].filter(Boolean).join(' ');
+    hF += '<tr>';
+    hF += '<td class="num">' + esc(n)                          + '</td>';
+    hF += '<td>'             + esc(vuoto(p.codice_serramento))  + '</td>';
+    hF += '<td class="c">'  + esc(vuoto(p.n_vetri))             + '</td>';
+    hF += '<td>'             + esc(vuoto(p.colore_int))          + '</td>';
+    hF += '<td>'             + esc(vuoto(p.colore_est))          + '</td>';
+    hF += '<td>'             + esc(coprInt || '—')               + '</td>';
+    hF += '<td>'             + esc(coprEst || '—')               + '</td>';
+    hF += '<td>'             + esc(vuoto(p.schermatura))         + '</td>';
+    hF += '<td>'             + esc(vuoto(p.oscurante_tipo))      + '</td>';
+    hF += '<td>'             + esc(vuoto(p.cassonetto))          + '</td>';
+    hF += '</tr>';
 
-    htmlFin += "<tr>";
-    htmlFin += "<td class="num">" + esc(n) + "</td>";
-    htmlFin += "<td>" + esc(vuoto(p.codice_serramento)) + "</td>";
-    htmlFin += "<td class="c">" + esc(vuoto(p.n_vetri)) + "</td>";
-    htmlFin += "<td>" + esc(vuoto(p.colore_int)) + "</td>";
-    htmlFin += "<td>" + esc(vuoto(p.colore_est)) + "</td>";
-    htmlFin += "<td>" + esc(coprInt || "—") + "</td>";
-    htmlFin += "<td>" + esc(coprEst || "—") + "</td>";
-    htmlFin += "<td>" + esc(vuoto(p.schermatura)) + "</td>";
-    htmlFin += "<td>" + esc(vuoto(p.oscurante_tipo)) + "</td>";
-    htmlFin += "<td>" + esc(vuoto(p.cassonetto)) + "</td>";
-    htmlFin += "</tr>";
-
-    // ---- ACCESSORI ----
-    var flags = "";
-    if (p.rimozione_accessori) flags += "<span class="flag red">Rimozione</span>";
-    if (p.taglio_marmo)        flags += "<span class="flag">Taglio marmo</span>";
-    if (p.angolari_pvc)        flags += "<span class="flag blue">Angolari PVC</span>";
-
-    htmlAcc += "<tr>";
-    htmlAcc += "<td class="num">" + esc(n) + "</td>";
-    htmlAcc += "<td>" + esc(vuoto(p.controtelaio)) + "</td>";
-    htmlAcc += "<td>" + esc(vuoto(p.zanzariera)) + "</td>";
-    htmlAcc += "<td>" + esc(vuoto(p.dinoxill)) + "</td>";
-    htmlAcc += "<td class="c">" + esc(vuoto(p.dinoxill_lati)) + "</td>";
-    htmlAcc += "<td>" + (flags || "<span style="color:#9ca3af">—</span>") + "</td>";
-    htmlAcc += "<td class="note-cell">" + esc(vuoto(p.note)) + "</td>";
-    htmlAcc += "</tr>";
+    // ACCESSORI E FLAG
+    var flags = '';
+    if (p.rimozione_accessori) flags += '<span class="flag red">Rimozione</span>';
+    if (p.taglio_marmo)        flags += '<span class="flag">Taglio marmo</span>';
+    if (p.angolari_pvc)        flags += '<span class="flag blue">Angolari PVC</span>';
+    hA += '<tr>';
+    hA += '<td class="num">' + esc(n)                    + '</td>';
+    hA += '<td>'             + esc(vuoto(p.controtelaio)) + '</td>';
+    hA += '<td>'             + esc(vuoto(p.zanzariera))   + '</td>';
+    hA += '<td>'             + esc(vuoto(p.dinoxill))     + '</td>';
+    hA += '<td class="c">'  + esc(vuoto(p.dinoxill_lati)) + '</td>';
+    hA += '<td>'             + (flags || '<span style="color:#9ca3af">—</span>') + '</td>';
+    hA += '<td class="note-cell">' + esc(vuoto(p.note))  + '</td>';
+    hA += '</tr>';
   });
 
-  document.getElementById("tbody-geom").innerHTML = htmlGeom;
-  document.getElementById("tbody-fin").innerHTML  = htmlFin;
-  document.getElementById("tbody-acc").innerHTML  = htmlAcc;
+  document.getElementById('tbody-geom').innerHTML = hG;
+  document.getElementById('tbody-fin').innerHTML  = hF;
+  document.getElementById('tbody-acc').innerHTML  = hA;
 }
 
-// ---- caricamento dati in parallelo ----
+// ---- caricamento parallelo ----
 function caricaDati(idRilievo) {
-  var loaded = { rilievo: null, posizioni: null, strats: null };
+  var loaded  = { rilievo: null, posizioni: null, strats: null };
   var errCount = 0;
 
   function tryRender() {
     if (loaded.rilievo === null || loaded.posizioni === null || loaded.strats === null) return;
     if (errCount > 0) return;
 
-    var r   = loaded.rilievo;
-    var pos = loaded.posizioni;
+    var r    = loaded.rilievo;
+    var pos  = loaded.posizioni;
+    var cant = r.cantieri || {};
 
-    var cant    = r.cantieri || {};
-    var cliente = (cant.clienti && cant.clienti.nome) ? cant.clienti.nome : "—";
-    var nomeCant = cant.nome_cantiere || "—";
-    var codice   = r.codice_completo || idRilievo;
+    var cliente  = (cant.clienti && cant.clienti.nome) ? cant.clienti.nome : '—';
+    var nomeCant = cant.nome_cantiere || '—';
+    var codice   = r.codice_completo  || idRilievo;
 
-    document.getElementById("rh-titolo").textContent    = "Rilievo — " + codice;
-    document.getElementById("rh-badge").textContent     = pos.length + " pos.";
-    document.getElementById("rh-cliente").textContent   = cliente;
-    document.getElementById("rh-cantiere").textContent  = nomeCant;
-    document.getElementById("rh-referente").textContent = r.referente   || "—";
-    document.getElementById("rh-data").textContent      = r.data_rilievo || "—";
-    document.getElementById("rh-posa").textContent      = r.data_posa   || "—";
-    document.getElementById("rh-intervento").textContent = r.intervento || "—";
-    document.getElementById("rh-gru").textContent       = r.gru ? "Si" : "No";
-    document.getElementById("rh-npos").textContent      = pos.length;
-    document.getElementById("tb-titolo").textContent    = "Rilievo " + codice;
-    document.title = "Rilievo " + codice;
+    document.getElementById('rh-titolo').textContent    = 'Rilievo — ' + codice;
+    document.getElementById('rh-badge').textContent     = pos.length + ' pos.';
+    document.getElementById('rh-cliente').textContent   = cliente;
+    document.getElementById('rh-cantiere').textContent  = nomeCant;
+    document.getElementById('rh-referente').textContent = r.referente    || '—';
+    document.getElementById('rh-data').textContent      = r.data_rilievo || '—';
+    document.getElementById('rh-posa').textContent      = r.data_posa    || '—';
+    document.getElementById('rh-intervento').textContent = r.intervento  || '—';
+    document.getElementById('rh-gru').textContent       = r.gru ? 'Si' : 'No';
+    document.getElementById('rh-npos').textContent      = pos.length;
+    document.getElementById('tb-titolo').textContent    = 'Rilievo ' + codice;
+    document.title = 'Rilievo ' + codice;
 
     renderStratigrafie(loaded.strats);
     renderPosizioni(pos);
     showReport();
   }
 
-  // 1) rilievo
   supaFetch(
-    "rilievi?id=eq." + idRilievo +
-    "&select=id,codice_completo,referente,data_rilievo,data_posa,intervento,gru,cantieri(nome_cantiere,clienti(nome))",
+    'rilievi?id=eq.' + idRilievo +
+    '&select=id,codice_completo,referente,data_rilievo,data_posa,intervento,gru,cantieri(nome_cantiere,clienti(nome))',
     function(rows) {
-      if (!rows.length) { setStato("Rilievo non trovato.", true); return; }
+      if (!rows.length) { setStato('Rilievo non trovato.', true); return; }
       loaded.rilievo = rows[0];
       tryRender();
     },
-    function(e) { errCount++; setStato("Errore caricamento rilievo: " + e, true); }
+    function(e) { errCount++; setStato('Errore caricamento rilievo: ' + e, true); }
   );
 
-  // 2) posizioni
   supaFetch(
-    "posizioni_serr?id_rilievo=eq." + idRilievo +
-    "&stato=eq.attivo" +
-    "&select=*" +
-    "&order=numero_pos.asc",
+    'posizioni_serr?id_rilievo=eq.' + idRilievo +
+    '&stato=eq.attivo' +
+    '&select=*' +
+    '&order=numero_pos.asc',
     function(rows) {
       loaded.posizioni = rows || [];
       tryRender();
     },
-    function(e) { errCount++; setStato("Errore caricamento posizioni: " + e, true); }
+    function(e) { errCount++; setStato('Errore caricamento posizioni: ' + e, true); }
   );
 
-  // 3) stratigrafie
   supaFetch(
-    "stratigrafie?id_rilievo=eq." + idRilievo +
-    "&stato=eq.attivo" +
-    "&select=*" +
-    "&order=ordine.asc",
+    'stratigrafie?id_rilievo=eq.' + idRilievo +
+    '&stato=eq.attivo' +
+    '&select=*' +
+    '&order=ordine.asc',
     function(rows) {
       loaded.strats = rows || [];
       tryRender();
     },
-    function(e) { errCount++; setStato("Errore caricamento stratigrafie: " + e, true); }
+    function(e) { errCount++; setStato('Errore caricamento stratigrafie: ' + e, true); }
   );
 }
 
 function init() {
   var currentUser = Auth.requireLogin();
   if (!currentUser) return;
-
   var params = new URLSearchParams(window.location.search);
-  ID_RILIEVO = params.get("idRilievo") || params.get("id");
-  if (!ID_RILIEVO) {
-    setStato("Parametro id mancante nell\'URL.", true);
-    return;
-  }
+  ID_RILIEVO = params.get('idRilievo') || params.get('id');
+  if (!ID_RILIEVO) { setStato('Parametro id mancante.', true); return; }
   caricaDati(ID_RILIEVO);
 }
 

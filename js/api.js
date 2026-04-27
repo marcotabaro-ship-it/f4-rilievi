@@ -315,7 +315,9 @@ const _in = {
       intervento:     data.intervento     || null,
       gru:            data.gru === 'SI',
       versione_posa:  data.versione_posa  || null,
-      note:           data.note           || null
+      note:              data.note || null,
+      allarme:           data.allarme === 'SI' || data.allarme === true,
+      note_commerciali:  data.note_commerciali || {}
     };
   },
 

@@ -237,6 +237,13 @@
           <div class="calc-item"><span class="calc-lbl">L ordine x H ordine</span><span class="calc-val tub" id="cLtub">—</span></div>
         </div>
         <div class="dsec-title">&#128203; Dati generali</div>
+        <div class="field-wrap">
+          <div class="field-label">N&#176; posizione <span style="font-size:.72rem;color:var(--c-text-sec);">(alfanumerico, max 7 caratteri)</span></div>
+          <input class="form-control" type="text" id="dNumAlfa" maxlength="7"
+            placeholder="es. CAM01, 001A, S1.2"
+            style="font-family:monospace;font-weight:700;letter-spacing:.5px;text-transform:uppercase;"
+            oninput="this.value=this.value.toUpperCase()" onchange="dSave()">
+        </div>
         <div class="form-row-2d">
           <div class="field-wrap">
             <div class="field-label">Piano <span class="req">*</span></div>
@@ -640,7 +647,7 @@ function renderPosizioni() {
     if(p.angolari_pvc===true) acc.push('PVC');
     var isSel=drawerPosId===p.ID_pos?'row-sel':'';
     html+='<tr class="'+isSel+'" onclick="openDrawer(\''+p.ID_pos+'\')">'+
-      '<td><span class="pos-num-badge">'+p.numero_pos+'</span></td>'+
+      '<td><span class="pos-num-badge" title="seq: '+p.numero_pos+'">'+(p.numero_pos_alfa||p.numero_pos)+'</span></td>'+
       '<td>'+piano+'</td>'+
       '<td style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(p.ambiente||'—')+'</td>'+
       '<td><span class="pos-badge-tipo">'+(p.tipo_serramento||'—')+'</span></td>'+
@@ -740,6 +747,7 @@ function resetDrawer() {
    'dAmbiente','dNote','dMateriale','dCopriIntMat','dCopriEstMat',
    'dSchermatura','dCassonetto','dControtelaio','dZanzariera','dDinoxill','dStratigrafia'
   ].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var alfa=document.getElementById('dNumAlfa'); if(alfa) alfa.value='';
   document.getElementById('dRimozione').checked=false;
   document.getElementById('dRimozioneAcc').checked=false;
   document.getElementById('dTaglioMarmo').checked=false;
@@ -771,6 +779,7 @@ function resetDrawer() {
 
 function fillDrawer(p) {
   resetDrawer();
+  var alfaEl=document.getElementById('dNumAlfa'); if(alfaEl) alfaEl.value=(p.numero_pos_alfa||'').toUpperCase();
   document.getElementById('dPiano').value=p.piano!==undefined?p.piano:'';
   document.getElementById('dAmbiente').value=p.ambiente||'';
   document.getElementById('dTipoSerr').value=p.tipo_serramento||'';
@@ -1086,6 +1095,7 @@ function raccogliDrawer() {
   }
   if(!ok){Utils.showWarning('Compila i campi evidenziati in rosso.');return null;}
   return{
+    numero_pos_alfa:(document.getElementById('dNumAlfa').value||'').toUpperCase().trim()||null,
     piano:document.getElementById('dPiano').value,
     ambiente:document.getElementById('dAmbiente').value.trim(),
     tipo_serramento:document.getElementById('dTipoSerr').value,

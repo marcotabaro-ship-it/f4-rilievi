@@ -118,6 +118,11 @@
     .leg-title { font-size:.95rem; font-weight:700; color:var(--c-primary); margin-bottom:12px; border-bottom:2px solid var(--c-red); padding-bottom:6px; }
     .leg-item { font-size:.82rem; margin-bottom:7px; display:flex; gap:8px; }
     .leg-code { font-family:monospace; font-weight:700; color:var(--c-red); min-width:44px; flex-shrink:0; }
+    .nc-section-title {
+      font-size:.78rem; font-weight:700; color:var(--c-primary);
+      text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px;
+      padding-top:14px; margin-top:14px; border-top:1px solid var(--c-border);
+    }
   </style>
 </head>
 <body>
@@ -139,6 +144,7 @@
         <h2>Rilievo Serramenti</h2>
         <span class="rh-code" id="rhCodice">—</span>
         <span id="rhGru" style="display:none;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:12px;font-size:.76rem;">&#127959;&#65039; Gru</span>
+        <span id="rhAllarme" style="display:none;background:#dc2626;padding:2px 8px;border-radius:12px;font-size:.76rem;">&#9888; Allarme</span>
       </div>
       <div class="rh-meta" id="rhMeta">—</div>
     </div>
@@ -189,8 +195,33 @@
           <div class="form-group"><label class="form-label">Data rilievo</label><input class="form-control" type="date" id="tDataRilievo"></div>
           <div class="form-group"><label class="form-label">Data posa prevista</label><input class="form-control" type="date" id="tDataPosa"></div>
         </div>
-        <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="tGru"><label for="tGru">&#127959;&#65039; Utilizzo gru / autoscala</label></div></div>
+        <div class="form-row form-row-2">
+          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="tGru"><label for="tGru">&#127959;&#65039; Utilizzo gru / autoscala</label></div></div>
+          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="tAllarme"><label for="tAllarme">&#9888;&#65039; Allarme presente</label></div></div>
+        </div>
         <div class="form-group"><label class="form-label">Note</label><textarea class="form-control" id="tNote" rows="3"></textarea></div>
+
+        <div class="nc-section-title">&#127912; Note Commerciali (colori accessori / maniglia)</div>
+        <div class="form-row form-row-2">
+          <div class="form-group"><label class="form-label">Colore avvolgibile</label><input class="form-control" type="text" id="tNcAvvol" placeholder="es. Bianco"></div>
+          <div class="form-group"><label class="form-label">Colore scuretto</label><input class="form-control" type="text" id="tNcScuretto" placeholder="es. Grigio"></div>
+        </div>
+        <div class="form-row form-row-2">
+          <div class="form-group"><label class="form-label">Colore tenda</label><input class="form-control" type="text" id="tNcTenda" placeholder=""></div>
+          <div class="form-group"><label class="form-label">Colore frangisole</label><input class="form-control" type="text" id="tNcFrang" placeholder=""></div>
+        </div>
+        <div class="form-row form-row-2">
+          <div class="form-group"><label class="form-label">Colore zanzariera</label><input class="form-control" type="text" id="tNcZanz" placeholder=""></div>
+          <div class="form-group"><label class="form-label">Colore coprifili int.</label><input class="form-control" type="text" id="tNcCoprInt" placeholder=""></div>
+        </div>
+        <div class="form-row form-row-2">
+          <div class="form-group"><label class="form-label">Colore coprifili est.</label><input class="form-control" type="text" id="tNcCoprEst" placeholder=""></div>
+          <div class="form-group"><label class="form-label">Colore Dinox</label><input class="form-control" type="text" id="tNcDinox" placeholder=""></div>
+        </div>
+        <div class="form-row form-row-2">
+          <div class="form-group"><label class="form-label">Maniglia — marca</label><input class="form-control" type="text" id="tNcManMarca" placeholder="es. Hoppe"></div>
+          <div class="form-group"><label class="form-label">Maniglia — modello</label><input class="form-control" type="text" id="tNcManModello" placeholder="es. Atlanta"></div>
+        </div>
       </div>
     </div>
    </div>
@@ -511,6 +542,8 @@ function renderTestata() {
   document.title=rilievo.codice+' — F4 Rilievi';
   document.getElementById('rhCodice').textContent=rilievo.codice||'—';
   if (rilievo.gru==='SI') document.getElementById('rhGru').style.display='';
+  if (rilievo.allarme===true) document.getElementById('rhAllarme').style.display='';
+  else document.getElementById('rhAllarme').style.display='none';
   document.getElementById('rhMeta').textContent=(rilievo.intervento||'')+' — '+(rilievo.data_rilievo||'')+(rilievo.referente?' — Ref: '+rilievo.referente:'');
   if (rilievo.percorsoCantiere) {
     var pc=rilievo.percorsoCantiere;
@@ -530,12 +563,37 @@ function populateTestataSel() {
   document.getElementById('tDataPosa').value=rilievo.data_posa||'';
   document.getElementById('tGru').checked=rilievo.gru==='SI';
   document.getElementById('tNote').value=rilievo.note||'';
+  document.getElementById('tAllarme').checked=rilievo.allarme===true;
+  var nc=rilievo.note_commerciali||{};
+  document.getElementById('tNcAvvol').value     = nc.colore_avvol      || '';
+  document.getElementById('tNcScuretto').value  = nc.colore_scuretto   || '';
+  document.getElementById('tNcTenda').value     = nc.colore_tenda      || '';
+  document.getElementById('tNcFrang').value     = nc.colore_frang      || '';
+  document.getElementById('tNcZanz').value      = nc.colore_zanzariera || '';
+  document.getElementById('tNcCoprInt').value   = nc.colore_copri_int  || '';
+  document.getElementById('tNcCoprEst').value   = nc.colore_copri_est  || '';
+  document.getElementById('tNcDinox').value     = nc.colore_dinox      || '';
+  document.getElementById('tNcManMarca').value  = nc.maniglia_marca    || '';
+  document.getElementById('tNcManModello').value= nc.maniglia_modello  || '';
 }
 
 async function salvaTestata() {
+  var nc={
+    colore_avvol:      document.getElementById('tNcAvvol').value.trim(),
+    colore_scuretto:   document.getElementById('tNcScuretto').value.trim(),
+    colore_tenda:      document.getElementById('tNcTenda').value.trim(),
+    colore_frang:      document.getElementById('tNcFrang').value.trim(),
+    colore_zanzariera: document.getElementById('tNcZanz').value.trim(),
+    colore_copri_int:  document.getElementById('tNcCoprInt').value.trim(),
+    colore_copri_est:  document.getElementById('tNcCoprEst').value.trim(),
+    colore_dinox:      document.getElementById('tNcDinox').value.trim(),
+    maniglia_marca:    document.getElementById('tNcManMarca').value.trim(),
+    maniglia_modello:  document.getElementById('tNcManModello').value.trim()
+  };
   var data={referente:document.getElementById('tReferente').value,intervento:document.getElementById('tIntervento').value,
     data_rilievo:document.getElementById('tDataRilievo').value,data_posa:document.getElementById('tDataPosa').value,
-    gru:document.getElementById('tGru').checked?'SI':'NO',note:document.getElementById('tNote').value.trim()};
+    gru:document.getElementById('tGru').checked?'SI':'NO',note:document.getElementById('tNote').value.trim(),
+    allarme:document.getElementById('tAllarme').checked,note_commerciali:nc};
   var res=await API.updateRilievo(idRilievo,data);
   if(res.success){Utils.showSuccess('Salvato.');rilievo=Object.assign({},rilievo,data);renderTestata();}
   else Utils.showError(res.error);
@@ -651,37 +709,22 @@ function populateDrawerDropdowns() {
   var ordineSerr=['I','F','PF','FF','VF','S'];
   var ordineSensi=['D','S','W','F'];
   var ordineForo=['A','D','P'];
-
-  // Piani ordinati numericamente
   Utils.fillSelect('dPiano',(lookups.LK_PIANO||[]).filter(function(p){return p;}).sort(function(a,b){return a.piano-b.piano;}).map(function(p){return{value:p.piano,label:'Piano '+(p.piano>=0?'+':'')+p.piano};}), '— Piano —');
-
-  // Tipo serramento ordine fisso I,F,PF,FF,VF,S
   var tipoSerrOrdered=(lookups.LK_TIPO_SERR||[]).filter(function(t){return t&&t.sigla;}).sort(function(a,b){return ordineSerr.indexOf(a.sigla)-ordineSerr.indexOf(b.sigla);});
   Utils.fillSelect('dTipoSerr',tipoSerrOrdered.map(function(t){return{value:t.sigla,label:t.sigla+' — '+t.descrizione};}), '— Tipo —');
-
-  // N campi 1→5 crescente
   Utils.fillSelect('dNCampi',(lookups.LK_N_CAMPI||[]).filter(function(c){return c&&c.n_campi;}).sort(function(a,b){return a.n_campi-b.n_campi;}).map(function(c){return{value:c.n_campi,label:c.n_campi+' campo/i'};}), '— N campi —');
-
-  // Senso apertura ordine D,S,W,F
   Utils.fillSelect('dSensoApertura',(lookups.LK_SENSI_APERTURA||[]).filter(function(s){return s&&s.sigla;}).sort(function(a,b){return ordineSensi.indexOf(a.sigla)-ordineSensi.indexOf(b.sigla);}).map(function(s){return{value:s.sigla,label:s.sigla+' — '+s.descrizione};}), '— Senso —');
-
-  // Tipo foro ordine A,D,P — senza testo tra parentesi
   var foroOrdered=(lookups.LK_TIPO_FORO_SERR||[]).filter(function(t){return t&&t.sigla;}).sort(function(a,b){return ordineForo.indexOf(a.sigla)-ordineForo.indexOf(b.sigla);});
   Utils.fillSelect('dTipoForo',foroOrdered.map(function(t){var desc=(t.descrizione||t.sigla).replace(/\s*\(.*?\)/g,'').trim();return{value:t.sigla,label:t.sigla+' — '+desc};}), '— Tipo foro —');
-
   var matSeen={};
   dbSerr.forEach(function(d){if(d&&d.materiale)matSeen[d.materiale]=1;});
   Utils.fillSelect('dMateriale',Object.keys(matSeen).sort().map(function(m){return{value:m,label:m};}),'— Materiale —');
-
-  // Schermatura: ordine Excel A, AM, AE, AR, S, TZ, TM, CA, CT
   var ordineScherm=['A','AM','AE','AR','S','TZ','TM','CA','CT'];
   Utils.fillSelect('dSchermatura',(lookups.LK_SCHERMATURA||[]).filter(function(s){return s&&s.sigla;}).sort(function(a,b){var ia=ordineScherm.indexOf(a.sigla),ib=ordineScherm.indexOf(b.sigla);return (ia<0?99:ia)-(ib<0?99:ib);}).map(function(s){var desc=s.descrizione_completa||s.descrizione||s.sigla;return{value:s.sigla,label:s.sigla+' — '+desc};}), '— Nessuna —');
   Utils.fillSelect('dCassonetto',(lookups.LK_CASSONETTO||[]).filter(function(c){return c&&c.sigla;}).map(function(c){return{value:c.sigla,label:c.sigla+' — '+c.descrizione};}), '— Nessuno —');
   Utils.fillSelect('dControtelaio',(lookups.LK_CONTROTELAIO||[]).filter(function(c){return c&&c.sigla;}).map(function(c){return{value:c.sigla,label:c.sigla+' — '+c.descrizione};}), '— Nessuno —');
   Utils.fillSelect('dZanzariera',(lookups.LK_ZANZARIERA||[]).filter(function(z){return z&&z.sigla;}).map(function(z){return{value:z.sigla,label:z.sigla+' — '+z.descrizione};}), '— Nessuna —');
   Utils.fillSelect('dDinoxill',(lookups.LK_DINOXILL||[]).filter(function(d){return d&&d.sigla;}).map(function(d){return{value:d.sigla,label:d.sigla+' — '+d.descrizione};}), '— Nessuno —');
-
-  // Coprifili materiali
   var cpSeen={};
   (lookups.LK_COPRIFILI||[]).filter(function(c){return c&&c.materiale_sigla;}).forEach(function(c){
     if(!cpSeen[c.materiale_sigla]) cpSeen[c.materiale_sigla]=c.materiale||c.materiale_sigla;
@@ -779,14 +822,11 @@ function dOnNCampiChange() {
   var grp=document.getElementById('grpSensiApertura');
   var ordineSensi=['D','S','W','F'];
   var opzioni=(lookups.LK_SENSI_APERTURA||[]).filter(function(s){return s&&s.sigla;}).sort(function(a,b){return ordineSensi.indexOf(a.sigla)-ordineSensi.indexOf(b.sigla);});
-
   if(n<=2){
-    // 1-2 campi: un solo select
     grp.innerHTML='<select class="form-control" id="dSensoApertura" onchange="dSave()"><option value="">— Senso —</option>'
       +opzioni.map(function(s){return '<option value="'+s.sigla+'">'+s.sigla+' — '+s.descrizione+'</option>';}).join('')
       +'</select>';
   } else {
-    // 3-5 campi: N select, uno per campo
     var html='';
     for(var i=1;i<=n;i++){
       html+='<div style="margin-bottom:4px;">'
@@ -796,7 +836,6 @@ function dOnNCampiChange() {
         +opzioni.map(function(s){return '<option value="'+s.sigla+'">'+s.sigla+' — '+s.descrizione+'</option>';}).join('')
         +'</select></div>';
     }
-    // mantieni dSensoApertura nascosto per compatibilità con raccogliDrawer
     html+='<input type="hidden" id="dSensoApertura" value="">';
     grp.innerHTML=html;
   }

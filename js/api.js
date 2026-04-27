@@ -172,7 +172,9 @@ const _map = {
       versione_posa:    row.versione_posa || 0,
       note:             row.note || '',
       stato:            row.stato,
-      percorsoCantiere: cantierePath || null
+      percorsoCantiere: cantierePath || null,
+      allarme:          row.allarme || false,
+      note_commerciali: row.note_commerciali || {}
     };
   },
 

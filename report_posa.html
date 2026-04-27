@@ -156,11 +156,14 @@
       .tr-sez td { font-size: 7px; padding: 2px 6px; }
       .tr-voce.zero-row { display: none !important; }
       .adj-input { width: 40px; font-size: 7px; padding: 1px 3px; }
-      .ore-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+      .ore-grid { grid-template-columns: repeat(6, 1fr); gap: 4px; }
       .ore-card { padding: 5px; }
       .ore-card .ore-val { font-size: 16px; }
       .ore-card .ore-lbl { font-size: 8px; }
       .btn-tb { display: none !important; }
+      #note-posa { font-size: 8px; }
+      #prev-override-cb, label[for="prev-override-cb"] { display: none !important; }
+      #prev-input { display: none !important; }
     }
   </style>
 </head>
@@ -228,7 +231,7 @@
 
     <div class="ore-block">
       <h3>Totali e Preventivo</h3>
-      <div class="ore-grid">
+      <div class="ore-grid" style="grid-template-columns:repeat(6,1fr)">
         <div class="ore-card">
           <div class="ore-val" id="card-dirette">—</div>
           <div class="ore-lbl">Ore Dirette</div>
@@ -242,12 +245,21 @@
           <div class="ore-lbl">Dirette + Indirette</div>
         </div>
         <div class="ore-card">
+          <div class="ore-val" id="card-accantonate" style="color:#f59e0b">—</div>
+          <div class="ore-lbl">Ore Accantonate</div>
+        </div>
+        <div class="ore-card">
           <div class="ore-val" id="card-totali">—</div>
           <div class="ore-lbl">Ore Totali</div>
         </div>
         <div class="ore-card">
-          <input class="prev-input" id="prev-input" type="number" min="0" step="0.5" placeholder="—" title="Ore Preventivo (modifica manuale)" />
+          <div class="ore-val" id="card-prev">—</div>
           <div class="ore-lbl">Ore Preventivo</div>
+          <div style="font-size:9px;color:#9ca3af;margin-top:3px">
+            <input id="prev-override-cb" type="checkbox" style="margin-right:3px" onchange="onPrevCbChange(this)" />
+            <label for="prev-override-cb" style="cursor:pointer">Manuale</label>
+            <input class="prev-input" id="prev-input" type="number" min="0" step="0.5" placeholder="—" style="display:none;width:70px;margin-top:3px;text-align:center;border:1px solid #d1d5db;border-radius:4px;padding:2px 4px;font-size:12px;" onchange="onPrevChange(this)" />
+          </div>
         </div>
       </div>
       <div class="posatori-row" id="posatori-row">
@@ -256,6 +268,14 @@
         <span>Ore/giorno (2 pers.): <strong>16h</strong></span>
         <span>Giorni stimati: <strong id="giorni-stim">—</strong></span>
       </div>
+    </div>
+
+    <div style="margin-top:10px">
+      <label style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.4px">Note</label>
+      <textarea id="note-posa" rows="3"
+        style="width:100%;margin-top:4px;border:1px solid #d1d5db;border-radius:6px;padding:8px 10px;font-size:13px;color:#374151;resize:vertical;box-sizing:border-box"
+        placeholder="Inserisci note per questo report posa..."
+        onchange="onNoteChange(this.value)"></textarea>
     </div>
 
   </div>
@@ -569,7 +589,7 @@ function renderAll(voci, adj) {
 function renderSummary(areaMap, totFin) {
   // --- riepilogo per area ---
   var htmlArea = '';
-  var oreDirette = 0, oreIndirette = 0;
+  var oreDirette = 0, oreIndirette = 0, oreAccantonate = 0;
 
   Object.keys(areaMap).forEach(function(area) {
     var d = areaMap[area];
@@ -577,8 +597,14 @@ function renderSummary(areaMap, totFin) {
     htmlArea += '<span class="lbl">' + area + '</span>';
     htmlArea += '<span class="val">' + fmtH(d.fin) + '</span>';
     htmlArea += '</div>';
-    if (d.tipo === 'dir') oreDirette   += d.fin;
-    else                  oreIndirette += d.fin;
+    if (area === 'POSIZIONAMENTO') {
+      oreAccantonate += d.fin;
+      oreDirette     += d.fin;
+    } else if (d.tipo === 'dir') {
+      oreDirette   += d.fin;
+    } else {
+      oreIndirette += d.fin;
+    }
   });
   htmlArea += '<div class="sum-row total"><span class="lbl">TOTALE</span><span class="val">' + fmtH(totFin) + '</span></div>';
   document.getElementById('sum-area').innerHTML = htmlArea;
@@ -593,10 +619,19 @@ function renderSummary(areaMap, totFin) {
   document.getElementById('sum-ore').innerHTML = htmlOre;
 
   // cards
-  document.getElementById('card-dirette').textContent   = fmtH(oreDirette);
-  document.getElementById('card-indirette').textContent = fmtH(oreIndirette);
-  document.getElementById('card-di').textContent        = fmtH(di);
-  document.getElementById('card-totali').textContent    = fmtH(totFin);
+  document.getElementById('card-dirette').textContent     = fmtH(oreDirette);
+  document.getElementById('card-indirette').textContent   = fmtH(oreIndirette);
+  document.getElementById('card-di').textContent          = fmtH(di);
+  document.getElementById('card-accantonate').textContent = fmtH(oreAccantonate);
+  document.getElementById('card-totali').textContent      = fmtH(totFin);
+
+  // ORE PREVENTIVO = auto = totFin (salvo override manuale)
+  var cb = document.getElementById('prev-override-cb');
+  if (!cb || !cb.checked) {
+    document.getElementById('card-prev').textContent = fmtH(totFin);
+    // salva anche il valore auto per stampa
+    try { localStorage.setItem(PREV_LS_KEY + '_auto', String(totFin)); } catch(e) {}
+  }
 
   // giorni
   var giorni = totFin > 0 ? Math.ceil(totFin / 16 * 10) / 10 : 0;
@@ -710,6 +745,15 @@ function init() {
     renderTipoGrid(pos);
     VOCI_GLOBALI = calcolaVoci(pos);
     renderAll(VOCI_GLOBALI, loadAdj());
+    // ripristina nota
+    var notaEl = document.getElementById('note-posa');
+    if (notaEl) notaEl.value = loadNote();
+    // ripristina prev override
+    var prevSaved = loadPrev();
+    if (prevSaved > 0) {
+      var cb = document.getElementById('prev-override-cb');
+      if (cb) { cb.checked = true; onPrevCbChange(cb); }
+    }
     showReport();
   }
 
@@ -729,12 +773,38 @@ function init() {
   );
 }
 
-// prev input handler
-document.getElementById('prev-input').addEventListener('change', function() {
-  var v = parseFloat(this.value) || 0;
+// ---- prev override handlers ----
+function onPrevCbChange(cb) {
+  var inp = document.getElementById('prev-input');
+  var card = document.getElementById('card-prev');
+  if (cb.checked) {
+    inp.style.display = '';
+    var saved = loadPrev();
+    inp.value = saved || '';
+    if (saved) card.textContent = fmtH(saved);
+  } else {
+    inp.style.display = 'none';
+    inp.value = '';
+    savePrev(0);
+    // ripristina auto
+    var auto = parseFloat(localStorage.getItem(PREV_LS_KEY + '_auto')) || 0;
+    card.textContent = fmtH(auto);
+  }
+}
+
+function onPrevChange(el) {
+  var v = Math.max(0, parseFloat(el.value) || 0);
   savePrev(v);
-  this.value = v || '';
-});
+  document.getElementById('card-prev').textContent = v ? fmtH(v) : '—';
+}
+
+// ---- note handlers ----
+function loadNote() {
+  try { return localStorage.getItem(PREV_LS_KEY + '_note') || ''; } catch(e) { return ''; }
+}
+function onNoteChange(val) {
+  try { localStorage.setItem(PREV_LS_KEY + '_note', val); } catch(e) {}
+}
 
 init();
 </script>

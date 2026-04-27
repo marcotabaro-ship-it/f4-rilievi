@@ -94,6 +94,11 @@ const _map = {
       telefono:   row.telefono  || '',
       email:      row.email     || '',
       note:       row.note      || '',
+      tipo_via:   row.tipo_via   || '',
+      indirizzo:  row.indirizzo  || '',
+      comune:     row.comune     || '',
+      provincia:  row.provincia  || '',
+      cap:        row.cap        || '',
       stato:      row.stato
     };
   },
@@ -438,11 +443,11 @@ const API = {
     catch(e) { return this._err(e); }
   },
   async createCliente(data) {
-    try { const user = Auth.getUser(); const rows = await _sb.post('clienti', { nome: data.nome, telefono: data.telefono || null, email: data.email || null, note: data.note || null, utente_creazione: user ? user.id : null }); return this._ok(_map.cliente(rows[0])); }
+    try { const user = Auth.getUser(); const rows = await _sb.post('clienti', { nome: data.nome, telefono: data.telefono || null, email: data.email || null, note: data.note || null, tipo_via: data.tipo_via || null, indirizzo: data.indirizzo || null, comune: data.comune || null, provincia: data.provincia || null, cap: data.cap || null, utente_creazione: user ? user.id : null }); return this._ok(_map.cliente(rows[0])); }
     catch(e) { return this._err(e); }
   },
   async updateCliente(id, data) {
-    try { const rows = await _sb.patch('clienti', { id: 'eq.' + id }, { nome: data.nome, telefono: data.telefono || null, email: data.email || null, note: data.note || null }); return this._ok(_map.cliente((rows || [])[0])); }
+    try { const rows = await _sb.patch('clienti', { id: 'eq.' + id }, { nome: data.nome, telefono: data.telefono || null, email: data.email || null, note: data.note || null, tipo_via: data.tipo_via || null, indirizzo: data.indirizzo || null, comune: data.comune || null, provincia: data.provincia || null, cap: data.cap || null }); return this._ok(_map.cliente((rows || [])[0])); }
     catch(e) { return this._err(e); }
   },
   async toggleStatoCliente(id) {

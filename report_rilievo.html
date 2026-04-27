@@ -36,7 +36,6 @@
     .sh-field { display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; font-size: 11px; }
     .sh-field label { font-weight: 700; color: #1a1a2e; white-space: nowrap; font-size: 10px; min-width: 65px; }
     .sh-field span { color: #374151; border-bottom: 1px solid #d1d5db; flex: 1; min-height: 13px; }
-    .sh-field-inline { display: flex; gap: 10px; }
     .sh-badges { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
     .sh-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
     .sh-badge.blue  { background: #ede9fe; color: #4f46e5; }
@@ -167,11 +166,7 @@
         <div class="sh-centro">
           <div class="sh-field"><label>Riferimento:</label><span id="sh-rif"></span><span id="sh-badge" style="margin-left:8px;font-size:10px;font-weight:700;color:#4f46e5;background:#ede9fe;padding:1px 7px;border-radius:8px;flex:none"></span></div>
           <div class="sh-field"><label>Indirizzo:</label><span id="sh-ind"></span></div>
-          <div class="sh-field-inline">
-            <div class="sh-field" style="flex:2"><label>Comune:</label><span id="sh-comune"></span></div>
-            <div class="sh-field" style="flex:0;min-width:60px"><label>Prov.:</label><span id="sh-prov"></span></div>
-            <div class="sh-field" style="flex:0;min-width:70px"><label>CAP:</label><span id="sh-cap"></span></div>
-          </div>
+          <div class="sh-field"><label>Comune:</label><span id="sh-loc"></span></div>
           <div class="sh-field"><label>Telefono:</label><span id="sh-tel"></span></div>
           <div class="sh-field"><label>e-mail:</label><span id="sh-email"></span></div>
         </div>
@@ -554,9 +549,8 @@ function caricaDati(idRil) {
     // indirizzo dal cantiere
     var viaStr = ((cant.tipo_via||'') + ' ' + (cant.indirizzo||'')).trim();
     document.getElementById('sh-ind').textContent    = viaStr || '—';
-    document.getElementById('sh-comune').textContent = cant.comune   || '—';
-    document.getElementById('sh-prov').textContent   = cant.provincia || '—';
-    document.getElementById('sh-cap').textContent    = cant.cap      || '';
+    var locParts = [cant.comune||'', cant.provincia ? '('+cant.provincia+')' : '', cant.cap||''];
+    document.getElementById('sh-loc').textContent = locParts.filter(Boolean).join(' ') || '—';
     document.getElementById('sh-tel').textContent    = cli.telefono  || '—';
     document.getElementById('sh-email').textContent  = cli.email     || '—';
 

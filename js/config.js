@@ -65,9 +65,9 @@ const APP_CONFIG = {
   STRAT_QUOTE: {
     'SERR_A': ['W','X','Y','Z'],
     'SERR_B': ['W','X','Y','Z','J'],
-    'SERR_C': ['W','X','Y','Z','J'],
-    'SERR_D': ['W','X','Y','Z','J','Q'],
-    'SERR_E': ['W','X','Y','Z','J','Q']
+    'SERR_C': ['X','Y','Z','J'],
+    'SERR_D': ['X','Y','Z','J','Q'],
+    'SERR_E': ['X','Y','Z','J','Q']
   },
 
   STRAT_QUOTE_DESC: {

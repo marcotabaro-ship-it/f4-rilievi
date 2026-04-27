@@ -156,14 +156,12 @@
       .tr-sez td { font-size: 7px; padding: 2px 6px; }
       .tr-voce.zero-row { display: none !important; }
       .adj-input { width: 40px; font-size: 7px; padding: 1px 3px; }
-      .ore-grid { grid-template-columns: repeat(6, 1fr); gap: 4px; }
+      .ore-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
       .ore-card { padding: 5px; }
       .ore-card .ore-val { font-size: 16px; }
       .ore-card .ore-lbl { font-size: 8px; }
       .btn-tb { display: none !important; }
       #note-posa { font-size: 8px; }
-      #prev-override-cb, label[for="prev-override-cb"] { display: none !important; }
-      #prev-input { display: none !important; }
     }
   </style>
 </head>
@@ -231,7 +229,7 @@
 
     <div class="ore-block">
       <h3>Totali e Preventivo</h3>
-      <div class="ore-grid" style="grid-template-columns:repeat(6,1fr)">
+      <div class="ore-grid" >
         <div class="ore-card">
           <div class="ore-val" id="card-dirette">—</div>
           <div class="ore-lbl">Ore Dirette</div>
@@ -244,22 +242,14 @@
           <div class="ore-val" id="card-di">—</div>
           <div class="ore-lbl">Dirette + Indirette</div>
         </div>
-        <div class="ore-card">
-          <div class="ore-val" id="card-accantonate" style="color:#f59e0b">—</div>
-          <div class="ore-lbl">Ore Accantonate</div>
-        </div>
-        <div class="ore-card">
+<div class="ore-card">
           <div class="ore-val" id="card-totali">—</div>
           <div class="ore-lbl">Ore Totali</div>
         </div>
         <div class="ore-card">
           <div class="ore-val" id="card-prev">—</div>
           <div class="ore-lbl">Ore Preventivo</div>
-          <div style="font-size:9px;color:#9ca3af;margin-top:3px">
-            <input id="prev-override-cb" type="checkbox" style="margin-right:3px" onchange="onPrevCbChange(this)" />
-            <label for="prev-override-cb" style="cursor:pointer">Manuale</label>
-            <input class="prev-input" id="prev-input" type="number" min="0" step="0.5" placeholder="—" style="display:none;width:70px;margin-top:3px;text-align:center;border:1px solid #d1d5db;border-radius:4px;padding:2px 4px;font-size:12px;" onchange="onPrevChange(this)" />
-          </div>
+          <div style="font-size:9px;color:#9ca3af;margin-top:3px">(ore calcolate)</div>
         </div>
       </div>
       <div class="posatori-row" id="posatori-row">
@@ -583,13 +573,22 @@ function renderAll(voci, adj) {
     '<td class="ore-fin">' + fmtH(totFin) + '</td>' +
     '</tr>';
 
-  renderSummary(areaMap, totFin);
+  // ORE PREVENTIVO = ore finali voce PROGETTAZIONE
+  var oreProgFin = 0;
+  voci.forEach(function(v) {
+    if (v.id === 'prog') {
+      var minus = parseFloat((adj[v.id] || {}).minus) || 0;
+      var plus  = parseFloat((adj[v.id] || {}).plus)  || 0;
+      oreProgFin = Math.max(0, Math.round((v.oreCalc - minus + plus) * 1000) / 1000);
+    }
+  });
+  renderSummary(areaMap, totFin, oreProgFin);
 }
 
-function renderSummary(areaMap, totFin) {
+function renderSummary(areaMap, totFin, orePrev) {
   // --- riepilogo per area ---
   var htmlArea = '';
-  var oreDirette = 0, oreIndirette = 0, oreAccantonate = 0;
+  var oreDirette = 0, oreIndirette = 0;
 
   Object.keys(areaMap).forEach(function(area) {
     var d = areaMap[area];
@@ -597,10 +596,7 @@ function renderSummary(areaMap, totFin) {
     htmlArea += '<span class="lbl">' + area + '</span>';
     htmlArea += '<span class="val">' + fmtH(d.fin) + '</span>';
     htmlArea += '</div>';
-    if (area === 'POSIZIONAMENTO') {
-      oreAccantonate += d.fin;
-      oreDirette     += d.fin;
-    } else if (d.tipo === 'dir') {
+    if (d.tipo === 'dir') {
       oreDirette   += d.fin;
     } else {
       oreIndirette += d.fin;
@@ -622,16 +618,10 @@ function renderSummary(areaMap, totFin) {
   document.getElementById('card-dirette').textContent     = fmtH(oreDirette);
   document.getElementById('card-indirette').textContent   = fmtH(oreIndirette);
   document.getElementById('card-di').textContent          = fmtH(di);
-  document.getElementById('card-accantonate').textContent = fmtH(oreAccantonate);
   document.getElementById('card-totali').textContent      = fmtH(totFin);
 
-  // ORE PREVENTIVO = auto = totFin (salvo override manuale)
-  var cb = document.getElementById('prev-override-cb');
-  if (!cb || !cb.checked) {
-    document.getElementById('card-prev').textContent = fmtH(totFin);
-    // salva anche il valore auto per stampa
-    try { localStorage.setItem(PREV_LS_KEY + '_auto', String(totFin)); } catch(e) {}
-  }
+  // ORE PREVENTIVO = ore finali PROGETTAZIONE (UFFICIO TECNICO / Progettazione)
+  document.getElementById('card-prev').textContent = fmtH(orePrev);
 
   // giorni
   var giorni = totFin > 0 ? Math.ceil(totFin / 16 * 10) / 10 : 0;
@@ -748,12 +738,6 @@ function init() {
     // ripristina nota
     var notaEl = document.getElementById('note-posa');
     if (notaEl) notaEl.value = loadNote();
-    // ripristina prev override
-    var prevSaved = loadPrev();
-    if (prevSaved > 0) {
-      var cb = document.getElementById('prev-override-cb');
-      if (cb) { cb.checked = true; onPrevCbChange(cb); }
-    }
     showReport();
   }
 
@@ -771,31 +755,6 @@ function init() {
     function(rows) { loaded.pos = rows || []; tryRender(); },
     function(e) { errored=true; setStato('Errore posizioni: '+e, true); }
   );
-}
-
-// ---- prev override handlers ----
-function onPrevCbChange(cb) {
-  var inp = document.getElementById('prev-input');
-  var card = document.getElementById('card-prev');
-  if (cb.checked) {
-    inp.style.display = '';
-    var saved = loadPrev();
-    inp.value = saved || '';
-    if (saved) card.textContent = fmtH(saved);
-  } else {
-    inp.style.display = 'none';
-    inp.value = '';
-    savePrev(0);
-    // ripristina auto
-    var auto = parseFloat(localStorage.getItem(PREV_LS_KEY + '_auto')) || 0;
-    card.textContent = fmtH(auto);
-  }
-}
-
-function onPrevChange(el) {
-  var v = Math.max(0, parseFloat(el.value) || 0);
-  savePrev(v);
-  document.getElementById('card-prev').textContent = v ? fmtH(v) : '—';
 }
 
 // ---- note handlers ----

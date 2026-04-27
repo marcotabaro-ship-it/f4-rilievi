@@ -1,664 +1,459 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Report Accessori &mdash; F4 Rilievi</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/main.css" />
   <style>
-    .rep-header {
-      background: var(--c-primary); color: white;
-      border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 16px;
-      display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    body { background: #f5f6fa; font-size: 12px; }
+
+    /* ---- TOOLBAR ---- */
+    #toolbar {
+      background: #1a1a2e; color: #fff; padding: 10px 18px;
+      display: flex; align-items: center; gap: 8px;
+      position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 6px rgba(0,0,0,.25);
     }
-    .rep-header h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
-    .rep-meta { font-size: .78rem; opacity: .85; line-height: 1.8; }
-    .rep-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .section-title {
-      font-size: .78rem; font-weight: 700; color: var(--c-primary);
-      text-transform: uppercase; letter-spacing: .5px;
-      border-bottom: 2px solid var(--c-red); padding-bottom: 4px; margin: 16px 0 12px;
+    #toolbar h1 { font-size: 14px; margin: 0; flex: 1; font-weight: 600; }
+    .btn-tb { border: none; border-radius: 6px; padding: 6px 13px; font-size: 12px; font-weight: 600; cursor: pointer; color: #fff; }
+    .btn-tb-primary { background: #4f46e5; } .btn-tb-primary:hover { background: #4338ca; }
+    .btn-tb-neutral { background: #374151; } .btn-tb-neutral:hover { background: #1f2937; }
+
+    /* ---- WRAP ---- */
+    #wrap { max-width: 1100px; margin: 20px auto; padding: 0 14px 48px; }
+    #stato-msg { text-align: center; padding: 60px; color: #6b7280; }
+
+    /* ---- HEADER SCHEDA ---- */
+    .scheda-header {
+      background: #fff; border: 2px solid #1a1a2e; border-radius: 8px;
+      margin-bottom: 12px; overflow: hidden; page-break-inside: avoid;
     }
-    .strat-list { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 8px; }
-    .strat-card-rep {
-      border: 1px solid var(--c-border); border-radius: var(--radius);
-      overflow: hidden; width: 150px; background: white;
+    .sh-top { display: grid; grid-template-columns: 110px 1fr 210px; border-bottom: 2px solid #1a1a2e; }
+    .sh-logo {
+      background: #1a1a2e; color: #fff;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 10px; font-size: 10px; font-weight: 700; text-align: center;
     }
-    .strat-card-rep img { width: 100%; height: 100px; object-fit: contain; background: #F5F5F5; padding: 5px; display: block; }
-    .strat-card-rep .sc-body { padding: 6px 8px; }
-    .strat-card-rep .sc-name { font-size: .76rem; font-weight: 700; color: var(--c-primary); margin-bottom: 2px; }
-    .strat-card-rep .sc-quote { font-size: .69rem; color: var(--c-text-sec); line-height: 1.5; }
+    .sh-logo .logo-box { border: 2px solid #e53e3e; padding: 3px 8px; font-size: 16px; font-weight: 900; letter-spacing: -1px; margin-bottom: 3px; }
+    .sh-centro { padding: 10px 14px; border-left: 2px solid #1a1a2e; border-right: 2px solid #1a1a2e; }
+    .sh-destra { padding: 10px 12px; }
+    .sh-field { display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; font-size: 11px; }
+    .sh-field label { font-weight: 700; color: #1a1a2e; font-size: 10px; min-width: 70px; white-space: nowrap; }
+    .sh-field span { color: #374151; border-bottom: 1px solid #d1d5db; flex: 1; min-height: 13px; }
+    .sh-badge-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+    .sh-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+    .sh-badge.blue { background: #ede9fe; color: #4f46e5; }
+    .sh-badge.green { background: #d1fae5; color: #065f46; }
+
+    /* ---- SEZIONI ---- */
+    .sez-title {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
+      color: #1a1a2e; margin: 14px 0 8px; padding-bottom: 3px;
+      border-bottom: 2px solid #ede9fe;
+    }
+
+    /* ---- STRATIGRAFIE ---- */
+    .strat-grid-acc { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+    .strat-card-acc {
+      background: #fff; border: 1px solid #d1d5db; border-radius: 6px;
+      padding: 8px; width: 150px; page-break-inside: avoid;
+    }
+    .strat-card-acc img { width: 100%; height: 80px; object-fit: contain; background: #f9f9f9; border: 1px solid #e5e7eb; border-radius: 3px; margin-bottom: 5px; }
+    .strat-card-acc h4 { font-size: 10px; font-weight: 700; color: #1a1a2e; margin: 0 0 3px; }
+    .strat-card-acc .sq { font-size: 9px; color: #6b7280; line-height: 1.5; }
+
+    /* ---- TABELLA POSIZIONI ---- */
+    .table-outer { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; overflow-x: auto; margin-bottom: 12px; }
+    table.t-pos { border-collapse: collapse; width: 100%; font-size: 11px; white-space: nowrap; }
+    table.t-pos thead th { background: #1a1a2e; color: #fff; padding: 6px 8px; text-align: center; font-size: 10px; font-weight: 600; }
+    table.t-pos td { padding: 5px 8px; border-bottom: 1px solid #f0f0f6; vertical-align: middle; font-size: 10px; color: #374151; }
+    table.t-pos tr:nth-child(even) td { background: #fafafe; }
+    table.t-pos tr { page-break-inside: avoid; }
+    table.t-pos td.num { font-weight: 700; color: #1a1a2e; font-family: monospace; background: #f0f0ff; text-align: center; }
+    table.t-pos td.c { text-align: center; }
+    table.t-pos td.dim-cell { text-align: center; }
+    .dim-main { font-weight: 700; font-size: 10px; }
+    .dim-calc { font-size: 9px; color: #6b7280; font-style: italic; }
+    .badge-tipo { display: inline-block; padding: 1px 6px; border-radius: 10px; background: #E3F2FD; color: #1565C0; font-weight: 700; font-size: 10px; }
+    .tot-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+    .tot-chip { background: #d1fae5; color: #065f46; border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: 600; }
+
+    /* ---- ACCESSORI ---- */
     .acc-group {
-      border: 1px solid var(--c-border); border-radius: var(--radius);
-      overflow: hidden; margin-bottom: 12px; background: white;
-      page-break-inside: avoid;
+      background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+      overflow: hidden; margin-bottom: 10px; page-break-inside: avoid;
     }
-    .acc-group-header {
-      background: #F5F7FF; border-bottom: 1px solid var(--c-border);
-      padding: 8px 14px; display: flex; align-items: center; gap: 12px;
+    .acc-group-hdr {
+      background: #f5f7ff; border-bottom: 1px solid #e5e7eb;
+      padding: 8px 12px; display: flex; align-items: center; gap: 10px;
     }
-    .acc-group-img {
-      width: 56px; height: 40px; object-fit: contain; flex-shrink: 0;
-      border: 1px solid var(--c-border); border-radius: 4px; background: white; padding: 3px;
-    }
-    .acc-group-title { font-size: .88rem; font-weight: 700; color: var(--c-primary); flex: 1; }
-    .acc-group-totale { font-size: .82rem; font-weight: 700; color: #2E7D32; white-space: nowrap; }
-    .acc-group-body { padding: 10px 14px; }
-    .acc-subgroup { margin-bottom: 9px; }
-    .acc-subgroup:last-child { margin-bottom: 0; }
-    .acc-sublabel { font-size: .76rem; font-weight: 700; color: var(--c-text-sec); margin-bottom: 4px; }
-    .acc-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .chip-mq  { display:inline-block; padding:2px 10px; border-radius:12px; font-size:.8rem; font-weight:700; background:#E3F2FD; color:#1565C0; white-space:nowrap; }
-    .chip-n   { display:inline-block; padding:2px 10px; border-radius:12px; font-size:.8rem; font-weight:700; background:#FFF3E0; color:#E65100; white-space:nowrap; }
-    .chip-m   { display:inline-block; padding:2px 10px; border-radius:12px; font-size:.8rem; font-weight:700; background:#F3E5F5; color:#6A1B9A; white-space:nowrap; }
-    .acc-pos-list {
-      flex: 1; font-size: .8rem; font-weight: 600; color: var(--c-primary);
-      font-family: monospace; background: #EEF2FF; padding: 3px 10px; border-radius: 4px;
-      min-width: 0;
-    }
-    .btn-copia {
-      font-size: .72rem; padding: 3px 9px; cursor: pointer;
-      background: var(--c-primary); color: white; border: none; border-radius: 4px; flex-shrink: 0;
-    }
-    .btn-copia:hover { opacity: .85; }
-    .pos-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
-    .pos-table th { background: var(--c-primary); color: white; padding: 6px 10px; text-align: left; font-weight: 600; font-size: .72rem; }
-    .pos-table td { padding: 6px 10px; border-bottom: 1px solid var(--c-border); }
-    .pos-table tr:last-child td { border-bottom: none; }
-    .pos-table tr { page-break-inside: avoid; }
-    .badge-t { display:inline-block; padding:1px 6px; border-radius:10px; background:#E3F2FD; color:#1565C0; font-weight:700; font-size:.72rem; }
-    .totali-bar { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-    .tot-chip { background:#E8F5E9; color:#2E7D32; border-radius:16px; padding:2px 10px; font-size:.78rem; font-weight:600; }
-    .mat-posa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 10px; margin-top: 8px; }
-    .mat-posa-card { border: 1px solid var(--c-border); border-radius: var(--radius); padding: 10px 12px; background: white; text-align: center; }
-    .mat-posa-card .mp-nome { font-size: .74rem; color: var(--c-text-sec); margin-bottom: 4px; }
-    .mat-posa-card .mp-val  { font-size: 1.1rem; font-weight: 700; color: var(--c-primary); }
-    .mat-posa-card .mp-um   { font-size: .7rem; color: var(--c-text-sec); }
+    .acc-img { width: 52px; height: 36px; object-fit: contain; flex-shrink: 0; border: 1px solid #e5e7eb; border-radius: 4px; background: #fff; padding: 2px; }
+    .acc-titolo { font-size: .88rem; font-weight: 700; color: #1a1a2e; flex: 1; }
+    .acc-tot { font-size: .8rem; font-weight: 700; color: #2E7D32; white-space: nowrap; }
+    .acc-body { padding: 8px 12px; }
+    .acc-sub { margin-bottom: 7px; }
+    .acc-sub:last-child { margin-bottom: 0; }
+    .acc-sublabel { font-size: 11px; font-weight: 700; color: #6b7280; margin-bottom: 3px; }
+    .acc-row { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .chip-mq { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 700; background: #E3F2FD; color: #1565C0; white-space: nowrap; }
+    .chip-n  { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 700; background: #FFF3E0; color: #E65100; white-space: nowrap; }
+    .chip-m  { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 700; background: #F3E5F5; color: #6A1B9A; white-space: nowrap; }
+    .acc-pos-list { flex: 1; font-size: 11px; font-weight: 600; color: #1a1a2e; font-family: monospace; background: #eef2ff; padding: 3px 9px; border-radius: 4px; min-width: 0; }
+    .btn-copy { font-size: 11px; padding: 2px 8px; cursor: pointer; background: #1a1a2e; color: #fff; border: none; border-radius: 4px; flex-shrink: 0; }
+    .btn-copy:hover { opacity: .8; }
+
+    /* ---- MATERIALI POSA ---- */
+    .mat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 8px; margin-top: 8px; }
+    .mat-card { border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; background: #fff; text-align: center; page-break-inside: avoid; }
+    .mat-nome { font-size: 10px; color: #6b7280; margin-bottom: 4px; }
+    .mat-val  { font-size: 1.1rem; font-weight: 700; color: #1a1a2e; }
+    .mat-um   { font-size: 9px; color: #6b7280; }
+
+    /* ---- PRINT ---- */
     @media print {
-      @page { size: A4 landscape; margin: 8mm; }
-      body { background: white; }
-      .sidebar, .top-bar, .rep-actions, .btn-copia, .breadcrumb { display: none !important; }
-      .main-content { padding: 0 !important; }
-      .rep-header { border-radius: 0; page-break-inside: avoid; }
-      .acc-group { page-break-inside: avoid; border-radius: 0; }
-      .strat-card-rep { page-break-inside: avoid; }
-      .section-title { page-break-after: avoid; }
-      .acc-group-header { background: #EEE !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      @page { size: A4 landscape; margin: 7mm; }
+      body { background: #fff; font-size: 10px; }
+      #toolbar { display: none !important; }
+      #wrap { margin: 0; padding: 0; max-width: none; }
+      .scheda-header { border-radius: 0; margin-bottom: 5px; }
+      .sh-top { grid-template-columns: 90px 1fr 180px; }
+      .sh-logo .logo-box { font-size: 12px; }
+      .sh-field { font-size: 9px; margin-bottom: 2px; }
+      .sh-field label { font-size: 9px; }
+      .sez-title { font-size: 8px; margin: 6px 0 4px; }
+      .strat-card-acc { width: 110px; padding: 5px; }
+      .strat-card-acc img { height: 55px; }
+      .strat-card-acc h4 { font-size: 8px; }
+      .strat-card-acc .sq { font-size: 7px; }
+      .table-outer { border-radius: 0; overflow: visible; }
+      table.t-pos { font-size: 8px; white-space: normal; }
+      table.t-pos thead th { padding: 3px 5px; font-size: 8px; }
+      table.t-pos td { padding: 2px 5px; font-size: 8px; }
+      .dim-main { font-size: 8px; }
+      .dim-calc { font-size: 7px; }
+      .acc-group { border-radius: 0; margin-bottom: 5px; }
+      .acc-group-hdr { padding: 5px 8px; background: #eee !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .acc-img { width: 38px; height: 26px; }
+      .acc-titolo { font-size: .8rem; }
+      .acc-tot { font-size: .74rem; }
+      .acc-body { padding: 5px 8px; }
+      .acc-sublabel { font-size: 9px; }
+      .acc-row { gap: 4px; }
+      .chip-mq,.chip-n,.chip-m { font-size: 9px; padding: 1px 6px; }
+      .acc-pos-list { font-size: 9px; padding: 2px 6px; }
+      .btn-copy { display: none !important; }
+      .mat-card { padding: 6px; }
+      .mat-nome { font-size: 8px; }
+      .mat-val  { font-size: .9rem; }
+      .mat-um   { font-size: 7px; }
+      .badge-tipo { font-size: 8px; }
+      .tot-chip { font-size: 8px; }
     }
   </style>
 </head>
 <body>
-<div class="app-layout" id="appLayout">
-  <main class="main-content">
-    <div class="breadcrumb">
-      <a href="clienti.html">Clienti</a> &#8250;
-      <a id="bcCliente" href="#">—</a> &#8250;
-      <a id="bcCantiere" href="#">—</a> &#8250;
-      <span id="bcRilievo">Report Accessori</span>
-    </div>
-    <div id="repContent">
-      <div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>
-    </div>
-  </main>
+
+<div id="toolbar">
+  <h1 id="tb-titolo">Report Accessori</h1>
+  <button class="btn-tb btn-tb-neutral" onclick="history.back()">&#8592; Indietro</button>
+  <button class="btn-tb btn-tb-primary" onclick="window.print()">&#128438; Stampa A4</button>
 </div>
+
+<div id="wrap">
+  <div id="stato-msg">Caricamento&hellip;</div>
+  <div id="rep-content" style="display:none"></div>
+</div>
+
 <script src="js/config.js"></script>
-<script src="js/api.js"></script>
 <script src="js/auth.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/layout.js"></script>
+<script src="js/api.js"></script>
 <script>
 var currentUser = Auth.requireLogin();
 if (!currentUser) throw new Error('not logged');
-Layout.init('clienti');
 
-var idRilievo = Utils.getParam('idRilievo');
+var idRilievo = (new URLSearchParams(window.location.search)).get('idRilievo');
 if (!idRilievo) window.location.href = 'clienti.html';
 
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function n2(x)  { return Math.round(x * 100) / 100; }
-function roundUp(x) { return Math.ceil(x); }
-
-// ================================================================
-// COSTANTI
-// ================================================================
-var C = {
-  sfrido:       50,
-  pvcBarra:   6000,
-  legnoBarra: 3500,
-  alumBarra:  6000,
-  angolPvcLato:   50,
-  angolPvcBarra: 6000,
-  cassIngrSx:  200,
-  cassIngrDx:  200,
-  scherm: {
-    'A': {h:150,sx:30,dx:30,supMin:1.5}, 'AM':{h:150,sx:30,dx:30,supMin:1.5},
-    'AE':{h:150,sx:30,dx:30,supMin:1.5}, 'AR':{h:150,sx:30,dx:30,supMin:1.5},
-    'S': {h:0,  sx:0, dx:0, supMin:0  },
-    'TZ':{h:100,sx:30,dx:30,supMin:0  }, 'TM':{h:100,sx:30,dx:30,supMin:0  },
-    'CA':{h:250,sx:30,dx:30,supMin:0  }, 'CT':{h:350,sx:30,dx:30,supMin:0  }
-  },
-  zanz: {
-    'V':{h:50,sx:50,dx:50,supMin:1.5},
-    'O':{h:50,sx:50,dx:50,supMin:2.0}
-  }
-};
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function v(x)  { return (!x&&x!==0)?'':String(x); }
+function n2(x) { return Math.round(x*100)/100; }
+function cUp(x){ return Math.ceil(x); }
 
 var STRAT_IMG = (typeof APP_CONFIG!=='undefined'&&APP_CONFIG.STRAT_IMAGES)?APP_CONFIG.STRAT_IMAGES:{};
 var TIPO_DESC = {'I':'Ingresso','F':'Finestra apribile','PF':'Porta finestra','FF':'Finestra fissa','VF':'Vetrata fissa','S':'Scorrevole'};
 var TIPO_ORD  = ['I','F','PF','FF','VF','S'];
-var SCHERM_DESC = {'A':'Avvolgibile manuale','AM':'Avv. meccanico','AE':'Avv. elettronico','AR':'Avv. radio','S':'Scuretto','TZ':'Tenda ZIP','TM':'Tenda manuale','CA':'Frangisole cavo','CT':'Frangisole catena'};
+var SCHERM_DESC = {'A':'Avvolgibile man.','AM':'Avv. meccanico','AE':'Avv. elettronico','AR':'Avv. radio',
+  'S':'Scuretto','TZ':'Tenda ZIP','TM':'Tenda manuale','CA':'Frangisole cavo','CT':'Frangisole catena'};
 
-// ================================================================
-// CALCOLI
-// ================================================================
-function numPos(p)  { return p.numero_pos_alfa || p.numero_pos; }
+// ================================================================ COSTANTI
+var C = {
+  sfrido:50, pvcB:6000, legB:3500, aluB:6000,
+  angLato:50, angB:6000,
+  cassIngr:200,
+  sch:{'A':{h:150,sx:30,dx:30,min:1.5},'AM':{h:150,sx:30,dx:30,min:1.5},'AE':{h:150,sx:30,dx:30,min:1.5},'AR':{h:150,sx:30,dx:30,min:1.5},
+       'S':{h:0,sx:0,dx:0,min:0},'TZ':{h:100,sx:30,dx:30,min:0},'TM':{h:100,sx:30,dx:30,min:0},
+       'CA':{h:250,sx:30,dx:30,min:0},'CT':{h:350,sx:30,dx:30,min:0}},
+  zan:{'V':{h:50,sx:50,dx:50,min:1.5},'O':{h:50,sx:50,dx:50,min:2.0}}
+};
 
-function parseQuote(raw) {
-  if (!raw) return [];
-  try {
-    var a = typeof raw==='string'?JSON.parse(raw):raw;
-    if (Array.isArray(a)) return a.filter(function(q){return q&&q.lettera&&(q.mm||q.mm===0);});
-    if (typeof a==='object') return Object.keys(a).filter(function(k){return a[k]!=null&&a[k]!=='';}).map(function(k){return{lettera:k,mm:a[k]};});
-  } catch(e){}
-  return [];
+// ================================================================ CALCOLI
+function numPos(p){ return p.numero_pos_alfa||p.numero_pos; }
+function parseQ(raw){ try{var a=typeof raw==='string'?JSON.parse(raw):raw;if(Array.isArray(a))return a.filter(function(q){return q&&q.lettera;});if(typeof a==='object')return Object.keys(a).map(function(k){return{lettera:k,mm:a[k]};});}catch(e){}return[]; }
+
+function calcTub(p,db){
+  var H=parseFloat(p.H_mm||p.h_mm)||0,L=parseFloat(p.L_mm||p.l_mm)||0;
+  var tf=(p.tipo_foro||'').toUpperCase(),ts=(p.tipo_serramento||'').toUpperCase();
+  if(!H||!L||!tf) return null;
+  var r=null;
+  for(var i=0;i<db.length;i++){var d=db[i];if(d&&d.materiale===p.materiale&&(d.descrizione===p.sistema||d.sistema===p.sistema)&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio){r=d;break;}}
+  var na=r?(parseFloat(r.telaio_nascosto_mm)||0):0,al=r?(parseFloat(r.aletta_mm)||0):0,tv=r?(parseFloat(r.telaio_a_vista_mm)||0):0;
+  var nH=(ts==='F'||ts==='FF')?2:1;
+  var Lt=0,Ht=0;
+  if(tf==='A'){Lt=L+2*na+2*al;Ht=H+na+nH*al;}
+  else if(tf==='D'){Lt=L+2*al;Ht=H+nH*al;}
+  else if(tf==='P'){Lt=L-2*tv+2*al;Ht=H-tv+nH*al;}
+  return {Lt:Lt,Ht:Ht,na:na,al:al};
 }
 
-function calcTub(p, dbSerr) {
-  var H=parseFloat(p.H_mm||p.h_mm)||0, L=parseFloat(p.L_mm||p.l_mm)||0;
-  var tf=(p.tipo_foro||'').toUpperCase(), ts=(p.tipo_serramento||'').toUpperCase();
-  if (!H||!L||!tf) return null;
-  var rec=null;
-  for (var i=0;i<dbSerr.length;i++) {
-    var d=dbSerr[i];
-    if (d&&d.materiale===p.materiale&&(d.descrizione===p.sistema||d.sistema===p.sistema)&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio){rec=d;break;}
-  }
-  var nasc=rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
-  var alet=rec?(parseFloat(rec.aletta_mm)||0):0;
-  var tv  =rec?(parseFloat(rec.telaio_a_vista_mm)||0):0;
-  var nAlH=(ts==='F'||ts==='FF')?2:1;
-  var Ltub=0,Htub=0;
-  if (tf==='A'){Ltub=L+2*nasc+2*alet;Htub=H+nasc+nAlH*alet;}
-  else if(tf==='D'){Ltub=L+2*alet;Htub=H+nAlH*alet;}
-  else if(tf==='P'){Ltub=L-2*tv+2*alet;Htub=H-tv+nAlH*alet;}
-  return {Ltub:Ltub,Htub:Htub,nasc:nasc,alet:alet};
-}
+function lBarra(mat){ var m=(mat||'').toUpperCase(); if(m.indexOf('LEG')>=0)return C.legB; if(m.indexOf('ALU')>=0||m.indexOf('ALL')>=0)return C.aluB; return C.pvcB; }
 
-function lBarraCoprifilo(mat) {
-  var m=(mat||'').toUpperCase();
-  if (m.indexOf('LEG')>=0) return C.legnoBarra;
-  if (m.indexOf('ALU')>=0||m.indexOf('ALL')>=0) return C.alumBarra;
-  return C.pvcBarra;
-}
-
-function svCoprifilo(ts, Ltub, Htub, dim) {
+function svCop(ts,Lt,Ht,dim){
   var s=C.sfrido;
-  if (ts==='F'||ts==='FF') return 2*(Ltub+2*dim+s)+2*(Htub+2*dim+s);
-  return 1*(Ltub+2*dim+s)+2*(Htub+1*dim+s);
+  return (ts==='F'||ts==='FF')?2*(Lt+2*dim+s)+2*(Ht+2*dim+s):1*(Lt+2*dim+s)+2*(Ht+1*dim+s);
 }
 
-function supScherm(ts, schCod, Ltub, Htub, nasc, alet) {
-  var cfg=C.scherm[schCod]; if (!cfg) return 0;
-  var nAlH=(ts==='F'||ts==='FF')?2:1;
-  var Larch=Ltub-2*alet-2*nasc, Harch=Htub-nAlH*alet-nAlH*nasc;
-  return Math.max((Larch+cfg.sx+cfg.dx)*(Harch+cfg.h)/1e6, cfg.supMin);
+function supSch(ts,cod,Lt,Ht,na,al){
+  var c=C.sch[cod];if(!c)return 0;
+  var nH=(ts==='F'||ts==='FF')?2:1;
+  var La=Lt-2*al-2*na,Ha=Ht-nH*al-nH*na;
+  return Math.max((La+c.sx+c.dx)*(Ha+c.h)/1e6,c.min);
 }
 
-function supZanz(ts, zanzCod, Ltub, Htub, nasc, alet) {
-  var cfg=C.zanz[zanzCod]; if (!cfg) return 0;
-  var nAlH=(ts==='F'||ts==='FF')?2:1;
-  var Larch=Ltub-2*alet-2*nasc, Harch=Htub-nAlH*alet-nAlH*nasc;
-  var sup=Math.max((Larch+cfg.sx+cfg.dx)*(Harch+cfg.h)/1e6, cfg.supMin);
-  if (ts==='S'&&zanzCod==='V') sup=sup/2;
-  return sup;
+function supZan(ts,cod,Lt,Ht,na,al){
+  var c=C.zan[cod];if(!c)return 0;
+  var nH=(ts==='F'||ts==='FF')?2:1;
+  var La=Lt-2*al-2*na,Ha=Ht-nH*al-nH*na;
+  var s=Math.max((La+c.sx+c.dx)*(Ha+c.h)/1e6,c.min);
+  if(ts==='S'&&cod==='V')s=s/2;
+  return s;
 }
 
-function matPosaMetri(ts, Ltub, Htub) {
-  var s=C.sfrido;
-  if (ts==='F'||ts==='FF') return (2*(Ltub+2*s)+2*(Htub+2*s))/1000;
-  return (1*(Ltub+2*s)+2*(Htub+2*s))/1000;
+function matM(ts,Lt,Ht){ var s=C.sfrido; return ((ts==='F'||ts==='FF')?2*(Lt+2*s)+2*(Ht+2*s):1*(Lt+2*s)+2*(Ht+2*s))/1000; }
+
+// ================================================================ SUPABASE
+var SU=APP_CONFIG.SUPABASE_URL,SK=APP_CONFIG.SUPABASE_ANON_KEY;
+function sfetch(path,cb,eb){
+  var x=new XMLHttpRequest();x.open('GET',SU+'/rest/v1/'+path,true);
+  x.setRequestHeader('apikey',SK);x.setRequestHeader('Authorization','Bearer '+(Auth.getToken()||SK));
+  x.onload=function(){if(x.status>=200&&x.status<300){try{cb(JSON.parse(x.responseText));}catch(e){eb(e.message);}}else eb('HTTP '+x.status);};
+  x.onerror=function(){eb('Rete');};x.send();
 }
 
-// ================================================================
-// INIT
-// ================================================================
-var SUPA_URL=APP_CONFIG.SUPABASE_URL, SUPA_KEY=APP_CONFIG.SUPABASE_ANON_KEY;
-
-function supaGet(path, cb, eb) {
-  var xhr=new XMLHttpRequest();
-  xhr.open('GET',SUPA_URL+'/rest/v1/'+path,true);
-  xhr.setRequestHeader('apikey',SUPA_KEY);
-  xhr.setRequestHeader('Authorization','Bearer '+(Auth.getToken()||SUPA_KEY));
-  xhr.onload=function(){if(xhr.status>=200&&xhr.status<300){try{cb(JSON.parse(xhr.responseText));}catch(e){eb(e.message);}}else eb('HTTP '+xhr.status);};
-  xhr.onerror=function(){eb('Rete');};
-  xhr.send();
+// ================================================================ INIT
+async function init(){
+  try{
+    var r=await Promise.all([API.getRilievo(idRilievo),API.getPosizioniSerr(idRilievo),API.getStratigrafie(idRilievo)]);
+    if(!r[0].success){document.getElementById('stato-msg').textContent='Errore: '+(r[0].error||'');return;}
+    var ril=r[0].data,pos=r[1].success?r[1].data:[],strat=r[2].success?r[2].data:[];
+    document.getElementById('tb-titolo').textContent='Report Accessori '+esc(ril.codice_completo||'');
+    document.title='Accessori '+(ril.codice_completo||'');
+    sfetch('db_serramento?stato=eq.attivo&select=materiale,descrizione,stile_design,variante_telaio,telaio_nascosto_mm,aletta_mm,telaio_a_vista_mm',
+      function(db){render(ril,pos,strat,db||[]);},function(){render(ril,pos,strat,[]);});
+  }catch(e){document.getElementById('stato-msg').textContent='Errore: '+e.message;}
 }
 
-async function init() {
-  try {
-    var results=await Promise.all([API.getRilievo(idRilievo),API.getPosizioniSerr(idRilievo),API.getStratigrafie(idRilievo)]);
-    var ril=results[0].data, pos=results[1].success?results[1].data:[], strat=results[2].success?results[2].data:[];
-    if (!results[0].success){Utils.showError(results[0].error);return;}
-    var cp=ril.percorsoCantiere||{};
-    document.getElementById('bcCliente').textContent  = cp.nomeCliente||'—';
-    document.getElementById('bcCantiere').textContent = cp.breadcrumb||'—';
-    document.getElementById('bcRilievo').textContent  = ril.codice_completo||'—';
-    document.title = 'Accessori '+(ril.codice_completo||'');
-    supaGet(
-      'db_serramento?stato=eq.attivo&select=materiale,descrizione,stile_design,variante_telaio,telaio_nascosto_mm,aletta_mm,telaio_a_vista_mm',
-      function(dbSerr){renderAll(ril,pos,strat,dbSerr||[]);},
-      function(){renderAll(ril,pos,strat,[]);}
-    );
-  } catch(e){Utils.showError(e.message||'Errore');}
-}
-
-// ================================================================
-// RENDER
-// ================================================================
-function renderAll(ril, pos, strat, dbSerr) {
+// ================================================================ RENDER
+function render(ril,pos,strat,db){
   var cp=ril.percorsoCantiere||{};
   var html='';
 
-  // HEADER
-  html+='<div class="rep-header"><div>'+
-    '<h2>&#128202; Report Accessori &mdash; '+esc(ril.codice_completo||'')+'</h2>'+
-    '<div class="rep-meta"><strong>'+esc(cp.nomeCliente||'—')+'</strong> &mdash; '+esc(cp.breadcrumb||'—')+'<br>'+
-    'Intervento: '+esc(ril.intervento||'—')+' &nbsp;|&nbsp; Referente: '+esc(ril.referente||'—')+
-    ' &nbsp;|&nbsp; Data rilievo: '+esc(ril.data_rilievo||'—')+'</div></div>'+
-    '<div class="rep-actions">'+
-    '<button class="btn btn-sm" style="background:rgba(255,255,255,.2);color:white;" onclick="window.print()">&#128438; Stampa</button>'+
-    '<button class="btn btn-sm" style="background:rgba(255,255,255,.2);color:white;" onclick="history.back()">&#8592; Torna</button>'+
-    '</div></div>';
+  // HEADER scheda stile report_rilievo
+  html+='<div class="scheda-header"><div class="sh-top">';
+  html+='<div class="sh-logo"><div class="logo-box">[F4]</div>GRUPPO F4<div style="font-size:8px;margin-top:2px;opacity:.7">F4 Rilievi</div></div>';
+  html+='<div class="sh-centro">';
+  html+='<div class="sh-field"><label>Riferimento:</label><span>'+(cp.nomeCliente?esc(cp.nomeCliente)+' &mdash; ':'')+esc(cp.breadcrumb||'—')+'</span>'+
+    '<span id="sh-badge" style="margin-left:8px;font-size:10px;font-weight:700;color:#4f46e5;background:#ede9fe;padding:1px 7px;border-radius:8px;flex:none;">'+esc(ril.codice_completo||'')+'</span></div>';
+  html+='<div class="sh-field"><label>Intervento:</label><span>'+esc(ril.intervento||'—')+'</span></div>';
+  html+='<div class="sh-field"><label>Referente:</label><span>'+esc(ril.referente||'—')+'</span></div>';
+  html+='</div>';
+  html+='<div class="sh-destra">';
+  html+='<div class="sh-field"><label>Data rilievo:</label><span>'+esc(ril.data_rilievo||'—')+'</span></div>';
+  html+='<div class="sh-field"><label>Data posa:</label><span>'+esc(ril.data_posa||'—')+'</span></div>';
+  html+='<div class="sh-badge-row">';
+  html+='<span class="sh-badge green">'+pos.length+' pos.</span>';
+  if(strat.length) html+='<span class="sh-badge blue">'+strat.length+' stratigrafie</span>';
+  html+='</div></div>';
+  html+='</div></div>'; // sh-top, scheda-header
 
-  if (!pos.length) {
-    html+='<div style="text-align:center;padding:60px;color:var(--c-text-sec);">Nessuna posizione.</div>';
-    document.getElementById('repContent').innerHTML=html; return;
-  }
+  if(!pos.length){ document.getElementById('stato-msg').style.display=''; document.getElementById('rep-content').style.display='none'; return; }
 
   // PRE-CALCOLA
-  var posCalc=pos.map(function(p){
-    var tub=calcTub(p,dbSerr);
+  var pc=pos.map(function(p){
+    var tub=calcTub(p,db);
     var ts=(p.tipo_serramento||'').toUpperCase();
-    var _supScherm=0,_supZanz=0,_svCI=0,_barCI=0,_svCE=0,_barCE=0;
-    var _schiuma=0,_msPol=0,_bg1=0,_multi=0,_barVap=0,_viti=0,_cassM=0;
-    if (tub) {
-      var Lt=tub.Ltub,Ht=tub.Htub,nasc=tub.nasc,alet=tub.alet;
-      if (p.schermatura) _supScherm=supScherm(ts,p.schermatura,Lt,Ht,nasc,alet);
-      if (p.zanzariera)  _supZanz  =supZanz(ts,p.zanzariera,Lt,Ht,nasc,alet);
-      if (p.coprifilo_int_mat){_svCI=svCoprifilo(ts,Lt,Ht,parseFloat(p.coprifilo_int_dim)||0);_barCI=roundUp(_svCI/lBarraCoprifilo(p.coprifilo_int_mat));}
-      if (p.coprifilo_est_mat){_svCE=svCoprifilo(ts,Lt,Ht,parseFloat(p.coprifilo_est_dim)||0);_barCE=roundUp(_svCE/lBarraCoprifilo(p.coprifilo_est_mat));}
-      _schiuma=matPosaMetri(ts,Lt,Ht); _bg1=_schiuma; _multi=_schiuma; _barVap=_schiuma;
-      _msPol=1; _viti=1;
-      _cassM=(Lt+C.cassIngrSx+C.cassIngrDx)/1000;
+    var _ss=0,_sz=0,_bci=0,_bce=0,_sch=0,_mp=0,_bg=0,_mu=0,_bv=0,_vi=0,_cassM=0;
+    if(tub){
+      var Lt=tub.Lt,Ht=tub.Ht,na=tub.na,al=tub.al;
+      if(p.schermatura)_ss=supSch(ts,p.schermatura,Lt,Ht,na,al);
+      if(p.zanzariera) _sz=supZan(ts,p.zanzariera,Lt,Ht,na,al);
+      if(p.coprifilo_int_mat){var sv=svCop(ts,Lt,Ht,parseFloat(p.coprifilo_int_dim)||0);_bci=cUp(sv/lBarra(p.coprifilo_int_mat));}
+      if(p.coprifilo_est_mat){var sv=svCop(ts,Lt,Ht,parseFloat(p.coprifilo_est_dim)||0);_bce=cUp(sv/lBarra(p.coprifilo_est_mat));}
+      _sch=matM(ts,Lt,Ht);_bg=_sch;_mu=_sch;_bv=_sch;_mp=1;_vi=1;
+      _cassM=(Lt+C.cassIngr+C.cassIngr)/1000;
     }
-    return Object.assign({},p,{_tub:tub,_ts:ts,_supScherm:_supScherm,_supZanz:_supZanz,
-      _svCI:_svCI,_barCI:_barCI,_svCE:_svCE,_barCE:_barCE,
-      _schiuma:_schiuma,_msPol:_msPol,_bg1:_bg1,_multi:_multi,_barVap:_barVap,_viti:_viti,_cassM:_cassM});
+    return Object.assign({},p,{_t:tub,_ts:ts,_ss:_ss,_sz:_sz,_bci:_bci,_bce:_bce,_sch:_sch,_mp:_mp,_bg:_bg,_mu:_mu,_bv:_bv,_vi:_vi,_cassM:_cassM});
   });
 
   // STRATIGRAFIE
-  if (strat.length) {
-    html+='<div class="section-title">&#128247; Stratigrafie</div><div class="strat-list">';
+  if(strat.length){
+    html+='<div class="sez-title">&#128247; Stratigrafie</div>';
+    html+='<div class="strat-grid-acc">';
     strat.forEach(function(s){
-      var imgSrc=STRAT_IMG[s.immagine_ref]||STRAT_IMG['SERR_'+(s.immagine_ref||'')]||'';
-      var quotes=parseQuote(s.quote_json);
-      var qStr=quotes.map(function(q){return q.lettera+': '+q.mm+' mm';}).join(' | ');
-      html+='<div class="strat-card-rep">';
-      if (imgSrc) html+='<img src="'+esc(imgSrc)+'" alt="" onerror="this.style.display=\'none\'">';
-      html+='<div class="sc-body"><div class="sc-name">'+esc(s.nome)+(s.is_default==='SI'?' <span style="font-size:.65rem;background:#d1fae5;color:#065f46;padding:1px 4px;border-radius:6px;">def</span>':'')+'</div>';
-      if (qStr) html+='<div class="sc-quote">'+esc(qStr)+'</div>';
-      html+='</div></div>';
+      var img=STRAT_IMG[s.immagine_ref]||STRAT_IMG['SERR_'+(s.immagine_ref||'')]||'';
+      var qs=parseQ(s.quote_json).map(function(q){return q.lettera+': '+q.mm+' mm';}).join(' | ');
+      html+='<div class="strat-card-acc">';
+      if(img) html+='<img src="'+esc(img)+'" alt="" onerror="this.style.display=\'none\'">';
+      html+='<h4>'+esc(s.nome)+(s.is_default==='SI'?' <span style="font-size:8px;background:#d1fae5;color:#065f46;padding:0 3px;border-radius:4px;">def</span>':'')+'</h4>';
+      if(qs) html+='<div class="sq">'+esc(qs)+'</div>';
+      html+='</div>';
     });
     html+='</div>';
   }
 
   // RIEPILOGO POSIZIONI
-  html+='<div class="section-title">&#128203; Riepilogo posizioni ('+pos.length+')</div>';
-  html+='<div style="overflow-x:auto;"><table class="pos-table"><thead><tr>'+
+  html+='<div class="sez-title">&#128203; Riepilogo posizioni ('+pc.length+')</div>';
+  html+='<div class="table-outer"><table class="t-pos"><thead><tr>'+
     '<th>N&deg;</th><th>Piano</th><th>Ambiente</th><th>Tipo</th>'+
     '<th>L (mm)</th><th>H (mm)</th><th>Foro</th><th>Sistema</th>'+
-    '<th>Coprifilo int.</th><th>Coprifilo est.</th></tr></thead><tbody>';
-  posCalc.forEach(function(p){
+    '<th>Cop. int.</th><th>Cop. est.</th>'+
+    '</tr></thead><tbody>';
+  pc.forEach(function(p){
     var piano=(p.piano!==undefined&&p.piano!==null)?('P'+(parseInt(p.piano)>=0?'+':'')+p.piano):'—';
+    var Lt=p._t?Math.round(p._t.Lt):null, Ht=p._t?Math.round(p._t.Ht):null;
     html+='<tr>'+
-      '<td style="font-weight:700;font-family:monospace;">'+esc(String(numPos(p)))+'</td>'+
-      '<td>'+piano+'</td><td>'+esc(p.ambiente||'—')+'</td>'+
-      '<td><span class="badge-t">'+esc(p.tipo_serramento||'—')+'</span></td>'+
-      '<td>'+(p.L_mm||p.l_mm||'—')+'</td><td>'+(p.H_mm||p.h_mm||'—')+'</td>'+
-      '<td>'+esc(p.tipo_foro||'—')+'</td>'+
-      '<td style="font-size:.74rem;">'+esc(p.sistema||'—')+'</td>'+
-      '<td style="font-size:.74rem;">'+esc(p.coprifilo_int_mat?p.coprifilo_int_mat+' '+p.coprifilo_int_dim+' mm':'—')+'</td>'+
-      '<td style="font-size:.74rem;">'+esc(p.coprifilo_est_mat?p.coprifilo_est_mat+' '+p.coprifilo_est_dim+' mm':'—')+'</td>'+
+      '<td class="num">'+esc(String(numPos(p)))+'</td>'+
+      '<td class="c">'+piano+'</td>'+
+      '<td>'+esc(p.ambiente||'—')+'</td>'+
+      '<td class="c"><span class="badge-tipo">'+esc(p.tipo_serramento||'—')+'</span></td>'+
+      '<td class="dim-cell"><div class="dim-main">'+(p.L_mm||p.l_mm||'—')+'</div>'+(Lt?'<div class="dim-calc">('+Lt+')</div>':'')+'</td>'+
+      '<td class="dim-cell"><div class="dim-main">'+(p.H_mm||p.h_mm||'—')+'</div>'+(Ht?'<div class="dim-calc">('+Ht+')</div>':'')+'</td>'+
+      '<td class="c">'+esc(p.tipo_foro||'—')+'</td>'+
+      '<td style="font-size:9px;">'+esc(p.sistema||'—')+(p.variante_telaio?'/'+esc(p.variante_telaio):'')+'</td>'+
+      '<td style="font-size:9px;">'+esc(p.coprifilo_int_mat?p.coprifilo_int_mat+' '+p.coprifilo_int_dim+' mm':'—')+'</td>'+
+      '<td style="font-size:9px;">'+esc(p.coprifilo_est_mat?p.coprifilo_est_mat+' '+p.coprifilo_est_dim+' mm':'—')+'</td>'+
       '</tr>';
   });
   html+='</tbody></table></div>';
-  var ct={}; posCalc.forEach(function(p){var t=p.tipo_serramento||'?';ct[t]=(ct[t]||0)+1;});
-  var tpres=TIPO_ORD.filter(function(t){return ct[t];});
-  if (tpres.length){
-    html+='<div class="totali-bar">';
-    tpres.forEach(function(t){html+='<span class="tot-chip"><span class="badge-t">'+t+'</span> '+(TIPO_DESC[t]||t)+': '+ct[t]+'</span>';});
-    html+='</div>';
-  }
+  var ct={};pc.forEach(function(p){var t=p.tipo_serramento||'?';ct[t]=(ct[t]||0)+1;});
+  var tp=TIPO_ORD.filter(function(t){return ct[t];});
+  if(tp.length){html+='<div class="tot-bar">';tp.forEach(function(t){html+='<span class="tot-chip"><span class="badge-tipo">'+t+'</span> '+(TIPO_DESC[t]||t)+': '+ct[t]+'</span>';});html+='</div>';}
 
-  html+='<div class="section-title">&#128295; Dettaglio accessori</div>';
+  html+='<div class="sez-title">&#128295; Dettaglio accessori</div>';
 
-  // ================================================================
-  // COPRIFILI INTERNI
-  // ================================================================
-  var copiMap={};
-  posCalc.forEach(function(p){
-    if (!p.coprifilo_int_mat) return;
-    var k=p.coprifilo_int_mat.toUpperCase()+'|'+(p.coprifilo_int_dim||'');
-    if (!copiMap[k]) copiMap[k]={mat:p.coprifilo_int_mat,dim:p.coprifilo_int_dim||'—',barre:0,pos:[]};
-    copiMap[k].barre+=p._barCI; copiMap[k].pos.push(numPos(p));
-  });
-  if (Object.keys(copiMap).length) {
-    var totBI=0; Object.values(copiMap).forEach(function(v){totBI+=v.barre;});
-    html+=mkGruppo('Coprifili interni','',totBI+' barre TOT.',
-      Object.values(copiMap).map(function(v){
-        return {label:v.mat+' &mdash; '+v.dim+' mm',
-          chipHtml:'<span class="chip-n">'+v.barre+' barre</span>',pos:v.pos};
-      })
-    );
-  }
+  // --- COPRIFILI INTERNI
+  var cim={};pc.forEach(function(p){if(!p.coprifilo_int_mat)return;var k=p.coprifilo_int_mat.toUpperCase()+'|'+(p.coprifilo_int_dim||'');if(!cim[k])cim[k]={mat:p.coprifilo_int_mat,dim:p.coprifilo_int_dim||'—',b:0,pos:[]};cim[k].b+=p._bci;cim[k].pos.push(numPos(p));});
+  if(Object.keys(cim).length){var tb=0;Object.values(cim).forEach(function(v){tb+=v.b;});html+=mkG('Coprifili interni','',tb+' barre TOT.',Object.values(cim).map(function(v){return{l:v.mat+' &mdash; '+v.dim+' mm',chips:'<span class="chip-n">'+v.b+' barre</span>',pos:v.pos};}));}
 
-  // ================================================================
-  // COPRIFILI ESTERNI
-  // ================================================================
-  var copeMap={};
-  posCalc.forEach(function(p){
-    if (!p.coprifilo_est_mat) return;
-    var k=p.coprifilo_est_mat.toUpperCase()+'|'+(p.coprifilo_est_dim||'');
-    if (!copeMap[k]) copeMap[k]={mat:p.coprifilo_est_mat,dim:p.coprifilo_est_dim||'—',barre:0,pos:[]};
-    copeMap[k].barre+=p._barCE; copeMap[k].pos.push(numPos(p));
-  });
-  if (Object.keys(copeMap).length) {
-    var totBE=0; Object.values(copeMap).forEach(function(v){totBE+=v.barre;});
-    html+=mkGruppo('Coprifili esterni','',totBE+' barre TOT.',
-      Object.values(copeMap).map(function(v){
-        return {label:v.mat+' &mdash; '+v.dim+' mm',
-          chipHtml:'<span class="chip-n">'+v.barre+' barre</span>',pos:v.pos};
-      })
-    );
-  }
+  // --- COPRIFILI ESTERNI
+  var cem={};pc.forEach(function(p){if(!p.coprifilo_est_mat)return;var k=p.coprifilo_est_mat.toUpperCase()+'|'+(p.coprifilo_est_dim||'');if(!cem[k])cem[k]={mat:p.coprifilo_est_mat,dim:p.coprifilo_est_dim||'—',b:0,pos:[]};cem[k].b+=p._bce;cem[k].pos.push(numPos(p));});
+  if(Object.keys(cem).length){var tb=0;Object.values(cem).forEach(function(v){tb+=v.b;});html+=mkG('Coprifili esterni','',tb+' barre TOT.',Object.values(cem).map(function(v){return{l:v.mat+' &mdash; '+v.dim+' mm',chips:'<span class="chip-n">'+v.b+' barre</span>',pos:v.pos};}));}
 
-  // ================================================================
-  // AVVOLGIBILE (A, AM, AE, AR)
-  // ================================================================
-  var avolTypes=['A','AM','AE','AR'];
-  var avolMap={};
-  posCalc.forEach(function(p){
-    if (!p.schermatura||avolTypes.indexOf(p.schermatura)<0) return;
-    var k=p.schermatura;
-    if (!avolMap[k]) avolMap[k]={sup:0,n:0,pos:[]};
-    avolMap[k].sup+=p._supScherm; avolMap[k].n++; avolMap[k].pos.push(numPos(p));
-  });
-  if (Object.keys(avolMap).length) {
-    var totAvolMq=0,totAvolN=0;
-    Object.values(avolMap).forEach(function(v){totAvolMq+=v.sup;totAvolN+=v.n;});
-    var ordAv=avolTypes.filter(function(k){return avolMap[k];});
-    html+=mkGruppo('Avvolgibile','img/Avvolgibile.jpeg',n2(totAvolMq)+' mq TOT. &mdash; '+totAvolN+' pz',
-      ordAv.map(function(k){
-        var v=avolMap[k];
-        return {label:(SCHERM_DESC[k]||k),
-          chipHtml:'<span class="chip-mq">'+n2(v.sup)+' mq</span> <span class="chip-n">'+v.n+' pz</span>',
-          pos:v.pos};
-      })
-    );
-  }
+  // --- AVVOLGIBILE
+  var avm={};['A','AM','AE','AR'].forEach(function(k){pc.forEach(function(p){if(p.schermatura!==k)return;if(!avm[k])avm[k]={mq:0,n:0,pos:[]};avm[k].mq+=p._ss;avm[k].n++;avm[k].pos.push(numPos(p));});});
+  var avk=Object.keys(avm);if(avk.length){var tm=0,tn=0;avk.forEach(function(k){tm+=avm[k].mq;tn+=avm[k].n;});html+=mkG('Avvolgibile','img/Avvolgibile.jpeg',n2(tm)+' mq TOT. &mdash; '+tn+' pz',avk.map(function(k){var v=avm[k];return{l:SCHERM_DESC[k]||k,chips:'<span class="chip-mq">'+n2(v.mq)+' mq</span> <span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
 
-  // ================================================================
-  // SCURETTO (S)
-  // ================================================================
-  var scuPos=posCalc.filter(function(p){return p.schermatura==='S';});
-  if (scuPos.length) {
-    html+=mkGruppo('Scuretto','img/Scuretto.jpeg',scuPos.length+' pz TOT.',
-      [{label:'Scuretto',chipHtml:'<span class="chip-n">'+scuPos.length+' pz</span>',pos:scuPos.map(numPos)}]
-    );
-  }
+  // --- SCURETTO
+  var scp=pc.filter(function(p){return p.schermatura==='S';});
+  if(scp.length)html+=mkG('Scuretto','img/Scuretto.jpeg',scp.length+' pz TOT.',[{l:'Scuretto',chips:'<span class="chip-n">'+scp.length+' pz</span>',pos:scp.map(numPos)}]);
 
-  // ================================================================
-  // TENDA (TZ, TM)
-  // ================================================================
-  var tendaTypes=['TZ','TM'];
-  var tendaMap={};
-  posCalc.forEach(function(p){
-    if (!p.schermatura||tendaTypes.indexOf(p.schermatura)<0) return;
-    var k=p.schermatura;
-    if (!tendaMap[k]) tendaMap[k]={n:0,pos:[]};
-    tendaMap[k].n++; tendaMap[k].pos.push(numPos(p));
-  });
-  if (Object.keys(tendaMap).length) {
-    var totTN=0; Object.values(tendaMap).forEach(function(v){totTN+=v.n;});
-    var ordTe=tendaTypes.filter(function(k){return tendaMap[k];});
-    html+=mkGruppo('Tenda','img/Tenda_zip.jpeg',totTN+' pz TOT.',
-      ordTe.map(function(k){
-        var v=tendaMap[k];
-        return {label:(SCHERM_DESC[k]||k),chipHtml:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};
-      })
-    );
-  }
+  // --- TENDA
+  var tem={};['TZ','TM'].forEach(function(k){pc.forEach(function(p){if(p.schermatura!==k)return;if(!tem[k])tem[k]={n:0,pos:[]};tem[k].n++;tem[k].pos.push(numPos(p));});});
+  var tek=Object.keys(tem);if(tek.length){var tn=0;tek.forEach(function(k){tn+=tem[k].n;});html+=mkG('Tenda','img/Tenda_zip.jpeg',tn+' pz TOT.',tek.map(function(k){var v=tem[k];return{l:SCHERM_DESC[k]||k,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
 
-  // ================================================================
-  // FRANGISOLE (CA, CT)
-  // ================================================================
-  var frangTypes=['CA','CT'];
-  var frangMap={};
-  posCalc.forEach(function(p){
-    if (!p.schermatura||frangTypes.indexOf(p.schermatura)<0) return;
-    var k=p.schermatura;
-    if (!frangMap[k]) frangMap[k]={n:0,pos:[]};
-    frangMap[k].n++; frangMap[k].pos.push(numPos(p));
-  });
-  if (Object.keys(frangMap).length) {
-    var totFN=0; Object.values(frangMap).forEach(function(v){totFN+=v.n;});
-    var ordFr=frangTypes.filter(function(k){return frangMap[k];});
-    html+=mkGruppo('Frangisole','img/Frangisole.jpeg',totFN+' pz TOT.',
-      ordFr.map(function(k){
-        var v=frangMap[k];
-        return {label:(SCHERM_DESC[k]||k),chipHtml:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};
-      })
-    );
-  }
+  // --- FRANGISOLE
+  var frm={};['CA','CT'].forEach(function(k){pc.forEach(function(p){if(p.schermatura!==k)return;if(!frm[k])frm[k]={n:0,pos:[]};frm[k].n++;frm[k].pos.push(numPos(p));});});
+  var frk=Object.keys(frm);if(frk.length){var fn=0;frk.forEach(function(k){fn+=frm[k].n;});html+=mkG('Frangisole','img/Frangisole.jpeg',fn+' pz TOT.',frk.map(function(k){var v=frm[k];return{l:SCHERM_DESC[k]||k,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
 
-  // ================================================================
-  // CONTROTELAIO LEGNO (L) — suddiviso per tipo serramento
-  // ================================================================
-  var ctlLMap={};
-  posCalc.forEach(function(p){
-    if (p.controtelaio!=='L') return;
-    var ts=p.tipo_serramento||'?';
-    if (!ctlLMap[ts]) ctlLMap[ts]={n:0,pos:[]};
-    ctlLMap[ts].n++; ctlLMap[ts].pos.push(numPos(p));
-  });
-  if (Object.keys(ctlLMap).length) {
-    var totCL=0; Object.values(ctlLMap).forEach(function(v){totCL+=v.n;});
-    var ordCL=TIPO_ORD.filter(function(t){return ctlLMap[t];});
-    html+=mkGruppo('Controtelaio legno','img/Controtelaio_legno.png',totCL+' pz TOT.',
-      ordCL.map(function(t){
-        var v=ctlLMap[t];
-        return {label:(TIPO_DESC[t]||t),chipHtml:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};
-      })
-    );
-  }
+  // --- CONTROTELAIO LEGNO
+  var clm={};pc.forEach(function(p){if(p.controtelaio!=='L')return;var t=p.tipo_serramento||'?';if(!clm[t])clm[t]={n:0,pos:[]};clm[t].n++;clm[t].pos.push(numPos(p));});
+  if(Object.keys(clm).length){var cn=0;Object.values(clm).forEach(function(v){cn+=v.n;});var clk=TIPO_ORD.filter(function(t){return clm[t];});html+=mkG('Controtelaio legno','img/Controtelaio_legno.png',cn+' pz TOT.',clk.map(function(t){var v=clm[t];return{l:TIPO_DESC[t]||t,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
 
-  // ================================================================
-  // TERMOCASSA (T) — suddivisa per tipo serramento
-  // ================================================================
-  var ctlTMap={};
-  posCalc.forEach(function(p){
-    if (p.controtelaio!=='T') return;
-    var ts=p.tipo_serramento||'?';
-    if (!ctlTMap[ts]) ctlTMap[ts]={n:0,pos:[]};
-    ctlTMap[ts].n++; ctlTMap[ts].pos.push(numPos(p));
-  });
-  if (Object.keys(ctlTMap).length) {
-    var totCT=0; Object.values(ctlTMap).forEach(function(v){totCT+=v.n;});
-    var ordCT=TIPO_ORD.filter(function(t){return ctlTMap[t];});
-    html+=mkGruppo('Termocassa','img/Termocassa.jpeg',totCT+' pz TOT.',
-      ordCT.map(function(t){
-        var v=ctlTMap[t];
-        return {label:(TIPO_DESC[t]||t),chipHtml:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};
-      })
-    );
-  }
+  // --- TERMOCASSA
+  var ctm={};pc.forEach(function(p){if(p.controtelaio!=='T')return;var t=p.tipo_serramento||'?';if(!ctm[t])ctm[t]={n:0,pos:[]};ctm[t].n++;ctm[t].pos.push(numPos(p));});
+  if(Object.keys(ctm).length){var tn=0;Object.values(ctm).forEach(function(v){tn+=v.n;});var ctk=TIPO_ORD.filter(function(t){return ctm[t];});html+=mkG('Termocassa','img/Termocassa.jpeg',tn+' pz TOT.',ctk.map(function(t){var v=ctm[t];return{l:TIPO_DESC[t]||t,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
 
-  // ================================================================
-  // CASSONETTO — per materiale in metri
-  // ================================================================
-  var cassDesc={'P':'PVC','L':'Legno'};
-  var cassMap={};
-  posCalc.forEach(function(p){
-    if (!p.cassonetto) return;
-    var k=p.cassonetto;
-    if (!cassMap[k]) cassMap[k]={m:0,pos:[]};
-    cassMap[k].m+=p._cassM; cassMap[k].pos.push(numPos(p));
-  });
-  if (Object.keys(cassMap).length) {
-    var totCassM=0; Object.values(cassMap).forEach(function(v){totCassM+=v.m;});
-    html+=mkGruppo('Cassonetto','img/Cassonetto_PVC.webp',n2(totCassM)+' m TOT.',
-      Object.keys(cassMap).map(function(k){
-        var v=cassMap[k];
-        return {label:'Cassonetto '+(cassDesc[k]||k),
-          chipHtml:'<span class="chip-m">'+n2(v.m)+' m</span>',pos:v.pos};
-      })
-    );
-  }
+  // --- CASSONETTO
+  var csm={};pc.forEach(function(p){if(!p.cassonetto)return;var k=p.cassonetto;if(!csm[k])csm[k]={m:0,pos:[]};csm[k].m+=p._cassM;csm[k].pos.push(numPos(p));});
+  if(Object.keys(csm).length){var tm=0;Object.values(csm).forEach(function(v){tm+=v.m;});var csd={'P':'PVC','L':'Legno'};html+=mkG('Cassonetto','img/Cassonetto_PVC.webp',n2(tm)+' m TOT.',Object.keys(csm).map(function(k){var v=csm[k];return{l:'Cassonetto '+(csd[k]||k),chips:'<span class="chip-m">'+n2(v.m)+' m</span>',pos:v.pos};}));}
 
-  // ================================================================
-  // ZANZARIERA
-  // ================================================================
-  var zanzDesc={'V':'Verticale','O':'Orizzontale'};
-  var zanzMap={};
-  posCalc.forEach(function(p){
-    if (!p.zanzariera) return;
-    var k=p.zanzariera;
-    if (!zanzMap[k]) zanzMap[k]={sup:0,n:0,pos:[]};
-    zanzMap[k].sup+=p._supZanz; zanzMap[k].n++; zanzMap[k].pos.push(numPos(p));
-  });
-  if (Object.keys(zanzMap).length) {
-    var totZM=0; Object.values(zanzMap).forEach(function(v){totZM+=v.sup;});
-    html+=mkGruppo('Zanzariera','img/Zanzariera.jpeg',n2(totZM)+' mq TOT.',
-      Object.keys(zanzMap).map(function(k){
-        var v=zanzMap[k];
-        return {label:(zanzDesc[k]||k),
-          chipHtml:'<span class="chip-mq">'+n2(v.sup)+' mq</span> <span class="chip-n">'+v.n+' pz</span>',
-          pos:v.pos};
-      })
-    );
-  }
+  // --- ZANZARIERA
+  var znm={};pc.forEach(function(p){if(!p.zanzariera)return;var k=p.zanzariera;if(!znm[k])znm[k]={mq:0,n:0,pos:[]};znm[k].mq+=p._sz;znm[k].n++;znm[k].pos.push(numPos(p));});
+  if(Object.keys(znm).length){var tm=0;Object.values(znm).forEach(function(v){tm+=v.mq;});var znd={'V':'Verticale','O':'Orizzontale'};html+=mkG('Zanzariera','img/Zanzariera.jpeg',n2(tm)+' mq TOT.',Object.keys(znm).map(function(k){var v=znm[k];return{l:znd[k]||k,chips:'<span class="chip-mq">'+n2(v.mq)+' mq</span> <span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
 
-  // ================================================================
-  // DINOX — per tipo
-  // ================================================================
-  var dinDesc={'DA':'Davanzale','I3':'Imbotte 3 lati','I4':'Imbotte 4 lati'};
-  var dinOrd=['DA','I3','I4'];
-  var dinMap={};
-  posCalc.forEach(function(p){
-    if (!p.dinoxill) return;
-    var k=p.dinoxill;
-    if (!dinMap[k]) dinMap[k]={n:0,pos:[]};
-    dinMap[k].n++; dinMap[k].pos.push(numPos(p));
-  });
-  if (Object.keys(dinMap).length) {
-    var totDN=0; Object.values(dinMap).forEach(function(v){totDN+=v.n;});
-    var ordDin=dinOrd.filter(function(k){return dinMap[k];});
-    html+=mkGruppo('Dinoxill','',totDN+' pz TOT.',
-      ordDin.map(function(k){
-        var v=dinMap[k];
-        return {label:(dinDesc[k]||k)+(dinMap[k]&&(k==='I3'||k==='I4')&&posCalc.some(function(p){return p.dinoxill===k&&p.dinoxill_lati;})?' ('+posCalc.find(function(p){return p.dinoxill===k&&p.dinoxill_lati;}).dinoxill_lati+' lati)':''),
-          chipHtml:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};
-      })
-    );
-  }
+  // --- DINOX
+  var dim={};var dnord=['DA','I3','I4'];var dnd={'DA':'Davanzale','I3':'Imbotte 3 lati','I4':'Imbotte 4 lati'};
+  pc.forEach(function(p){if(!p.dinoxill)return;var k=p.dinoxill;if(!dim[k])dim[k]={n:0,pos:[]};dim[k].n++;dim[k].pos.push(numPos(p));});
+  if(Object.keys(dim).length){var dn=0;Object.values(dim).forEach(function(v){dn+=v.n;});var dik=dnord.filter(function(k){return dim[k];});html+=mkG('Dinoxill','',dn+' pz TOT.',dik.map(function(k){var v=dim[k];return{l:dnd[k]||k,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
 
-  // ================================================================
-  // ANGOLARI PVC
-  // ================================================================
-  var angPoss=posCalc.filter(function(p){return p.angolari_pvc===true;});
-  if (angPoss.length) {
-    var totBarreAng=0;
-    angPoss.forEach(function(p){
-      if (p._tub){var sv=svCoprifilo(p._ts,p._tub.Ltub,p._tub.Htub,C.angolPvcLato);totBarreAng+=roundUp(sv/C.angolPvcBarra);}
-    });
-    html+=mkGruppo('Angolari PVC','',angPoss.length+' pos. &mdash; '+totBarreAng+' barre',
-      [{label:'Angolari PVC 50 mm',
-        chipHtml:'<span class="chip-n">'+angPoss.length+' pos.</span> <span class="chip-n">'+totBarreAng+' barre</span>',
-        pos:angPoss.map(numPos)}]
-    );
-  }
+  // --- ANGOLARI PVC
+  var agp=pc.filter(function(p){return p.angolari_pvc===true;});
+  if(agp.length){var ab=0;agp.forEach(function(p){if(p._t){var sv=svCop(p._ts,p._t.Lt,p._t.Ht,C.angLato);ab+=cUp(sv/C.angB);}});html+=mkG('Angolari PVC','',agp.length+' pos. &mdash; '+ab+' barre',[{l:'Angolari PVC 50 mm',chips:'<span class="chip-n">'+agp.length+' pos.</span> <span class="chip-n">'+ab+' barre</span>',pos:agp.map(numPos)}]);}
 
-  // ================================================================
-  // RIMOZIONE / TAGLIO
-  // ================================================================
-  var rimS=posCalc.filter(function(p){return p.rimozione==='SI'||p.rimozione===true;});
-  var rimA=posCalc.filter(function(p){return p.rimozione_accessori===true;});
-  var mrm =posCalc.filter(function(p){return p.taglio_marmo===true;});
-  if (rimS.length||rimA.length||mrm.length) {
-    var subRim=[];
-    if (rimS.length) subRim.push({label:'Rimozione serramento esistente',chipHtml:'<span class="chip-n">'+rimS.length+' pz</span>',pos:rimS.map(numPos)});
-    if (rimA.length) subRim.push({label:'Rimozione accessori esistenti', chipHtml:'<span class="chip-n">'+rimA.length+' pz</span>',pos:rimA.map(numPos)});
-    if (mrm.length)  subRim.push({label:'Taglio piani marmo',            chipHtml:'<span class="chip-n">'+mrm.length+' pz</span>',pos:mrm.map(numPos)});
-    html+=mkGruppo('Rimozione / Taglio','', (rimS.length+rimA.length+mrm.length)+' interventi',subRim);
-  }
+  // --- RIMOZIONE / TAGLIO
+  var rs=pc.filter(function(p){return p.rimozione==='SI'||p.rimozione===true;});
+  var ra=pc.filter(function(p){return p.rimozione_accessori===true;});
+  var mr=pc.filter(function(p){return p.taglio_marmo===true;});
+  if(rs.length||ra.length||mr.length){var sr=[];
+    if(rs.length)sr.push({l:'Rimozione serramento',chips:'<span class="chip-n">'+rs.length+' pz</span>',pos:rs.map(numPos)});
+    if(ra.length)sr.push({l:'Rimozione accessori', chips:'<span class="chip-n">'+ra.length+' pz</span>',pos:ra.map(numPos)});
+    if(mr.length)sr.push({l:'Taglio piani marmo',  chips:'<span class="chip-n">'+mr.length+' pz</span>',pos:mr.map(numPos)});
+    html+=mkG('Rimozione / Taglio','', (rs.length+ra.length+mr.length)+' interventi',sr);}
 
-  // ================================================================
-  // MATERIALI DI POSA
-  // ================================================================
-  var totSch=0,totPol=0,totBG1=0,totMul=0,totBV=0,totViti=0;
-  posCalc.forEach(function(p){totSch+=p._schiuma;totPol+=p._msPol;totBG1+=p._bg1;totMul+=p._multi;totBV+=p._barVap;totViti+=p._viti;});
-  var totLin=n2(totSch+totBG1+totMul+totBV);
-  html+='<div class="acc-group">'+
-    '<div class="acc-group-header">'+
-    '<img class="acc-group-img" src="img/Posa.jpeg" alt="Posa" onerror="this.style.display=\'none\'">'+
-    '<div class="acc-group-title">Materiali di posa</div>'+
-    '<div class="acc-group-totale">Tot. lineari: '+totLin+' m</div>'+
-    '</div><div class="acc-group-body"><div class="mat-posa-grid">';
-  [{nome:'Schiuma',val:n2(totSch),um:'m'},{nome:'MS Polimero',val:totPol,um:'flac.'},
-   {nome:'Nastro BG1',val:n2(totBG1),um:'m'},{nome:'Nastro Multi',val:n2(totMul),um:'m'},
-   {nome:'Barriera vapore',val:n2(totBV),um:'m'},{nome:'Viti 1 kit',val:totViti,um:'kit'},
-   {nome:'Tot. lineare',val:totLin,um:'m'}
-  ].forEach(function(item){
-    html+='<div class="mat-posa-card"><div class="mp-nome">'+item.nome+'</div>'+
-      '<div class="mp-val">'+item.val+'</div><div class="mp-um">'+item.um+'</div></div>';
-  });
+  // --- MATERIALI DI POSA
+  var tSch=0,tPol=0,tBG=0,tMu=0,tBV=0,tVi=0;
+  pc.forEach(function(p){tSch+=p._sch;tPol+=p._mp;tBG+=p._bg;tMu+=p._mu;tBV+=p._bv;tVi+=p._vi;});
+  var tLin=n2(tSch+tBG+tMu+tBV);
+  html+='<div class="acc-group"><div class="acc-group-hdr">'+
+    '<img class="acc-img" src="img/Posa.jpeg" alt="Posa" onerror="this.style.display=\'none\'">'+
+    '<div class="acc-titolo">Materiali di posa</div>'+
+    '<div class="acc-tot">Totale lineare: '+tLin+' m</div>'+
+    '</div><div class="acc-body"><div class="mat-grid">';
+  [{n:'Schiuma poliuretanica',v:n2(tSch),u:'m'},{n:'MS Polimero',v:tPol,u:'flac.'},
+   {n:'Nastro BG1',v:n2(tBG),u:'m'},{n:'Nastro Multi',v:n2(tMu),u:'m'},
+   {n:'Barriera vapore',v:n2(tBV),u:'m'},{n:'Viti 1 kit',v:tVi,u:'kit'},
+   {n:'Tot. lineare',v:tLin,u:'m'}
+  ].forEach(function(item){html+='<div class="mat-card"><div class="mat-nome">'+item.n+'</div><div class="mat-val">'+item.v+'</div><div class="mat-um">'+item.u+'</div></div>';});
   html+='</div></div></div>';
 
-  document.getElementById('repContent').innerHTML=html;
+  document.getElementById('stato-msg').style.display='none';
+  document.getElementById('rep-content').style.display='';
+  document.getElementById('rep-content').innerHTML=html;
 }
 
-// ================================================================
-// HELPER mkGruppo
-// ================================================================
-function mkGruppo(titolo, img, totLabel, subs) {
-  var h='<div class="acc-group"><div class="acc-group-header">';
-  if (img) h+='<img class="acc-group-img" src="'+esc(img)+'" alt="" onerror="this.style.display=\'none\'">';
-  else h+='<div style="width:56px;height:40px;flex-shrink:0;"></div>';
-  h+='<div class="acc-group-title">'+esc(titolo)+'</div>';
-  h+='<div class="acc-group-totale">'+totLabel+'</div>';
-  h+='</div><div class="acc-group-body">';
+// ================================================================ HELPER
+function mkG(titolo,img,totLabel,subs){
+  var h='<div class="acc-group"><div class="acc-group-hdr">';
+  if(img) h+='<img class="acc-img" src="'+esc(img)+'" alt="" onerror="this.style.display=\'none\'">';
+  else h+='<div style="width:52px;height:36px;flex-shrink:0;"></div>';
+  h+='<div class="acc-titolo">'+esc(titolo)+'</div>';
+  h+='<div class="acc-tot">'+totLabel+'</div>';
+  h+='</div><div class="acc-body">';
   subs.forEach(function(s){
-    var posStr=s.pos.map(function(x){return String(x);}).join(', ');
-    h+='<div class="acc-subgroup">';
-    if (subs.length>1) h+='<div class="acc-sublabel">'+s.label+'</div>';
-    h+='<div class="acc-row">'+s.chipHtml;
-    h+='<div class="acc-pos-list">Pos: '+esc(posStr)+'</div>';
-    h+='<button class="btn-copia" onclick="copia(\''+posStr.replace(/'/g,"\\'")+'\')" title="Copia">&#128203;</button>';
+    var ps=s.pos.map(function(x){return String(x);}).join(', ');
+    h+='<div class="acc-sub">';
+    if(subs.length>1) h+='<div class="acc-sublabel">'+s.l+'</div>';
+    h+='<div class="acc-row">'+s.chips;
+    h+='<div class="acc-pos-list">Pos: '+esc(ps)+'</div>';
+    h+='<button class="btn-copy" onclick="copia(\''+ps.replace(/'/g,"\\'")+'\')" title="Copia posizioni">&#128203;</button>';
     h+='</div></div>';
   });
   h+='</div></div>';
   return h;
 }
 
-function copia(txt) {
-  if (navigator.clipboard&&navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(txt).then(function(){Utils.showSuccess('Copiato: '+txt);});
-  } else {
-    var el=document.createElement('textarea');el.value=txt;
-    document.body.appendChild(el);el.select();
-    document.execCommand('copy');document.body.removeChild(el);
-    Utils.showSuccess('Copiato: '+txt);
-  }
+function copia(txt){
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(function(){alert('Copiato: '+txt);});
+  else{var e=document.createElement('textarea');e.value=txt;document.body.appendChild(e);e.select();document.execCommand('copy');document.body.removeChild(e);alert('Copiato: '+txt);}
 }
 
 init();

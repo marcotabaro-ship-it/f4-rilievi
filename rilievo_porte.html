@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rilievo Porte — F4 Rilievi</title>
+  <title>Rilievo Porte &mdash; F4 Rilievi</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
   <style>
@@ -19,8 +19,6 @@
       font-family: monospace; background: var(--c-red);
       padding: 4px 12px; border-radius: 20px; font-size: .9rem; font-weight: 700;
     }
-
-    /* Immagini porta */
     .porta-info-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;
     }
@@ -36,8 +34,6 @@
       padding: 6px 8px; font-size: .74rem; color: var(--c-text-sec);
       text-align: center; border-top: 1px solid var(--c-border);
     }
-
-    /* Tabella posizioni */
     .pos-table { width: 100%; border-collapse: collapse; font-size: .82rem; min-width: 850px; }
     .pos-table th {
       background: #E65100; color: white; padding: 8px 10px;
@@ -48,6 +44,7 @@
     .pos-num-cell {
       background: #E65100; color: white; text-align: center;
       font-weight: 700; min-width: 36px; border-radius: 4px; padding: 3px 6px;
+      font-family: monospace; font-size: .82rem;
     }
     .badge-porte { background: #FFF3E0; color: #E65100; }
   </style>
@@ -63,13 +60,11 @@
     <span id="bcRilievo">Rilievo</span>
   </div>
 
-  <!-- ALERT VERSIONE POSA -->
   <div class="alert alert-warning" id="alertPosa" style="display:none;">
-    ⚠️ I tempi di posa sono stati aggiornati.
+    &#9888;&#65039; I tempi di posa sono stati aggiornati.
     <button class="btn btn-sm btn-outline" style="margin-left:12px;" onclick="aggiornaVersionePosa()">Aggiorna ora</button>
   </div>
 
-  <!-- TESTATA -->
   <div class="rilievo-header">
     <div>
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
@@ -80,36 +75,33 @@
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;"
-              onclick="openModalClona()">📋 Clona / Revisione</button>
+              onclick="openModalClona()">&#128203; Clona / Revisione</button>
       <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;"
-              onclick="Utils.navigate('report_posa.html',{idRilievo:idRilievo,tipo:'PORTE'})">⏱️ Report Posa</button>
+              onclick="Utils.navigate('report_posa.html',{idRilievo:idRilievo,tipo:'PORTE'})">&#9201;&#65039; Report Posa</button>
     </div>
   </div>
 
-  <!-- TABS -->
   <div class="tabs">
-    <button class="tab-btn active" onclick="showTab('tabPosizioni',this)">🚪 Posizioni</button>
-    <button class="tab-btn" onclick="showTab('tabTestata',this)">📋 Dati rilievo</button>
-    <button class="tab-btn" onclick="showTab('tabGuida',this)">📐 Guida misure</button>
+    <button class="tab-btn active" onclick="showTab('tabPosizioni',this)">&#128682; Posizioni</button>
+    <button class="tab-btn" onclick="showTab('tabTestata',this)">&#128203; Dati rilievo</button>
+    <button class="tab-btn" onclick="showTab('tabGuida',this)">&#128208; Guida misure</button>
   </div>
 
-  <!-- TAB POSIZIONI -->
   <div class="tab-panel active" id="tabPosizioni">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
       <span style="font-size:.9rem;color:var(--c-text-sec);" id="countPosizioni">0 posizioni</span>
-      <button class="btn btn-primary" onclick="openModalPosizione(null)">➕ Nuova posizione</button>
+      <button class="btn btn-primary" onclick="openModalPosizione(null)">&#10133; Nuova posizione</button>
     </div>
     <div id="posizioniContainer">
       <div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>
     </div>
   </div>
 
-  <!-- TAB TESTATA -->
   <div class="tab-panel" id="tabTestata">
     <div class="card">
       <div class="card-header">
         <span class="card-title">Modifica dati rilievo</span>
-        <button class="btn btn-primary btn-sm" onclick="salvaTestata()">💾 Salva</button>
+        <button class="btn btn-primary btn-sm" onclick="salvaTestata()">&#128190; Salva</button>
       </div>
       <div class="form-row form-row-2">
         <div class="form-group">
@@ -138,18 +130,17 @@
     </div>
   </div>
 
-  <!-- TAB GUIDA MISURE -->
   <div class="tab-panel" id="tabGuida">
     <div class="card">
-      <div class="card-header"><span class="card-title">📐 Guida alla rilevazione delle misure</span></div>
+      <div class="card-header"><span class="card-title">&#128208; Guida alla rilevazione delle misure</span></div>
       <div style="margin-bottom:16px;">
         <p style="font-size:.88rem;color:var(--c-text-sec);margin-bottom:12px;">
           Le immagini mostrano come rilevare le misure H e L per i due tipi di foro.
-          La misura <strong>H</strong> è sempre l'altezza, <strong>L</strong> è sempre la larghezza.
+          La misura <strong>H</strong> e l'altezza, <strong>L</strong> e la larghezza.
         </p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
           <div>
-            <h4 style="margin-bottom:10px;color:var(--c-primary);">Tipo N — Netta passaggio</h4>
+            <h4 style="margin-bottom:10px;color:var(--c-primary);">Tipo N &mdash; Netta passaggio</h4>
             <div class="porta-info-grid">
               <div class="porta-info-card">
                 <img src="img/PorteIntTipoForoNh.jpg" alt="N - H">
@@ -160,12 +151,9 @@
                 <div class="porta-info-label">L = Larghezza netta passaggio</div>
               </div>
             </div>
-            <div class="alert alert-info" style="margin-top:8px;font-size:.82rem;">
-              ℹ️ Si misura la luce netta interna del foro, senza considerare il controtelaio.
-            </div>
           </div>
           <div>
-            <h4 style="margin-bottom:10px;color:var(--c-primary);">Tipo P — Posa in luce</h4>
+            <h4 style="margin-bottom:10px;color:var(--c-primary);">Tipo P &mdash; Posa in luce</h4>
             <div class="porta-info-grid">
               <div class="porta-info-card">
                 <img src="img/PorteIntTipoForoPh.jpg" alt="P - H">
@@ -176,9 +164,6 @@
                 <div class="porta-info-label">L = Larghezza posa in luce</div>
               </div>
             </div>
-            <div class="alert alert-info" style="margin-top:8px;font-size:.82rem;">
-              ℹ️ Si misura la luce comprendendo il controtelaio già posato.
-            </div>
           </div>
         </div>
       </div>
@@ -188,21 +173,18 @@
  </main>
 </div>
 
-<!-- ================================================================
-     MODAL: NUOVA/MODIFICA POSIZIONE PORTA
-     ================================================================ -->
+<!-- MODAL POSIZIONE -->
 <div class="modal" id="modalPosizione" style="padding-top:70px;">
   <div class="modal-box modal-box-lg">
     <div class="modal-header" style="background:#E65100;color:white;border-radius:12px 12px 0 0;">
       <span class="modal-title" id="modalPosizioneTitle" style="color:white;">Nuova posizione</span>
-      <button class="modal-close" style="color:rgba(255,255,255,.8);" onclick="Utils.closeModal('modalPosizione')">✕</button>
+      <button class="modal-close" style="color:rgba(255,255,255,.8);" onclick="Utils.closeModal('modalPosizione')">&#10005;</button>
     </div>
     <div class="modal-body" style="padding:16px;">
 
-      <!-- Immagini guida contestuali -->
       <div id="portaImgGuida" style="display:none;margin-bottom:14px;">
         <div class="alert alert-info" style="font-size:.82rem;margin-bottom:8px;">
-          📐 Riferimento misure per il tipo di foro selezionato:
+          &#128208; Riferimento misure per il tipo di foro selezionato:
         </div>
         <div class="porta-info-grid" style="max-width:400px;">
           <div class="porta-info-card">
@@ -218,10 +200,16 @@
 
       <div class="form-row form-row-3">
 
-        <!-- COL 1: IDENTIFICAZIONE -->
         <div>
           <div style="font-weight:600;font-size:.82rem;color:#E65100;margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid #E65100;">
-            📋 IDENTIFICAZIONE
+            &#128203; IDENTIFICAZIONE
+          </div>
+          <div class="form-group">
+            <label class="form-label">N&#176; posizione <span style="font-size:.72rem;color:var(--c-text-sec);">(max 7 car.)</span></label>
+            <input class="form-control" type="text" id="pNumAlfa" maxlength="7"
+              placeholder="es. CAM01, 001A"
+              style="font-family:monospace;font-weight:700;letter-spacing:.5px;text-transform:uppercase;"
+              oninput="this.value=this.value.toUpperCase()">
           </div>
           <div class="form-group">
             <label class="form-label">Piano <span class="req">*</span></label>
@@ -270,63 +258,30 @@
           <div class="form-group" id="grpDecentrato" style="display:none;">
             <label class="form-label">Telaio decentrato (mm)</label>
             <input class="form-control" type="number" id="pDecentrato" placeholder="es. 50">
-            <div class="form-hint">Solo per scorrevoli a scomparsa o tra 2 muri</div>
           </div>
         </div>
 
-        <!-- COL 2: CARATTERISTICHE -->
         <div>
           <div style="font-weight:600;font-size:.82rem;color:#E65100;margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid #E65100;">
-            🚪 CARATTERISTICHE
+            &#128682; CARATTERISTICHE
           </div>
-          <div class="form-group">
-            <label class="form-label">Collezione</label>
-            <input class="form-control" type="text" id="pCollezione" placeholder="Nome collezione">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Modello</label>
-            <input class="form-control" type="text" id="pModello" placeholder="Nome modello">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Versione</label>
-            <input class="form-control" type="text" id="pVersione" placeholder="Es. Standard, Premium">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Essenza / Finitura</label>
-            <input class="form-control" type="text" id="pEssenza" placeholder="Es. Rovere naturale, Laccato bianco">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Verso di apertura</label>
-            <input class="form-control" type="text" id="pVerso" placeholder="Es. DX, SX, a libro">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Vetri</label>
-            <input class="form-control" type="text" id="pVetri" placeholder="Es. Senza, Con vetro satinato">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Tipo serratura</label>
-            <input class="form-control" type="text" id="pSerratura" placeholder="Es. Normale, Privacy, Bagno">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Mostrine</label>
-            <input class="form-control" type="text" id="pMostrine" placeholder="Es. Standard, Quadra, Tonda">
-          </div>
+          <div class="form-group"><label class="form-label">Collezione</label><input class="form-control" type="text" id="pCollezione" placeholder="Nome collezione"></div>
+          <div class="form-group"><label class="form-label">Modello</label><input class="form-control" type="text" id="pModello" placeholder="Nome modello"></div>
+          <div class="form-group"><label class="form-label">Versione</label><input class="form-control" type="text" id="pVersione" placeholder="Es. Standard, Premium"></div>
+          <div class="form-group"><label class="form-label">Essenza / Finitura</label><input class="form-control" type="text" id="pEssenza" placeholder="Es. Rovere naturale"></div>
+          <div class="form-group"><label class="form-label">Verso di apertura</label><input class="form-control" type="text" id="pVerso" placeholder="Es. DX, SX, a libro"></div>
+          <div class="form-group"><label class="form-label">Vetri</label><input class="form-control" type="text" id="pVetri" placeholder="Es. Senza, Con vetro satinato"></div>
+          <div class="form-group"><label class="form-label">Tipo serratura</label><input class="form-control" type="text" id="pSerratura" placeholder="Es. Normale, Privacy"></div>
+          <div class="form-group"><label class="form-label">Mostrine</label><input class="form-control" type="text" id="pMostrine" placeholder="Es. Standard, Quadra"></div>
           <div class="form-row form-row-2">
-            <div class="form-group">
-              <label class="form-label">Colore serratura</label>
-              <input class="form-control" type="text" id="pColoreSerr" placeholder="Es. Cromo, Nero">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Colore cerniere</label>
-              <input class="form-control" type="text" id="pColoreCerniere" placeholder="Es. Cromo, Oro">
-            </div>
+            <div class="form-group"><label class="form-label">Colore serratura</label><input class="form-control" type="text" id="pColoreSerr" placeholder="Es. Cromo"></div>
+            <div class="form-group"><label class="form-label">Colore cerniere</label><input class="form-control" type="text" id="pColoreCerniere" placeholder="Es. Oro"></div>
           </div>
         </div>
 
-        <!-- COL 3: ALLARGAMENTI E POSA -->
         <div>
           <div style="font-weight:600;font-size:.82rem;color:#E65100;margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid #E65100;">
-            🔧 ALLARGAMENTI E POSA
+            &#128295; ALLARGAMENTI E POSA
           </div>
           <div class="form-group">
             <div class="checkbox-group">
@@ -340,81 +295,43 @@
           </div>
 
           <div style="font-weight:600;font-size:.78rem;color:#E65100;margin:14px 0 10px;">FORNITURA CONTROTELAIO</div>
-          <div class="form-group">
-            <div class="checkbox-group"><input type="checkbox" id="pFornCTLInt"><label for="pFornCTLInt">Porta interna</label></div>
-          </div>
-          <div class="form-group">
-            <div class="checkbox-group"><input type="checkbox" id="pFornCTLBli"><label for="pFornCTLBli">Porta blindata</label></div>
-          </div>
-          <div class="form-group">
-            <div class="checkbox-group"><input type="checkbox" id="pFornCTLRei"><label for="pFornCTLRei">Porta REI</label></div>
-          </div>
+          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pFornCTLInt"><label for="pFornCTLInt">Porta interna</label></div></div>
+          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pFornCTLBli"><label for="pFornCTLBli">Porta blindata</label></div></div>
+          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pFornCTLRei"><label for="pFornCTLRei">Porta REI</label></div></div>
 
           <div style="font-weight:600;font-size:.78rem;color:#E65100;margin:14px 0 10px;">INSTALLAZIONE CONTROTELAIO</div>
-          <div class="form-group">
-            <div class="checkbox-group"><input type="checkbox" id="pInstCTLInt"><label for="pInstCTLInt">Porta interna</label></div>
-          </div>
-          <div class="form-group">
-            <div class="checkbox-group"><input type="checkbox" id="pInstCTLBli"><label for="pInstCTLBli">Porta blindata</label></div>
-          </div>
-          <div class="form-group">
-            <div class="checkbox-group"><input type="checkbox" id="pInstCTLRei"><label for="pInstCTLRei">Porta REI</label></div>
-          </div>
+          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pInstCTLInt"><label for="pInstCTLInt">Porta interna</label></div></div>
+          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pInstCTLBli"><label for="pInstCTLBli">Porta blindata</label></div></div>
+          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pInstCTLRei"><label for="pInstCTLRei">Porta REI</label></div></div>
 
           <div style="font-weight:600;font-size:.78rem;color:#E65100;margin:14px 0 10px;">MANIGLIA</div>
-          <div class="form-group">
-            <label class="form-label">Marca</label>
-            <input class="form-control" type="text" id="pManiMarca" placeholder="Es. Colombo, Fusital">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Modello</label>
-            <input class="form-control" type="text" id="pManiModello">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Colore / Materiale</label>
-            <input class="form-control" type="text" id="pManiColore" placeholder="Es. Cromo satinato">
-          </div>
+          <div class="form-group"><label class="form-label">Marca</label><input class="form-control" type="text" id="pManiMarca" placeholder="Es. Colombo, Fusital"></div>
+          <div class="form-group"><label class="form-label">Modello</label><input class="form-control" type="text" id="pManiModello"></div>
+          <div class="form-group"><label class="form-label">Colore / Materiale</label><input class="form-control" type="text" id="pManiColore" placeholder="Es. Cromo satinato"></div>
 
           <div style="font-weight:600;font-size:.78rem;color:#E65100;margin:14px 0 10px;">ALTRO</div>
-          <div class="form-group">
-            <div class="checkbox-group">
-              <input type="checkbox" id="pRimozione">
-              <label for="pRimozione">Rimozione porta esistente</label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Note</label>
-            <textarea class="form-control" id="pNote" rows="3"></textarea>
-          </div>
+          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pRimozione"><label for="pRimozione">Rimozione porta esistente</label></div></div>
+          <div class="form-group"><label class="form-label">Note</label><textarea class="form-control" id="pNote" rows="3"></textarea></div>
         </div>
 
-      </div><!-- fine form-row-3 -->
-    </div><!-- fine modal-body -->
+      </div>
+    </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="Utils.closeModal('modalPosizione')">Annulla</button>
       <button class="btn btn-secondary" id="btnSalvaAggiungi" onclick="salvaPosizioneEAggiungi()" style="display:none;">
-        💾 Salva e aggiungi altra
+        &#128190; Salva e aggiungi altra
       </button>
       <button class="btn btn-primary" id="btnSalvaPosizione" onclick="salvaPosizione()">
-        💾 Salva posizione
+        &#128190; Salva posizione
       </button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: COPIA -->
 <div class="modal" id="modalCopiaPos">
   <div class="modal-box modal-box-sm">
-    <div class="modal-header">
-      <span class="modal-title">Copia posizione</span>
-      <button class="modal-close" onclick="Utils.closeModal('modalCopiaPos')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">Quante copie?</label>
-        <input class="form-control" type="number" id="nCopie" min="1" max="20" value="1">
-      </div>
-    </div>
+    <div class="modal-header"><span class="modal-title">Copia posizione</span><button class="modal-close" onclick="Utils.closeModal('modalCopiaPos')">&#10005;</button></div>
+    <div class="modal-body"><div class="form-group"><label class="form-label">Quante copie?</label><input class="form-control" type="number" id="nCopie" min="1" max="20" value="1"></div></div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="Utils.closeModal('modalCopiaPos')">Annulla</button>
       <button class="btn btn-primary" id="btnEseguiCopia" onclick="eseguiCopiaPos()">Copia</button>
@@ -422,16 +339,10 @@
   </div>
 </div>
 
-<!-- MODAL: ELIMINA -->
 <div class="modal" id="modalEliminaPos">
   <div class="modal-box modal-box-sm">
-    <div class="modal-header">
-      <span class="modal-title">Elimina posizione</span>
-      <button class="modal-close" onclick="Utils.closeModal('modalEliminaPos')">✕</button>
-    </div>
-    <div class="modal-body">
-      <p>Eliminare la posizione <strong id="posDaEliminare"></strong>?</p>
-    </div>
+    <div class="modal-header"><span class="modal-title">Elimina posizione</span><button class="modal-close" onclick="Utils.closeModal('modalEliminaPos')">&#10005;</button></div>
+    <div class="modal-body"><p>Eliminare la posizione <strong id="posDaEliminare"></strong>?</p></div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="Utils.closeModal('modalEliminaPos')">Annulla</button>
       <button class="btn btn-danger" id="btnConfEliminaPos" onclick="confEliminaPos()">Elimina</button>
@@ -439,25 +350,13 @@
   </div>
 </div>
 
-<!-- MODAL: CLONA -->
 <div class="modal" id="modalClona">
   <div class="modal-box modal-box-sm">
-    <div class="modal-header">
-      <span class="modal-title">Clona / Revisione</span>
-      <button class="modal-close" onclick="Utils.closeModal('modalClona')">✕</button>
-    </div>
+    <div class="modal-header"><span class="modal-title">Clona / Revisione</span><button class="modal-close" onclick="Utils.closeModal('modalClona')">&#10005;</button></div>
     <div class="modal-body">
-      <div class="form-group">
-        <div class="radio-group" style="flex-direction:column;gap:12px;">
-          <label class="radio-opt">
-            <input type="radio" name="tipoClona" value="COPIA" checked>
-            <div><strong>Copia</strong><br><span style="font-size:.8rem;color:var(--c-text-sec);">Variante parallela (R00C00 → R00C01)</span></div>
-          </label>
-          <label class="radio-opt">
-            <input type="radio" name="tipoClona" value="REVISIONE">
-            <div><strong>Revisione</strong><br><span style="font-size:.8rem;color:var(--c-text-sec);">Nuovo sopralluogo (R00C00 → R01C00)</span></div>
-          </label>
-        </div>
+      <div class="radio-group" style="flex-direction:column;gap:12px;">
+        <label class="radio-opt"><input type="radio" name="tipoClona" value="COPIA" checked><div><strong>Copia</strong><br><span style="font-size:.8rem;color:var(--c-text-sec);">Variante parallela (R00C00 &#8594; R00C01)</span></div></label>
+        <label class="radio-opt"><input type="radio" name="tipoClona" value="REVISIONE"><div><strong>Revisione</strong><br><span style="font-size:.8rem;color:var(--c-text-sec);">Nuovo sopralluogo (R00C00 &#8594; R01C00)</span></div></label>
       </div>
     </div>
     <div class="modal-footer">
@@ -480,25 +379,21 @@ Layout.init('clienti');
 const idRilievo = Utils.getParam('idRilievo');
 if (!idRilievo) window.location.href = 'clienti.html';
 
-let rilievo = null, posizioni = [], lookups = {}, dbPorte = [];
-let posizioneEditId = null, posizioneCopiaId = null, posizioneEliminaId = null;
+var rilievo = null, posizioni = [], lookups = {}, dbPorte = [];
+var posizioneEditId = null, posizioneCopiaId = null, posizioneEliminaId = null;
 
-// ================================================================
-// INIT
-// ================================================================
 async function init() {
-  const [resRil, resLK, resDB] = await Promise.all([
+  var resArr = await Promise.all([
     API.getRilievo(idRilievo),
     API.getLookupMulti(['LK_REFERENTI','LK_INTERVENTO','LK_TIPO_PORTA',
       'LK_SISTEMA_PORTE','LK_TIPO_FORO_PORTE','LK_PIANO']),
     API.getDbPorte()
   ]);
-
+  var resRil = resArr[0], resLK = resArr[1], resDB = resArr[2];
   if (!resRil.success) { Utils.showError(resRil.error); return; }
   rilievo = resRil.data;
   lookups = resLK.success ? resLK.data : {};
   dbPorte = resDB.success ? resDB.data : [];
-
   renderTestata();
   populateTestataSel();
   await loadPosizioni();
@@ -506,9 +401,6 @@ async function init() {
   populateModalDropdowns();
 }
 
-// ================================================================
-// TESTATA
-// ================================================================
 function renderTestata() {
   document.title = rilievo.codice + ' — F4 Rilievi';
   document.getElementById('rhCodice').textContent = rilievo.codice || '—';
@@ -516,32 +408,24 @@ function renderTestata() {
     (rilievo.intervento||'') + ' — ' + (rilievo.data_rilievo||'') +
     (rilievo.referente ? ' — Ref: ' + rilievo.referente : '');
   if (rilievo.percorsoCantiere) {
-    const pc = rilievo.percorsoCantiere;
-    const bcC = document.getElementById('bcCliente');
-    bcC.textContent = pc.nomeCliente; bcC.href = 'clienti.html';
-    const bcCant = document.getElementById('bcCantiere');
-    bcCant.textContent = pc.breadcrumb || '—';
+    var pc = rilievo.percorsoCantiere;
+    var bcC = document.getElementById('bcCliente'); bcC.textContent = pc.nomeCliente; bcC.href = 'clienti.html';
+    var bcCant = document.getElementById('bcCantiere'); bcCant.textContent = pc.breadcrumb || '—';
     bcCant.href = 'cantiere.html?idCliente=' + (rilievo.ID_cantiere||'');
     document.getElementById('bcRilievo').textContent = rilievo.codice;
   }
 }
 
 function populateTestataSel() {
-  const selRef = document.getElementById('tReferente');
-  selRef.innerHTML = '<option value="">—</option>';
-  (lookups.LK_REFERENTI||[]).forEach(r => {
-    const o = document.createElement('option');
-    o.value = r.nome_completo; o.textContent = r.nome_completo;
-    if (r.nome_completo === rilievo.referente) o.selected = true;
-    selRef.appendChild(o);
+  var selRef = document.getElementById('tReferente'); selRef.innerHTML = '<option value="">—</option>';
+  (lookups.LK_REFERENTI||[]).forEach(function(r) {
+    var o = document.createElement('option'); o.value = r.nome_completo; o.textContent = r.nome_completo;
+    if (r.nome_completo === rilievo.referente) o.selected = true; selRef.appendChild(o);
   });
-  const selInt = document.getElementById('tIntervento');
-  selInt.innerHTML = '<option value="">—</option>';
-  (lookups.LK_INTERVENTO||[]).forEach(i => {
-    const o = document.createElement('option');
-    o.value = i.descrizione; o.textContent = i.descrizione;
-    if (i.descrizione === rilievo.intervento) o.selected = true;
-    selInt.appendChild(o);
+  var selInt = document.getElementById('tIntervento'); selInt.innerHTML = '<option value="">—</option>';
+  (lookups.LK_INTERVENTO||[]).forEach(function(i) {
+    var o = document.createElement('option'); o.value = i.descrizione; o.textContent = i.descrizione;
+    if (i.descrizione === rilievo.intervento) o.selected = true; selInt.appendChild(o);
   });
   document.getElementById('tDataRilievo').value = rilievo.data_rilievo || '';
   document.getElementById('tDataPosa').value    = rilievo.data_posa    || '';
@@ -549,106 +433,80 @@ function populateTestataSel() {
 }
 
 async function salvaTestata() {
-  const data = {
-    referente: document.getElementById('tReferente').value,
-    intervento: document.getElementById('tIntervento').value,
+  var data = {
+    referente:    document.getElementById('tReferente').value,
+    intervento:   document.getElementById('tIntervento').value,
     data_rilievo: document.getElementById('tDataRilievo').value,
-    data_posa: document.getElementById('tDataPosa').value,
-    note: document.getElementById('tNote').value.trim()
+    data_posa:    document.getElementById('tDataPosa').value,
+    note:         document.getElementById('tNote').value.trim()
   };
-  const res = await API.updateRilievo(idRilievo, data);
-  if (res.success) {
-    Utils.showSuccess('Dati rilievo salvati.');
-    rilievo = {...rilievo, ...data};
-    renderTestata();
-  } else Utils.showError(res.error);
+  var res = await API.updateRilievo(idRilievo, data);
+  if (res.success) { Utils.showSuccess('Dati rilievo salvati.'); rilievo = Object.assign({}, rilievo, data); renderTestata(); }
+  else Utils.showError(res.error);
 }
 
 async function checkVersionePosa() {
-  const res = await API.checkVersionePosa(idRilievo);
-  if (res.success && res.aggiornamentoDisponibile) {
-    document.getElementById('alertPosa').style.display = 'flex';
-  }
+  var res = await API.checkVersionePosa(idRilievo);
+  if (res.success && res.aggiornamentoDisponibile) document.getElementById('alertPosa').style.display = 'flex';
 }
-
 async function aggiornaVersionePosa() {
-  const res = await API.aggiornaVersionePosa(idRilievo);
-  if (res.success) {
-    Utils.showSuccess('Tempi di posa aggiornati.');
-    document.getElementById('alertPosa').style.display = 'none';
-  } else Utils.showError(res.error);
+  var res = await API.aggiornaVersionePosa(idRilievo);
+  if (res.success) { Utils.showSuccess('Aggiornato.'); document.getElementById('alertPosa').style.display = 'none'; }
+  else Utils.showError(res.error);
 }
 
 function showTab(id, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b)  { b.classList.remove('active'); });
+  document.getElementById(id).classList.add('active'); btn.classList.add('active');
 }
 
-// ================================================================
-// POSIZIONI
-// ================================================================
 async function loadPosizioni() {
-  const res = await API.getPosizioniPorte(idRilievo);
+  var res = await API.getPosizioniPorte(idRilievo);
   if (!res.success) { Utils.showError(res.error); return; }
-  posizioni = res.data;
-  renderPosizioni();
+  posizioni = res.data; renderPosizioni();
 }
 
 function renderPosizioni() {
-  const c = document.getElementById('posizioniContainer');
+  var c = document.getElementById('posizioniContainer');
   document.getElementById('countPosizioni').textContent = posizioni.length + ' posizioni';
-  if (!posizioni.length) {
-    Utils.showEmptyState(c,'Nessuna posizione. Clicca "+ Nuova posizione".','🚪'); return;
-  }
-  c.innerHTML = `
-    <div style="overflow-x:auto;">
-      <table class="pos-table">
-        <thead><tr>
-          <th>N°</th><th>Piano</th><th>Ambiente</th><th>Tipo</th>
-          <th>Fornitore / Sistema</th><th>H (mm)</th><th>L (mm)</th>
-          <th>Note</th><th style="text-align:right;">Azioni</th>
-        </tr></thead>
-        <tbody>
-          ${posizioni.map(p => `
-            <tr>
-              <td><span class="pos-num-cell">${p.numero_pos}</span></td>
-              <td>P${p.piano >= 0 ? '+' : ''}${p.piano}</td>
-              <td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.ambiente||'—'}</td>
-              <td><span class="badge badge-porte">${p.tipo_porta||'—'}</span></td>
-              <td style="font-size:.8rem;">
-                <div style="font-weight:600;">${p.fornitore||'—'} / ${p.sistema||'—'}</div>
-                <div style="color:var(--c-text-sec);font-size:.76rem;">${p.modello||''}</div>
-              </td>
-              <td class="num">${p.H_mm||'—'}</td>
-              <td class="num">${p.L_mm||'—'}</td>
-              <td style="font-size:.78rem;max-width:100px;overflow:hidden;text-overflow:ellipsis;">${p.note||'—'}</td>
-              <td class="td-actions">
-                <button class="btn-icon" title="Modifica" onclick="openModalPosizione('${p.ID_pos}')">✏️</button>
-                <button class="btn-icon" title="Copia" onclick="openModalCopiaPos('${p.ID_pos}')">📋</button>
-                <button class="btn-icon" title="Elimina" onclick="openModalEliminaPos('${p.ID_pos}','${p.numero_pos}')">🗑️</button>
-              </td>
-            </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>`;
+  if (!posizioni.length) { Utils.showEmptyState(c,'Nessuna posizione. Clicca "+ Nuova posizione".','&#128682;'); return; }
+  var rows = posizioni.map(function(p) {
+    var piano = (p.piano !== undefined && p.piano !== null) ? ('P'+(p.piano>=0?'+':'')+p.piano) : '—';
+    var numDisp = p.numero_pos_alfa || p.numero_pos;
+    return '<tr>' +
+      '<td><span class="pos-num-cell" title="seq: '+p.numero_pos+'">' + numDisp + '</span></td>' +
+      '<td>' + piano + '</td>' +
+      '<td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (p.ambiente||'—') + '</td>' +
+      '<td><span class="badge badge-porte">' + (p.tipo_porta||'—') + '</span></td>' +
+      '<td style="font-size:.8rem;"><div style="font-weight:600;">' + (p.fornitore||'—') + ' / ' + (p.sistema||'—') + '</div>' +
+        '<div style="color:var(--c-text-sec);font-size:.76rem;">' + (p.modello||'') + '</div></td>' +
+      '<td>' + (p.H_mm||'—') + '</td>' +
+      '<td>' + (p.L_mm||'—') + '</td>' +
+      '<td style="font-size:.78rem;max-width:100px;overflow:hidden;text-overflow:ellipsis;">' + (p.note||'—') + '</td>' +
+      '<td style="white-space:nowrap;text-align:right;">' +
+        '<button class="btn-icon" title="Modifica" onclick="openModalPosizione(\''+p.ID_pos+'\')">&#9999;&#65039;</button>' +
+        '<button class="btn-icon" title="Copia" onclick="openModalCopiaPos(\''+p.ID_pos+'\')">&#128203;</button>' +
+        '<button class="btn-icon" title="Elimina" onclick="openModalEliminaPos(\''+p.ID_pos+'\',\''+numDisp+'\')">&#128465;&#65039;</button>' +
+      '</td></tr>';
+  }).join('');
+  c.innerHTML = '<div style="overflow-x:auto;"><table class="pos-table"><thead><tr>' +
+    '<th>N&#176;</th><th>Piano</th><th>Ambiente</th><th>Tipo</th>' +
+    '<th>Fornitore / Sistema</th><th>H (mm)</th><th>L (mm)</th>' +
+    '<th>Note</th><th style="text-align:right;">Azioni</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
-// ================================================================
-// MODAL POSIZIONE
-// ================================================================
 function populateModalDropdowns() {
   Utils.fillSelect('pPiano',
-    (lookups.LK_PIANO||[]).map(p => ({ value: p.piano, label: 'Piano ' + (p.piano >= 0 ? '+' : '') + p.piano })),
+    (lookups.LK_PIANO||[]).map(function(p) { return { value: p.piano, label: 'Piano ' + (p.piano >= 0 ? '+' : '') + p.piano }; }),
     '— Piano —');
   Utils.fillSelect('pTipoForo',
-    (lookups.LK_TIPO_FORO_PORTE||[]).map(t => ({ value: t.sigla, label: t.sigla + ' — ' + t.descrizione })),
+    (lookups.LK_TIPO_FORO_PORTE||[]).map(function(t) { return { value: t.sigla, label: t.sigla + ' — ' + t.descrizione }; }),
     '— Tipo foro —');
-
-  // Fornitori unici dal DB
-  const fornitori = [...new Set(dbPorte.map(d => d.fornitore))];
-  Utils.fillSelect('pFornitore', fornitori.map(f => ({ value: f, label: f })), '— Fornitore —');
+  var fornitori = [];
+  dbPorte.forEach(function(d) { if (fornitori.indexOf(d.fornitore) < 0) fornitori.push(d.fornitore); });
+  Utils.fillSelect('pFornitore', fornitori.map(function(f) { return { value: f, label: f }; }), '— Fornitore —');
 }
 
 function openModalPosizione(id) {
@@ -656,22 +514,19 @@ function openModalPosizione(id) {
   document.getElementById('modalPosizioneTitle').textContent = id ? 'Modifica posizione' : 'Nuova posizione';
   document.getElementById('btnSalvaAggiungi').style.display = id ? 'none' : '';
   resetModal();
-  if (id) {
-    const pos = posizioni.find(p => p.ID_pos === id);
-    if (pos) fillModal(pos);
-  }
+  if (id) { var pos = posizioni.find(function(p) { return p.ID_pos === id; }); if (pos) fillModal(pos); }
   Utils.openModal('modalPosizione');
 }
 
 function resetModal() {
-  const campos = ['pPiano','pFornitore','pTipoPorta','pSistema','pTipoForo',
+  var campos = ['pNumAlfa','pPiano','pFornitore','pTipoPorta','pSistema','pTipoForo',
     'pHmm','pLmm','pSpMuro','pDecentrato','pCollezione','pModello','pVersione',
     'pEssenza','pVerso','pVetri','pSerratura','pMostrine','pColoreSerr',
     'pColoreCerniere','pAllargMm','pManiMarca','pManiModello','pManiColore','pNote','pAmbiente'];
-  campos.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  campos.forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
   ['pSopraluce','pAllargamento','pFornCTLInt','pFornCTLBli','pFornCTLRei',
-   'pInstCTLInt','pInstCTLBli','pInstCTLRei','pRimozione'].forEach(id => {
-    const el = document.getElementById(id); if(el) el.checked = false;
+   'pInstCTLInt','pInstCTLBli','pInstCTLRei','pRimozione'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.checked = false;
   });
   document.getElementById('pTipoPorta').innerHTML = '<option value="">—</option>';
   document.getElementById('pTipoPorta').disabled = true;
@@ -684,6 +539,7 @@ function resetModal() {
 }
 
 function fillModal(p) {
+  var alfaEl = document.getElementById('pNumAlfa'); if (alfaEl) alfaEl.value = (p.numero_pos_alfa||'').toUpperCase();
   document.getElementById('pPiano').value     = p.piano !== undefined ? p.piano : '';
   document.getElementById('pAmbiente').value  = p.ambiente || '';
   document.getElementById('pHmm').value       = p.H_mm || '';
@@ -715,92 +571,68 @@ function fillModal(p) {
   document.getElementById('pInstCTLInt').checked  = p.install_ctl_int === 'SI';
   document.getElementById('pInstCTLBli').checked  = p.install_ctl_bli === 'SI';
   document.getElementById('pInstCTLRei').checked  = p.install_ctl_rei === 'SI';
-
-  // Cascata
   document.getElementById('pFornitore').value = p.fornitore || '';
   onFornitoreChange(true);
   document.getElementById('pTipoPorta').value = p.tipo_porta || '';
   onTipoPortaChange(true);
   document.getElementById('pSistema').value = p.sistema || '';
   onSistemaChange(true);
-
   if (p.allargamento_telaio === 'SI') document.getElementById('grpAllargMm').style.display = '';
   if (p.tipo_foro) onTipoForoChange();
 }
 
-// Cascata fornitore → tipo porta
 function onFornitoreChange(silent) {
-  const forn = document.getElementById('pFornitore').value;
-  if (!forn) {
-    document.getElementById('pTipoPorta').innerHTML = '<option value="">—</option>';
-    document.getElementById('pTipoPorta').disabled = true;
-    return;
-  }
-  const tipi = [...new Set(dbPorte.filter(d => d.fornitore === forn).map(d => d.tipo_porta))];
-  Utils.fillSelect('pTipoPorta', tipi.map(t => ({ value: t, label: t })), '— Tipo porta —');
+  var forn = document.getElementById('pFornitore').value;
+  if (!forn) { document.getElementById('pTipoPorta').innerHTML = '<option value="">—</option>'; document.getElementById('pTipoPorta').disabled = true; return; }
+  var tipi = [];
+  dbPorte.filter(function(d) { return d.fornitore === forn; }).forEach(function(d) { if (tipi.indexOf(d.tipo_porta) < 0) tipi.push(d.tipo_porta); });
+  Utils.fillSelect('pTipoPorta', tipi.map(function(t) { return { value: t, label: t }; }), '— Tipo porta —');
   document.getElementById('pTipoPorta').disabled = false;
   document.getElementById('pSistema').innerHTML = '<option value="">—</option>';
   document.getElementById('pSistema').disabled = true;
   document.getElementById('grpSopraluce').style.display = 'none';
 }
 
-// Cascata tipo porta → sistema
 function onTipoPortaChange(silent) {
-  const forn = document.getElementById('pFornitore').value;
-  const tipo = document.getElementById('pTipoPorta').value;
+  var forn = document.getElementById('pFornitore').value;
+  var tipo = document.getElementById('pTipoPorta').value;
   if (!tipo) { document.getElementById('pSistema').innerHTML = '<option value="">—</option>'; document.getElementById('pSistema').disabled = true; return; }
-  const sistemi = [...new Set(
-    dbPorte.filter(d => d.fornitore === forn && d.tipo_porta === tipo).map(d => d.sistema_sigla)
-  )];
-  // Usa solo sistemi univoci dal LK_SISTEMA_PORTE che matchano
-  const sistemiFiltrati = (lookups.LK_SISTEMA_PORTE||[]).filter(s => sistemi.includes(s.sigla));
-  Utils.fillSelect('pSistema',
-    sistemiFiltrati.map(s => ({ value: s.sigla, label: s.sigla + ' — ' + s.descrizione })),
-    '— Sistema —');
+  var sistemi = [];
+  dbPorte.filter(function(d) { return d.fornitore === forn && d.tipo_porta === tipo; }).forEach(function(d) { if (sistemi.indexOf(d.sistema_sigla) < 0) sistemi.push(d.sistema_sigla); });
+  var sistemiFiltrati = (lookups.LK_SISTEMA_PORTE||[]).filter(function(s) { return sistemi.indexOf(s.sigla) >= 0; });
+  Utils.fillSelect('pSistema', sistemiFiltrati.map(function(s) { return { value: s.sigla, label: s.sigla + ' — ' + s.descrizione }; }), '— Sistema —');
   document.getElementById('pSistema').disabled = false;
 }
 
-// Sistema selezionato → mostra/nascondi sopraluce e decentrato
 function onSistemaChange(silent) {
-  const sis = document.getElementById('pSistema').value;
-  const rec = (lookups.LK_SISTEMA_PORTE||[]).find(s => s.sigla === sis);
-  document.getElementById('grpSopraluce').style.display =
-    rec && rec.sopraluce_disponibile === 'SI' ? '' : 'none';
-  // Mostra decentrato solo per scorrevoli
-  const isScorr = sis === 'SI' || sis === 'SE';
+  var sis = document.getElementById('pSistema').value;
+  var rec = (lookups.LK_SISTEMA_PORTE||[]).find(function(s) { return s.sigla === sis; });
+  document.getElementById('grpSopraluce').style.display = rec && rec.sopraluce_disponibile === 'SI' ? '' : 'none';
+  var isScorr = sis === 'SI' || sis === 'SE';
   document.getElementById('grpDecentrato').style.display = isScorr ? '' : 'none';
 }
 
-// Tipo foro → aggiorna immagini guida
 function onTipoForoChange() {
-  const foro = document.getElementById('pTipoForo').value;
+  var foro = document.getElementById('pTipoForo').value;
   if (!foro) { document.getElementById('portaImgGuida').style.display = 'none'; return; }
   document.getElementById('portaImgGuida').style.display = '';
-  document.getElementById('portaImgH').src = APP_CONFIG.PORTA_IMAGES[foro + '_H'] || '';
-  document.getElementById('portaImgL').src = APP_CONFIG.PORTA_IMAGES[foro + '_L'] || '';
+  var imgCfg = APP_CONFIG.PORTA_IMAGES || {};
+  document.getElementById('portaImgH').src = imgCfg[foro + '_H'] || '';
+  document.getElementById('portaImgL').src = imgCfg[foro + '_L'] || '';
 }
 
 function onAllargamentoChange() {
-  document.getElementById('grpAllargMm').style.display =
-    document.getElementById('pAllargamento').checked ? '' : 'none';
+  document.getElementById('grpAllargMm').style.display = document.getElementById('pAllargamento').checked ? '' : 'none';
 }
 
-// ================================================================
-// SALVA POSIZIONE
-// ================================================================
 async function salvaPosizione(chiudiModal) {
-  const data = raccogliDati();
-  if (!data) return false;
-  const btn = document.getElementById('btnSalvaPosizione');
+  var data = raccogliDati(); if (!data) return false;
+  var btn = document.getElementById('btnSalvaPosizione');
   btn.disabled = true; btn.textContent = 'Salvataggio...';
-  let res;
-  if (posizioneEditId) {
-    res = await API.updatePosizionePorta(posizioneEditId, data);
-  } else {
-    data.ID_rilievo = idRilievo;
-    res = await API.createPosizionePorta(data);
-  }
-  btn.disabled = false; btn.textContent = '💾 Salva posizione';
+  var res;
+  if (posizioneEditId) { res = await API.updatePosizionePorta(posizioneEditId, data); }
+  else { data.ID_rilievo = idRilievo; res = await API.createPosizionePorta(data); }
+  btn.disabled = false; btn.textContent = '&#128190; Salva posizione';
   if (res.success) {
     Utils.showSuccess(posizioneEditId ? 'Posizione aggiornata.' : 'Posizione ' + (res.numero_pos||'') + ' creata.');
     await loadPosizioni();
@@ -810,16 +642,20 @@ async function salvaPosizione(chiudiModal) {
 }
 
 async function salvaPosizioneEAggiungi() {
-  const ok = await salvaPosizione(false);
+  var ok = await salvaPosizione(false);
   if (ok) { posizioneEditId = null; resetModal(); document.getElementById('modalPosizioneTitle').textContent = 'Nuova posizione'; }
 }
 
 function raccogliDati() {
-  const req = { pPiano: 'Piano', pFornitore: 'Fornitore', pTipoPorta: 'Tipo porta', pSistema: 'Sistema', pTipoForo: 'Tipo foro', pHmm: 'H', pLmm: 'L' };
-  for (const [id, label] of Object.entries(req)) {
-    if (!document.getElementById(id)?.value) { Utils.showWarning(label + ' è obbligatorio.'); return null; }
+  var req = { pPiano: 'Piano', pFornitore: 'Fornitore', pTipoPorta: 'Tipo porta', pSistema: 'Sistema', pTipoForo: 'Tipo foro', pHmm: 'H', pLmm: 'L' };
+  for (var id in req) {
+    if (!document.getElementById(id) || !document.getElementById(id).value) {
+      Utils.showWarning(req[id] + ' e obbligatorio.'); return null;
+    }
   }
+  var alfaEl = document.getElementById('pNumAlfa');
   return {
+    numero_pos_alfa:        alfaEl ? (alfaEl.value.toUpperCase().trim() || null) : null,
     piano:                  document.getElementById('pPiano').value,
     ambiente:               document.getElementById('pAmbiente').value.trim(),
     fornitore:              document.getElementById('pFornitore').value,
@@ -857,15 +693,11 @@ function raccogliDati() {
   };
 }
 
-// ================================================================
-// COPIA / ELIMINA
-// ================================================================
 function openModalCopiaPos(id) { posizioneCopiaId = id; document.getElementById('nCopie').value = 1; Utils.openModal('modalCopiaPos'); }
 async function eseguiCopiaPos() {
-  const n = parseInt(document.getElementById('nCopie').value)||1;
-  const btn = document.getElementById('btnEseguiCopia');
-  btn.disabled = true; btn.textContent = 'Copia...';
-  const res = await API.copyPosizionePorta(posizioneCopiaId, n);
+  var n = parseInt(document.getElementById('nCopie').value)||1;
+  var btn = document.getElementById('btnEseguiCopia'); btn.disabled = true; btn.textContent = 'Copia...';
+  var res = await API.copyPosizionePorta(posizioneCopiaId, n);
   btn.disabled = false; btn.textContent = 'Copia';
   if (res.success) { Utils.showSuccess(n + ' copi' + (n===1?'a':'e') + ' create.'); Utils.closeModal('modalCopiaPos'); await loadPosizioni(); }
   else Utils.showError(res.error);
@@ -873,20 +705,18 @@ async function eseguiCopiaPos() {
 
 function openModalEliminaPos(id, numPos) { posizioneEliminaId = id; document.getElementById('posDaEliminare').textContent = numPos; Utils.openModal('modalEliminaPos'); }
 async function confEliminaPos() {
-  const res = await API.deletePosizionePorta(posizioneEliminaId);
+  var res = await API.deletePosizionePorta(posizioneEliminaId);
   if (res.success) { Utils.showSuccess('Posizione eliminata.'); Utils.closeModal('modalEliminaPos'); await loadPosizioni(); }
   else Utils.showError(res.error);
 }
 
-// ================================================================
-// CLONA
-// ================================================================
 function openModalClona() { Utils.openModal('modalClona'); }
 async function eseguiClona() {
-  const tipoClone = document.querySelector('[name="tipoClona"]:checked')?.value;
-  const res = await API.cloneRilievo(idRilievo, tipoClone);
+  var tc = document.querySelector('[name="tipoClona"]:checked');
+  var tcVal = tc ? tc.value : 'COPIA';
+  var res = await API.cloneRilievo(idRilievo, tcVal);
   if (res.success) {
-    Utils.showSuccess((tipoClone==='REVISIONE'?'Revisione':'Copia') + ' creata: ' + res.codice);
+    Utils.showSuccess((tcVal==='REVISIONE'?'Revisione':'Copia') + ' creata: ' + res.codice);
     Utils.closeModal('modalClona');
     Utils.navigate('rilievo_porte.html', { idRilievo: res.id });
   } else Utils.showError(res.error);

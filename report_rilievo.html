@@ -20,147 +20,128 @@
     #stato-msg { text-align: center; padding: 64px; color: #6b7280; font-size: 15px; }
     #stato-msg.errore { color: #dc2626; }
 
-    /* ---- HEADER SCHEDA ---- */
+    /* ---- HEADER ---- */
     .scheda-header {
       background: #fff; border: 2px solid #1a1a2e; border-radius: 8px;
-      margin-bottom: 12px; overflow: hidden;
+      margin-bottom: 10px; overflow: hidden; page-break-inside: avoid;
     }
-    .sh-top {
-      display: grid; grid-template-columns: 120px 1fr 220px;
-      border-bottom: 2px solid #1a1a2e;
-    }
+    .sh-top { display: grid; grid-template-columns: 120px 1fr 220px; border-bottom: 2px solid #1a1a2e; }
     .sh-logo {
       background: #1a1a2e; color: #fff; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; padding: 10px;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.3px; text-align: center;
+      align-items: center; justify-content: center; padding: 10px; font-size: 11px; font-weight: 700; text-align: center;
     }
-    .sh-logo .logo-box {
-      border: 2px solid #e53e3e; padding: 4px 8px; font-size: 18px;
-      font-weight: 900; letter-spacing: -1px; margin-bottom: 4px;
-    }
+    .sh-logo .logo-box { border: 2px solid #e53e3e; padding: 4px 8px; font-size: 18px; font-weight: 900; letter-spacing: -1px; margin-bottom: 4px; }
     .sh-centro { padding: 10px 14px; border-left: 2px solid #1a1a2e; border-right: 2px solid #1a1a2e; }
     .sh-destra { padding: 10px 12px; }
-    .sh-field { display: flex; align-items: baseline; gap: 6px; margin-bottom: 5px; font-size: 12px; }
-    .sh-field label { font-weight: 700; color: #1a1a2e; white-space: nowrap; font-size: 11px; min-width: 70px; }
-    .sh-field span { color: #374151; border-bottom: 1px solid #d1d5db; flex: 1; min-height: 14px; }
-    .sh-field-inline { display: flex; gap: 12px; }
-    .sh-bottom {
-      display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 8px 14px; gap: 10px;
-    }
-    .sh-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: #ede9fe; color: #4f46e5; padding: 2px 10px; border-radius: 10px;
-      font-size: 11px; font-weight: 700;
-    }
-    .sh-badge.red { background: #fee2e2; color: #dc2626; }
+    .sh-field { display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; font-size: 11px; }
+    .sh-field label { font-weight: 700; color: #1a1a2e; white-space: nowrap; font-size: 10px; min-width: 65px; }
+    .sh-field span { color: #374151; border-bottom: 1px solid #d1d5db; flex: 1; min-height: 13px; }
+    .sh-field-inline { display: flex; gap: 10px; }
+    .sh-badges { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+    .sh-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+    .sh-badge.blue  { background: #ede9fe; color: #4f46e5; }
+    .sh-badge.red   { background: #fee2e2; color: #dc2626; }
     .sh-badge.green { background: #d1fae5; color: #065f46; }
 
-    /* ---- NOTE COMMERCIALI ---- */
-    .nc-block {
-      background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
-      padding: 10px 14px; margin-bottom: 12px;
+    /* ---- NOTE COMMERCIALI COMPATTE ---- */
+    .nc-compact {
+      padding: 6px 14px; font-size: 10px; background: #fafafe;
+      border-top: 1px solid #e5e7eb; display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: center;
     }
-    .nc-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #4f46e5; margin-bottom: 8px; }
-    .nc-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-    .nc-item { font-size: 11px; }
-    .nc-item label { display: block; color: #9ca3af; font-size: 10px; }
-    .nc-item span { color: #1a1a2e; font-weight: 600; }
+    .nc-compact-title { font-weight: 700; color: #4f46e5; text-transform: uppercase; letter-spacing: .4px; margin-right: 4px; white-space: nowrap; }
+    .nc-item-compact { white-space: nowrap; }
+    .nc-item-compact span { font-weight: 600; color: #1a1a2e; }
 
     /* ---- LEGENDA ---- */
     .legenda-block {
       background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
-      padding: 10px 14px; margin-bottom: 12px;
+      padding: 8px 14px; margin-bottom: 10px; page-break-inside: avoid;
     }
-    .leg-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #1a1a2e; margin-bottom: 8px; border-bottom: 2px solid #e5e7eb; padding-bottom: 4px; }
-    .leg-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
-    .leg-section h4 { font-size: 10px; font-weight: 700; color: #4f46e5; margin: 0 0 4px; text-transform: uppercase; }
-    .leg-row { font-size: 10px; line-height: 1.4; }
-    .leg-row b { color: #e53e3e; margin-right: 3px; font-family: monospace; }
+    .leg-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #1a1a2e; margin-bottom: 7px; padding-bottom: 4px; border-bottom: 2px solid #e5e7eb; }
+    .leg-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+    .leg-section h4 { font-size: 9px; font-weight: 700; color: #4f46e5; margin: 0 0 3px; text-transform: uppercase; }
+    .leg-row { font-size: 9px; line-height: 1.4; }
+    .leg-row b { color: #e53e3e; margin-right: 2px; font-family: monospace; }
 
     /* ---- STRATIGRAFIE ---- */
-    .strat-section { margin-bottom: 12px; }
-    .strat-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #1a1a2e; margin-bottom: 8px; }
-    .strat-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+    .strat-section { margin-bottom: 10px; page-break-inside: avoid; }
+    .strat-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #1a1a2e; margin-bottom: 6px; }
+    .strat-grid { display: flex; gap: 8px; flex-wrap: wrap; }
     .strat-card {
-      background: #fff; border: 1px solid #d1d5db; border-radius: 6px; padding: 10px;
-      min-width: 160px; max-width: 220px;
+      background: #fff; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px;
+      min-width: 150px; max-width: 200px; page-break-inside: avoid;
     }
-    .strat-card h4 { margin: 0 0 6px; font-size: 11px; color: #1a1a2e; font-weight: 700; }
-    .strat-card img { width: 100%; max-height: 90px; object-fit: contain; background: #f9f9f9; border: 1px solid #e5e7eb; border-radius: 3px; margin-bottom: 6px; }
-    .strat-no-img { height: 60px; background: #f3f4f6; border: 1px dashed #d1d5db; border-radius: 3px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #9ca3af; }
-    .strat-quote-tbl { font-size: 10px; border-collapse: collapse; }
+    .strat-card h4 { margin: 0 0 5px; font-size: 10px; color: #1a1a2e; font-weight: 700; }
+    .strat-card img { width: 100%; max-height: 80px; object-fit: contain; background: #f9f9f9; border: 1px solid #e5e7eb; border-radius: 3px; margin-bottom: 5px; }
+    .strat-no-img { height: 50px; background: #f3f4f6; border: 1px dashed #d1d5db; border-radius: 3px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #9ca3af; }
+    .strat-quote-tbl { font-size: 9px; border-collapse: collapse; }
     .strat-quote-tbl td { padding: 1px 4px; }
     .strat-quote-tbl td:first-child { color: #6b7280; }
     .strat-quote-tbl td:last-child { font-weight: 600; }
-    .def-badge { font-size: 9px; background: #d1fae5; color: #065f46; padding: 1px 5px; border-radius: 6px; margin-left: 4px; }
+    .def-badge { font-size: 8px; background: #d1fae5; color: #065f46; padding: 1px 4px; border-radius: 5px; margin-left: 4px; }
 
-    /* ---- TABELLA POSIZIONI ---- */
-    .sez-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #1a1a2e; margin: 14px 0 6px; padding-bottom: 4px; border-bottom: 2px solid #ede9fe; }
-    .table-outer { overflow-x: auto; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 14px; }
-    table.t-ril {
-      border-collapse: collapse; font-size: 11px; white-space: nowrap; width: 100%;
-    }
+    /* ---- TABELLA ---- */
+    .sez-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #1a1a2e; margin: 10px 0 5px; padding-bottom: 3px; border-bottom: 2px solid #ede9fe; }
+    .table-outer { overflow-x: auto; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 12px; }
+    table.t-ril { border-collapse: collapse; font-size: 11px; white-space: nowrap; width: 100%; }
     table.t-ril thead tr.th-main th {
-      background: #1a1a2e; color: #fff; padding: 7px 6px;
-      text-align: center; font-weight: 700; font-size: 9px; letter-spacing: 0.3px;
-      border-right: 1px solid #374151;
+      background: #1a1a2e; color: #fff; padding: 7px 5px;
+      text-align: center; font-weight: 700; font-size: 9px; letter-spacing: .3px; border-right: 1px solid #374151;
     }
     table.t-ril thead tr.th-group th {
-      background: #374151; color: #a5b4fc; padding: 3px 6px;
-      text-align: center; font-weight: 600; font-size: 9px; letter-spacing: 0.5px;
-      text-transform: uppercase; border-right: 1px solid #4b5563;
+      background: #374151; color: #a5b4fc; padding: 3px 5px;
+      text-align: center; font-weight: 600; font-size: 9px; letter-spacing: .5px; text-transform: uppercase; border-right: 1px solid #4b5563;
     }
-    table.t-ril td {
-      padding: 5px 6px; border-bottom: 1px solid #f0f0f6;
-      border-right: 1px solid #f0f0f6; vertical-align: middle;
-      font-size: 10px; color: #374151;
-    }
-    table.t-ril tr:hover td { background: #fafafe; }
+    table.t-ril td { padding: 5px 5px; border-bottom: 1px solid #f0f0f6; border-right: 1px solid #f0f0f6; vertical-align: middle; font-size: 10px; color: #374151; }
+    table.t-ril tr:nth-child(even) td { background: #fafafe; }
     table.t-ril td.c { text-align: center; }
-    table.t-ril td.num { text-align: center; font-weight: 700; color: #1a1a2e; background: #f8f8ff; }
+    table.t-ril td.num { text-align: center; font-weight: 700; color: #1a1a2e; background: #f0f0ff; }
     table.t-ril td.tipo { text-align: center; font-weight: 700; color: #4f46e5; font-size: 11px; }
     table.t-ril td.dim-cell { text-align: center; }
     .dim-main { font-weight: 700; font-size: 10px; color: #1a1a2e; }
     .dim-calc { font-size: 9px; color: #6b7280; font-style: italic; }
-    .chk { display: inline-block; width: 12px; height: 12px; border: 1.5px solid #9ca3af; border-radius: 2px; background: #fff; }
+    .chk { display: inline-block; width: 11px; height: 11px; border: 1.5px solid #9ca3af; border-radius: 2px; background: #fff; }
     .chk.on { background: #e53e3e; border-color: #e53e3e; }
-    td.note-cell { white-space: normal; max-width: 120px; font-size: 9px; color: #6b7280; }
     td.grp-sep { border-left: 2px solid #d1d5db; }
+    .strat-ref { font-size: 9px; color: #6b7280; font-style: italic; }
 
     /* ---- PRINT ---- */
     @media print {
-      @page { size: A4 landscape; margin: 8mm 8mm 8mm 8mm; }
-      body { background: #fff; font-size: 8px; }
+      @page { size: A4 landscape; margin: 7mm 7mm 7mm 7mm; }
+      body { background: #fff; }
       #toolbar { display: none !important; }
       #wrap { margin: 0; padding: 0; max-width: none; }
-      .scheda-header { border: 1.5px solid #1a1a2e; margin-bottom: 6px; border-radius: 0; }
-      .sh-logo .logo-box { font-size: 14px; }
-      .sh-field { font-size: 9px; margin-bottom: 3px; }
-      .sh-field label { font-size: 9px; }
-      .nc-block { border: 1px solid #ccc; border-radius: 0; padding: 6px 10px; margin-bottom: 6px; }
-      .nc-grid { grid-template-columns: repeat(5, 1fr); }
-      .nc-item { font-size: 9px; }
-      .legenda-block { border: 1px solid #ccc; border-radius: 0; padding: 6px 10px; margin-bottom: 6px; page-break-inside: avoid; }
-      .leg-grid { grid-template-columns: repeat(7, 1fr); gap: 6px; }
-      .leg-section h4 { font-size: 8px; }
-      .leg-row { font-size: 8px; }
-      .strat-section { margin-bottom: 6px; }
-      .strat-card { border: 1px solid #ccc; border-radius: 0; padding: 6px; min-width: 120px; max-width: 180px; }
-      .strat-card h4 { font-size: 9px; }
-      .strat-card img { max-height: 70px; }
-      .strat-quote-tbl { font-size: 8px; }
-      .sez-title { font-size: 9px; margin: 8px 0 4px; }
-      .table-outer { border-radius: 0; border: 1px solid #ccc; margin-bottom: 8px; overflow: visible; }
-      table.t-ril { font-size: 7px; white-space: normal; }
-      table.t-ril thead tr.th-main th { padding: 4px 3px; font-size: 7px; }
+
+      /* Non spezzare mai header, legenda, stratigrafie */
+      .scheda-header { page-break-inside: avoid !important; page-break-after: avoid; border-radius: 0; margin-bottom: 4px; }
+      .legenda-block  { page-break-inside: avoid !important; border-radius: 0; padding: 5px 8px; margin-bottom: 4px; }
+      .strat-section  { page-break-inside: avoid !important; margin-bottom: 4px; }
+      .strat-card     { page-break-inside: avoid !important; padding: 5px; min-width: 110px; max-width: 160px; }
+
+      /* Tabella: non spezzare mai una singola riga */
+      .table-outer { overflow: visible; border-radius: 0; border: 1px solid #ccc; page-break-inside: auto; }
+      table.t-ril  { font-size: 7px; white-space: normal; }
+      table.t-ril thead { display: table-header-group; }
+      table.t-ril tr   { page-break-inside: avoid !important; }
+      table.t-ril thead tr.th-main th { padding: 3px 3px; font-size: 7px; }
       table.t-ril thead tr.th-group th { padding: 2px 3px; font-size: 7px; }
-      table.t-ril td { padding: 3px 3px; font-size: 7px; }
-      .dim-main { font-size: 7px; }
-      .dim-calc { font-size: 6px; }
-      .chk { width: 9px; height: 9px; border-width: 1px; }
-      td.note-cell { font-size: 6px; max-width: 80px; }
+      table.t-ril td   { padding: 2px 3px; font-size: 7px; }
+      .dim-main        { font-size: 7px; }
+      .dim-calc        { font-size: 6px; }
+      .chk             { width: 8px; height: 8px; border-width: 1px; }
+
+      .sh-logo .logo-box { font-size: 13px; }
+      .sh-field  { font-size: 9px; margin-bottom: 2px; }
+      .sh-field label { font-size: 9px; }
+      .nc-compact { font-size: 8px; padding: 4px 10px; }
+      .leg-grid   { grid-template-columns: repeat(7, 1fr); gap: 5px; }
+      .leg-section h4 { font-size: 7px; }
+      .leg-row    { font-size: 7px; }
+      .strat-card h4 { font-size: 8px; }
+      .strat-card img { max-height: 60px; }
+      .strat-quote-tbl { font-size: 7px; }
       .btn-tb { display: none !important; }
-      .page-break { page-break-before: always; }
+      .sez-title { font-size: 8px; margin: 5px 0 3px; }
     }
   </style>
 </head>
@@ -176,27 +157,20 @@
   <div id="stato-msg">Caricamento in corso&hellip;</div>
   <div id="report-content" style="display:none">
 
-    <!-- ======= HEADER SCHEDA ======= -->
     <div class="scheda-header">
       <div class="sh-top">
         <div class="sh-logo">
           <div class="logo-box">[F4]</div>
           GRUPPO F4
-          <div style="font-size:9px;margin-top:4px;opacity:.8">F4 Rilievi</div>
+          <div style="font-size:9px;margin-top:3px;opacity:.8">F4 Rilievi</div>
         </div>
         <div class="sh-centro">
-          <div class="sh-field">
-            <label>Riferimento:</label>
-            <span id="sh-rif"></span>
-            <span id="sh-badge" class="sh-badge" style="margin-left:8px"></span>
-          </div>
-          <div class="sh-field">
-            <label>Indirizzo:</label>
-            <span id="sh-ind"></span>
-          </div>
+          <div class="sh-field"><label>Riferimento:</label><span id="sh-rif"></span><span id="sh-badge" style="margin-left:8px;font-size:10px;font-weight:700;color:#4f46e5;background:#ede9fe;padding:1px 7px;border-radius:8px;flex:none"></span></div>
+          <div class="sh-field"><label>Indirizzo:</label><span id="sh-ind"></span></div>
           <div class="sh-field-inline">
-            <div class="sh-field" style="flex:1"><label>Comune:</label><span id="sh-comune"></span></div>
-            <div class="sh-field" style="width:60px"><label>Prov.:</label><span id="sh-prov"></span></div>
+            <div class="sh-field" style="flex:2"><label>Comune:</label><span id="sh-comune"></span></div>
+            <div class="sh-field" style="flex:0;min-width:60px"><label>Prov.:</label><span id="sh-prov"></span></div>
+            <div class="sh-field" style="flex:0;min-width:70px"><label>CAP:</label><span id="sh-cap"></span></div>
           </div>
           <div class="sh-field"><label>Telefono:</label><span id="sh-tel"></span></div>
           <div class="sh-field"><label>e-mail:</label><span id="sh-email"></span></div>
@@ -206,19 +180,16 @@
           <div class="sh-field"><label>Referente:</label><span id="sh-ref"></span></div>
           <div class="sh-field"><label>Data rilievo:</label><span id="sh-data"></span></div>
           <div class="sh-field"><label>Data posa:</label><span id="sh-posa"></span></div>
-          <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
-            <span id="sh-gru" class="sh-badge" style="display:none">&#127959; GRU</span>
+          <div class="sh-badges">
+            <span id="sh-gru" class="sh-badge blue" style="display:none">&#127959; GRU</span>
             <span id="sh-alarm" class="sh-badge red" style="display:none">&#9888; ALLARME</span>
-            <span id="sh-npos" class="sh-badge">0 pos.</span>
+            <span id="sh-npos" class="sh-badge green">0 pos.</span>
           </div>
         </div>
       </div>
-      <div class="sh-bottom" id="sh-nc" style="display:none">
-        <!-- note commerciali: populate dinamicamente -->
-      </div>
+      <div class="nc-compact" id="sh-nc" style="display:none"></div>
     </div>
 
-    <!-- ======= LEGENDA ======= -->
     <div class="legenda-block">
       <div class="leg-title">Legenda</div>
       <div class="leg-grid">
@@ -238,9 +209,9 @@
           <div class="leg-row"><b>PA</b>PVC-Alluminio</div>
           <div class="leg-row"><b>LA</b>Legno-Alluminio</div>
           <div class="leg-row"><b>L-</b>Legno</div>
-          <h4 style="margin-top:6px">Tipo Foro</h4>
+          <h4 style="margin-top:5px">Tipo Foro</h4>
           <div class="leg-row"><b>A</b>Architettonico</div>
-          <div class="leg-row"><b>D</b>Dimensione telaio</div>
+          <div class="leg-row"><b>D</b>Dim. telaio</div>
           <div class="leg-row"><b>P</b>Posa in luce</div>
         </div>
         <div class="leg-section">
@@ -271,11 +242,11 @@
           <div class="leg-row"><b>V</b>Veneziana</div>
           <div class="leg-row"><b>D</b>Duette</div>
           <div class="leg-row"><b>P</b>Pliss&egrave;</div>
-          <h4 style="margin-top:6px">Mecc. Osc.</h4>
+          <h4 style="margin-top:5px">Mecc. Osc.</h4>
           <div class="leg-row"><b>C</b>Catenella</div>
           <div class="leg-row"><b>M</b>Motore</div>
           <div class="leg-row"><b>F</b>Fotovoltaico</div>
-          <h4 style="margin-top:6px">Vetro</h4>
+          <h4 style="margin-top:5px">Vetro</h4>
           <div class="leg-row"><b>D</b>Doppio</div>
           <div class="leg-row"><b>T</b>Triplo</div>
         </div>
@@ -284,13 +255,12 @@
           <div class="leg-row"><b>P</b>PVC</div>
           <div class="leg-row"><b>L</b>Legno</div>
           <div class="leg-row"><b>A</b>Alluminio</div>
-          <h4 style="margin-top:6px">Cassonetto</h4>
-          <div class="leg-row"><b>P</b>PVC</div>
-          <div class="leg-row"><b>L</b>Legno</div>
-          <h4 style="margin-top:6px">Controtelaio</h4>
+          <h4 style="margin-top:5px">Cassonetto</h4>
+          <div class="leg-row"><b>P</b>PVC &nbsp;<b>L</b>Legno</div>
+          <h4 style="margin-top:5px">Controtelaio</h4>
           <div class="leg-row"><b>L</b>Legno</div>
           <div class="leg-row"><b>T</b>Termocassa</div>
-          <h4 style="margin-top:6px">Dinox</h4>
+          <h4 style="margin-top:5px">Dinox</h4>
           <div class="leg-row"><b>DA</b>Davanzale</div>
           <div class="leg-row"><b>I3</b>Imbotte 3 lati</div>
           <div class="leg-row"><b>I4</b>Imbotte 4 lati</div>
@@ -301,24 +271,22 @@
           <div class="leg-row"><b>S</b>Sinistra</div>
           <div class="leg-row"><b>W</b>Vasistas</div>
           <div class="leg-row"><b>F</b>Fisso</div>
-          <h4 style="margin-top:6px">Dim. calcolate</h4>
-          <div class="leg-row" style="color:#6b7280;font-style:italic">Le misure in corsivo grigio sono le dimensioni calcolate (tubolarit&agrave;) in base al tipo foro e al serramento selezionato.</div>
-          <h4 style="margin-top:6px">Flag</h4>
+          <h4 style="margin-top:5px">Dim. calcolate</h4>
+          <div class="leg-row" style="color:#6b7280;font-style:italic">Le misure in corsivo grigio sono le dimensioni calcolate (tubolarita) in base al tipo foro e al serramento.</div>
+          <h4 style="margin-top:5px">Flag</h4>
           <div class="leg-row"><span class="chk on" style="display:inline-block"></span> = attivo</div>
           <div class="leg-row"><span class="chk" style="display:inline-block"></span> = non presente</div>
         </div>
       </div>
     </div>
 
-    <!-- ======= STRATIGRAFIE ======= -->
     <div class="strat-section" id="strat-section">
       <div class="strat-title">Stratigrafie</div>
       <div class="strat-grid" id="strat-grid">
-        <div style="color:#9ca3af;font-size:12px">Nessuna stratigrafia registrata.</div>
+        <div style="color:#9ca3af;font-size:11px">Nessuna stratigrafia registrata.</div>
       </div>
     </div>
 
-    <!-- ======= TABELLA POSIZIONI ======= -->
     <div class="sez-title">Posizioni Serramenti</div>
     <div class="table-outer">
       <table class="t-ril">
@@ -332,7 +300,7 @@
             <th colspan="4" class="grp-sep">ACCESSORI</th>
             <th colspan="4" class="grp-sep">RIM. / FLAG</th>
             <th colspan="2" class="grp-sep">SENSI</th>
-            <th class="grp-sep">NOTE</th>
+            <th class="grp-sep">STRAT.</th>
           </tr>
           <tr class="th-main">
             <th>N&deg;</th>
@@ -371,23 +339,17 @@
       </table>
     </div>
 
-  </div><!-- /report-content -->
+  </div>
 </div>
 
 <script src="js/config.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/api.js"></script>
 <script>
-// ================================================================
-// report_rilievo.html v2 — A4 landscape
-// ================================================================
 var SUPA_URL = APP_CONFIG.SUPABASE_URL;
 var SUPA_KEY = APP_CONFIG.SUPABASE_ANON_KEY;
 var ID_RILIEVO = null;
-
-// ---- Dati comuni per calcolo dimensioni ----
-// Valori default (sovrascritti da Supabase se disponibili)
-var DC = { ao:30, af:20, as:20, aria_o:10, aria_v:10, sp_o:20, sp_v:20, aria_o2:10, aria_v2:10 };
+var DC = {};
 var DB_SERR = [];
 
 function setStato(msg, isErr) {
@@ -408,13 +370,9 @@ function doFetch(path, cb, eb) {
     xhr.setRequestHeader('Authorization', 'Bearer ' + (tok || SUPA_KEY));
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = function() {
-      if (xhr.status === 401) {
-        Auth._refreshToken().then(function(ok) { if (ok) run(Auth.getToken()); else Auth.logout(); });
-        return;
-      }
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try { cb(JSON.parse(xhr.responseText)); } catch(e) { eb('Parse: ' + e.message); }
-      } else { eb('HTTP ' + xhr.status); }
+      if (xhr.status === 401) { Auth._refreshToken().then(function(ok) { if(ok) run(Auth.getToken()); else Auth.logout(); }); return; }
+      if (xhr.status >= 200 && xhr.status < 300) { try { cb(JSON.parse(xhr.responseText)); } catch(e) { eb('Parse: '+e.message); } }
+      else eb('HTTP '+xhr.status);
     };
     xhr.onerror = function() { eb('Rete'); };
     xhr.send();
@@ -427,66 +385,64 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function v(x) { return (!x && x !== 0) ? '' : String(x); }
-function chk(val) {
-  return val ? '<span class="chk on"></span>' : '<span class="chk"></span>';
+function chk(val) { return val ? '<span class="chk on"></span>' : '<span class="chk"></span>'; }
+
+// ---- Calcolo tubolare ----
+function calcDim(p, dc, dbSerr) {
+  var H = parseFloat(p.h_mm||p.H_mm)||0, L = parseFloat(p.l_mm||p.L_mm)||0;
+  var tf = (p.tipo_foro||'').toUpperCase(), ts = (p.tipo_serramento||'').toUpperCase();
+  var ctl = (p.controtelaio||'').toUpperCase();
+  if (!H||!L||!tf) return {Ltub:0,Htub:0};
+  var rec = null;
+  for (var i=0; i<dbSerr.length; i++) {
+    var d = dbSerr[i];
+    if (d && d.materiale===p.materiale && (d.descrizione===p.sistema||d.sistema===p.sistema) && d.stile_design===p.stile_design && d.variante_telaio===p.variante_telaio) { rec=d; break; }
+  }
+  var nasc = rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
+  var alet = rec?(parseFloat(rec.aletta_mm)||0):0;
+  var af = dc[2]||20, ao2=dc[5]||10, av2=dc[6]||10, spo=dc[6]||20, spv=dc[7]||20;
+  var hasCtl = ctl==='L'||ctl==='T';
+  var nAlH = (ts==='F'||ts==='FF')?2:1;
+  var Ltub=0, Htub=0;
+  if (tf==='A'){Ltub=L+2*nasc+2*alet; Htub=H+nasc+nAlH*alet;}
+  else if (tf==='D'){Ltub=L+2*alet; Htub=H+nAlH*alet;}
+  else if (tf==='P'){Ltub=L-2*af+2*alet; Htub=H-af+nAlH*alet;}
+  return {Ltub:Math.round(Ltub), Htub:Math.round(Htub)};
 }
 
-// ---- Calcolo dimensioni tubolare ----
-function calcDim(p, dc, dbSerr) {
-  var H = parseFloat(p.H_mm || p.h_mm) || 0;
-  var L = parseFloat(p.L_mm || p.l_mm) || 0;
-  var tf = (p.tipo_foro || '').toUpperCase();
-  var ts = (p.tipo_serramento || '').toUpperCase();
-  var ctl = (p.controtelaio || '').toUpperCase();
-  if (!H || !L || !tf) return { Ltub: 0, Htub: 0 };
-  var rec = null;
-  for (var i = 0; i < dbSerr.length; i++) {
-    var d = dbSerr[i];
-    if (d && d.materiale === p.materiale && (d.descrizione === p.sistema || d.sistema === p.sistema) && d.stile_design === p.stile_design && d.variante_telaio === p.variante_telaio) {
-      rec = d; break;
+// ---- Parse quote_json ----
+function parseQuoteJson(raw) {
+  if (!raw) return [];
+  try {
+    var arr = (typeof raw === 'string') ? JSON.parse(raw) : raw;
+    if (Array.isArray(arr)) return arr; // [{lettera, mm}]
+    if (typeof arr === 'object') {
+      return Object.keys(arr).map(function(k) { return {lettera: k, mm: arr[k]}; });
     }
-  }
-  var nasc = rec ? (parseFloat(rec.telaio_nascosto_mm) || 0) : 0;
-  var alet = rec ? (parseFloat(rec.aletta_mm) || 0) : 0;
-  var ao = dc.ao || 30, af = dc.af || 20;
-  var ao2 = dc.aria_o || 10, av2 = dc.aria_v || 10;
-  var spo = dc.sp_o || 20, spv = dc.sp_v || 20;
-  var hasCtl = ctl === 'L' || ctl === 'T';
-  var ridO = hasCtl ? (ao2 + spo + ao) : ao2;
-  var ridV = hasCtl ? (av2 + spv + ao) : av2;
-  var nAlH = (ts === 'F' || ts === 'FF') ? 2 : 1;
-  var Ltub = 0, Htub = 0;
-  if (tf === 'A') { Ltub = L + 2*nasc + 2*alet; Htub = H + nasc + nAlH*alet; }
-  else if (tf === 'D') { Ltub = L + 2*alet; Htub = H + nAlH*alet; }
-  else if (tf === 'P') { Ltub = L - 2*af + 2*alet; Htub = H - af + nAlH*alet; }
-  return { Ltub: Math.round(Ltub), Htub: Math.round(Htub) };
+  } catch(e) {}
+  return [];
 }
 
 // ---- Render stratigrafie ----
 function renderStratigrafie(strats) {
-  if (!strats || !strats.length) return;
+  if (!strats||!strats.length) return;
   var grid = document.getElementById('strat-grid');
-  var QDESC = APP_CONFIG.STRAT_QUOTE_DESC || {};
   var SIMAGES = APP_CONFIG.STRAT_IMAGES || {};
-  var SQUOTE = APP_CONFIG.STRAT_QUOTE || {};
   var html = '';
   strats.forEach(function(s) {
     var imgKey = s.immagine_ref || '';
     var imgSrc = SIMAGES[imgKey] || '';
-    var qJson = (typeof s.quote_json === 'object') ? s.quote_json : {};
-    var keys = SQUOTE[imgKey] ? SQUOTE[imgKey] : Object.keys(qJson);
+    var quotes = parseQuoteJson(s.quote_json);
     html += '<div class="strat-card">';
-    html += '<h4>' + esc(s.nome) + (s.is_default ? '<span class="def-badge">Default</span>' : '') + '</h4>';
-    if (imgSrc) {
-      html += '<img src="' + esc(imgSrc) + '" alt="' + esc(imgKey) + '" />';
-    } else {
-      html += '<div class="strat-no-img">Nessuna immagine</div>';
-    }
-    if (keys.length) {
+    html += '<h4>' + esc(s.nome) + (s.is_default?'<span class="def-badge">Default</span>':'') + '</h4>';
+    if (imgSrc) html += '<img src="'+esc(imgSrc)+'" alt="'+esc(imgKey)+'" />';
+    else html += '<div class="strat-no-img">Nessuna immagine</div>';
+    if (quotes.length) {
       html += '<table class="strat-quote-tbl"><tbody>';
-      keys.forEach(function(k) {
-        var val = (qJson[k] !== undefined) ? qJson[k] : '—';
-        html += '<tr><td>' + esc(QDESC[k] || k) + '</td><td><strong>' + esc(val) + ' mm</strong></td></tr>';
+      quotes.forEach(function(q) {
+        if (q.lettera && (q.mm || q.mm === 0)) {
+          html += '<tr><td><b>' + esc(q.lettera) + '</b></td><td>' + esc(q.mm) + ' mm</td></tr>';
+        }
       });
       html += '</tbody></table>';
     }
@@ -495,177 +451,164 @@ function renderStratigrafie(strats) {
   grid.innerHTML = html;
 }
 
-// ---- Render note commerciali ----
-function renderNC(nc, allarme, gru) {
-  var keys = [
+// ---- Render note commerciali compatte ----
+function renderNC(nc) {
+  var fields = [
     ['colore_avvol','Avvolgibile'],['colore_scuretto','Scuretto'],
     ['colore_tenda','Tenda'],['colore_frang','Frangisole'],
     ['colore_zanzariera','Zanzariera'],['colore_copri_int','Coprifili Int.'],
     ['colore_copri_est','Coprifili Est.'],['colore_dinox','Dinox'],
-    ['maniglia_marca','Maniglia (marca)'],['maniglia_modello','Maniglia (modello)']
+    ['maniglia_marca','Maniglia marca'],['maniglia_modello','Maniglia modello']
   ];
-  var hasSome = false;
-  keys.forEach(function(k) { if (nc[k[0]]) hasSome = true; });
-  if (!hasSome) return;
+  var parts = [];
+  fields.forEach(function(f) { if (nc[f[0]]) parts.push('<span class="nc-item-compact">' + esc(f[1]) + ': <span>' + esc(nc[f[0]]) + '</span></span>'); });
+  if (!parts.length) return;
   var el = document.getElementById('sh-nc');
+  el.innerHTML = '<span class="nc-compact-title">Note Commerciali</span>' + parts.join('');
   el.style.display = '';
-  var html = '';
-  keys.forEach(function(k) {
-    if (!nc[k[0]]) return;
-    html += '<div class="nc-item"><label>' + k[1] + '</label><span>' + esc(nc[k[0]]) + '</span></div>';
-  });
-  el.innerHTML = '<div style="grid-column:1/-1;font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;margin-bottom:4px">Note commerciali</div>' + html;
 }
 
-// ---- Render tabella posizioni ----
+// ---- Render tabella ----
 function renderPosizioni(posizioni, stratigrafie) {
   var tbody = document.getElementById('tbody-ril');
   var stMap = {};
-  (stratigrafie || []).forEach(function(s) { stMap[s.ID_stratigrafia || s.id] = s.nome; });
+  (stratigrafie||[]).forEach(function(s) { stMap[s.id||s.ID_stratigrafia] = s.nome; });
   var html = '';
   posizioni.forEach(function(p) {
     var dim = calcDim(p, DC, DB_SERR);
-    var lIns = v(p.L_mm || p.l_mm);
-    var hIns = v(p.H_mm || p.h_mm);
+    var lIns = v(p.l_mm||p.L_mm), hIns = v(p.h_mm||p.H_mm);
     var lCalc = dim.Ltub ? String(dim.Ltub) : '';
     var hCalc = dim.Htub ? String(dim.Htub) : '';
-    var coprInt = v(p.coprifilo_int_mat);
-    var coprIntDim = v(p.coprifilo_int_dim);
-    var coprEst = v(p.coprifilo_est_mat);
-    var coprEstDim = v(p.coprifilo_est_dim);
-    var stNome = '';
-    if (p.ID_stratigrafia_override || p.id_stratigrafia_override) {
-      var sid = p.ID_stratigrafia_override || p.id_stratigrafia_override;
-      stNome = stMap[sid] || '';
-    }
-    var pianoStr = (p.piano !== undefined && p.piano !== null) ?
-      'P' + (parseInt(p.piano) >= 0 ? '+' : '') + p.piano : '—';
+    var piano = (p.piano!==undefined&&p.piano!==null) ? ('P'+(parseInt(p.piano)>=0?'+':'')+p.piano) : '—';
+    var numDisp = p.numero_pos_alfa || p.numero_pos;
+    var stId = p.id_stratigrafia_override || p.ID_stratigrafia_override || '';
+    var stNome = stId ? (stMap[stId] || '') : '';
     html += '<tr>';
-    html += '<td class="num">' + esc(v(p.numero_pos)) + '</td>';
-    html += '<td class="c">' + pianoStr + '</td>';
-    html += '<td style="white-space:normal;min-width:70px">' + esc(v(p.ambiente)) + '</td>';
+    html += '<td class="num">' + esc(v(numDisp)) + '</td>';
+    html += '<td class="c">' + piano + '</td>';
+    html += '<td style="white-space:normal;min-width:60px">' + esc(v(p.ambiente)) + '</td>';
     html += '<td class="tipo">' + esc(v(p.tipo_serramento)) + '</td>';
     html += '<td class="c grp-sep">' + esc(v(p.n_campi)) + '</td>';
     html += '<td class="c">' + esc(v(p.materiale)) + '</td>';
-    html += '<td style="min-width:50px">' + esc(v(p.sistema)) + '</td>';
-    html += '<td class="c">' + esc(v(p.stile_design)) + (p.variante_telaio ? '/' + esc(v(p.variante_telaio)) : '') + '</td>';
+    html += '<td style="min-width:45px">' + esc(v(p.sistema)) + '</td>';
+    html += '<td class="c">' + esc(v(p.stile_design)) + (p.variante_telaio?'/'+esc(v(p.variante_telaio)):'') + '</td>';
     html += '<td class="c grp-sep">' + esc(v(p.tipo_foro)) + '</td>';
-    html += '<td class="dim-cell"><div class="dim-main">' + lIns + '</div>' + (lCalc ? '<div class="dim-calc">(' + lCalc + ')</div>' : '') + '</td>';
-    html += '<td class="dim-cell"><div class="dim-main">' + hIns + '</div>' + (hCalc ? '<div class="dim-calc">(' + hCalc + ')</div>' : '') + '</td>';
-    html += '<td style="font-size:9px;font-family:monospace">' + esc(v(p.codice_serramento)) + '</td>';
+    html += '<td class="dim-cell"><div class="dim-main">'+lIns+'</div>'+(lCalc?'<div class="dim-calc">('+lCalc+')</div>':'')+'</td>';
+    html += '<td class="dim-cell"><div class="dim-main">'+hIns+'</div>'+(hCalc?'<div class="dim-calc">('+hCalc+')</div>':'')+'</td>';
+    html += '<td style="font-size:8px;font-family:monospace">' + esc(v(p.codice_serramento)) + '</td>';
     html += '<td class="c grp-sep">' + esc(v(p.n_vetri)) + '</td>';
     html += '<td class="c">' + esc(v(p.oscurante_tipo)) + '</td>';
     html += '<td class="c">' + esc(v(p.oscurante_meccanismo)) + '</td>';
-    html += '<td class="c grp-sep">' + esc(coprInt) + '</td>';
-    html += '<td class="c">' + esc(coprIntDim) + '</td>';
-    html += '<td class="c">' + esc(coprEst) + '</td>';
-    html += '<td class="c">' + esc(coprEstDim) + '</td>';
+    html += '<td class="c grp-sep">' + esc(v(p.coprifilo_int_mat)) + '</td>';
+    html += '<td class="c">' + esc(v(p.coprifilo_int_dim)) + '</td>';
+    html += '<td class="c">' + esc(v(p.coprifilo_est_mat)) + '</td>';
+    html += '<td class="c">' + esc(v(p.coprifilo_est_dim)) + '</td>';
     html += '<td class="c grp-sep">' + esc(v(p.cassonetto)) + '</td>';
     html += '<td class="c">' + esc(v(p.schermatura)) + '</td>';
     html += '<td class="c">' + esc(v(p.zanzariera)) + '</td>';
     html += '<td class="c">' + esc(v(p.controtelaio)) + '</td>';
-    html += '<td class="c grp-sep">' + esc(v(p.dinoxill)) + (p.dinoxill_lati ? '<br><span style="font-size:8px">'+esc(v(p.dinoxill_lati))+'L</span>' : '') + '</td>';
+    html += '<td class="c grp-sep">' + esc(v(p.dinoxill)) + (p.dinoxill_lati?'<br><span style="font-size:7px">'+esc(v(p.dinoxill_lati))+'L</span>':'') + '</td>';
     html += '<td class="c">' + chk(p.angolari_pvc) + '</td>';
-    html += '<td class="c">' + chk(p.rimozione === 'SI' || p.rimozione === true) + '</td>';
+    html += '<td class="c">' + chk(p.rimozione==='SI'||p.rimozione===true) + '</td>';
     html += '<td class="c">' + chk(p.rimozione_accessori) + '</td>';
     html += '<td class="c grp-sep">' + chk(p.taglio_marmo) + '</td>';
-    html += '<td class="c" style="min-width:50px;font-size:9px">' + esc(v(p.senso_apertura)) + '</td>';
-    html += '<td class="c grp-sep" style="font-size:9px">' + esc(stNome) + '</td>';
+    html += '<td class="c" style="min-width:40px;font-size:9px">' + esc(v(p.senso_apertura)) + '</td>';
+    html += '<td class="c grp-sep strat-ref">' + esc(stNome) + '</td>';
     html += '</tr>';
   });
-  tbody.innerHTML = html || '<tr><td colspan="30" style="text-align:center;padding:20px;color:#9ca3af">Nessuna posizione</td></tr>';
+  tbody.innerHTML = html || '<tr><td colspan="30" style="text-align:center;padding:16px;color:#9ca3af">Nessuna posizione</td></tr>';
 }
 
 // ---- Caricamento parallelo ----
 function caricaDati(idRil) {
-  var loaded = { ril: null, pos: null, strats: null, dc: null, db: null };
+  var loaded = {ril:null, pos:null, strats:null, dc:null, db:null};
   var errored = false;
 
   function tryRender() {
-    if (!loaded.ril || !loaded.pos || !loaded.strats || !loaded.dc || !loaded.db) return;
+    if (!loaded.ril||!loaded.pos||!loaded.strats||!loaded.dc||!loaded.db) return;
     if (errored) return;
 
     var r = loaded.ril;
-    var pos = loaded.pos;
     var cant = r.cantieri || {};
-    var cli = cant.clienti ? cant.clienti.nome || '' : '';
+    var cli  = cant.clienti || {};
     var codice = r.codice_completo || idRil;
 
-    // aggiorna DC con dati comuni
-    (loaded.dc || []).forEach(function(row) {
-      var id = parseInt(row.id || 0);
-      var val = parseFloat(row.valore_mm) || 0;
-      if (id === 1)  DC.ao  = val;
-      else if (id === 2) DC.af = val;
-      else if (id === 5) DC.aria_o = val;
-      else if (id === 6) DC.aria_v = val;
-      else if (id === 10) DC.sp_o = val;
-      else if (id === 11) DC.sp_v = val;
-      else if (id === 15) DC.aria_o2 = val;
-      else if (id === 16) DC.aria_v2 = val;
+    (loaded.dc||[]).forEach(function(row) {
+      if (row) DC[parseInt(row.id||0)] = parseFloat(row.valore_mm)||0;
     });
     DB_SERR = loaded.db || [];
 
     // header
-    document.getElementById('tb-titolo').textContent  = 'Rilievo ' + codice;
+    var nomeCliente = cli.nome || '';
+    var nomeCant    = cant.nome_cantiere || '';
+    document.getElementById('tb-titolo').textContent = 'Rilievo ' + codice;
     document.title = 'Rilievo ' + codice;
-    document.getElementById('sh-rif').textContent     = (cli ? cli + ' — ' : '') + (cant.nome_cantiere || '');
-    document.getElementById('sh-badge').textContent   = codice;
-    document.getElementById('sh-data').textContent    = r.data_rilievo  || '—';
-    document.getElementById('sh-posa').textContent    = r.data_posa     || '—';
-    document.getElementById('sh-int').textContent     = r.intervento    || '—';
-    document.getElementById('sh-ref').textContent     = r.referente     || '—';
-    document.getElementById('sh-npos').textContent    = pos.length + ' pos.';
+    document.getElementById('sh-rif').textContent   = (nomeCliente ? nomeCliente + ' \u2014 ' : '') + nomeCant;
+    document.getElementById('sh-badge').textContent = codice;
+    document.getElementById('sh-npos').textContent  = loaded.pos.length + ' pos.';
+    document.getElementById('sh-data').textContent  = r.data_rilievo || '—';
+    document.getElementById('sh-posa').textContent  = r.data_posa    || '—';
+    document.getElementById('sh-int').textContent   = r.intervento   || '—';
+    document.getElementById('sh-ref').textContent   = r.referente    || '—';
+
+    // indirizzo dal cantiere
+    var viaStr = ((cant.tipo_via||'') + ' ' + (cant.indirizzo||'')).trim();
+    document.getElementById('sh-ind').textContent    = viaStr || '—';
+    document.getElementById('sh-comune').textContent = cant.comune   || '—';
+    document.getElementById('sh-prov').textContent   = cant.provincia || '—';
+    document.getElementById('sh-cap').textContent    = cant.cap      || '';
+    document.getElementById('sh-tel').textContent    = cli.telefono  || '—';
+    document.getElementById('sh-email').textContent  = cli.email     || '—';
+
     if (r.gru === 'SI' || r.gru === true) document.getElementById('sh-gru').style.display = '';
     if (r.allarme === true) document.getElementById('sh-alarm').style.display = '';
 
     var nc = r.note_commerciali || {};
-    renderNC(nc, r.allarme, r.gru);
+    renderNC(nc);
     renderStratigrafie(loaded.strats);
-    renderPosizioni(pos, loaded.strats);
+    renderPosizioni(loaded.pos, loaded.strats);
     showReport();
   }
 
   doFetch(
-    'rilievi?id=eq.' + idRil + '&select=id,codice_completo,referente,data_rilievo,data_posa,intervento,gru,allarme,note_commerciali,cantieri(nome_cantiere,clienti(nome))',
+    'rilievi?id=eq.'+idRil+'&select=id,codice_completo,referente,data_rilievo,data_posa,intervento,gru,allarme,note_commerciali,cantieri(nome_cantiere,tipo_via,indirizzo,comune,provincia,cap,clienti(nome,telefono,email))',
     function(rows) {
-      if (!rows.length) { errored=true; setStato('Rilievo non trovato.', true); return; }
+      if (!rows.length) { errored=true; setStato('Rilievo non trovato.',true); return; }
       loaded.ril = rows[0]; tryRender();
     },
-    function(e) { errored=true; setStato('Errore rilievo: '+e, true); }
+    function(e) { errored=true; setStato('Errore rilievo: '+e,true); }
   );
 
   doFetch(
-    'posizioni_serr?id_rilievo=eq.' + idRil + '&stato=eq.attivo&select=*&order=numero_pos.asc',
-    function(rows) { loaded.pos = rows || []; tryRender(); },
-    function(e) { errored=true; setStato('Errore posizioni: '+e, true); }
+    'posizioni_serr?id_rilievo=eq.'+idRil+'&stato=eq.attivo&select=*&order=numero_pos.asc',
+    function(rows) { loaded.pos = rows||[]; tryRender(); },
+    function(e) { errored=true; setStato('Errore posizioni: '+e,true); }
   );
 
   doFetch(
-    'stratigrafie?id_rilievo=eq.' + idRil + '&stato=eq.attivo&select=*&order=ordine.asc',
-    function(rows) { loaded.strats = rows || []; tryRender(); },
-    function(e) { loaded.strats = []; tryRender(); }
+    'stratigrafie?id_rilievo=eq.'+idRil+'&stato=eq.attivo&select=*&order=ordine.asc',
+    function(rows) { loaded.strats = rows||[]; tryRender(); },
+    function(e) { loaded.strats=[]; tryRender(); }
   );
 
   doFetch(
     'dati_comuni_serr?stato=eq.attivo&select=id,valore_mm',
-    function(rows) { loaded.dc = rows || []; tryRender(); },
-    function(e) { loaded.dc = []; tryRender(); }
+    function(rows) { loaded.dc = rows||[]; tryRender(); },
+    function(e) { loaded.dc=[]; tryRender(); }
   );
 
   doFetch(
     'db_serramento?stato=eq.attivo&select=materiale,descrizione,stile_design,variante_telaio,telaio_nascosto_mm,aletta_mm',
-    function(rows) { loaded.db = rows || []; tryRender(); },
-    function(e) { loaded.db = []; tryRender(); }
+    function(rows) { loaded.db = rows||[]; tryRender(); },
+    function(e) { loaded.db=[]; tryRender(); }
   );
 }
 
 function init() {
-  var u = Auth.requireLogin();
-  if (!u) return;
+  var u = Auth.requireLogin(); if (!u) return;
   var params = new URLSearchParams(window.location.search);
   ID_RILIEVO = params.get('idRilievo') || params.get('id');
-  if (!ID_RILIEVO) { setStato('Parametro id mancante.', true); return; }
+  if (!ID_RILIEVO) { setStato('Parametro id mancante.',true); return; }
   caricaDati(ID_RILIEVO);
 }
 

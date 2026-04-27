@@ -219,22 +219,32 @@ function showReport() {
 }
 
 function supaFetch(path, callback, errback) {
-  var token = Auth.getToken() || SUPA_KEY;
-  var xhr   = new XMLHttpRequest();
-  xhr.open('GET', SUPA_URL + '/rest/v1/' + path, true);
-  xhr.setRequestHeader('apikey',        SUPA_KEY);
-  xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-  xhr.setRequestHeader('Content-Type',  'application/json');
-  xhr.onload = function() {
-    if (xhr.status >= 200 && xhr.status < 300) {
-      try { callback(JSON.parse(xhr.responseText)); }
-      catch(e) { errback('Errore parsing: ' + e.message); }
-    } else {
-      errback('HTTP ' + xhr.status);
-    }
-  };
-  xhr.onerror = function() { errback('Errore di rete'); };
-  xhr.send();
+  function doReq(token) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', SUPA_URL + '/rest/v1/' + path, true);
+    xhr.setRequestHeader('apikey',        SUPA_KEY);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + (token || SUPA_KEY));
+    xhr.setRequestHeader('Content-Type',  'application/json');
+    xhr.onload = function() {
+      if (xhr.status === 401) {
+        // token scaduto: prova refresh automatico
+        Auth._refreshToken().then(function(ok) {
+          if (ok) { doReq(Auth.getToken()); }
+          else    { Auth.logout(); }
+        });
+        return;
+      }
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try { callback(JSON.parse(xhr.responseText)); }
+        catch(e) { errback('Errore parsing: ' + e.message); }
+      } else {
+        errback('HTTP ' + xhr.status + ': ' + xhr.responseText);
+      }
+    };
+    xhr.onerror = function() { errback('Errore di rete'); };
+    xhr.send();
+  }
+  doReq(Auth.getToken());
 }
 
 function esc(s) {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clienti — F4 Rilievi</title>
+  <title>Clienti &mdash; F4 Rilievi</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
 </head>
@@ -16,13 +16,13 @@
         <p class="page-subtitle">Gestione anagrafiche clienti e cantieri</p>
       </div>
       <div class="header-actions">
-        <button class="btn btn-primary" onclick="openModalNuovoCliente()">➕ Nuovo cliente</button>
+        <button class="btn btn-primary" onclick="openModalNuovoCliente()">&#10133; Nuovo cliente</button>
       </div>
     </div>
 
     <div class="card" style="padding:14px;margin-bottom:16px;">
       <div class="search-box">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon">&#128269;</span>
         <input class="form-control" type="text" id="searchInput"
                placeholder="Cerca per nome cliente..." oninput="filterClienti(this.value)">
       </div>
@@ -36,12 +36,15 @@
 
 <!-- MODAL CLIENTE -->
 <div class="modal" id="modalCliente">
-  <div class="modal-box modal-box-sm">
+  <div class="modal-box">
     <div class="modal-header">
       <span class="modal-title" id="modalClienteTitle">Nuovo cliente</span>
-      <button class="modal-close" onclick="Utils.closeModal('modalCliente')">✕</button>
+      <button class="modal-close" onclick="Utils.closeModal('modalCliente')">&#10005;</button>
     </div>
     <div class="modal-body">
+
+      <!-- DATI ANAGRAFICI -->
+      <div style="font-size:.78rem;font-weight:700;color:var(--c-primary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">&#128100; Anagrafica</div>
       <div class="form-group">
         <label class="form-label">Nome / Ragione sociale <span class="req">*</span></label>
         <input class="form-control" type="text" id="clienteNome" placeholder="Es. Rossi Mario">
@@ -49,14 +52,57 @@
       <div class="form-row form-row-2">
         <div class="form-group">
           <label class="form-label">Telefono</label>
-          <input class="form-control" type="tel" id="clienteTel">
+          <input class="form-control" type="tel" id="clienteTel" placeholder="es. 0434 000000">
         </div>
         <div class="form-group">
           <label class="form-label">E-mail</label>
           <input class="form-control" type="email" id="clienteEmail">
         </div>
       </div>
+
+      <!-- INDIRIZZO -->
+      <div style="font-size:.78rem;font-weight:700;color:var(--c-primary);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 10px;padding-top:10px;border-top:1px solid var(--c-border);">&#128205; Indirizzo di residenza / sede</div>
+      <div class="form-hint" style="margin-bottom:10px;">
+        Questo indirizzo viene proposto come predefinito quando si crea un nuovo cantiere.
+      </div>
+      <div class="form-row form-row-2">
+        <div class="form-group">
+          <label class="form-label">Tipo via</label>
+          <select class="form-control" id="clienteTipoVia">
+            <option value="">—</option>
+            <option>Via</option><option>Piazza</option><option>Largo</option>
+            <option>Viale</option><option>Corso</option><option>Strada</option>
+            <option>Piazzale</option><option>Calle</option><option>Contrada</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Indirizzo</label>
+          <input class="form-control" type="text" id="clienteIndirizzo" placeholder="es. Roma, 12">
+        </div>
+      </div>
       <div class="form-group">
+        <label class="form-label">Comune</label>
+        <div class="search-box">
+          <span class="search-icon">&#128269;</span>
+          <input class="form-control" type="text" id="clienteComuneInput"
+                 placeholder="Digita il comune..." autocomplete="off"
+                 oninput="cercaComuneCliente(this.value)">
+          <div class="search-results" id="clienteComuneResults"></div>
+        </div>
+      </div>
+      <div class="form-row form-row-2">
+        <div class="form-group">
+          <label class="form-label">Provincia</label>
+          <input class="form-control" type="text" id="clienteProv" maxlength="2" placeholder="es. PN">
+        </div>
+        <div class="form-group">
+          <label class="form-label">CAP</label>
+          <input class="form-control" type="text" id="clienteCap" placeholder="es. 33170">
+        </div>
+      </div>
+
+      <!-- NOTE -->
+      <div class="form-group" style="margin-top:4px;">
         <label class="form-label">Note</label>
         <textarea class="form-control" id="clienteNote" rows="2"></textarea>
       </div>
@@ -73,7 +119,7 @@
   <div class="modal-box modal-box-sm">
     <div class="modal-header">
       <span class="modal-title" id="toggleTitle">Conferma</span>
-      <button class="modal-close" onclick="Utils.closeModal('modalToggle')">✕</button>
+      <button class="modal-close" onclick="Utils.closeModal('modalToggle')">&#10005;</button>
     </div>
     <div class="modal-body"><p id="toggleMsg"></p></div>
     <div class="modal-footer">
@@ -89,135 +135,155 @@
 <script src="js/utils.js"></script>
 <script src="js/layout.js"></script>
 <script>
-  const currentUser = Auth.requireLogin();
-  if (!currentUser) throw new Error('not logged');
-  Layout.init('clienti');
+var currentUser = Auth.requireLogin();
+if (!currentUser) throw new Error('not logged');
+Layout.init('clienti');
 
-  let tuttiClienti = [];
-  let clienteEditId = null;
+var tuttiClienti = [];
+var clienteEditId = null;
 
-  async function init() {
-    const res = await API.getClienti();
-    if (!res.success) { Utils.showError(res.error); return; }
-    tuttiClienti = res.data;
-    renderClienti(tuttiClienti);
+async function init() {
+  var res = await API.getClienti();
+  if (!res.success) { Utils.showError(res.error); return; }
+  tuttiClienti = res.data;
+  renderClienti(tuttiClienti);
+}
+
+function filterClienti(q) {
+  q = q.trim().toLowerCase();
+  renderClienti(q ? tuttiClienti.filter(function(c) {
+    return (c.nome||'').toLowerCase().includes(q) || (c.email||'').toLowerCase().includes(q) || (c.comune||'').toLowerCase().includes(q);
+  }) : tuttiClienti);
+}
+
+function renderClienti(lista) {
+  var container = document.getElementById('clientiList');
+  if (!lista.length) { Utils.showEmptyState(container,'Nessun cliente trovato.','&#128101;'); return; }
+  var sorted = Utils.sortByName(lista,'nome');
+  container.innerHTML = sorted.map(function(c) {
+    var attivo = c.stato === 'attivo';
+    var addrStr = [c.tipo_via, c.indirizzo].filter(Boolean).join(' ').trim();
+    var locStr  = [c.comune, c.provincia ? '('+c.provincia+')' : ''].filter(Boolean).join(' ').trim();
+    var addrLine = [addrStr, locStr, c.cap].filter(Boolean).join(' \u2014 ');
+    var contatti = [c.telefono ? '&#128222; '+c.telefono : '', c.email ? '&#9993;&#65039; '+c.email : ''].filter(Boolean).join('&nbsp;&nbsp;');
+    return '<div class="card" style="margin-bottom:8px;padding:0;overflow:hidden;">' +
+      '<div style="display:flex;align-items:stretch;">' +
+        '<div style="width:52px;background:'+(attivo?'var(--c-primary)':'var(--c-text-sec)')+';display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:1.2rem;flex-shrink:0;">' +
+          (c.nome||'?').charAt(0).toUpperCase() +
+        '</div>' +
+        '<div style="flex:1;padding:10px 14px;cursor:pointer;" onclick="Utils.navigate(\'cantiere.html\',{idCliente:\''+c.ID_cliente+'\'})">' +
+          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
+            '<strong>'+c.nome+'</strong>' +
+            '<span class="badge '+(attivo?'badge-attivo':'badge-obsoleto')+'">'+(attivo?'Attivo':'Non attivo')+'</span>' +
+          '</div>' +
+          '<div style="font-size:.79rem;color:var(--c-text-sec);margin-top:2px;">' + (contatti||'Nessun contatto') + '</div>' +
+          (addrLine ? '<div style="font-size:.76rem;color:var(--c-text-sec);">&#128205; '+addrLine+'</div>' : '') +
+        '</div>' +
+        '<div style="padding:0 10px;display:flex;align-items:center;gap:4px;">' +
+          '<button class="btn btn-sm btn-outline" title="Cantieri" onclick="Utils.navigate(\'cantiere.html\',{idCliente:\''+c.ID_cliente+'\'})">&#127959;</button>' +
+          '<button class="btn-icon" title="Modifica" onclick="openModalModifica(\''+c.ID_cliente+'\')">&#9999;&#65039;</button>' +
+          (Auth.isAdmin() ? '<button class="btn-icon" title="'+(attivo?'Disattiva':'Riattiva')+'" onclick="confermaToggle(\''+c.ID_cliente+'\',\''+c.nome.replace(/'/g,"\\'")+'\','+attivo+')">'+(attivo?'&#128308;':'&#128994;')+'</button>' : '') +
+        '</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+function openModalNuovoCliente() {
+  clienteEditId = null;
+  document.getElementById('modalClienteTitle').textContent = 'Nuovo cliente';
+  ['clienteNome','clienteTel','clienteEmail','clienteNote',
+   'clienteIndirizzo','clienteComuneInput','clienteProv','clienteCap'].forEach(function(id) {
+    var el = document.getElementById(id); if(el) el.value = '';
+  });
+  document.getElementById('clienteTipoVia').value = '';
+  Utils.openModal('modalCliente');
+  setTimeout(function() { document.getElementById('clienteNome').focus(); }, 100);
+}
+
+function openModalModifica(id) {
+  var c = tuttiClienti.find(function(x) { return x.ID_cliente == id; });
+  if (!c) return;
+  clienteEditId = id;
+  document.getElementById('modalClienteTitle').textContent = 'Modifica cliente';
+  document.getElementById('clienteNome').value         = c.nome      || '';
+  document.getElementById('clienteTel').value          = c.telefono  || '';
+  document.getElementById('clienteEmail').value        = c.email     || '';
+  document.getElementById('clienteNote').value         = c.note      || '';
+  document.getElementById('clienteTipoVia').value      = c.tipo_via  || '';
+  document.getElementById('clienteIndirizzo').value    = c.indirizzo || '';
+  document.getElementById('clienteComuneInput').value  = c.comune    || '';
+  document.getElementById('clienteProv').value         = c.provincia || '';
+  document.getElementById('clienteCap').value          = c.cap       || '';
+  Utils.openModal('modalCliente');
+  setTimeout(function() { document.getElementById('clienteNome').focus(); }, 100);
+}
+
+async function salvaCliente() {
+  var nome = document.getElementById('clienteNome').value.trim();
+  if (!nome) { Utils.showWarning('Nome obbligatorio.'); return; }
+  var data = {
+    nome:      nome,
+    telefono:  document.getElementById('clienteTel').value.trim(),
+    email:     document.getElementById('clienteEmail').value.trim(),
+    note:      document.getElementById('clienteNote').value.trim(),
+    tipo_via:  document.getElementById('clienteTipoVia').value,
+    indirizzo: document.getElementById('clienteIndirizzo').value.trim(),
+    comune:    document.getElementById('clienteComuneInput').value.trim(),
+    provincia: document.getElementById('clienteProv').value.trim().toUpperCase(),
+    cap:       document.getElementById('clienteCap').value.trim()
+  };
+  var btn = document.getElementById('btnSalvaCliente');
+  btn.disabled = true; btn.textContent = 'Salvataggio...';
+  var res = clienteEditId ? await API.updateCliente(clienteEditId, data) : await API.createCliente(data);
+  btn.disabled = false; btn.textContent = 'Salva';
+  if (res.success) {
+    Utils.showSuccess(clienteEditId ? 'Cliente aggiornato.' : 'Cliente creato.');
+    Utils.closeModal('modalCliente');
+    await init();
+  } else Utils.showError(res.error);
+}
+
+// Autocomplete comune
+var cercaComuneCliente = Utils.debounce(async function(q) {
+  var box = document.getElementById('clienteComuneResults');
+  if (q.length < 2) { box.classList.remove('open'); return; }
+  var res = await API.getComuni(q);
+  if (!res.success || !res.data.length) { box.classList.remove('open'); return; }
+  box.innerHTML = res.data.map(function(c) {
+    return '<div class="search-result-item" onclick=\'selComuneCliente('+JSON.stringify(c)+')\' >' +
+      '<div class="search-result-main">'+c.comune+'</div>' +
+      '<div class="search-result-sub">'+c.provincia+' \u2014 CAP '+c.CAP+'</div></div>';
+  }).join('');
+  box.classList.add('open');
+}, 350);
+
+function selComuneCliente(c) {
+  document.getElementById('clienteComuneInput').value = c.comune;
+  document.getElementById('clienteProv').value        = c.provincia;
+  var capEl = document.getElementById('clienteCap');
+  if (!capEl.value) capEl.value = c.CAP;
+  document.getElementById('clienteComuneResults').classList.remove('open');
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.search-box')) {
+    var el = document.getElementById('clienteComuneResults'); if (el) el.classList.remove('open');
   }
+});
 
-  function filterClienti(q) {
-    q = q.trim().toLowerCase();
-    renderClienti(q ? tuttiClienti.filter(c =>
-      (c.nome||'').toLowerCase().includes(q) ||
-      (c.email||'').toLowerCase().includes(q)
-    ) : tuttiClienti);
-  }
+function confermaToggle(id, nome, attivo) {
+  document.getElementById('toggleTitle').textContent = attivo ? 'Disattiva cliente' : 'Riattiva cliente';
+  document.getElementById('toggleMsg').textContent   = attivo ? 'Vuoi disattivare "'+nome+'"?' : 'Vuoi riattivare "'+nome+'"?';
+  document.getElementById('btnConfermaToggle').onclick = async function() {
+    Utils.closeModal('modalToggle');
+    var res = await API.toggleCliente(id);
+    if (res.success) { Utils.showSuccess('Stato aggiornato.'); await init(); }
+    else Utils.showError(res.error);
+  };
+  Utils.openModal('modalToggle');
+}
 
-  function renderClienti(lista) {
-    const container = document.getElementById('clientiList');
-    if (!lista.length) {
-      Utils.showEmptyState(container,'Nessun cliente trovato.','👥'); return;
-    }
-    const sorted = Utils.sortByName(lista,'nome');
-    container.innerHTML = sorted.map(c => {
-      const attivo = c.stato === 'attivo';
-      return `
-        <div class="card" style="margin-bottom:8px;padding:0;overflow:hidden;">
-          <div style="display:flex;align-items:stretch;">
-            <div style="width:52px;background:${attivo?'var(--c-primary)':'var(--c-text-sec)'};
-                        display:flex;align-items:center;justify-content:center;
-                        color:white;font-weight:700;font-size:1.2rem;flex-shrink:0;">
-              ${(c.nome||'?').charAt(0).toUpperCase()}
-            </div>
-            <div style="flex:1;padding:12px 14px;cursor:pointer;"
-                 onclick="Utils.navigate('cantiere.html',{idCliente:'${c.ID_cliente}'})">
-              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                <strong>${c.nome}</strong>
-                <span class="badge ${attivo?'badge-attivo':'badge-obsoleto'}">
-                  ${attivo?'Attivo':'Non attivo'}
-                </span>
-              </div>
-              <div style="font-size:.8rem;color:var(--c-text-sec);margin-top:3px;">
-                ${c.telefono?'📞 '+c.telefono+' ':''}${c.email?'✉️ '+c.email:''}
-                ${!c.telefono&&!c.email?'Nessun contatto registrato':''}
-              </div>
-            </div>
-            <div style="padding:0 10px;display:flex;align-items:center;gap:4px;">
-              <button class="btn btn-sm btn-outline" title="Cantieri"
-                      onclick="Utils.navigate('cantiere.html',{idCliente:'${c.ID_cliente}'})">
-                🏗️
-              </button>
-              <button class="btn-icon" title="Modifica"
-                      onclick="openModalModifica('${c.ID_cliente}')">✏️</button>
-              ${Auth.isAdmin() ? `
-              <button class="btn-icon" title="${attivo?'Disattiva':'Riattiva'}"
-                      onclick="confermaToggle('${c.ID_cliente}','${c.nome.replace(/'/g,"\\'")}',${attivo})">
-                ${attivo?'🔴':'🟢'}
-              </button>` : ''}
-            </div>
-          </div>
-        </div>`;
-    }).join('');
-  }
-
-  function openModalNuovoCliente() {
-    clienteEditId = null;
-    document.getElementById('modalClienteTitle').textContent = 'Nuovo cliente';
-    document.getElementById('clienteNome').value  = '';
-    document.getElementById('clienteTel').value   = '';
-    document.getElementById('clienteEmail').value = '';
-    document.getElementById('clienteNote').value  = '';
-    Utils.openModal('modalCliente');
-    setTimeout(() => document.getElementById('clienteNome').focus(), 100);
-  }
-
-  function openModalModifica(id) {
-    const c = tuttiClienti.find(x => x.ID_cliente == id);
-    if (!c) return;
-    clienteEditId = id;
-    document.getElementById('modalClienteTitle').textContent = 'Modifica cliente';
-    document.getElementById('clienteNome').value  = c.nome     || '';
-    document.getElementById('clienteTel').value   = c.telefono || '';
-    document.getElementById('clienteEmail').value = c.email    || '';
-    document.getElementById('clienteNote').value  = c.note     || '';
-    Utils.openModal('modalCliente');
-    setTimeout(() => document.getElementById('clienteNome').focus(), 100);
-  }
-
-  async function salvaCliente() {
-    const nome = document.getElementById('clienteNome').value.trim();
-    if (!nome) { Utils.showWarning('Nome obbligatorio.'); return; }
-    const data = {
-      nome, telefono: document.getElementById('clienteTel').value.trim(),
-      email: document.getElementById('clienteEmail').value.trim(),
-      note:  document.getElementById('clienteNote').value.trim()
-    };
-    const btn = document.getElementById('btnSalvaCliente');
-    btn.disabled = true; btn.textContent = 'Salvataggio...';
-    const res = clienteEditId
-      ? await API.updateCliente(clienteEditId, data)
-      : await API.createCliente(data);
-    btn.disabled = false; btn.textContent = 'Salva';
-    if (res.success) {
-      Utils.showSuccess(clienteEditId ? 'Cliente aggiornato.' : 'Cliente creato.');
-      Utils.closeModal('modalCliente');
-      await init();
-    } else { Utils.showError(res.error); }
-  }
-
-  function confermaToggle(id, nome, attivo) {
-    document.getElementById('toggleTitle').textContent = attivo ? 'Disattiva cliente' : 'Riattiva cliente';
-    document.getElementById('toggleMsg').textContent   = attivo
-      ? `Vuoi disattivare "${nome}"?`
-      : `Vuoi riattivare "${nome}"?`;
-    document.getElementById('btnConfermaToggle').onclick = async () => {
-      Utils.closeModal('modalToggle');
-      const res = await API.toggleCliente(id);
-      if (res.success) { Utils.showSuccess('Stato aggiornato.'); await init(); }
-      else Utils.showError(res.error);
-    };
-    Utils.openModal('modalToggle');
-  }
-
-  init();
+init();
 </script>
 </body>
 </html>

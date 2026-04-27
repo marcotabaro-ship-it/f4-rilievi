@@ -288,7 +288,7 @@
         <thead>
           <tr class="th-group">
             <th colspan="4">IDENTIFICAZIONE</th>
-            <th colspan="4" class="grp-sep">SERRAMENTO</th>
+            <th colspan="3" class="grp-sep">SERRAMENTO</th>
             <th colspan="4" class="grp-sep">GEOMETRIA</th>
             <th colspan="3" class="grp-sep">VETRO / OSC</th>
             <th colspan="4" class="grp-sep">COPRIFILI</th>
@@ -309,7 +309,6 @@
             <th class="grp-sep">FORO</th>
             <th>L (mm)</th>
             <th>H (mm)</th>
-            <th>COD.</th>
             <th class="grp-sep">VETRO</th>
             <th>OSC</th>
             <th>MECC</th>
@@ -490,7 +489,6 @@ function renderPosizioni(posizioni, stratigrafie) {
     html += '<td class="c grp-sep">' + esc(v(p.tipo_foro)) + '</td>';
     html += '<td class="dim-cell"><div class="dim-main">'+lIns+'</div>'+(lCalc?'<div class="dim-calc">('+lCalc+')</div>':'')+'</td>';
     html += '<td class="dim-cell"><div class="dim-main">'+hIns+'</div>'+(hCalc?'<div class="dim-calc">('+hCalc+')</div>':'')+'</td>';
-    html += '<td style="font-size:8px;font-family:monospace">' + esc(v(p.codice_serramento)) + '</td>';
     html += '<td class="c grp-sep">' + esc(v(p.n_vetri)) + '</td>';
     html += '<td class="c">' + esc(v(p.oscurante_tipo)) + '</td>';
     html += '<td class="c">' + esc(v(p.oscurante_meccanismo)) + '</td>';

@@ -6,89 +6,161 @@
   <title>Report Rilievo &mdash; F4 Rilievi</title>
   <link rel="stylesheet" href="css/main.css" />
   <style>
-    body { background: #f5f6fa; }
+    body { background: #f5f6fa; font-family: 'Segoe UI', Arial, sans-serif; }
     #toolbar {
-      background: #1a1a2e; color: #ffffff; padding: 12px 20px;
-      display: flex; align-items: center; gap: 10px;
-      position: sticky; top: 0; z-index: 100;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      background: #1a1a2e; color: #fff; padding: 10px 18px;
+      display: flex; align-items: center; gap: 8px;
+      position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     }
-    #toolbar h1 { font-size: 15px; margin: 0; flex: 1; font-weight: 600; }
-    .btn-tb { border: none; border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; color: #ffffff; }
+    #toolbar h1 { font-size: 14px; margin: 0; flex: 1; font-weight: 600; }
+    .btn-tb { border: none; border-radius: 6px; padding: 6px 13px; font-size: 12px; font-weight: 600; cursor: pointer; color: #fff; }
     .btn-tb-primary { background: #4f46e5; }
-    .btn-tb-primary:hover { background: #4338ca; }
     .btn-tb-neutral { background: #374151; }
-    .btn-tb-neutral:hover { background: #1f2937; }
-    #wrap { max-width: 1000px; margin: 24px auto; padding: 0 16px 48px; }
-    #stato-msg { text-align: center; padding: 64px 20px; color: #6b7280; font-size: 15px; }
+    #wrap { max-width: 1100px; margin: 20px auto; padding: 0 14px 48px; }
+    #stato-msg { text-align: center; padding: 64px; color: #6b7280; font-size: 15px; }
     #stato-msg.errore { color: #dc2626; }
-    .r-header {
-      background: #ffffff; border-radius: 10px; padding: 20px 24px;
-      margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+
+    /* ---- HEADER SCHEDA ---- */
+    .scheda-header {
+      background: #fff; border: 2px solid #1a1a2e; border-radius: 8px;
+      margin-bottom: 12px; overflow: hidden;
     }
-    .r-header-top { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
-    .r-header-top h2 { margin: 0; font-size: 18px; color: #1a1a2e; font-weight: 700; }
-    .r-badge { font-size: 11px; background: #ede9fe; color: #4f46e5; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
-    .r-meta { display: flex; gap: 24px; flex-wrap: wrap; }
-    .r-meta-item { font-size: 13px; color: #6b7280; }
-    .r-meta-item strong { color: #1a1a2e; }
-    .sez-titolo {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.6px; color: #4f46e5;
-      margin: 18px 0 8px; padding-bottom: 4px;
-      border-bottom: 2px solid #ede9fe;
+    .sh-top {
+      display: grid; grid-template-columns: 120px 1fr 220px;
+      border-bottom: 2px solid #1a1a2e;
     }
-    .strat-grid { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .sh-logo {
+      background: #1a1a2e; color: #fff; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 10px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.3px; text-align: center;
+    }
+    .sh-logo .logo-box {
+      border: 2px solid #e53e3e; padding: 4px 8px; font-size: 18px;
+      font-weight: 900; letter-spacing: -1px; margin-bottom: 4px;
+    }
+    .sh-centro { padding: 10px 14px; border-left: 2px solid #1a1a2e; border-right: 2px solid #1a1a2e; }
+    .sh-destra { padding: 10px 12px; }
+    .sh-field { display: flex; align-items: baseline; gap: 6px; margin-bottom: 5px; font-size: 12px; }
+    .sh-field label { font-weight: 700; color: #1a1a2e; white-space: nowrap; font-size: 11px; min-width: 70px; }
+    .sh-field span { color: #374151; border-bottom: 1px solid #d1d5db; flex: 1; min-height: 14px; }
+    .sh-field-inline { display: flex; gap: 12px; }
+    .sh-bottom {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 8px 14px; gap: 10px;
+    }
+    .sh-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #ede9fe; color: #4f46e5; padding: 2px 10px; border-radius: 10px;
+      font-size: 11px; font-weight: 700;
+    }
+    .sh-badge.red { background: #fee2e2; color: #dc2626; }
+    .sh-badge.green { background: #d1fae5; color: #065f46; }
+
+    /* ---- NOTE COMMERCIALI ---- */
+    .nc-block {
+      background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+      padding: 10px 14px; margin-bottom: 12px;
+    }
+    .nc-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #4f46e5; margin-bottom: 8px; }
+    .nc-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .nc-item { font-size: 11px; }
+    .nc-item label { display: block; color: #9ca3af; font-size: 10px; }
+    .nc-item span { color: #1a1a2e; font-weight: 600; }
+
+    /* ---- LEGENDA ---- */
+    .legenda-block {
+      background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+      padding: 10px 14px; margin-bottom: 12px;
+    }
+    .leg-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #1a1a2e; margin-bottom: 8px; border-bottom: 2px solid #e5e7eb; padding-bottom: 4px; }
+    .leg-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+    .leg-section h4 { font-size: 10px; font-weight: 700; color: #4f46e5; margin: 0 0 4px; text-transform: uppercase; }
+    .leg-row { font-size: 10px; line-height: 1.4; }
+    .leg-row b { color: #e53e3e; margin-right: 3px; font-family: monospace; }
+
+    /* ---- STRATIGRAFIE ---- */
+    .strat-section { margin-bottom: 12px; }
+    .strat-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #1a1a2e; margin-bottom: 8px; }
+    .strat-grid { display: flex; gap: 10px; flex-wrap: wrap; }
     .strat-card {
-      background: #ffffff; border-radius: 10px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 14px;
-      flex: 1; min-width: 200px; max-width: 280px;
+      background: #fff; border: 1px solid #d1d5db; border-radius: 6px; padding: 10px;
+      min-width: 160px; max-width: 220px;
     }
-    .strat-card h4 { margin: 0 0 8px; font-size: 13px; color: #1a1a2e; }
-    .strat-card img { width: 100%; max-height: 110px; object-fit: contain; border: 1px solid #e5e7eb; border-radius: 4px; margin-bottom: 8px; }
-    .strat-no-img { width: 100%; height: 80px; background: #f3f4f6; border: 1px dashed #d1d5db; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #9ca3af; }
-    .strat-quote-tbl { font-size: 11px; border-collapse: collapse; }
+    .strat-card h4 { margin: 0 0 6px; font-size: 11px; color: #1a1a2e; font-weight: 700; }
+    .strat-card img { width: 100%; max-height: 90px; object-fit: contain; background: #f9f9f9; border: 1px solid #e5e7eb; border-radius: 3px; margin-bottom: 6px; }
+    .strat-no-img { height: 60px; background: #f3f4f6; border: 1px dashed #d1d5db; border-radius: 3px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #9ca3af; }
+    .strat-quote-tbl { font-size: 10px; border-collapse: collapse; }
     .strat-quote-tbl td { padding: 1px 4px; }
     .strat-quote-tbl td:first-child { color: #6b7280; }
-    .strat-quote-tbl td:last-child { font-weight: 600; color: #1a1a2e; }
-    .strat-def-badge { font-size: 10px; background: #d1fae5; color: #065f46; padding: 1px 6px; border-radius: 8px; margin-left: 6px; }
-    .table-wrap {
-      background: #ffffff; border-radius: 10px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow-x: auto; margin-bottom: 14px;
+    .strat-quote-tbl td:last-child { font-weight: 600; }
+    .def-badge { font-size: 9px; background: #d1fae5; color: #065f46; padding: 1px 5px; border-radius: 6px; margin-left: 4px; }
+
+    /* ---- TABELLA POSIZIONI ---- */
+    .sez-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #1a1a2e; margin: 14px 0 6px; padding-bottom: 4px; border-bottom: 2px solid #ede9fe; }
+    .table-outer { overflow-x: auto; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 14px; }
+    table.t-ril {
+      border-collapse: collapse; font-size: 11px; white-space: nowrap; width: 100%;
     }
-    table.t-ril { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
-    table.t-ril thead th { background: #1a1a2e; color: #ffffff; padding: 9px 10px; text-align: left; font-weight: 600; font-size: 11px; }
-    table.t-ril thead th.c { text-align: center; }
-    table.t-ril td { padding: 7px 10px; border-bottom: 1px solid #f0f0f6; color: #374151; }
+    table.t-ril thead tr.th-main th {
+      background: #1a1a2e; color: #fff; padding: 7px 6px;
+      text-align: center; font-weight: 700; font-size: 9px; letter-spacing: 0.3px;
+      border-right: 1px solid #374151;
+    }
+    table.t-ril thead tr.th-group th {
+      background: #374151; color: #a5b4fc; padding: 3px 6px;
+      text-align: center; font-weight: 600; font-size: 9px; letter-spacing: 0.5px;
+      text-transform: uppercase; border-right: 1px solid #4b5563;
+    }
+    table.t-ril td {
+      padding: 5px 6px; border-bottom: 1px solid #f0f0f6;
+      border-right: 1px solid #f0f0f6; vertical-align: middle;
+      font-size: 10px; color: #374151;
+    }
+    table.t-ril tr:hover td { background: #fafafe; }
     table.t-ril td.c { text-align: center; }
-    table.t-ril td.num { text-align: center; font-weight: 700; color: #1a1a2e; }
-    table.t-ril td.dim { text-align: center; font-weight: 700; color: #4f46e5; }
-    table.t-ril tr:hover { background: #fafafe; }
-    table.t-ril td.note-cell { white-space: normal; max-width: 160px; font-size: 11px; color: #6b7280; }
-    .flag { display: inline-block; font-size: 10px; background: #fef3c7; color: #92400e; border-radius: 4px; padding: 1px 5px; margin: 1px; font-weight: 600; }
-    .flag.blue { background: #dbeafe; color: #1e40af; }
-    .flag.red  { background: #fee2e2; color: #991b1b; }
+    table.t-ril td.num { text-align: center; font-weight: 700; color: #1a1a2e; background: #f8f8ff; }
+    table.t-ril td.tipo { text-align: center; font-weight: 700; color: #4f46e5; font-size: 11px; }
+    table.t-ril td.dim-cell { text-align: center; }
+    .dim-main { font-weight: 700; font-size: 10px; color: #1a1a2e; }
+    .dim-calc { font-size: 9px; color: #6b7280; font-style: italic; }
+    .chk { display: inline-block; width: 12px; height: 12px; border: 1.5px solid #9ca3af; border-radius: 2px; background: #fff; }
+    .chk.on { background: #e53e3e; border-color: #e53e3e; }
+    td.note-cell { white-space: normal; max-width: 120px; font-size: 9px; color: #6b7280; }
+    td.grp-sep { border-left: 2px solid #d1d5db; }
+
+    /* ---- PRINT ---- */
     @media print {
-      @page { size: A4 portrait; margin: 10mm 8mm 10mm 8mm; }
-      body { background: #ffffff; }
+      @page { size: A4 landscape; margin: 8mm 8mm 8mm 8mm; }
+      body { background: #fff; font-size: 8px; }
       #toolbar { display: none !important; }
       #wrap { margin: 0; padding: 0; max-width: none; }
-      .r-header { box-shadow: none; border: 1px solid #cccccc; border-radius: 0; padding: 8px 10px; margin-bottom: 6px; page-break-inside: avoid; }
-      .r-header-top h2 { font-size: 13px; }
-      .r-meta-item { font-size: 9px; }
-      .sez-titolo { font-size: 9px; margin: 10px 0 5px; }
-      .strat-grid { gap: 8px; }
-      .strat-card { box-shadow: none; border: 1px solid #cccccc; border-radius: 0; padding: 8px; min-width: 140px; max-width: 190px; }
+      .scheda-header { border: 1.5px solid #1a1a2e; margin-bottom: 6px; border-radius: 0; }
+      .sh-logo .logo-box { font-size: 14px; }
+      .sh-field { font-size: 9px; margin-bottom: 3px; }
+      .sh-field label { font-size: 9px; }
+      .nc-block { border: 1px solid #ccc; border-radius: 0; padding: 6px 10px; margin-bottom: 6px; }
+      .nc-grid { grid-template-columns: repeat(5, 1fr); }
+      .nc-item { font-size: 9px; }
+      .legenda-block { border: 1px solid #ccc; border-radius: 0; padding: 6px 10px; margin-bottom: 6px; page-break-inside: avoid; }
+      .leg-grid { grid-template-columns: repeat(7, 1fr); gap: 6px; }
+      .leg-section h4 { font-size: 8px; }
+      .leg-row { font-size: 8px; }
+      .strat-section { margin-bottom: 6px; }
+      .strat-card { border: 1px solid #ccc; border-radius: 0; padding: 6px; min-width: 120px; max-width: 180px; }
       .strat-card h4 { font-size: 9px; }
       .strat-card img { max-height: 70px; }
       .strat-quote-tbl { font-size: 8px; }
-      .table-wrap { box-shadow: none; border: 1px solid #cccccc; border-radius: 0; overflow: visible; margin-bottom: 8px; }
-      table.t-ril { font-size: 7.5px; white-space: normal; }
-      table.t-ril thead th { padding: 4px 5px; font-size: 7px; }
-      table.t-ril td { padding: 3px 5px; }
-      table.t-ril td.note-cell { font-size: 7px; max-width: 80px; }
-      .flag { font-size: 7px; padding: 0 3px; }
+      .sez-title { font-size: 9px; margin: 8px 0 4px; }
+      .table-outer { border-radius: 0; border: 1px solid #ccc; margin-bottom: 8px; overflow: visible; }
+      table.t-ril { font-size: 7px; white-space: normal; }
+      table.t-ril thead tr.th-main th { padding: 4px 3px; font-size: 7px; }
+      table.t-ril thead tr.th-group th { padding: 2px 3px; font-size: 7px; }
+      table.t-ril td { padding: 3px 3px; font-size: 7px; }
+      .dim-main { font-size: 7px; }
+      .dim-calc { font-size: 6px; }
+      .chk { width: 9px; height: 9px; border-width: 1px; }
+      td.note-cell { font-size: 6px; max-width: 80px; }
       .btn-tb { display: none !important; }
+      .page-break { page-break-before: always; }
     }
   </style>
 </head>
@@ -97,99 +169,209 @@
 <div id="toolbar">
   <h1 id="tb-titolo">Report Rilievo Serramenti</h1>
   <button class="btn-tb btn-tb-neutral" onclick="history.back()">&#8592; Indietro</button>
-  <button class="btn-tb btn-tb-primary" onclick="window.print()">&#128438; Stampa / PDF</button>
+  <button class="btn-tb btn-tb-primary" onclick="window.print()">&#128438; Stampa A4 Landscape</button>
 </div>
 
 <div id="wrap">
-  <div id="stato-msg">Caricamento dati in corso&hellip;</div>
+  <div id="stato-msg">Caricamento in corso&hellip;</div>
   <div id="report-content" style="display:none">
 
-    <div class="r-header">
-      <div class="r-header-top">
-        <h2 id="rh-titolo">Rilievo Serramenti</h2>
-        <span class="r-badge" id="rh-badge">—</span>
+    <!-- ======= HEADER SCHEDA ======= -->
+    <div class="scheda-header">
+      <div class="sh-top">
+        <div class="sh-logo">
+          <div class="logo-box">[F4]</div>
+          GRUPPO F4
+          <div style="font-size:9px;margin-top:4px;opacity:.8">F4 Rilievi</div>
+        </div>
+        <div class="sh-centro">
+          <div class="sh-field">
+            <label>Riferimento:</label>
+            <span id="sh-rif"></span>
+            <span id="sh-badge" class="sh-badge" style="margin-left:8px"></span>
+          </div>
+          <div class="sh-field">
+            <label>Indirizzo:</label>
+            <span id="sh-ind"></span>
+          </div>
+          <div class="sh-field-inline">
+            <div class="sh-field" style="flex:1"><label>Comune:</label><span id="sh-comune"></span></div>
+            <div class="sh-field" style="width:60px"><label>Prov.:</label><span id="sh-prov"></span></div>
+          </div>
+          <div class="sh-field"><label>Telefono:</label><span id="sh-tel"></span></div>
+          <div class="sh-field"><label>e-mail:</label><span id="sh-email"></span></div>
+        </div>
+        <div class="sh-destra">
+          <div class="sh-field"><label>Intervento:</label><span id="sh-int"></span></div>
+          <div class="sh-field"><label>Referente:</label><span id="sh-ref"></span></div>
+          <div class="sh-field"><label>Data rilievo:</label><span id="sh-data"></span></div>
+          <div class="sh-field"><label>Data posa:</label><span id="sh-posa"></span></div>
+          <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+            <span id="sh-gru" class="sh-badge" style="display:none">&#127959; GRU</span>
+            <span id="sh-alarm" class="sh-badge red" style="display:none">&#9888; ALLARME</span>
+            <span id="sh-npos" class="sh-badge">0 pos.</span>
+          </div>
+        </div>
       </div>
-      <div class="r-meta">
-        <div class="r-meta-item"><strong>Cliente:</strong> <span id="rh-cliente">—</span></div>
-        <div class="r-meta-item"><strong>Cantiere:</strong> <span id="rh-cantiere">—</span></div>
-        <div class="r-meta-item"><strong>Referente:</strong> <span id="rh-referente">—</span></div>
-        <div class="r-meta-item"><strong>Data rilievo:</strong> <span id="rh-data">—</span></div>
-        <div class="r-meta-item"><strong>Data posa:</strong> <span id="rh-posa">—</span></div>
-        <div class="r-meta-item"><strong>Intervento:</strong> <span id="rh-intervento">—</span></div>
-        <div class="r-meta-item"><strong>GRU:</strong> <span id="rh-gru">—</span></div>
-        <div class="r-meta-item"><strong>N. posizioni:</strong> <span id="rh-npos">—</span></div>
+      <div class="sh-bottom" id="sh-nc" style="display:none">
+        <!-- note commerciali: populate dinamicamente -->
       </div>
     </div>
 
-    <div class="sez-titolo">Stratigrafie</div>
-    <div class="strat-grid" id="strat-grid">
-      <div style="color:#9ca3af;font-size:13px;padding:8px">Nessuna stratigrafia registrata.</div>
+    <!-- ======= LEGENDA ======= -->
+    <div class="legenda-block">
+      <div class="leg-title">Legenda</div>
+      <div class="leg-grid">
+        <div class="leg-section">
+          <h4>Serramento</h4>
+          <div class="leg-row"><b>I</b>Ingresso</div>
+          <div class="leg-row"><b>F</b>Finestra apribile</div>
+          <div class="leg-row"><b>PF</b>Porta Finestra</div>
+          <div class="leg-row"><b>FF</b>Finestra Fissa</div>
+          <div class="leg-row"><b>VF</b>Vetrata Fissa</div>
+          <div class="leg-row"><b>S</b>Scorrevole</div>
+        </div>
+        <div class="leg-section">
+          <h4>Materiale</h4>
+          <div class="leg-row"><b>A-</b>Alluminio</div>
+          <div class="leg-row"><b>P-</b>PVC</div>
+          <div class="leg-row"><b>PA</b>PVC-Alluminio</div>
+          <div class="leg-row"><b>LA</b>Legno-Alluminio</div>
+          <div class="leg-row"><b>L-</b>Legno</div>
+          <h4 style="margin-top:6px">Tipo Foro</h4>
+          <div class="leg-row"><b>A</b>Architettonico</div>
+          <div class="leg-row"><b>D</b>Dimensione telaio</div>
+          <div class="leg-row"><b>P</b>Posa in luce</div>
+        </div>
+        <div class="leg-section">
+          <h4>Telaio (variante)</h4>
+          <div class="leg-row"><b>NR</b>No Reveal</div>
+          <div class="leg-row"><b>CR</b>Counter Reveal</div>
+          <div class="leg-row"><b>HR</b>High Reveal</div>
+          <div class="leg-row"><b>IR</b>Interior Reveal</div>
+          <div class="leg-row"><b>ZR</b>Zero Reveal</div>
+          <div class="leg-row"><b>WR</b>Wide Reveal</div>
+          <div class="leg-row"><b>SR</b>Shallow Reveal</div>
+          <div class="leg-row"><b>DR</b>Deep Reveal</div>
+        </div>
+        <div class="leg-section">
+          <h4>Schermatura</h4>
+          <div class="leg-row"><b>A</b>Avvolgibile man.</div>
+          <div class="leg-row"><b>AM</b>A. Meccanico</div>
+          <div class="leg-row"><b>AE</b>A. Elettronico</div>
+          <div class="leg-row"><b>AR</b>A. Radio</div>
+          <div class="leg-row"><b>S</b>Scuretto</div>
+          <div class="leg-row"><b>TZ</b>Tenda ZIP</div>
+          <div class="leg-row"><b>TM</b>Tenda Manuale</div>
+          <div class="leg-row"><b>CA</b>Frangisole Cavo</div>
+          <div class="leg-row"><b>CT</b>Frangisole Catena</div>
+        </div>
+        <div class="leg-section">
+          <h4>Osc. Integrato</h4>
+          <div class="leg-row"><b>V</b>Veneziana</div>
+          <div class="leg-row"><b>D</b>Duette</div>
+          <div class="leg-row"><b>P</b>Pliss&egrave;</div>
+          <h4 style="margin-top:6px">Mecc. Osc.</h4>
+          <div class="leg-row"><b>C</b>Catenella</div>
+          <div class="leg-row"><b>M</b>Motore</div>
+          <div class="leg-row"><b>F</b>Fotovoltaico</div>
+          <h4 style="margin-top:6px">Vetro</h4>
+          <div class="leg-row"><b>D</b>Doppio</div>
+          <div class="leg-row"><b>T</b>Triplo</div>
+        </div>
+        <div class="leg-section">
+          <h4>Coprifili</h4>
+          <div class="leg-row"><b>P</b>PVC</div>
+          <div class="leg-row"><b>L</b>Legno</div>
+          <div class="leg-row"><b>A</b>Alluminio</div>
+          <h4 style="margin-top:6px">Cassonetto</h4>
+          <div class="leg-row"><b>P</b>PVC</div>
+          <div class="leg-row"><b>L</b>Legno</div>
+          <h4 style="margin-top:6px">Controtelaio</h4>
+          <div class="leg-row"><b>L</b>Legno</div>
+          <div class="leg-row"><b>T</b>Termocassa</div>
+          <h4 style="margin-top:6px">Dinox</h4>
+          <div class="leg-row"><b>DA</b>Davanzale</div>
+          <div class="leg-row"><b>I3</b>Imbotte 3 lati</div>
+          <div class="leg-row"><b>I4</b>Imbotte 4 lati</div>
+        </div>
+        <div class="leg-section">
+          <h4>Sensi apertura</h4>
+          <div class="leg-row"><b>D</b>Destra</div>
+          <div class="leg-row"><b>S</b>Sinistra</div>
+          <div class="leg-row"><b>W</b>Vasistas</div>
+          <div class="leg-row"><b>F</b>Fisso</div>
+          <h4 style="margin-top:6px">Dim. calcolate</h4>
+          <div class="leg-row" style="color:#6b7280;font-style:italic">Le misure in corsivo grigio sono le dimensioni calcolate (tubolarit&agrave;) in base al tipo foro e al serramento selezionato.</div>
+          <h4 style="margin-top:6px">Flag</h4>
+          <div class="leg-row"><span class="chk on" style="display:inline-block"></span> = attivo</div>
+          <div class="leg-row"><span class="chk" style="display:inline-block"></span> = non presente</div>
+        </div>
+      </div>
     </div>
 
-    <div class="sez-titolo">Posizioni &mdash; Geometria e Tipologia</div>
-    <div class="table-wrap">
+    <!-- ======= STRATIGRAFIE ======= -->
+    <div class="strat-section" id="strat-section">
+      <div class="strat-title">Stratigrafie</div>
+      <div class="strat-grid" id="strat-grid">
+        <div style="color:#9ca3af;font-size:12px">Nessuna stratigrafia registrata.</div>
+      </div>
+    </div>
+
+    <!-- ======= TABELLA POSIZIONI ======= -->
+    <div class="sez-title">Posizioni Serramenti</div>
+    <div class="table-outer">
       <table class="t-ril">
         <thead>
-          <tr>
-            <th class="c" style="width:30px">N&deg;</th>
-            <th class="c" style="width:40px">Piano</th>
-            <th style="width:110px">Ambiente</th>
-            <th class="c" style="width:36px">Tipo</th>
-            <th class="c" style="width:36px">N.C.</th>
-            <th class="c" style="width:60px">Senso ap.</th>
-            <th class="c" style="width:36px">Foro</th>
-            <th class="c" style="width:55px">L (mm)</th>
-            <th class="c" style="width:55px">H (mm)</th>
-            <th style="width:80px">Materiale</th>
-            <th style="width:120px">Sistema</th>
-            <th style="width:90px">Stile/Design</th>
-            <th style="width:80px">Variante</th>
+          <tr class="th-group">
+            <th colspan="4">IDENTIFICAZIONE</th>
+            <th colspan="4" class="grp-sep">SERRAMENTO</th>
+            <th colspan="4" class="grp-sep">GEOMETRIA</th>
+            <th colspan="3" class="grp-sep">VETRO / OSC</th>
+            <th colspan="4" class="grp-sep">COPRIFILI</th>
+            <th colspan="4" class="grp-sep">ACCESSORI</th>
+            <th colspan="4" class="grp-sep">RIM. / FLAG</th>
+            <th colspan="2" class="grp-sep">SENSI</th>
+            <th class="grp-sep">NOTE</th>
+          </tr>
+          <tr class="th-main">
+            <th>N&deg;</th>
+            <th>PIANO</th>
+            <th>AMBIENTE</th>
+            <th>TIPO</th>
+            <th class="grp-sep">N.C.</th>
+            <th>MAT</th>
+            <th>SISTEMA</th>
+            <th>STL/TEL</th>
+            <th class="grp-sep">FORO</th>
+            <th>L (mm)</th>
+            <th>H (mm)</th>
+            <th>COD.</th>
+            <th class="grp-sep">VETRO</th>
+            <th>OSC</th>
+            <th>MECC</th>
+            <th class="grp-sep">COPR.I</th>
+            <th>dim</th>
+            <th>COPR.E</th>
+            <th>dim</th>
+            <th class="grp-sep">CASS</th>
+            <th>SCHERM</th>
+            <th>ZANZ</th>
+            <th>CTL</th>
+            <th class="grp-sep">DINOX</th>
+            <th>ANG</th>
+            <th>RIM.S</th>
+            <th>RIM.A</th>
+            <th class="grp-sep">TAGLIO</th>
+            <th>SENSI</th>
+            <th class="grp-sep">STRAT.</th>
           </tr>
         </thead>
-        <tbody id="tbody-geom"></tbody>
+        <tbody id="tbody-ril"></tbody>
       </table>
     </div>
 
-    <div class="sez-titolo">Posizioni &mdash; Finiture e Colori</div>
-    <div class="table-wrap">
-      <table class="t-ril">
-        <thead>
-          <tr>
-            <th class="c" style="width:30px">N&deg;</th>
-            <th style="width:80px">Cod. Serr.</th>
-            <th class="c" style="width:36px">Vetri</th>
-            <th style="width:90px">Colore int.</th>
-            <th style="width:90px">Colore est.</th>
-            <th style="width:90px">Copr. int.</th>
-            <th style="width:90px">Copr. est.</th>
-            <th style="width:80px">Schermatura</th>
-            <th style="width:60px">Oscurante</th>
-            <th style="width:60px">Cassonetto</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-fin"></tbody>
-      </table>
-    </div>
-
-    <div class="sez-titolo">Posizioni &mdash; Accessori, Flag e Note</div>
-    <div class="table-wrap">
-      <table class="t-ril">
-        <thead>
-          <tr>
-            <th class="c" style="width:30px">N&deg;</th>
-            <th style="width:70px">Controtelaio</th>
-            <th style="width:70px">Zanzariera</th>
-            <th style="width:70px">Dinoxill</th>
-            <th class="c" style="width:50px">Lati</th>
-            <th style="width:130px">Flag attivi</th>
-            <th>Note</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-acc"></tbody>
-      </table>
-    </div>
-
-  </div>
+  </div><!-- /report-content -->
 </div>
 
 <script src="js/config.js"></script>
@@ -197,85 +379,104 @@
 <script src="js/api.js"></script>
 <script>
 // ================================================================
-// report_rilievo.html — Dashboard rilievo serramenti stampabile
-// F4 Rilievi — Supabase backend
+// report_rilievo.html v2 — A4 landscape
 // ================================================================
-
 var SUPA_URL = APP_CONFIG.SUPABASE_URL;
 var SUPA_KEY = APP_CONFIG.SUPABASE_ANON_KEY;
 var ID_RILIEVO = null;
 
+// ---- Dati comuni per calcolo dimensioni ----
+// Valori default (sovrascritti da Supabase se disponibili)
+var DC = { ao:30, af:20, as:20, aria_o:10, aria_v:10, sp_o:20, sp_v:20, aria_o2:10, aria_v2:10 };
+var DB_SERR = [];
+
 function setStato(msg, isErr) {
   var el = document.getElementById('stato-msg');
-  el.textContent   = msg;
-  el.className     = isErr ? 'errore' : '';
-  el.style.display = '';
+  el.textContent = msg; el.className = isErr ? 'errore' : ''; el.style.display = '';
   document.getElementById('report-content').style.display = 'none';
 }
-
 function showReport() {
-  document.getElementById('stato-msg').style.display    = 'none';
+  document.getElementById('stato-msg').style.display = 'none';
   document.getElementById('report-content').style.display = '';
 }
 
-function supaFetch(path, callback, errback) {
-  function doReq(token) {
+function doFetch(path, cb, eb) {
+  function run(tok) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', SUPA_URL + '/rest/v1/' + path, true);
-    xhr.setRequestHeader('apikey',        SUPA_KEY);
-    xhr.setRequestHeader('Authorization', 'Bearer ' + (token || SUPA_KEY));
-    xhr.setRequestHeader('Content-Type',  'application/json');
+    xhr.setRequestHeader('apikey', SUPA_KEY);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + (tok || SUPA_KEY));
+    xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = function() {
       if (xhr.status === 401) {
-        // token scaduto: prova refresh automatico
-        Auth._refreshToken().then(function(ok) {
-          if (ok) { doReq(Auth.getToken()); }
-          else    { Auth.logout(); }
-        });
+        Auth._refreshToken().then(function(ok) { if (ok) run(Auth.getToken()); else Auth.logout(); });
         return;
       }
       if (xhr.status >= 200 && xhr.status < 300) {
-        try { callback(JSON.parse(xhr.responseText)); }
-        catch(e) { errback('Errore parsing: ' + e.message); }
-      } else {
-        errback('HTTP ' + xhr.status + ': ' + xhr.responseText);
-      }
+        try { cb(JSON.parse(xhr.responseText)); } catch(e) { eb('Parse: ' + e.message); }
+      } else { eb('HTTP ' + xhr.status); }
     };
-    xhr.onerror = function() { errback('Errore di rete'); };
+    xhr.onerror = function() { eb('Rete'); };
     xhr.send();
   }
-  doReq(Auth.getToken());
+  run(Auth.getToken());
 }
 
 function esc(s) {
   if (!s && s !== 0) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function v(x) { return (!x && x !== 0) ? '' : String(x); }
+function chk(val) {
+  return val ? '<span class="chk on"></span>' : '<span class="chk"></span>';
 }
 
-function vuoto(v) { return (!v && v !== 0) ? '' : String(v); }
+// ---- Calcolo dimensioni tubolare ----
+function calcDim(p, dc, dbSerr) {
+  var H = parseFloat(p.H_mm || p.h_mm) || 0;
+  var L = parseFloat(p.L_mm || p.l_mm) || 0;
+  var tf = (p.tipo_foro || '').toUpperCase();
+  var ts = (p.tipo_serramento || '').toUpperCase();
+  var ctl = (p.controtelaio || '').toUpperCase();
+  if (!H || !L || !tf) return { Ltub: 0, Htub: 0 };
+  var rec = null;
+  for (var i = 0; i < dbSerr.length; i++) {
+    var d = dbSerr[i];
+    if (d && d.materiale === p.materiale && (d.descrizione === p.sistema || d.sistema === p.sistema) && d.stile_design === p.stile_design && d.variante_telaio === p.variante_telaio) {
+      rec = d; break;
+    }
+  }
+  var nasc = rec ? (parseFloat(rec.telaio_nascosto_mm) || 0) : 0;
+  var alet = rec ? (parseFloat(rec.aletta_mm) || 0) : 0;
+  var ao = dc.ao || 30, af = dc.af || 20;
+  var ao2 = dc.aria_o || 10, av2 = dc.aria_v || 10;
+  var spo = dc.sp_o || 20, spv = dc.sp_v || 20;
+  var hasCtl = ctl === 'L' || ctl === 'T';
+  var ridO = hasCtl ? (ao2 + spo + ao) : ao2;
+  var ridV = hasCtl ? (av2 + spv + ao) : av2;
+  var nAlH = (ts === 'F' || ts === 'FF') ? 2 : 1;
+  var Ltub = 0, Htub = 0;
+  if (tf === 'A') { Ltub = L + 2*nasc + 2*alet; Htub = H + nasc + nAlH*alet; }
+  else if (tf === 'D') { Ltub = L + 2*alet; Htub = H + nAlH*alet; }
+  else if (tf === 'P') { Ltub = L - 2*af + 2*alet; Htub = H - af + nAlH*alet; }
+  return { Ltub: Math.round(Ltub), Htub: Math.round(Htub) };
+}
 
-// ---- render stratigrafie ----
+// ---- Render stratigrafie ----
 function renderStratigrafie(strats) {
   if (!strats || !strats.length) return;
-  var grid     = document.getElementById('strat-grid');
-  var QDESC    = APP_CONFIG.STRAT_QUOTE_DESC || {};
-  var SIMAGES  = APP_CONFIG.STRAT_IMAGES     || {};
-  var SQUOTE   = APP_CONFIG.STRAT_QUOTE      || {};
+  var grid = document.getElementById('strat-grid');
+  var QDESC = APP_CONFIG.STRAT_QUOTE_DESC || {};
+  var SIMAGES = APP_CONFIG.STRAT_IMAGES || {};
+  var SQUOTE = APP_CONFIG.STRAT_QUOTE || {};
   var html = '';
-
   strats.forEach(function(s) {
-    var imgKey   = s.immagine_ref || '';
-    var imgSrc   = SIMAGES[imgKey] || '';
-    var qJson    = s.quote_json || {};
-    var keys     = SQUOTE[imgKey] ? SQUOTE[imgKey] : Object.keys(qJson);
-    var defBadge = s.is_default ? '<span class="strat-def-badge">Default</span>' : '';
-
+    var imgKey = s.immagine_ref || '';
+    var imgSrc = SIMAGES[imgKey] || '';
+    var qJson = (typeof s.quote_json === 'object') ? s.quote_json : {};
+    var keys = SQUOTE[imgKey] ? SQUOTE[imgKey] : Object.keys(qJson);
     html += '<div class="strat-card">';
-    html +=   '<h4>' + esc(s.nome) + defBadge + '</h4>';
+    html += '<h4>' + esc(s.nome) + (s.is_default ? '<span class="def-badge">Default</span>' : '') + '</h4>';
     if (imgSrc) {
       html += '<img src="' + esc(imgSrc) + '" alt="' + esc(imgKey) + '" />';
     } else {
@@ -284,158 +485,184 @@ function renderStratigrafie(strats) {
     if (keys.length) {
       html += '<table class="strat-quote-tbl"><tbody>';
       keys.forEach(function(k) {
-        var desc = QDESC[k] || k;
-        var val  = (qJson[k] !== undefined) ? qJson[k] : '—';
-        html += '<tr><td>' + esc(desc) + '</td><td>' + esc(val) + ' mm</td></tr>';
+        var val = (qJson[k] !== undefined) ? qJson[k] : '—';
+        html += '<tr><td>' + esc(QDESC[k] || k) + '</td><td><strong>' + esc(val) + ' mm</strong></td></tr>';
       });
       html += '</tbody></table>';
     }
     html += '</div>';
   });
-
   grid.innerHTML = html;
 }
 
-// ---- render tabelle posizioni ----
-function renderPosizioni(posizioni) {
-  var TIPO_LBL = APP_CONFIG.TIPO_SERR_LABEL      || {};
-  var FORO_LBL = APP_CONFIG.TIPO_FORO_SERR_LABEL || {};
-  var hG = '', hF = '', hA = '';
-
-  posizioni.forEach(function(p) {
-    var n    = vuoto(p.numero_pos) || '—';
-    var tipo = vuoto(p.tipo_serramento);
-    var lStr = p.l_mm ? String(p.l_mm) : '—';
-    var hStr = p.h_mm ? String(p.h_mm) : '—';
-
-    // GEOMETRIA
-    hG += '<tr>';
-    hG += '<td class="num">'  + esc(n)                       + '</td>';
-    hG += '<td class="c">'    + esc(vuoto(p.piano))           + '</td>';
-    hG += '<td>'              + esc(vuoto(p.ambiente))         + '</td>';
-    hG += '<td class="c"><strong>' + esc(tipo) + '</strong></td>';
-    hG += '<td class="c">'   + esc(vuoto(p.n_campi))          + '</td>';
-    hG += '<td class="c">'   + esc(vuoto(p.senso_apertura))   + '</td>';
-    hG += '<td class="c">'   + esc(vuoto(p.tipo_foro))        + '</td>';
-    hG += '<td class="dim">'  + lStr                           + '</td>';
-    hG += '<td class="dim">'  + hStr                           + '</td>';
-    hG += '<td>'              + esc(vuoto(p.materiale))        + '</td>';
-    hG += '<td>'              + esc(vuoto(p.sistema))          + '</td>';
-    hG += '<td>'              + esc(vuoto(p.stile_design))     + '</td>';
-    hG += '<td>'              + esc(vuoto(p.variante_telaio))  + '</td>';
-    hG += '</tr>';
-
-    // FINITURE
-    var coprInt = [vuoto(p.coprifilo_int_mat), vuoto(p.coprifilo_int_dim)].filter(Boolean).join(' ');
-    var coprEst = [vuoto(p.coprifilo_est_mat), vuoto(p.coprifilo_est_dim)].filter(Boolean).join(' ');
-    hF += '<tr>';
-    hF += '<td class="num">' + esc(n)                          + '</td>';
-    hF += '<td>'             + esc(vuoto(p.codice_serramento))  + '</td>';
-    hF += '<td class="c">'  + esc(vuoto(p.n_vetri))             + '</td>';
-    hF += '<td>'             + esc(vuoto(p.colore_int))          + '</td>';
-    hF += '<td>'             + esc(vuoto(p.colore_est))          + '</td>';
-    hF += '<td>'             + esc(coprInt || '—')               + '</td>';
-    hF += '<td>'             + esc(coprEst || '—')               + '</td>';
-    hF += '<td>'             + esc(vuoto(p.schermatura))         + '</td>';
-    hF += '<td>'             + esc(vuoto(p.oscurante_tipo))      + '</td>';
-    hF += '<td>'             + esc(vuoto(p.cassonetto))          + '</td>';
-    hF += '</tr>';
-
-    // ACCESSORI E FLAG
-    var flags = '';
-    if (p.rimozione_accessori) flags += '<span class="flag red">Rimozione</span>';
-    if (p.taglio_marmo)        flags += '<span class="flag">Taglio marmo</span>';
-    if (p.angolari_pvc)        flags += '<span class="flag blue">Angolari PVC</span>';
-    hA += '<tr>';
-    hA += '<td class="num">' + esc(n)                    + '</td>';
-    hA += '<td>'             + esc(vuoto(p.controtelaio)) + '</td>';
-    hA += '<td>'             + esc(vuoto(p.zanzariera))   + '</td>';
-    hA += '<td>'             + esc(vuoto(p.dinoxill))     + '</td>';
-    hA += '<td class="c">'  + esc(vuoto(p.dinoxill_lati)) + '</td>';
-    hA += '<td>'             + (flags || '<span style="color:#9ca3af">—</span>') + '</td>';
-    hA += '<td class="note-cell">' + esc(vuoto(p.note))  + '</td>';
-    hA += '</tr>';
+// ---- Render note commerciali ----
+function renderNC(nc, allarme, gru) {
+  var keys = [
+    ['colore_avvol','Avvolgibile'],['colore_scuretto','Scuretto'],
+    ['colore_tenda','Tenda'],['colore_frang','Frangisole'],
+    ['colore_zanzariera','Zanzariera'],['colore_copri_int','Coprifili Int.'],
+    ['colore_copri_est','Coprifili Est.'],['colore_dinox','Dinox'],
+    ['maniglia_marca','Maniglia (marca)'],['maniglia_modello','Maniglia (modello)']
+  ];
+  var hasSome = false;
+  keys.forEach(function(k) { if (nc[k[0]]) hasSome = true; });
+  if (!hasSome) return;
+  var el = document.getElementById('sh-nc');
+  el.style.display = '';
+  var html = '';
+  keys.forEach(function(k) {
+    if (!nc[k[0]]) return;
+    html += '<div class="nc-item"><label>' + k[1] + '</label><span>' + esc(nc[k[0]]) + '</span></div>';
   });
-
-  document.getElementById('tbody-geom').innerHTML = hG;
-  document.getElementById('tbody-fin').innerHTML  = hF;
-  document.getElementById('tbody-acc').innerHTML  = hA;
+  el.innerHTML = '<div style="grid-column:1/-1;font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;margin-bottom:4px">Note commerciali</div>' + html;
 }
 
-// ---- caricamento parallelo ----
-function caricaDati(idRilievo) {
-  var loaded  = { rilievo: null, posizioni: null, strats: null };
-  var errCount = 0;
+// ---- Render tabella posizioni ----
+function renderPosizioni(posizioni, stratigrafie) {
+  var tbody = document.getElementById('tbody-ril');
+  var stMap = {};
+  (stratigrafie || []).forEach(function(s) { stMap[s.ID_stratigrafia || s.id] = s.nome; });
+  var html = '';
+  posizioni.forEach(function(p) {
+    var dim = calcDim(p, DC, DB_SERR);
+    var lIns = v(p.L_mm || p.l_mm);
+    var hIns = v(p.H_mm || p.h_mm);
+    var lCalc = dim.Ltub ? String(dim.Ltub) : '';
+    var hCalc = dim.Htub ? String(dim.Htub) : '';
+    var coprInt = v(p.coprifilo_int_mat);
+    var coprIntDim = v(p.coprifilo_int_dim);
+    var coprEst = v(p.coprifilo_est_mat);
+    var coprEstDim = v(p.coprifilo_est_dim);
+    var stNome = '';
+    if (p.ID_stratigrafia_override || p.id_stratigrafia_override) {
+      var sid = p.ID_stratigrafia_override || p.id_stratigrafia_override;
+      stNome = stMap[sid] || '';
+    }
+    var pianoStr = (p.piano !== undefined && p.piano !== null) ?
+      'P' + (parseInt(p.piano) >= 0 ? '+' : '') + p.piano : '—';
+    html += '<tr>';
+    html += '<td class="num">' + esc(v(p.numero_pos)) + '</td>';
+    html += '<td class="c">' + pianoStr + '</td>';
+    html += '<td style="white-space:normal;min-width:70px">' + esc(v(p.ambiente)) + '</td>';
+    html += '<td class="tipo">' + esc(v(p.tipo_serramento)) + '</td>';
+    html += '<td class="c grp-sep">' + esc(v(p.n_campi)) + '</td>';
+    html += '<td class="c">' + esc(v(p.materiale)) + '</td>';
+    html += '<td style="min-width:50px">' + esc(v(p.sistema)) + '</td>';
+    html += '<td class="c">' + esc(v(p.stile_design)) + (p.variante_telaio ? '/' + esc(v(p.variante_telaio)) : '') + '</td>';
+    html += '<td class="c grp-sep">' + esc(v(p.tipo_foro)) + '</td>';
+    html += '<td class="dim-cell"><div class="dim-main">' + lIns + '</div>' + (lCalc ? '<div class="dim-calc">(' + lCalc + ')</div>' : '') + '</td>';
+    html += '<td class="dim-cell"><div class="dim-main">' + hIns + '</div>' + (hCalc ? '<div class="dim-calc">(' + hCalc + ')</div>' : '') + '</td>';
+    html += '<td style="font-size:9px;font-family:monospace">' + esc(v(p.codice_serramento)) + '</td>';
+    html += '<td class="c grp-sep">' + esc(v(p.n_vetri)) + '</td>';
+    html += '<td class="c">' + esc(v(p.oscurante_tipo)) + '</td>';
+    html += '<td class="c">' + esc(v(p.oscurante_meccanismo)) + '</td>';
+    html += '<td class="c grp-sep">' + esc(coprInt) + '</td>';
+    html += '<td class="c">' + esc(coprIntDim) + '</td>';
+    html += '<td class="c">' + esc(coprEst) + '</td>';
+    html += '<td class="c">' + esc(coprEstDim) + '</td>';
+    html += '<td class="c grp-sep">' + esc(v(p.cassonetto)) + '</td>';
+    html += '<td class="c">' + esc(v(p.schermatura)) + '</td>';
+    html += '<td class="c">' + esc(v(p.zanzariera)) + '</td>';
+    html += '<td class="c">' + esc(v(p.controtelaio)) + '</td>';
+    html += '<td class="c grp-sep">' + esc(v(p.dinoxill)) + (p.dinoxill_lati ? '<br><span style="font-size:8px">'+esc(v(p.dinoxill_lati))+'L</span>' : '') + '</td>';
+    html += '<td class="c">' + chk(p.angolari_pvc) + '</td>';
+    html += '<td class="c">' + chk(p.rimozione === 'SI' || p.rimozione === true) + '</td>';
+    html += '<td class="c">' + chk(p.rimozione_accessori) + '</td>';
+    html += '<td class="c grp-sep">' + chk(p.taglio_marmo) + '</td>';
+    html += '<td class="c" style="min-width:50px;font-size:9px">' + esc(v(p.senso_apertura)) + '</td>';
+    html += '<td class="c grp-sep" style="font-size:9px">' + esc(stNome) + '</td>';
+    html += '</tr>';
+  });
+  tbody.innerHTML = html || '<tr><td colspan="30" style="text-align:center;padding:20px;color:#9ca3af">Nessuna posizione</td></tr>';
+}
+
+// ---- Caricamento parallelo ----
+function caricaDati(idRil) {
+  var loaded = { ril: null, pos: null, strats: null, dc: null, db: null };
+  var errored = false;
 
   function tryRender() {
-    if (loaded.rilievo === null || loaded.posizioni === null || loaded.strats === null) return;
-    if (errCount > 0) return;
+    if (!loaded.ril || !loaded.pos || !loaded.strats || !loaded.dc || !loaded.db) return;
+    if (errored) return;
 
-    var r    = loaded.rilievo;
-    var pos  = loaded.posizioni;
+    var r = loaded.ril;
+    var pos = loaded.pos;
     var cant = r.cantieri || {};
+    var cli = cant.clienti ? cant.clienti.nome || '' : '';
+    var codice = r.codice_completo || idRil;
 
-    var cliente  = (cant.clienti && cant.clienti.nome) ? cant.clienti.nome : '—';
-    var nomeCant = cant.nome_cantiere || '—';
-    var codice   = r.codice_completo  || idRilievo;
+    // aggiorna DC con dati comuni
+    (loaded.dc || []).forEach(function(row) {
+      var id = parseInt(row.id || 0);
+      var val = parseFloat(row.valore_mm) || 0;
+      if (id === 1)  DC.ao  = val;
+      else if (id === 2) DC.af = val;
+      else if (id === 5) DC.aria_o = val;
+      else if (id === 6) DC.aria_v = val;
+      else if (id === 10) DC.sp_o = val;
+      else if (id === 11) DC.sp_v = val;
+      else if (id === 15) DC.aria_o2 = val;
+      else if (id === 16) DC.aria_v2 = val;
+    });
+    DB_SERR = loaded.db || [];
 
-    document.getElementById('rh-titolo').textContent    = 'Rilievo — ' + codice;
-    document.getElementById('rh-badge').textContent     = pos.length + ' pos.';
-    document.getElementById('rh-cliente').textContent   = cliente;
-    document.getElementById('rh-cantiere').textContent  = nomeCant;
-    document.getElementById('rh-referente').textContent = r.referente    || '—';
-    document.getElementById('rh-data').textContent      = r.data_rilievo || '—';
-    document.getElementById('rh-posa').textContent      = r.data_posa    || '—';
-    document.getElementById('rh-intervento').textContent = r.intervento  || '—';
-    document.getElementById('rh-gru').textContent       = r.gru ? 'Si' : 'No';
-    document.getElementById('rh-npos').textContent      = pos.length;
-    document.getElementById('tb-titolo').textContent    = 'Rilievo ' + codice;
+    // header
+    document.getElementById('tb-titolo').textContent  = 'Rilievo ' + codice;
     document.title = 'Rilievo ' + codice;
+    document.getElementById('sh-rif').textContent     = (cli ? cli + ' — ' : '') + (cant.nome_cantiere || '');
+    document.getElementById('sh-badge').textContent   = codice;
+    document.getElementById('sh-data').textContent    = r.data_rilievo  || '—';
+    document.getElementById('sh-posa').textContent    = r.data_posa     || '—';
+    document.getElementById('sh-int').textContent     = r.intervento    || '—';
+    document.getElementById('sh-ref').textContent     = r.referente     || '—';
+    document.getElementById('sh-npos').textContent    = pos.length + ' pos.';
+    if (r.gru === 'SI' || r.gru === true) document.getElementById('sh-gru').style.display = '';
+    if (r.allarme === true) document.getElementById('sh-alarm').style.display = '';
 
+    var nc = r.note_commerciali || {};
+    renderNC(nc, r.allarme, r.gru);
     renderStratigrafie(loaded.strats);
-    renderPosizioni(pos);
+    renderPosizioni(pos, loaded.strats);
     showReport();
   }
 
-  supaFetch(
-    'rilievi?id=eq.' + idRilievo +
-    '&select=id,codice_completo,referente,data_rilievo,data_posa,intervento,gru,cantieri(nome_cantiere,clienti(nome))',
+  doFetch(
+    'rilievi?id=eq.' + idRil + '&select=id,codice_completo,referente,data_rilievo,data_posa,intervento,gru,allarme,note_commerciali,cantieri(nome_cantiere,clienti(nome))',
     function(rows) {
-      if (!rows.length) { setStato('Rilievo non trovato.', true); return; }
-      loaded.rilievo = rows[0];
-      tryRender();
+      if (!rows.length) { errored=true; setStato('Rilievo non trovato.', true); return; }
+      loaded.ril = rows[0]; tryRender();
     },
-    function(e) { errCount++; setStato('Errore caricamento rilievo: ' + e, true); }
+    function(e) { errored=true; setStato('Errore rilievo: '+e, true); }
   );
 
-  supaFetch(
-    'posizioni_serr?id_rilievo=eq.' + idRilievo +
-    '&stato=eq.attivo' +
-    '&select=*' +
-    '&order=numero_pos.asc',
-    function(rows) {
-      loaded.posizioni = rows || [];
-      tryRender();
-    },
-    function(e) { errCount++; setStato('Errore caricamento posizioni: ' + e, true); }
+  doFetch(
+    'posizioni_serr?id_rilievo=eq.' + idRil + '&stato=eq.attivo&select=*&order=numero_pos.asc',
+    function(rows) { loaded.pos = rows || []; tryRender(); },
+    function(e) { errored=true; setStato('Errore posizioni: '+e, true); }
   );
 
-  supaFetch(
-    'stratigrafie?id_rilievo=eq.' + idRilievo +
-    '&stato=eq.attivo' +
-    '&select=*' +
-    '&order=ordine.asc',
-    function(rows) {
-      loaded.strats = rows || [];
-      tryRender();
-    },
-    function(e) { errCount++; setStato('Errore caricamento stratigrafie: ' + e, true); }
+  doFetch(
+    'stratigrafie?id_rilievo=eq.' + idRil + '&stato=eq.attivo&select=*&order=ordine.asc',
+    function(rows) { loaded.strats = rows || []; tryRender(); },
+    function(e) { loaded.strats = []; tryRender(); }
+  );
+
+  doFetch(
+    'dati_comuni_serr?stato=eq.attivo&select=id,valore_mm',
+    function(rows) { loaded.dc = rows || []; tryRender(); },
+    function(e) { loaded.dc = []; tryRender(); }
+  );
+
+  doFetch(
+    'db_serramento?stato=eq.attivo&select=materiale,descrizione,stile_design,variante_telaio,telaio_nascosto_mm,aletta_mm',
+    function(rows) { loaded.db = rows || []; tryRender(); },
+    function(e) { loaded.db = []; tryRender(); }
   );
 }
 
 function init() {
-  var currentUser = Auth.requireLogin();
-  if (!currentUser) return;
+  var u = Auth.requireLogin();
+  if (!u) return;
   var params = new URLSearchParams(window.location.search);
   ID_RILIEVO = params.get('idRilievo') || params.get('id');
   if (!ID_RILIEVO) { setStato('Parametro id mancante.', true); return; }

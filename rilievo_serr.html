@@ -634,13 +634,13 @@ function renderPosizioni() {
     var dimCalc=calcolaRealtime(p);
     var piano=(p.piano!==undefined&&p.piano!=='')?('P'+(p.piano>=0?'+':'')+p.piano):'—';
     var acc=[];
-    if(p.controtelaio) acc.push(p.controtelaio==='T'?'TC':'CTL');
+    if(p.controtelaio) acc.push(p.controtelaio==='T'?'TC':'CTL-L');
     if(p.schermatura)  acc.push(p.schermatura);
-    if(p.cassonetto)   acc.push('Cass');
-    if(p.zanzariera)   acc.push('Zanz');
+    if(p.cassonetto)   acc.push('Cass-'+(p.cassonetto==='P'?'PVC':p.cassonetto==='L'?'Leg':p.cassonetto));
+    if(p.zanzariera)   acc.push('Zanz-'+p.zanzariera);
     if(p.dinoxill)     acc.push(p.dinoxill);
-    if(p.coprifilo_int_mat) acc.push('CopI');
-    if(p.coprifilo_est_mat) acc.push('CopE');
+    if(p.coprifilo_int_mat) acc.push('CopI-'+(p.coprifilo_int_dim||p.coprifilo_int_mat));
+    if(p.coprifilo_est_mat) acc.push('CopE-'+(p.coprifilo_est_dim||p.coprifilo_est_mat));
     if(p.rimozione==='SI'||p.rimozione===true) acc.push('RimS');
     if(p.rimozione_accessori===true) acc.push('RimA');
     if(p.taglio_marmo===true) acc.push('Mrm');

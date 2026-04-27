@@ -507,7 +507,6 @@ function resetAdj() {
   if (!confirm('Eliminare tutti gli aggiustamenti manuali?')) return;
   saveAdj({});
   var prev = localStorage.getItem(PREV_LS_KEY) || '';
-  document.getElementById('prev-input').value = prev;
   renderAll(VOCI_GLOBALI, {});
 }
 function loadPrev() {
@@ -730,7 +729,6 @@ function init() {
     document.title = 'Posa ' + codice;
 
     var prevSaved = loadPrev();
-    document.getElementById('prev-input').value = prevSaved || '';
 
     renderTipoGrid(pos);
     VOCI_GLOBALI = calcolaVoci(pos);

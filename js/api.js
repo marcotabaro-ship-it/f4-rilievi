@@ -148,6 +148,7 @@ const _map = {
       ID_pos:                   row.id,
       ID_rilievo:               row.id_rilievo,
       numero_pos:               row.numero_pos,
+      numero_pos_alfa:          row.numero_pos_alfa || '',
       piano:                    row.piano,
       ambiente:                 row.ambiente              || '',
       tipo_serramento:          row.tipo_serramento       || '',
@@ -192,6 +193,7 @@ const _map = {
       ID_pos:               row.id,
       ID_rilievo:           row.id_rilievo,
       numero_pos:           row.numero_pos,
+      numero_pos_alfa:      row.numero_pos_alfa || '',
       piano:                row.piano,
       ambiente:             row.ambiente             || '',
       fornitore:            row.fornitore            || '',
@@ -281,6 +283,7 @@ const _in = {
   posSerr(data) {
     return {
       id_rilievo:               data.ID_rilievo,
+      numero_pos_alfa:          data.numero_pos_alfa || null,
       piano:                    data.piano !== '' ? parseInt(data.piano) : null,
       ambiente:                 data.ambiente             || null,
       tipo_serramento:          data.tipo_serramento      || null,
@@ -322,6 +325,7 @@ const _in = {
     const b = v => v === 'SI' || v === true;
     return {
       id_rilievo:           data.ID_rilievo,
+      numero_pos_alfa:      data.numero_pos_alfa || null,
       piano:                data.piano !== '' ? parseInt(data.piano) : null,
       ambiente:             data.ambiente              || null,
       fornitore:            data.fornitore             || null,

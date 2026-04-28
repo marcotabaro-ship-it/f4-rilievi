@@ -80,6 +80,28 @@
     .def-badge { font-size: 8px; background: #d1fae5; color: #065f46; padding: 1px 4px; border-radius: 5px; margin-left: 4px; }
 
     /* ---- TABELLA ---- */
+    /* ── CAPITOLI REPORT ── */
+    .tr-cap-hdr td {
+      background: #1a1a2e; color: #a5b4fc;
+      font-weight: 700; font-size: 9px; letter-spacing: 1px;
+      text-transform: uppercase; padding: 5px 8px;
+      border-top: 3px solid #4f46e5; page-break-after: avoid;
+    }
+    .tr-cap-subtot td {
+      background: #eef2ff; color: #3730a3;
+      font-size: 8px; font-weight: 600; padding: 3px 8px;
+      border-bottom: 2px solid #c7d2fe; page-break-before: avoid;
+    }
+    .tr-cap-end td {
+      background: #f5f5ff; color: #9ca3af;
+      font-size: 7.5px; padding: 2px 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .tr-no-cap td {
+      background: #f9fafb; color: #6b7280;
+      font-size: 8px; font-weight: 600; padding: 3px 8px;
+      border-top: 2px solid #e5e7eb;
+    }
     .sez-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #1a1a2e; margin: 10px 0 5px; padding-bottom: 3px; border-bottom: 2px solid #ede9fe; }
     .table-outer { overflow-x: auto; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 12px; }
     table.t-ril { border-collapse: collapse; font-size: 11px; white-space: nowrap; width: 100%; }
@@ -140,7 +162,29 @@
       .strat-card img { max-height: 60px; }
       .strat-quote-tbl { font-size: 7px; }
       .btn-tb { display: none !important; }
-      .sez-title { font-size: 8px; margin: 5px 0 3px; }
+      /* ── CAPITOLI REPORT ── */
+    .tr-cap-hdr td {
+      background: #1a1a2e; color: #a5b4fc;
+      font-weight: 700; font-size: 9px; letter-spacing: 1px;
+      text-transform: uppercase; padding: 5px 8px;
+      border-top: 3px solid #4f46e5; page-break-after: avoid;
+    }
+    .tr-cap-subtot td {
+      background: #eef2ff; color: #3730a3;
+      font-size: 8px; font-weight: 600; padding: 3px 8px;
+      border-bottom: 2px solid #c7d2fe; page-break-before: avoid;
+    }
+    .tr-cap-end td {
+      background: #f5f5ff; color: #9ca3af;
+      font-size: 7.5px; padding: 2px 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .tr-no-cap td {
+      background: #f9fafb; color: #6b7280;
+      font-size: 8px; font-weight: 600; padding: 3px 8px;
+      border-top: 2px solid #e5e7eb;
+    }
+    .sez-title { font-size: 8px; margin: 5px 0 3px; }
     }
   </style>
 </head>
@@ -463,12 +507,26 @@ function renderNC(nc) {
 }
 
 // ---- Render tabella ----
-function renderPosizioni(posizioni, stratigrafie) {
+function renderPosizioni(posizioni, stratigrafie, capitoli) {
   var tbody = document.getElementById('tbody-ril');
+  var NCOL = 30; // numero colonne totali della tabella
   var stMap = {};
   (stratigrafie||[]).forEach(function(s) { stMap[s.id||s.ID_stratigrafia] = s.nome; });
-  var html = '';
-  posizioni.forEach(function(p) {
+
+  // Costruisci lista righe ordinata
+  var righe = [];
+  (posizioni||[]).forEach(function(p) {
+    var ord = (p.ordine !== undefined && p.ordine !== null) ? p.ordine : p.numero_pos;
+    righe.push({tipo:'pos', ordine:ord, data:p});
+  });
+  (capitoli||[]).forEach(function(cap) {
+    righe.push({tipo:'cap_inizio', ordine:cap.ordine_inizio, data:cap});
+    righe.push({tipo:'cap_fine',   ordine:cap.ordine_fine,   data:cap});
+  });
+  righe.sort(function(a,b){ return a.ordine - b.ordine; });
+
+  // Funzione riga posizione
+  function rowPos(p) {
     var dim = calcDim(p, DC, DB_SERR);
     var lIns = v(p.l_mm||p.L_mm), hIns = v(p.h_mm||p.H_mm);
     var lCalc = dim.Ltub ? String(dim.Ltub) : '';
@@ -477,48 +535,118 @@ function renderPosizioni(posizioni, stratigrafie) {
     var numDisp = p.numero_pos_alfa || p.numero_pos;
     var stId = p.id_stratigrafia_override || p.ID_stratigrafia_override || '';
     var stNome = stId ? (stMap[stId] || '') : '';
-    html += '<tr>';
-    html += '<td class="num">' + esc(v(numDisp)) + '</td>';
-    html += '<td class="c">' + piano + '</td>';
-    html += '<td style="white-space:normal;min-width:60px">' + esc(v(p.ambiente)) + '</td>';
-    html += '<td class="tipo">' + esc(v(p.tipo_serramento)) + '</td>';
-    html += '<td class="c grp-sep">' + esc(v(p.n_campi)) + '</td>';
-    html += '<td class="c">' + esc(v(p.materiale)) + '</td>';
-    html += '<td style="min-width:45px">' + esc(v(p.sistema)) + '</td>';
-    html += '<td class="c">' + esc(v(p.stile_design)) + (p.variante_telaio?'/'+esc(v(p.variante_telaio)):'') + '</td>';
-    html += '<td class="c grp-sep">' + esc(v(p.tipo_foro)) + '</td>';
-    html += '<td class="dim-cell"><div class="dim-main">'+lIns+'</div>'+(lCalc?'<div class="dim-calc">('+lCalc+')</div>':'')+'</td>';
-    html += '<td class="dim-cell"><div class="dim-main">'+hIns+'</div>'+(hCalc?'<div class="dim-calc">('+hCalc+')</div>':'')+'</td>';
-    html += '<td class="c grp-sep">' + esc(v(p.n_vetri)) + '</td>';
-    html += '<td class="c">' + esc(v(p.oscurante_tipo)) + '</td>';
-    html += '<td class="c">' + esc(v(p.oscurante_meccanismo)) + '</td>';
-    html += '<td class="c grp-sep">' + esc(v(p.coprifilo_int_mat)) + '</td>';
-    html += '<td class="c">' + esc(v(p.coprifilo_int_dim)) + '</td>';
-    html += '<td class="c">' + esc(v(p.coprifilo_est_mat)) + '</td>';
-    html += '<td class="c">' + esc(v(p.coprifilo_est_dim)) + '</td>';
-    html += '<td class="c grp-sep">' + esc(v(p.cassonetto)) + '</td>';
-    html += '<td class="c">' + esc(v(p.schermatura)) + '</td>';
-    html += '<td class="c">' + esc(v(p.zanzariera)) + '</td>';
-    html += '<td class="c">' + esc(v(p.controtelaio)) + '</td>';
-    html += '<td class="c grp-sep">' + esc(v(p.dinoxill)) + (p.dinoxill_lati?'<br><span style="font-size:7px">'+esc(v(p.dinoxill_lati))+'L</span>':'') + '</td>';
-    html += '<td class="c">' + chk(p.angolari_pvc) + '</td>';
-    html += '<td class="c">' + chk(p.rimozione==='SI'||p.rimozione===true) + '</td>';
-    html += '<td class="c">' + chk(p.rimozione_accessori) + '</td>';
-    html += '<td class="c grp-sep">' + chk(p.taglio_marmo) + '</td>';
-    html += '<td class="c" style="min-width:40px;font-size:9px">' + esc(v(p.senso_apertura)) + '</td>';
-    html += '<td class="c grp-sep strat-ref">' + esc(stNome) + '</td>';
-    html += '</tr>';
+    var h = '<tr>';
+    h += '<td class="num">'  + esc(v(numDisp)) + '</td>';
+    h += '<td class="c">'   + piano + '</td>';
+    h += '<td style="white-space:normal;min-width:60px">' + esc(v(p.ambiente)) + '</td>';
+    h += '<td class="tipo">' + esc(v(p.tipo_serramento)) + '</td>';
+    h += '<td class="c grp-sep">' + esc(v(p.n_campi)) + '</td>';
+    h += '<td class="c">'   + esc(v(p.materiale)) + '</td>';
+    h += '<td style="min-width:45px">' + esc(v(p.sistema)) + '</td>';
+    h += '<td class="c">'   + esc(v(p.stile_design)) + (p.variante_telaio?'/'+esc(v(p.variante_telaio)):'') + '</td>';
+    h += '<td class="c grp-sep">' + esc(v(p.tipo_foro)) + '</td>';
+    h += '<td class="dim-cell"><div class="dim-main">'+lIns+'</div>'+(lCalc?'<div class="dim-calc">('+lCalc+')</div>':'')+'</td>';
+    h += '<td class="dim-cell"><div class="dim-main">'+hIns+'</div>'+(hCalc?'<div class="dim-calc">('+hCalc+')</div>':'')+'</td>';
+    h += '<td class="c grp-sep">' + esc(v(p.n_vetri)) + '</td>';
+    h += '<td class="c">'   + esc(v(p.oscurante_tipo)) + '</td>';
+    h += '<td class="c">'   + esc(v(p.oscurante_meccanismo)) + '</td>';
+    h += '<td class="c grp-sep">' + esc(v(p.coprifilo_int_mat)) + '</td>';
+    h += '<td class="c">'   + esc(v(p.coprifilo_int_dim)) + '</td>';
+    h += '<td class="c">'   + esc(v(p.coprifilo_est_mat)) + '</td>';
+    h += '<td class="c">'   + esc(v(p.coprifilo_est_dim)) + '</td>';
+    h += '<td class="c grp-sep">' + esc(v(p.cassonetto)) + '</td>';
+    h += '<td class="c">'   + esc(v(p.schermatura)) + '</td>';
+    h += '<td class="c">'   + esc(v(p.zanzariera)) + '</td>';
+    h += '<td class="c">'   + esc(v(p.controtelaio)) + '</td>';
+    h += '<td class="c grp-sep">' + esc(v(p.dinoxill)) + (p.dinoxill_lati?'<br><span style="font-size:7px">'+esc(v(p.dinoxill_lati))+'L</span>':'') + '</td>';
+    h += '<td class="c">'   + chk(p.angolari_pvc) + '</td>';
+    h += '<td class="c">'   + chk(p.rimozione==='SI'||p.rimozione===true) + '</td>';
+    h += '<td class="c">'   + chk(p.rimozione_accessori) + '</td>';
+    h += '<td class="c grp-sep">' + chk(p.taglio_marmo) + '</td>';
+    h += '<td class="c" style="min-width:40px;font-size:9px">' + esc(v(p.senso_apertura)) + '</td>';
+    h += '<td class="c grp-sep strat-ref">' + esc(stNome) + '</td>';
+    h += '</tr>';
+    return h;
+  }
+
+  // Funzione subtotale capitolo
+  function rowSubtot(titolo, posCap) {
+    var nP=posCap.length, nCtlL=0, nCtlT=0, nAvv=0, nScur=0;
+    var nZanz=0, nCass=0, nCoprI=0, nCoprE=0, nRim=0;
+    posCap.forEach(function(p){
+      if(p.controtelaio==='L')nCtlL++; else if(p.controtelaio==='T')nCtlT++;
+      var sc=(p.schermatura||'').toUpperCase();
+      if(sc==='A'||sc==='AM'||sc==='AE'||sc==='AR')nAvv++;
+      else if(sc==='S')nScur++;
+      if(p.zanzariera)nZanz++;
+      if(p.cassonetto)nCass++;
+      if(p.coprifilo_int_mat)nCoprI++;
+      if(p.coprifilo_est_mat)nCoprE++;
+      if(p.rimozione==='SI'||p.rimozione===true)nRim++;
+    });
+    var chips = '<b>'+nP+'</b> pos.';
+    if(nCtlL) chips += ' &nbsp;\u25AA CTL-L: <b>'+nCtlL+'</b>';
+    if(nCtlT) chips += ' &nbsp;\u25AA TC: <b>'+nCtlT+'</b>';
+    if(nAvv)  chips += ' &nbsp;\u25AA Avv: <b>'+nAvv+'</b>';
+    if(nScur) chips += ' &nbsp;\u25AA Scur: <b>'+nScur+'</b>';
+    if(nZanz) chips += ' &nbsp;\u25AA Zanz: <b>'+nZanz+'</b>';
+    if(nCass) chips += ' &nbsp;\u25AA Cass: <b>'+nCass+'</b>';
+    if(nCoprI)chips += ' &nbsp;\u25AA CopI: <b>'+nCoprI+'</b>';
+    if(nCoprE)chips += ' &nbsp;\u25AA CopE: <b>'+nCoprE+'</b>';
+    if(nRim)  chips += ' &nbsp;\u25AA Rim: <b>'+nRim+'</b>';
+    return '<tr class="tr-cap-subtot"><td colspan="'+NCOL+'">Subtotale \u2014 '+esc(titolo)+' &nbsp;\u2502 '+chips+'</td></tr>';
+  }
+
+  var html = '';
+  var capCorrente = null;
+  var posCap = [];
+  var posizioniFuoriCap = [];
+
+  righe.forEach(function(r) {
+    if (r.tipo === 'cap_inizio') {
+      // Se c'erano posizioni fuori capitolo prima di questo, mostralo
+      if (posizioniFuoriCap.length) {
+        html += '<tr class="tr-no-cap"><td colspan="'+NCOL+'">Posizioni senza capitolo ('+posizioniFuoriCap.length+')</td></tr>';
+        posizioniFuoriCap.forEach(function(p){ html += rowPos(p); });
+        posizioniFuoriCap = [];
+      }
+      capCorrente = r.data; posCap = [];
+      html += '<tr class="tr-cap-hdr"><td colspan="'+NCOL+'">'+
+        '<span style="letter-spacing:3px;opacity:.5">\u2550\u2550\u2550</span> '+
+        esc(r.data.titolo)+
+        ' <span style="letter-spacing:3px;opacity:.5">\u2550\u2550\u2550</span>'+
+        '</td></tr>';
+    } else if (r.tipo === 'cap_fine') {
+      posCap.forEach(function(p){ html += rowPos(p); });
+      if (posCap.length) html += rowSubtot(capCorrente ? capCorrente.titolo : '', posCap);
+      html += '<tr class="tr-cap-end"><td colspan="'+NCOL+'">\u2500\u2500\u2500 Fine: '+esc(r.data.titolo)+' \u2500\u2500\u2500</td></tr>';
+      capCorrente = null; posCap = [];
+    } else {
+      // posizione normale
+      if (capCorrente) posCap.push(r.data);
+      else posizioniFuoriCap.push(r.data);
+    }
   });
-  tbody.innerHTML = html || '<tr><td colspan="30" style="text-align:center;padding:16px;color:#9ca3af">Nessuna posizione</td></tr>';
+
+  // Posizioni rimaste fuori da qualsiasi capitolo
+  if (posizioniFuoriCap.length) {
+    if ((capitoli||[]).length > 0) {
+      html += '<tr class="tr-no-cap"><td colspan="'+NCOL+'">Posizioni senza capitolo ('+posizioniFuoriCap.length+')</td></tr>';
+    }
+    posizioniFuoriCap.forEach(function(p){ html += rowPos(p); });
+  }
+
+  tbody.innerHTML = html || '<tr><td colspan="'+NCOL+'" style="text-align:center;padding:16px;color:#9ca3af">Nessuna posizione</td></tr>';
 }
+
 
 // ---- Caricamento parallelo ----
 function caricaDati(idRil) {
-  var loaded = {ril:null, pos:null, strats:null, dc:null, db:null};
+  var loaded = {ril:null, pos:null, strats:null, dc:null, db:null, caps:null};
   var errored = false;
 
   function tryRender() {
-    if (!loaded.ril||!loaded.pos||!loaded.strats||!loaded.dc||!loaded.db) return;
+    if (!loaded.ril||!loaded.pos||!loaded.strats||!loaded.dc||!loaded.db||!loaded.caps) return;
     if (errored) return;
 
     var r = loaded.ril;
@@ -538,7 +666,8 @@ function caricaDati(idRil) {
     document.title = 'Rilievo ' + codice;
     document.getElementById('sh-rif').textContent   = (nomeCliente ? nomeCliente + ' \u2014 ' : '') + nomeCant;
     document.getElementById('sh-badge').textContent = codice;
-    document.getElementById('sh-npos').textContent  = loaded.pos.length + ' pos.';
+    var nPosReali = loaded.pos.filter(function(p){return !p.is_capitolo;}).length;
+    document.getElementById('sh-npos').textContent  = nPosReali + ' pos.';
     document.getElementById('sh-data').textContent  = r.data_rilievo || '—';
     document.getElementById('sh-posa').textContent  = r.data_posa    || '—';
     document.getElementById('sh-int').textContent   = r.intervento   || '—';
@@ -558,7 +687,7 @@ function caricaDati(idRil) {
     var nc = r.note_commerciali || {};
     renderNC(nc);
     renderStratigrafie(loaded.strats);
-    renderPosizioni(loaded.pos, loaded.strats);
+    renderPosizioni(loaded.pos, loaded.strats, loaded.caps);
     showReport();
   }
 
@@ -572,7 +701,7 @@ function caricaDati(idRil) {
   );
 
   doFetch(
-    'posizioni_serr?id_rilievo=eq.'+idRil+'&stato=eq.attivo&select=*&order=numero_pos.asc',
+    'posizioni_serr?id_rilievo=eq.'+idRil+'&stato=eq.attivo&select=*&order=ordine.asc',
     function(rows) { loaded.pos = rows||[]; tryRender(); },
     function(e) { errored=true; setStato('Errore posizioni: '+e,true); }
   );
@@ -581,6 +710,12 @@ function caricaDati(idRil) {
     'stratigrafie?id_rilievo=eq.'+idRil+'&stato=eq.attivo&select=*&order=ordine.asc',
     function(rows) { loaded.strats = rows||[]; tryRender(); },
     function(e) { loaded.strats=[]; tryRender(); }
+  );
+
+  doFetch(
+    'capitoli_rilievo?id_rilievo=eq.'+idRil+'&stato=eq.attivo&select=*&order=ordine_inizio.asc',
+    function(rows) { loaded.caps = rows||[]; tryRender(); },
+    function(e) { loaded.caps=[]; tryRender(); }
   );
 
   doFetch(

@@ -110,6 +110,29 @@
     .mat-um   { font-size: 9px; color: #6b7280; }
 
     /* ---- PRINT ---- */
+    /* ── CAPITOLI ── */
+    .cap-hdr-acc {
+      background: #1a1a2e; color: #a5b4fc;
+      padding: 8px 14px; margin: 14px 0 8px;
+      border-radius: 6px; font-size: .88rem; font-weight: 700;
+      letter-spacing: .5px; page-break-after: avoid;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .cap-hdr-acc .cap-num { background: #4f46e5; color: #fff; border-radius: 4px; padding: 1px 8px; font-size: .8rem; }
+    .cap-hdr-acc .cap-sep { flex:1; height: 2px; background: #374151; }
+    .cap-subtot-acc {
+      background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 6px;
+      padding: 8px 14px; margin: 8px 0 16px; font-size: .8rem;
+      display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+    }
+    .cap-subtot-acc .cst-label { font-weight: 700; color: #3730a3; }
+    .cap-subtot-acc .cst-chip { background: #c7d2fe; color: #1e1b4b; border-radius: 8px; padding: 1px 8px; font-weight: 600; }
+    .totali-globali-hdr {
+      background: #064e3b; color: #a7f3d0;
+      padding: 8px 14px; margin: 20px 0 8px;
+      border-radius: 6px; font-size: .88rem; font-weight: 700;
+      letter-spacing: .5px;
+    }
     @media print {
       @page { size: A4 landscape; margin: 7mm; }
       body { background: #fff; font-size: 10px; }
@@ -252,18 +275,18 @@ function sfetch(path,cb,eb){
 // ================================================================ INIT
 async function init(){
   try{
-    var r=await Promise.all([API.getRilievo(idRilievo),API.getPosizioniSerr(idRilievo),API.getStratigrafie(idRilievo)]);
+    var r=await Promise.all([API.getRilievo(idRilievo),API.getPosizioniSerr(idRilievo),API.getStratigrafie(idRilievo),API.getCapitoli(idRilievo)]);
     if(!r[0].success){document.getElementById('stato-msg').textContent='Errore: '+(r[0].error||'');return;}
-    var ril=r[0].data,pos=r[1].success?r[1].data:[],strat=r[2].success?r[2].data:[];
+    var ril=r[0].data,pos=r[1].success?r[1].data:[],strat=r[2].success?r[2].data:[],caps=r[3].success?r[3].data:[];
     document.getElementById('tb-titolo').textContent='Report Accessori '+esc(ril.codice_completo||'');
     document.title='Accessori '+(ril.codice_completo||'');
     sfetch('db_serramento?stato=eq.attivo&select=materiale,descrizione,stile_design,variante_telaio,telaio_nascosto_mm,aletta_mm,telaio_a_vista_mm',
-      function(db){render(ril,pos,strat,db||[]);},function(){render(ril,pos,strat,[]);});
+      function(db){render(ril,pos,strat,db||[],caps);},function(){render(ril,pos,strat,[],caps);});
   }catch(e){document.getElementById('stato-msg').textContent='Errore: '+e.message;}
 }
 
 // ================================================================ RENDER
-function render(ril,pos,strat,db){
+function render(ril,pos,strat,db,caps){
   var cp=ril.percorsoCantiere||{};
   var html='';
 
@@ -280,7 +303,7 @@ function render(ril,pos,strat,db){
   html+='<div class="sh-field"><label>Data rilievo:</label><span>'+esc(ril.data_rilievo||'—')+'</span></div>';
   html+='<div class="sh-field"><label>Data posa:</label><span>'+esc(ril.data_posa||'—')+'</span></div>';
   html+='<div class="sh-badge-row">';
-  html+='<span class="sh-badge green">'+pos.length+' pos.</span>';
+  html+='<span class="sh-badge green">'+pos.length+' pos.'+(caps&&caps.length?' &nbsp;&#128193; '+caps.length+' cap.':'')+'</span>';
   if(strat.length) html+='<span class="sh-badge blue">'+strat.length+' stratigrafie</span>';
   html+='</div></div>';
   html+='</div></div>'; // sh-top, scheda-header
@@ -350,55 +373,122 @@ function render(ril,pos,strat,db){
 
   html+='<div class="sez-title">&#128295; Dettaglio accessori</div>';
 
+  // Se ci sono capitoli: render per capitolo + totali complessivi
+  if (caps && caps.length) {
+    // Costruisci lista ordinata righe
+    var righe = [];
+    pc.forEach(function(p){ righe.push({tipo:'pos', ordine:p.ordine!==null&&p.ordine!==undefined?p.ordine:p.numero_pos, data:p}); });
+    caps.forEach(function(cap){
+      righe.push({tipo:'cap_inizio', ordine:cap.ordine_inizio, data:cap});
+      righe.push({tipo:'cap_fine',   ordine:cap.ordine_fine,   data:cap});
+    });
+    righe.sort(function(a,b){ return a.ordine-b.ordine; });
+
+    var capCorr=null, pcCap=[], pcFuori=[];
+    righe.forEach(function(r){
+      if (r.tipo==='cap_inizio') { capCorr=r.data; pcCap=[]; }
+      else if (r.tipo==='cap_fine') {
+        if (capCorr && pcCap.length) {
+          html += mkCapHdr(capCorr.titolo, pcCap.length);
+          html += renderDettaglioAcc(pcCap);
+          html += mkCapSubtot(capCorr.titolo, pcCap);
+        }
+        capCorr=null; pcCap=[];
+      } else {
+        if (capCorr) pcCap.push(r.data); else pcFuori.push(r.data);
+      }
+    });
+    if (pcFuori.length) {
+      html += mkCapHdr('Senza capitolo', pcFuori.length);
+      html += renderDettaglioAcc(pcFuori);
+      html += mkCapSubtot('Senza capitolo', pcFuori);
+    }
+    // Totali complessivi
+    html += '<div class="totali-globali-hdr">&#8721; Totali complessivi — tutti i capitoli</div>';
+    html += renderDettaglioAcc(pc);
+  } else {
+    html += renderDettaglioAcc(pc);
+  }
+  document.getElementById('stato-msg').style.display='none';
+  document.getElementById('rep-content').style.display='';
+  document.getElementById('rep-content').innerHTML=html;
+}
+
+// ================================================================ CAPITOLI HELPER
+function mkCapHdr(titolo, nPos) {
+  return '<div class="cap-hdr-acc">'+
+    '<span class="cap-num">'+nPos+' pos.</span> '+
+    '<span style="letter-spacing:2px;opacity:.6">\u2550\u2550</span> '+
+    esc(titolo)+
+    ' <span style="letter-spacing:2px;opacity:.6">\u2550\u2550</span>'+
+    '<span class="cap-sep"></span>'+
+    '</div>';
+}
+
+function mkCapSubtot(titolo, pcSub) {
+  var tSch=0,tBG=0,tMu=0,tBV=0,tPol=0,tVi=0,nCI=0,nCE=0,nAvv=0,nScur=0,nZanz=0,nCass=0,nCtlL=0,nCtlT=0;
+  pcSub.forEach(function(p){
+    tSch+=p._sch;tBG+=p._bg;tMu+=p._mu;tBV+=p._bv;tPol+=p._mp;tVi+=p._vi;
+    if(p._bci)nCI+=p._bci;if(p._bce)nCE+=p._bce;
+    var sc=(p.schermatura||'').toUpperCase();
+    if(sc==='A'||sc==='AM'||sc==='AE'||sc==='AR')nAvv++;else if(sc==='S')nScur++;
+    if(p.zanzariera)nZanz++;if(p.cassonetto)nCass++;
+    if(p.controtelaio==='L')nCtlL++;else if(p.controtelaio==='T')nCtlT++;
+  });
+  var tLin=n2(tSch+tBG+tMu+tBV);
+  var chips='';
+  if(nCI)  chips+='<span class="cst-chip">CopI: '+nCI+' barre</span> ';
+  if(nCE)  chips+='<span class="cst-chip">CopE: '+nCE+' barre</span> ';
+  if(nAvv) chips+='<span class="cst-chip">Avv: '+nAvv+' pz</span> ';
+  if(nScur)chips+='<span class="cst-chip">Scur: '+nScur+' pz</span> ';
+  if(nZanz)chips+='<span class="cst-chip">Zanz: '+nZanz+' pz</span> ';
+  if(nCass)chips+='<span class="cst-chip">Cass: '+nCass+' pz</span> ';
+  if(nCtlL)chips+='<span class="cst-chip">CTL-L: '+nCtlL+' pz</span> ';
+  if(nCtlT)chips+='<span class="cst-chip">TC: '+nCtlT+' pz</span> ';
+  chips+='<span class="cst-chip">Posa: '+tLin+' m lin.</span> ';
+  if(tPol) chips+='<span class="cst-chip">Polimero: '+tPol+' flac.</span> ';
+  return '<div class="cap-subtot-acc"><span class="cst-label">Subtotale '+esc(titolo)+'</span>'+chips+'</div>';
+}
+
+function renderDettaglioAcc(pc) {
+  var html = '';
   // --- COPRIFILI INTERNI
   var cim={};pc.forEach(function(p){if(!p.coprifilo_int_mat)return;var k=p.coprifilo_int_mat.toUpperCase()+'|'+(p.coprifilo_int_dim||'');if(!cim[k])cim[k]={mat:p.coprifilo_int_mat,dim:p.coprifilo_int_dim||'—',b:0,pos:[]};cim[k].b+=p._bci;cim[k].pos.push(numPos(p));});
   if(Object.keys(cim).length){var tb=0;Object.values(cim).forEach(function(v){tb+=v.b;});html+=mkG('Coprifili interni','',tb+' barre TOT.',Object.values(cim).map(function(v){return{l:v.mat+' &mdash; '+v.dim+' mm',chips:'<span class="chip-n">'+v.b+' barre</span>',pos:v.pos};}));}
-
   // --- COPRIFILI ESTERNI
   var cem={};pc.forEach(function(p){if(!p.coprifilo_est_mat)return;var k=p.coprifilo_est_mat.toUpperCase()+'|'+(p.coprifilo_est_dim||'');if(!cem[k])cem[k]={mat:p.coprifilo_est_mat,dim:p.coprifilo_est_dim||'—',b:0,pos:[]};cem[k].b+=p._bce;cem[k].pos.push(numPos(p));});
   if(Object.keys(cem).length){var tb=0;Object.values(cem).forEach(function(v){tb+=v.b;});html+=mkG('Coprifili esterni','',tb+' barre TOT.',Object.values(cem).map(function(v){return{l:v.mat+' &mdash; '+v.dim+' mm',chips:'<span class="chip-n">'+v.b+' barre</span>',pos:v.pos};}));}
-
   // --- AVVOLGIBILE
   var avm={};['A','AM','AE','AR'].forEach(function(k){pc.forEach(function(p){if(p.schermatura!==k)return;if(!avm[k])avm[k]={mq:0,n:0,pos:[]};avm[k].mq+=p._ss;avm[k].n++;avm[k].pos.push(numPos(p));});});
   var avk=Object.keys(avm);if(avk.length){var tm=0,tn=0;avk.forEach(function(k){tm+=avm[k].mq;tn+=avm[k].n;});html+=mkG('Avvolgibile','img/Avvolgibile.jpeg',n2(tm)+' mq TOT. &mdash; '+tn+' pz',avk.map(function(k){var v=avm[k];return{l:SCHERM_DESC[k]||k,chips:'<span class="chip-mq">'+n2(v.mq)+' mq</span> <span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-
   // --- SCURETTO
   var scp=pc.filter(function(p){return p.schermatura==='S';});
-  if(scp.length)html+=mkG('Scuretto','img/Scuretto.jpeg',scp.length+' pz TOT.',[{l:'Scuretto',chips:'<span class="chip-n">'+scp.length+' pz</span>',pos:scp.map(numPos)}]);
-
+  if(scp.length)html+=mkG('Scuretto','img/Scuretto.jpeg',scp.length+' pz',[{l:'Scuretto',chips:'<span class="chip-n">'+scp.length+' pz</span>',pos:scp.map(numPos)}]);
   // --- TENDA
   var tem={};['TZ','TM'].forEach(function(k){pc.forEach(function(p){if(p.schermatura!==k)return;if(!tem[k])tem[k]={n:0,pos:[]};tem[k].n++;tem[k].pos.push(numPos(p));});});
   var tek=Object.keys(tem);if(tek.length){var tn=0;tek.forEach(function(k){tn+=tem[k].n;});html+=mkG('Tenda','img/Tenda_zip.jpeg',tn+' pz TOT.',tek.map(function(k){var v=tem[k];return{l:SCHERM_DESC[k]||k,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-
   // --- FRANGISOLE
   var frm={};['CA','CT'].forEach(function(k){pc.forEach(function(p){if(p.schermatura!==k)return;if(!frm[k])frm[k]={n:0,pos:[]};frm[k].n++;frm[k].pos.push(numPos(p));});});
   var frk=Object.keys(frm);if(frk.length){var fn=0;frk.forEach(function(k){fn+=frm[k].n;});html+=mkG('Frangisole','img/Frangisole.jpeg',fn+' pz TOT.',frk.map(function(k){var v=frm[k];return{l:SCHERM_DESC[k]||k,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-
   // --- CONTROTELAIO LEGNO
   var clm={};pc.forEach(function(p){if(p.controtelaio!=='L')return;var t=p.tipo_serramento||'?';if(!clm[t])clm[t]={n:0,pos:[]};clm[t].n++;clm[t].pos.push(numPos(p));});
   if(Object.keys(clm).length){var cn=0;Object.values(clm).forEach(function(v){cn+=v.n;});var clk=TIPO_ORD.filter(function(t){return clm[t];});html+=mkG('Controtelaio legno','img/Controtelaio_legno.png',cn+' pz TOT.',clk.map(function(t){var v=clm[t];return{l:TIPO_DESC[t]||t,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-
   // --- TERMOCASSA
   var ctm={};pc.forEach(function(p){if(p.controtelaio!=='T')return;var t=p.tipo_serramento||'?';if(!ctm[t])ctm[t]={n:0,pos:[]};ctm[t].n++;ctm[t].pos.push(numPos(p));});
   if(Object.keys(ctm).length){var tn=0;Object.values(ctm).forEach(function(v){tn+=v.n;});var ctk=TIPO_ORD.filter(function(t){return ctm[t];});html+=mkG('Termocassa','img/Termocassa.jpeg',tn+' pz TOT.',ctk.map(function(t){var v=ctm[t];return{l:TIPO_DESC[t]||t,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-
   // --- CASSONETTO
   var csm={};pc.forEach(function(p){if(!p.cassonetto)return;var k=p.cassonetto;if(!csm[k])csm[k]={m:0,pos:[]};csm[k].m+=p._cassM;csm[k].pos.push(numPos(p));});
   if(Object.keys(csm).length){var tm=0;Object.values(csm).forEach(function(v){tm+=v.m;});var csd={'P':'PVC','L':'Legno'};html+=mkG('Cassonetto','img/Cassonetto_PVC.webp',n2(tm)+' m TOT.',Object.keys(csm).map(function(k){var v=csm[k];return{l:'Cassonetto '+(csd[k]||k),chips:'<span class="chip-m">'+n2(v.m)+' m</span>',pos:v.pos};}));}
-
   // --- ZANZARIERA
   var znm={};pc.forEach(function(p){if(!p.zanzariera)return;var k=p.zanzariera;if(!znm[k])znm[k]={mq:0,n:0,pos:[]};znm[k].mq+=p._sz;znm[k].n++;znm[k].pos.push(numPos(p));});
   if(Object.keys(znm).length){var tm=0;Object.values(znm).forEach(function(v){tm+=v.mq;});var znd={'V':'Verticale','O':'Orizzontale'};html+=mkG('Zanzariera','img/Zanzariera.jpeg',n2(tm)+' mq TOT.',Object.keys(znm).map(function(k){var v=znm[k];return{l:znd[k]||k,chips:'<span class="chip-mq">'+n2(v.mq)+' mq</span> <span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-
   // --- DINOX
   var dim={};var dnord=['DA','I3','I4'];var dnd={'DA':'Davanzale','I3':'Imbotte 3 lati','I4':'Imbotte 4 lati'};
   pc.forEach(function(p){if(!p.dinoxill)return;var k=p.dinoxill;if(!dim[k])dim[k]={n:0,pos:[]};dim[k].n++;dim[k].pos.push(numPos(p));});
   if(Object.keys(dim).length){var dn=0;Object.values(dim).forEach(function(v){dn+=v.n;});var dik=dnord.filter(function(k){return dim[k];});html+=mkG('Dinoxill','',dn+' pz TOT.',dik.map(function(k){var v=dim[k];return{l:dnd[k]||k,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-
   // --- ANGOLARI PVC
   var agp=pc.filter(function(p){return p.angolari_pvc===true;});
-  if(agp.length){var ab=0;agp.forEach(function(p){if(p._t){var sv=svCop(p._ts,p._t.Lt,p._t.Ht,C.angLato);ab+=cUp(sv/C.angB);}});html+=mkG('Angolari PVC','',agp.length+' pos. &mdash; '+ab+' barre',[{l:'Angolari PVC 50 mm',chips:'<span class="chip-n">'+agp.length+' pos.</span> <span class="chip-n">'+ab+' barre</span>',pos:agp.map(numPos)}]);}
-
+  if(agp.length){var ab=0;agp.forEach(function(p){if(p._t){var sv=svCop(p._ts,p._t.Lt,p._t.Ht,C.angLato);ab+=cUp(sv/C.angB);}});html+=mkG('Angolari PVC','',agp.length+' pos.',[ {l:'Angolari PVC 50 mm',chips:'<span class="chip-n">'+agp.length+' pos.</span> <span class="chip-n">'+ab+' barre</span>',pos:agp.map(numPos)}]);}
   // --- RIMOZIONE / TAGLIO
   var rs=pc.filter(function(p){return p.rimozione==='SI'||p.rimozione===true;});
   var ra=pc.filter(function(p){return p.rimozione_accessori===true;});
@@ -408,7 +498,6 @@ function render(ril,pos,strat,db){
     if(ra.length)sr.push({l:'Rimozione accessori', chips:'<span class="chip-n">'+ra.length+' pz</span>',pos:ra.map(numPos)});
     if(mr.length)sr.push({l:'Taglio piani marmo',  chips:'<span class="chip-n">'+mr.length+' pz</span>',pos:mr.map(numPos)});
     html+=mkG('Rimozione / Taglio','', (rs.length+ra.length+mr.length)+' interventi',sr);}
-
   // --- MATERIALI DI POSA
   var tSch=0,tPol=0,tBG=0,tMu=0,tBV=0,tVi=0;
   pc.forEach(function(p){tSch+=p._sch;tPol+=p._mp;tBG+=p._bg;tMu+=p._mu;tBV+=p._bv;tVi+=p._vi;});
@@ -418,22 +507,36 @@ function render(ril,pos,strat,db){
     '<div class="acc-titolo">Materiali di posa</div>'+
     '<div class="acc-tot">Totale lineare: '+tLin+' m</div>'+
     '</div><div class="acc-body"><div class="mat-grid">';
-  [{n:'Schiuma poliuretanica',v:n2(tSch),u:'m'},{n:'MS Polimero',v:tPol,u:'flac.'},
-   {n:'Nastro BG1',v:n2(tBG),u:'m'},{n:'Nastro Multi',v:n2(tMu),u:'m'},
-   {n:'Barriera vapore',v:n2(tBV),u:'m'},{n:'Viti 1 kit',v:tVi,u:'kit'},
-   {n:'Tot. lineare',v:tLin,u:'m'}
-  ].forEach(function(item){html+='<div class="mat-card"><div class="mat-nome">'+item.n+'</div><div class="mat-val">'+item.v+'</div><div class="mat-um">'+item.u+'</div></div>';});
+  [{n:'Schiuma',v:n2(tSch),u:'m'},{n:'MS Polimero',v:tPol,u:'flac.'},{n:'Nastro BG1',v:n2(tBG),u:'m'},{n:'Nastro Multi',v:n2(tMu),u:'m'},{n:'Bar.vapore',v:n2(tBV),u:'m'},{n:'Viti 1 kit',v:tVi,u:'kit'},{n:'Tot.lineare',v:tLin,u:'m'}].forEach(function(item){
+    html+='<div class="mat-card"><div class="mat-nome">'+item.n+'</div><div class="mat-val">'+item.v+'</div><div class="mat-um">'+item.u+'</div></div>';
+  });
   html+='</div></div></div>';
-
-  document.getElementById('stato-msg').style.display='none';
-  document.getElementById('rep-content').style.display='';
-  document.getElementById('rep-content').innerHTML=html;
+  return html;
 }
 
-// ================================================================ HELPER
-function mkG(titolo,img,totLabel,subs){
+// ================================================================ HELPER mkGtitolo,img,totLabel,subs){
   var h='<div class="acc-group"><div class="acc-group-hdr">';
   if(img) h+='<img class="acc-img" src="'+esc(img)+'" alt="" onerror="this.style.display=\'none\'">';
+  else h+='<div style="width:52px;height:36px;flex-shrink:0;"></div>';
+  h+='<div class="acc-titolo">'+esc(titolo)+'</div>';
+  h+='<div class="acc-tot">'+totLabel+'</div>';
+  h+='</div><div class="acc-body">';
+  subs.forEach(function(s){
+    var ps=s.pos.map(function(x){return String(x);}).join(', ');
+    h+='<div class="acc-sub">';
+    if(subs.length>1) h+='<div class="acc-sublabel">'+s.l+'</div>';
+    h+='<div class="acc-row">'+s.chips;
+    h+='<div class="acc-pos-list">Pos: '+esc(ps)+'</div>';
+    h+='<button class="btn-copy" onclick="copia(\''+ps.replace(/'/g,"\\'")+'\')" title="Copia posizioni">&#128203;</button>';
+    h+='</div></div>';
+  });
+  h+='</div></div>';
+  return h;
+}
+
+function mkG(titolo,img,totLabel,subs){
+  var h='<div class="acc-group"><div class="acc-group-hdr">';
+  if(img) h+='<img class="acc-img" src="'+esc(img)+'" alt="" onerror="this.style.display='none'">';
   else h+='<div style="width:52px;height:36px;flex-shrink:0;"></div>';
   h+='<div class="acc-titolo">'+esc(titolo)+'</div>';
   h+='<div class="acc-tot">'+totLabel+'</div>';

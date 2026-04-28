@@ -188,7 +188,7 @@ function render(ril,pos,caps){
   html+='<tr class="th-m">'+
     '<th>N&#176;</th><th>Piano</th><th>Ambiente</th><th>Tipo</th>'+
     '<th class="gsep">Foro</th><th>H (mm)</th><th>L (mm)</th>'+
-    '<th class="gsep">Fornitore</th><th>Sistema</th><th>Foro</th>'+
+    '<th class="gsep">Fornitore</th><th>Sistema</th><th>Sopraluce</th>'+
     '<th class="gsep">Modello</th><th>Essenza</th><th>Verso</th>'+
     '<th class="gsep c">ALL</th><th class="c">CTL</th><th class="c">RIM</th><th>Note</th>'+
     '</tr></thead><tbody>';
@@ -206,11 +206,11 @@ function render(ril,pos,caps){
     h+='<td style="white-space:normal;min-width:55px">'+esc(v(p.ambiente))+'</td>';
     h+='<td class="c"><span class="badge-tipo-p">'+esc(v(p.tipo_porta))+'</span></td>';
     h+='<td class="c gsep">'+esc(v(p.tipo_foro))+'</td>';
-    h+='<td class="c">'+esc(v(p.H_mm))+'</td>';
-    h+='<td class="c">'+esc(v(p.L_mm))+'</td>';
+    h+='<td class="c">'+esc(v(p.h_mm||p.H_mm))+'</td>';
+    h+='<td class="c">'+esc(v(p.l_mm||p.L_mm))+'</td>';
     h+='<td class="gsep" style="font-size:9px;">'+esc(v(p.fornitore))+'</td>';
     h+='<td style="font-size:9px;">'+esc(v(p.sistema))+'</td>';
-    h+='<td class="c">'+esc(v(p.tipo_foro))+'</td>';
+    h+='<td class="c">'+chk(p.sopraluce==='SI'||p.sopraluce===true)+'</td>';
     h+='<td class="gsep" style="white-space:normal;min-width:55px;font-size:9px;">'+esc(v(p.modello))+'</td>';
     h+='<td style="white-space:normal;min-width:50px;font-size:9px;">'+esc(v(p.essenza))+'</td>';
     h+='<td style="font-size:9px;">'+esc(v(p.verso_apertura))+'</td>';

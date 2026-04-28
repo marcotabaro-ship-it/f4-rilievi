@@ -7,48 +7,45 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
   <style>
-    .adm-tabs { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:20px; border-bottom:2px solid var(--c-border); padding-bottom:0; }
-    .adm-tab { padding:9px 18px; border:none; background:none; cursor:pointer; font-size:.85rem; font-weight:500; color:var(--c-text-sec); border-bottom:3px solid transparent; margin-bottom:-2px; border-radius:4px 4px 0 0; transition:all .2s; }
-    .adm-tab.active { color:var(--c-primary); border-bottom-color:var(--c-primary); background:#EEF2FF; }
-    .adm-tab:hover:not(.active) { background:var(--c-bg); }
-    .adm-panel { display:none; }
-    .adm-panel.active { display:block; }
-    .data-table { width:100%; border-collapse:collapse; font-size:.82rem; }
-    .data-table th { background:var(--c-primary); color:white; padding:9px 10px; text-align:left; font-size:.76rem; font-weight:600; white-space:nowrap; }
-    .data-table td { padding:9px 10px; border-bottom:1px solid var(--c-border); vertical-align:middle; }
-    .data-table tr:hover td { background:#F5F7FF; }
-    .badge-attivo   { background:#E8F5E9; color:#2E7D32; padding:2px 8px; border-radius:20px; font-size:.74rem; font-weight:600; }
-    .badge-disattivo{ background:#FFEBEE; color:#C62828; padding:2px 8px; border-radius:20px; font-size:.74rem; font-weight:600; }
-    .lk-selector { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
-    .inline-edit { display:flex; align-items:center; gap:6px; }
-    .inline-edit input { width:90px; padding:4px 6px; border:1px solid var(--c-border); border-radius:4px; font-size:.82rem; }
-    .btn-xs { padding:3px 10px; font-size:.75rem; }
-    .form-section { background:var(--c-bg); border:1px solid var(--c-border); border-radius:var(--radius); padding:16px; margin-bottom:16px; }
-    .form-section-title { font-size:.82rem; font-weight:700; color:var(--c-primary); text-transform:uppercase; letter-spacing:.5px; margin-bottom:12px; }
-    .pass-toggle { background:none; border:none; cursor:pointer; color:var(--c-text-sec); padding:0 6px; }
-    .mail-btn { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; background:#E3F2FD; color:#1565C0; border:none; border-radius:4px; cursor:pointer; font-size:.78rem; font-weight:500; text-decoration:none; }
-    .mail-btn:hover { background:#BBDEFB; }
-    /* ── POSA EDITOR ── */
-    .posa-input { width:72px; padding:3px 5px; border:1px solid var(--c-border); border-radius:4px; font-size:.80rem; text-align:center; }
-    .posa-input.dirty { border:2px solid #f59e0b; background:#fffbeb; font-weight:700; }
-    .draft-bar { position:sticky; bottom:0; left:0; right:0; z-index:50; background:#1a1a2e; color:#fff; padding:10px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:3px solid #4f46e5; display:none; }
-    .draft-bar.visible { display:flex; }
-    .draft-count { font-size:.88rem; color:#a5b4fc; }
-    .draft-count strong { color:#fff; font-size:1rem; }
-    .btn-salva-rev { background:#4f46e5; color:#fff; border:none; border-radius:8px; padding:9px 18px; font-size:.88rem; font-weight:700; cursor:pointer; }
-    .btn-salva-rev:hover { background:#3730a3; }
-    .btn-annulla-draft { background:rgba(255,255,255,.12); color:#a5b4fc; border:none; border-radius:6px; padding:6px 12px; font-size:.82rem; cursor:pointer; }
-    .posa-area-hdr td { background:#e0e7ff; color:#1a1a2e; font-weight:700; font-size:.76rem; padding:4px 10px; letter-spacing:.3px; }
-    .rev-card { border:1px solid var(--c-border); border-radius:8px; padding:12px 14px; margin-bottom:10px; background:#fff; }
-    .rev-card-hdr { display:flex; align-items:baseline; gap:10px; margin-bottom:4px; }
-    .rev-num { font-size:.78rem; font-weight:700; color:#fff; background:#4f46e5; padding:1px 8px; border-radius:10px; }
-    .rev-data { font-size:.78rem; color:var(--c-text-sec); }
-    .rev-autore { font-size:.82rem; font-weight:600; }
-    .rev-note { font-size:.80rem; color:var(--c-text-sec); margin-top:3px; }
-    .rev-attuale { border-color:#4f46e5; background:#eef2ff; }
-    .posa-tabs { display:flex; gap:4px; margin-bottom:12px; }
-    .posa-tab { padding:6px 14px; border:1px solid var(--c-border); background:#fff; cursor:pointer; font-size:.82rem; font-weight:500; color:var(--c-text-sec); border-radius:6px; }
-    .posa-tab.active { background:#4f46e5; color:#fff; border-color:#4f46e5; }
+    .adm-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:20px;border-bottom:2px solid var(--c-border);padding-bottom:0;}
+    .adm-tab{padding:9px 18px;border:none;background:none;cursor:pointer;font-size:.85rem;font-weight:500;color:var(--c-text-sec);border-bottom:3px solid transparent;margin-bottom:-2px;border-radius:4px 4px 0 0;transition:all .2s;}
+    .adm-tab.active{color:var(--c-primary);border-bottom-color:var(--c-primary);background:#EEF2FF;}
+    .adm-tab:hover:not(.active){background:var(--c-bg);}
+    .adm-panel{display:none;} .adm-panel.active{display:block;}
+    .data-table{width:100%;border-collapse:collapse;font-size:.82rem;}
+    .data-table th{background:var(--c-primary);color:white;padding:9px 10px;text-align:left;font-size:.76rem;font-weight:600;white-space:nowrap;}
+    .data-table td{padding:9px 10px;border-bottom:1px solid var(--c-border);vertical-align:middle;}
+    .data-table tr:hover td{background:#F5F7FF;}
+    .badge-attivo{background:#E8F5E9;color:#2E7D32;padding:2px 8px;border-radius:20px;font-size:.74rem;font-weight:600;}
+    .badge-disattivo{background:#FFEBEE;color:#C62828;padding:2px 8px;border-radius:20px;font-size:.74rem;font-weight:600;}
+    .lk-selector{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
+    .btn-xs{padding:3px 10px;font-size:.75rem;}
+    .pass-toggle{background:none;border:none;cursor:pointer;color:var(--c-text-sec);padding:0 6px;}
+    .mail-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:#E3F2FD;color:#1565C0;border:none;border-radius:4px;cursor:pointer;font-size:.78rem;font-weight:500;text-decoration:none;}
+    .mail-btn:hover{background:#BBDEFB;}
+    /* DRAFT */
+    .posa-input{width:72px;padding:3px 5px;border:1px solid var(--c-border);border-radius:4px;font-size:.80rem;text-align:center;}
+    .posa-input.dirty{border:2px solid #f59e0b;background:#fffbeb;font-weight:700;}
+    .draft-bar{position:fixed;bottom:0;left:0;right:0;z-index:999;background:#1a1a2e;color:#fff;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:3px solid #4f46e5;display:none;}
+    .draft-bar.visible{display:flex;}
+    .draft-count{font-size:.88rem;color:#a5b4fc;} .draft-count strong{color:#fff;font-size:1rem;}
+    .btn-salva-rev{background:#4f46e5;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:.88rem;font-weight:700;cursor:pointer;}
+    .btn-salva-rev:hover{background:#3730a3;}
+    .btn-annulla-draft{background:rgba(255,255,255,.12);color:#a5b4fc;border:none;border-radius:6px;padding:6px 12px;font-size:.82rem;cursor:pointer;}
+    .posa-area-hdr td{background:#e0e7ff;color:#1a1a2e;font-weight:700;font-size:.76rem;padding:4px 10px;letter-spacing:.3px;}
+    .tec-area-hdr td{background:#fef3c7;color:#78350f;font-weight:700;font-size:.76rem;padding:4px 10px;letter-spacing:.3px;}
+    .rev-card{border:1px solid var(--c-border);border-radius:8px;padding:12px 14px;margin-bottom:10px;background:#fff;}
+    .rev-card-hdr{display:flex;align-items:baseline;gap:10px;margin-bottom:4px;}
+    .rev-num{font-size:.78rem;font-weight:700;color:#fff;background:#4f46e5;padding:1px 8px;border-radius:10px;}
+    .rev-num.tecnico{background:#d97706;}
+    .rev-num.completo{background:#059669;}
+    .rev-attuale{border-color:#4f46e5;background:#eef2ff;}
+    .posa-tabs{display:flex;gap:4px;margin-bottom:12px;}
+    .posa-tab{padding:6px 14px;border:1px solid var(--c-border);background:#fff;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--c-text-sec);border-radius:6px;}
+    .posa-tab.active{background:#4f46e5;color:#fff;border-color:#4f46e5;}
+    .nota-draft{background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.82rem;color:#78350f;}
+    .inline-edit{display:flex;align-items:center;gap:6px;}
+    .inline-edit input{width:90px;padding:4px 6px;border:1px solid var(--c-border);border-radius:4px;font-size:.82rem;}
   </style>
 </head>
 <body>
@@ -60,7 +57,6 @@
         <p class="page-subtitle">Gestione utenti, tabelle di configurazione e dati tecnici</p>
       </div>
     </div>
-
     <div class="adm-tabs">
       <button class="adm-tab active" onclick="showTab('utenti',this)">&#128101; Utenti</button>
       <button class="adm-tab" onclick="showTab('lookup',this)">&#128203; Lookup</button>
@@ -119,7 +115,9 @@
       </div>
     </div>
 
+    <!-- DATI TECNICI SERRAMENTO (draft+revisione) -->
     <div id="panel-dati" class="adm-panel">
+      <div class="nota-draft">&#9888; Modifica i valori e al termine clicca <strong>Salva e crea revisione</strong>. I campi modificati appariranno con bordo giallo.</div>
       <div class="card" style="margin-bottom:16px;">
         <div class="card-header"><span class="card-title">&#9881;&#65039; Dati Comuni Serramento (parametri tubolarita)</span></div>
         <div id="tabellaComuni"><div class="loading-state"><div class="spinner"></div></div></div>
@@ -130,14 +128,9 @@
       </div>
     </div>
 
-    <!-- ================================================================ -->
-    <!-- TAB: DATI POSA -->
-    <!-- ================================================================ -->
+    <!-- DATI POSA (draft+revisione) -->
     <div id="panel-posa" class="adm-panel">
-      <div style="background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.82rem;color:#78350f;">
-        &#9888; Modifica i valori nei campi e al termine clicca <strong>Salva e crea revisione</strong>.
-        I campi modificati appariranno con bordo giallo. Le modifiche non vengono salvate finche non confermi.
-      </div>
+      <div class="nota-draft">&#9888; Modifica i valori e al termine clicca <strong>Salva e crea revisione</strong>. I campi modificati appariranno con bordo giallo.</div>
       <div class="posa-tabs">
         <button class="posa-tab active" onclick="showPosaTab('SERR',this)">&#129695; Serramenti</button>
         <button class="posa-tab" onclick="showPosaTab('PORTE',this)">&#128682; Porte</button>
@@ -147,53 +140,44 @@
       </div>
     </div>
 
-    <!-- ================================================================ -->
-    <!-- TAB: REVISIONI -->
-    <!-- ================================================================ -->
+    <!-- REVISIONI -->
     <div id="panel-revisioni" class="adm-panel">
       <div class="card">
         <div class="card-header">
-          <span class="card-title">&#128220; Storico Revisioni Parametri Posa</span>
+          <span class="card-title">&#128220; Storico Revisioni Parametri</span>
           <span id="cntRevisioni" style="font-size:.82rem;color:var(--c-text-sec);"></span>
         </div>
         <div id="listaRevisioni"><div class="loading-state"><div class="spinner"></div></div></div>
       </div>
     </div>
 
+    <!-- DB PRODOTTI -->
     <div id="panel-db" class="adm-panel">
       <div class="card" style="margin-bottom:16px;">
-        <div class="card-header">
-          <span class="card-title">&#129695; DB Serramenti</span>
-          <span id="cntSerr" style="color:var(--c-text-sec);font-size:.82rem;"></span>
-        </div>
+        <div class="card-header"><span class="card-title">&#129695; DB Serramenti</span><span id="cntSerr" style="color:var(--c-text-sec);font-size:.82rem;"></span></div>
         <div id="tabellaDbSerr"><div class="loading-state"><div class="spinner"></div></div></div>
       </div>
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">&#128682; DB Porte</span>
-          <span id="cntPorte" style="color:var(--c-text-sec);font-size:.82rem;"></span>
-        </div>
+        <div class="card-header"><span class="card-title">&#128682; DB Porte</span><span id="cntPorte" style="color:var(--c-text-sec);font-size:.82rem;"></span></div>
         <div id="tabellaDbPorte"><div class="loading-state"><div class="spinner"></div></div></div>
       </div>
     </div>
   </main>
 </div>
 
-<!-- DRAFT BAR (sticky bottom) -->
+<!-- DRAFT BAR -->
 <div class="draft-bar" id="draftBar">
   <div class="draft-count">&#128221; Bozza: <strong id="draftCount">0</strong> campi modificati non salvati</div>
   <div style="display:flex;gap:8px;">
-    <button class="btn-annulla-draft" onclick="annullaDraft()">&#10005; Annulla modifiche</button>
+    <button class="btn-annulla-draft" onclick="annullaDraft()">&#10005; Annulla</button>
     <button class="btn-salva-rev" onclick="apriModalRevisione()">&#128190; Salva e crea revisione</button>
   </div>
 </div>
+
 <!-- MODAL UTENTE -->
 <div class="modal" id="modalUtente">
   <div class="modal-box">
-    <div class="modal-header">
-      <span class="modal-title" id="modalUtenteTitle">Nuovo utente</span>
-      <button class="modal-close" onclick="Utils.closeModal('modalUtente')">&#10005;</button>
-    </div>
+    <div class="modal-header"><span class="modal-title" id="modalUtenteTitle">Nuovo utente</span><button class="modal-close" onclick="Utils.closeModal('modalUtente')">&#10005;</button></div>
     <div class="modal-body">
       <div class="form-row form-row-2">
         <div class="form-group"><label class="form-label">Nome completo <span class="req">*</span></label><input class="form-control" type="text" id="uNome" placeholder="Es. Rossi Mario"></div>
@@ -214,37 +198,20 @@
           <option value="altro">Altro (sola lettura)</option>
         </select>
       </div>
-      <div id="passGroup" class="form-group">
-        <label class="form-label">Password <span class="req">*</span></label>
-        <div style="display:flex;gap:6px;"><input class="form-control" type="password" id="uPass" placeholder="Minimo 8 caratteri" style="flex:1;"><button class="pass-toggle" type="button" onclick="togglePass('uPass',this)" title="Mostra/Nascondi">&#128065;</button></div>
-      </div>
-      <div id="passNuovaGroup" class="form-group" style="display:none;">
-        <label class="form-label">Nuova password (lascia vuota per non cambiare)</label>
-        <div style="display:flex;gap:6px;"><input class="form-control" type="password" id="uPassNuova" placeholder="Lascia vuota per non cambiare" style="flex:1;"><button class="pass-toggle" type="button" onclick="togglePass('uPassNuova',this)" title="Mostra/Nascondi">&#128065;</button></div>
-      </div>
-      <div id="statoGroup" class="form-group" style="display:none;">
-        <label class="form-label">Stato</label>
-        <select class="form-control" id="uStato"><option value="attivo">Attivo</option><option value="disattivo">Disattivo</option></select>
-      </div>
+      <div id="passGroup" class="form-group"><label class="form-label">Password <span class="req">*</span></label><div style="display:flex;gap:6px;"><input class="form-control" type="password" id="uPass" placeholder="Minimo 8 caratteri" style="flex:1;"><button class="pass-toggle" type="button" onclick="togglePass('uPass',this)">&#128065;</button></div></div>
+      <div id="passNuovaGroup" class="form-group" style="display:none;"><label class="form-label">Nuova password</label><div style="display:flex;gap:6px;"><input class="form-control" type="password" id="uPassNuova" placeholder="Lascia vuota per non cambiare" style="flex:1;"><button class="pass-toggle" type="button" onclick="togglePass('uPassNuova',this)">&#128065;</button></div></div>
+      <div id="statoGroup" class="form-group" style="display:none;"><label class="form-label">Stato</label><select class="form-control" id="uStato"><option value="attivo">Attivo</option><option value="disattivo">Disattivo</option></select></div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="Utils.closeModal('modalUtente')">Annulla</button>
-      <button class="btn btn-primary" id="btnSalvaUtente" onclick="salvaUtente()">Salva</button>
-    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="Utils.closeModal('modalUtente')">Annulla</button><button class="btn btn-primary" id="btnSalvaUtente" onclick="salvaUtente()">Salva</button></div>
   </div>
 </div>
-
 <div class="modal" id="modalToggleUtente">
   <div class="modal-box modal-box-sm">
     <div class="modal-header"><span class="modal-title" id="toggleUtenteTitle">Conferma</span><button class="modal-close" onclick="Utils.closeModal('modalToggleUtente')">&#10005;</button></div>
     <div class="modal-body"><p id="toggleUtenteMsg"></p></div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="Utils.closeModal('modalToggleUtente')">Annulla</button>
-      <button class="btn btn-danger" id="btnConfermaToggleUtente">Conferma</button>
-    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="Utils.closeModal('modalToggleUtente')">Annulla</button><button class="btn btn-danger" id="btnConfermaToggleUtente">Conferma</button></div>
   </div>
 </div>
-
 <div class="modal" id="modalAddLk">
   <div class="modal-box modal-box-sm">
     <div class="modal-header"><span class="modal-title">Aggiungi voce</span><button class="modal-close" onclick="Utils.closeModal('modalAddLk')">&#10005;</button></div>
@@ -252,14 +219,11 @@
       <div class="form-group"><label class="form-label">Sigla</label><input class="form-control" type="text" id="lkNewSigla" placeholder="Es. TS"></div>
       <div class="form-group"><label class="form-label">Descrizione <span class="req">*</span></label><input class="form-control" type="text" id="lkNewDesc" placeholder="Testo descrittivo"></div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="Utils.closeModal('modalAddLk')">Annulla</button>
-      <button class="btn btn-primary" id="btnSalvaLk" onclick="salvaLk()">Aggiungi</button>
-    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="Utils.closeModal('modalAddLk')">Annulla</button><button class="btn btn-primary" id="btnSalvaLk" onclick="salvaLk()">Aggiungi</button></div>
   </div>
 </div>
 
-<!-- MODAL NUOVA REVISIONE -->
+<!-- MODAL REVISIONE -->
 <div class="modal" id="modalRevisione">
   <div class="modal-box modal-box-sm">
     <div class="modal-header" style="background:#4f46e5;color:#fff;border-radius:12px 12px 0 0;">
@@ -268,13 +232,10 @@
     </div>
     <div class="modal-body">
       <div style="background:#eef2ff;border-radius:6px;padding:10px 12px;margin-bottom:14px;font-size:.82rem;color:#3730a3;">
-        Verranno salvate <strong id="revDraftCount">0</strong> modifiche ai parametri di posa.
-        Questa azione creera una nuova revisione nello storico.
+        Verranno salvate <strong id="revDraftCount">0</strong> modifiche.<br>
+        <span id="revTipoDesc" style="color:#4f46e5;font-weight:600;"></span>
       </div>
-      <div class="form-group">
-        <label class="form-label">Note (opzionale)</label>
-        <textarea class="form-control" id="revNote" rows="3" placeholder="Es. Aggiornamento ore installazione finestre per nuovi accordi..."></textarea>
-      </div>
+      <div class="form-group"><label class="form-label">Note (opzionale)</label><textarea class="form-control" id="revNote" rows="3" placeholder="Es. Aggiornamento ore installazione..."></textarea></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="Utils.closeModal('modalRevisione')">Annulla</button>
@@ -292,16 +253,21 @@
 var currentUser = Auth.requireLogin();
 if (!currentUser || !Auth.isAdmin()) {
   Utils.showError('Accesso riservato agli administrator.');
-  setTimeout(function() { window.location.href = 'dashboard.html'; }, 1500);
+  setTimeout(function(){ window.location.href = 'dashboard.html'; }, 1500);
   throw new Error('not admin');
 }
 Layout.init('');
 
+// ================================================================
+// TABS
+// ================================================================
+var panelCorrente = 'utenti';
 function showTab(name, btn) {
-  document.querySelectorAll('.adm-panel').forEach(function(p) { p.classList.remove('active'); });
-  document.querySelectorAll('.adm-tab').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.adm-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.adm-tab').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('panel-' + name).classList.add('active');
   btn.classList.add('active');
+  panelCorrente = name;
   if (name === 'utenti')    loadUtenti();
   if (name === 'dati')      loadDatiTecnici();
   if (name === 'posa')      loadDatiPosa('SERR');
@@ -310,304 +276,233 @@ function showTab(name, btn) {
 }
 
 function togglePass(id, btn) {
-  var el = document.getElementById(id);
-  var show = el.type === 'password';
-  el.type = show ? 'text' : 'password';
-  btn.innerHTML = show ? '&#128584;' : '&#128065;';
+  var el = document.getElementById(id); var show = el.type === 'password';
+  el.type = show ? 'text' : 'password'; btn.innerHTML = show ? '&#128584;' : '&#128065;';
 }
-
 function roleBadge(ruolo) {
   var map = { administrator:'Admin', titolare:'Titolare', responsabile_commerciale:'Resp. Comm.', ufficio_preventivi:'Uff. Prev.', agente:'Agente', altro:'Altro' };
   return map[ruolo] || ruolo;
 }
-
-function buildMailtoLink(utente) {
+function buildMailtoLink(u) {
   var sogg = encodeURIComponent('Accesso app F4 Rilievi Preliminari');
-  var corpo = encodeURIComponent('Ciao ' + (utente.nome||'') + ',\n\nPuoi accedere all app F4 Rilievi Preliminari al seguente indirizzo:\nhttps://marcotabaro-ship-it.github.io/f4-rilievi/\n\nEmail di accesso: ' + utente.email + '\nPassword: (quella comunicata separatamente)\n\nGruppo F4');
-  return 'mailto:' + encodeURIComponent(utente.email) + '?subject=' + sogg + '&body=' + corpo;
+  var corpo = encodeURIComponent('Ciao ' + (u.nome||'') + ',\n\nhttps://marcotabaro-ship-it.github.io/f4-rilievi/\n\nEmail: ' + u.email + '\nGruppo F4');
+  return 'mailto:' + encodeURIComponent(u.email) + '?subject=' + sogg + '&body=' + corpo;
 }
 
 // ================================================================
 // UTENTI
 // ================================================================
 var tuttiUtenti = [], utenteEditId = null;
-
 async function loadUtenti() {
-  var container = document.getElementById('tabellaUtenti');
-  Utils.showLoading(container);
-  var res = await API.adminGetUtenti();
-  if (!res.success) { Utils.showError(res.error); return; }
+  var c = document.getElementById('tabellaUtenti'); Utils.showLoading(c);
+  var res = await API.adminGetUtenti(); if (!res.success){ Utils.showError(res.error); return; }
   tuttiUtenti = res.data; renderUtenti();
 }
-
 function renderUtenti() {
-  var container = document.getElementById('tabellaUtenti');
-  if (!tuttiUtenti.length) { Utils.showEmptyState(container, 'Nessun utente.', '&#128101;'); return; }
+  var c = document.getElementById('tabellaUtenti');
+  if (!tuttiUtenti.length){ Utils.showEmptyState(c,'Nessun utente.','&#128101;'); return; }
   var sorted = tuttiUtenti.slice().sort(function(a,b){ return (a.nome||'').localeCompare(b.nome||'','it'); });
-  var rows = sorted.map(function(u) {
-    var attivo = u.stato === 'attivo';
-    return '<tr><td><strong>' + (u.nome||'—') + '</strong></td>' +
-      '<td style="color:var(--c-text-sec);">' + (u.email||'—') + '</td>' +
-      '<td>' + roleBadge(u.ruolo) + '</td>' +
-      '<td><code>' + (u.sigla||'—') + '</code></td>' +
-      '<td style="color:var(--c-text-sec);">' + (u.reparto||'—') + '</td>' +
-      '<td><span class="badge-' + (attivo?'attivo':'disattivo') + '">' + (attivo?'Attivo':'Disattivo') + '</span></td>' +
-      '<td style="text-align:right;white-space:nowrap;">' +
-        '<a class="mail-btn" href="' + buildMailtoLink(u) + '">&#9993;&#65039; Invia link</a>&nbsp;' +
-        '<button class="btn btn-sm btn-outline" onclick="openModalModificaUtente(\'' + u.id + '\')">&#9999;&#65039;</button>&nbsp;' +
-        '<button class="btn btn-sm ' + (attivo?'btn-danger':'btn-outline') + '" onclick="confermaToggleUtente(\'' + u.id + '\',\'' + (u.nome||u.email||'').replace(/'/g,"\\'") + '\',' + attivo + ')">' + (attivo?'&#128308;':'&#128994;') + '</button>' +
-      '</td></tr>';
+  var rows = sorted.map(function(u){
+    var att = u.stato === 'attivo';
+    return '<tr><td><strong>'+(u.nome||'—')+'</strong></td><td style="color:var(--c-text-sec);">'+(u.email||'—')+'</td><td>'+roleBadge(u.ruolo)+'</td><td><code>'+(u.sigla||'—')+'</code></td><td style="color:var(--c-text-sec);">'+(u.reparto||'—')+'</td><td><span class="badge-'+(att?'attivo':'disattivo')+'">'+(att?'Attivo':'Disattivo')+'</span></td><td style="text-align:right;white-space:nowrap;"><a class="mail-btn" href="'+buildMailtoLink(u)+'">&#9993;&#65039; Invia link</a>&nbsp;<button class="btn btn-sm btn-outline" onclick="openModalModificaUtente(\''+u.id+'\')">&#9999;&#65039;</button>&nbsp;<button class="btn btn-sm '+(att?'btn-danger':'btn-outline')+'" onclick="confermaToggleUtente(\''+u.id+'\',\''+(u.nome||u.email||'').replace(/'/g,"\\'")+'\','+att+')">'+(att?'&#128308;':'&#128994;')+'</button></td></tr>';
   }).join('');
-  container.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Nome</th><th>Email</th><th>Ruolo</th><th>Sigla</th><th>Reparto</th><th>Stato</th><th style="text-align:right;">Azioni</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+  c.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Nome</th><th>Email</th><th>Ruolo</th><th>Sigla</th><th>Reparto</th><th>Stato</th><th style="text-align:right;">Azioni</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
-
 function openModalNuovoUtente() {
-  utenteEditId = null;
-  document.getElementById('modalUtenteTitle').textContent = 'Nuovo utente';
+  utenteEditId = null; document.getElementById('modalUtenteTitle').textContent = 'Nuovo utente';
   ['uNome','uSigla','uEmail','uReparto','uPass','uPassNuova'].forEach(function(id){ var el=document.getElementById(id); if(el)el.value=''; });
-  document.getElementById('uRuolo').value = 'agente';
-  document.getElementById('passGroup').style.display = '';
-  document.getElementById('passNuovaGroup').style.display = 'none';
-  document.getElementById('statoGroup').style.display = 'none';
-  document.getElementById('uEmail').disabled = false;
-  Utils.openModal('modalUtente');
-  setTimeout(function(){ document.getElementById('uNome').focus(); }, 100);
+  document.getElementById('uRuolo').value='agente'; document.getElementById('passGroup').style.display=''; document.getElementById('passNuovaGroup').style.display='none'; document.getElementById('statoGroup').style.display='none'; document.getElementById('uEmail').disabled=false;
+  Utils.openModal('modalUtente'); setTimeout(function(){ document.getElementById('uNome').focus(); },100);
 }
-
 function openModalModificaUtente(id) {
-  var u = tuttiUtenti.find(function(x){ return x.id === id; });
-  if (!u) return;
-  utenteEditId = id;
-  document.getElementById('modalUtenteTitle').textContent = 'Modifica utente';
-  document.getElementById('uNome').value = u.nome||''; document.getElementById('uSigla').value = u.sigla||'';
-  document.getElementById('uEmail').value = u.email||''; document.getElementById('uReparto').value = u.reparto||'';
-  document.getElementById('uRuolo').value = u.ruolo||'altro'; document.getElementById('uStato').value = u.stato||'attivo';
-  document.getElementById('passGroup').style.display = 'none';
-  document.getElementById('passNuovaGroup').style.display = '';
-  document.getElementById('statoGroup').style.display = '';
-  document.getElementById('uEmail').disabled = true;
-  Utils.openModal('modalUtente');
-  setTimeout(function(){ document.getElementById('uNome').focus(); }, 100);
+  var u = tuttiUtenti.find(function(x){ return x.id===id; }); if (!u) return;
+  utenteEditId = id; document.getElementById('modalUtenteTitle').textContent = 'Modifica utente';
+  document.getElementById('uNome').value=u.nome||''; document.getElementById('uSigla').value=u.sigla||''; document.getElementById('uEmail').value=u.email||''; document.getElementById('uReparto').value=u.reparto||''; document.getElementById('uRuolo').value=u.ruolo||'altro'; document.getElementById('uStato').value=u.stato||'attivo';
+  document.getElementById('passGroup').style.display='none'; document.getElementById('passNuovaGroup').style.display=''; document.getElementById('statoGroup').style.display=''; document.getElementById('uEmail').disabled=true;
+  Utils.openModal('modalUtente'); setTimeout(function(){ document.getElementById('uNome').focus(); },100);
 }
-
 async function salvaUtente() {
-  var nome=document.getElementById('uNome').value.trim(), email=document.getElementById('uEmail').value.trim();
-  var ruolo=document.getElementById('uRuolo').value, sigla=document.getElementById('uSigla').value.trim().toUpperCase();
-  var reparto=document.getElementById('uReparto').value.trim(), pass=document.getElementById('uPass').value, passN=document.getElementById('uPassNuova').value;
-  if (!nome){ Utils.showWarning('Nome obbligatorio.'); return; }
-  if (!email && !utenteEditId){ Utils.showWarning('Email obbligatoria.'); return; }
-  if (!utenteEditId && !pass){ Utils.showWarning('Password obbligatoria.'); return; }
-  if (!utenteEditId && pass.length < 8){ Utils.showWarning('Password minimo 8 caratteri.'); return; }
-  var btn = document.getElementById('btnSalvaUtente'); btn.disabled = true; btn.textContent = 'Salvataggio...';
+  var nome=document.getElementById('uNome').value.trim(), email=document.getElementById('uEmail').value.trim(), ruolo=document.getElementById('uRuolo').value, sigla=document.getElementById('uSigla').value.trim().toUpperCase(), reparto=document.getElementById('uReparto').value.trim(), pass=document.getElementById('uPass').value, passN=document.getElementById('uPassNuova').value;
+  if (!nome){ Utils.showWarning('Nome obbligatorio.'); return; } if (!email&&!utenteEditId){ Utils.showWarning('Email obbligatoria.'); return; } if (!utenteEditId&&!pass){ Utils.showWarning('Password obbligatoria.'); return; } if (!utenteEditId&&pass.length<8){ Utils.showWarning('Password minimo 8 caratteri.'); return; }
+  var btn=document.getElementById('btnSalvaUtente'); btn.disabled=true; btn.textContent='Salvataggio...';
   var res;
-  if (!utenteEditId) res = await _sb.adminCall('create_user', { email:email, password:pass, nome:nome, ruolo:ruolo, sigla:sigla, reparto:reparto });
-  else {
-    res = await _sb.adminCall('update_user', { id:utenteEditId, nome:nome, ruolo:ruolo, sigla:sigla, reparto:reparto, stato:document.getElementById('uStato').value });
-    if (res.success && passN && passN.length >= 8) await _sb.adminCall('reset_password', { id:utenteEditId, new_password:passN });
-  }
-  btn.disabled = false; btn.textContent = 'Salva';
-  if (res.success) { Utils.showSuccess(utenteEditId?'Utente aggiornato.':'Utente creato.'); Utils.closeModal('modalUtente'); await loadUtenti(); }
-  else Utils.showError(res.error||'Errore sconosciuto.');
+  if (!utenteEditId) res = await _sb.adminCall('create_user',{email,password:pass,nome,ruolo,sigla,reparto});
+  else { res = await _sb.adminCall('update_user',{id:utenteEditId,nome,ruolo,sigla,reparto,stato:document.getElementById('uStato').value}); if (res.success&&passN&&passN.length>=8) await _sb.adminCall('reset_password',{id:utenteEditId,new_password:passN}); }
+  btn.disabled=false; btn.textContent='Salva';
+  if (res.success){ Utils.showSuccess(utenteEditId?'Utente aggiornato.':'Utente creato.'); Utils.closeModal('modalUtente'); await loadUtenti(); } else Utils.showError(res.error||'Errore.');
 }
-
-function confermaToggleUtente(id, nome, attivo) {
-  document.getElementById('toggleUtenteTitle').textContent = attivo ? 'Disattiva utente' : 'Riattiva utente';
-  document.getElementById('toggleUtenteMsg').textContent = attivo ? 'Disattivare "' + nome + '"?' : 'Riattivare "' + nome + '"?';
-  document.getElementById('btnConfermaToggleUtente').onclick = async function() {
-    Utils.closeModal('modalToggleUtente');
-    var res = await _sb.adminCall('toggle_stato', { id:id });
-    if (res.success) { Utils.showSuccess('Stato aggiornato.'); await loadUtenti(); }
-    else Utils.showError(res.error);
-  };
+function confermaToggleUtente(id,nome,attivo) {
+  document.getElementById('toggleUtenteTitle').textContent = attivo?'Disattiva utente':'Riattiva utente';
+  document.getElementById('toggleUtenteMsg').textContent = attivo?'Disattivare "'+nome+'"?':'Riattivare "'+nome+'"?';
+  document.getElementById('btnConfermaToggleUtente').onclick = async function(){ Utils.closeModal('modalToggleUtente'); var res=await _sb.adminCall('toggle_stato',{id}); if(res.success){Utils.showSuccess('Stato aggiornato.');await loadUtenti();}else Utils.showError(res.error); };
   Utils.openModal('modalToggleUtente');
 }
 
 // ================================================================
 // LOOKUP
 // ================================================================
-var currentLk = null, lkData = [];
-var ORDINI_LOOKUP = {
-  'LK_TIPO_SERR':['I','F','PF','FF','VF','S'],'LK_TIPO_FORO_SERR':['A','D','P'],
-  'LK_SENSI_APERTURA':['D','S','W','F'],'LK_SCHERMATURA':['A','AM','AE','AR','S','TZ','TM','CA','CT'],
-  'LK_VETRO':['D','T'],'LK_COPRIFILI':['P','L','A'],'LK_CASSONETTO':['P','L'],
-  'LK_CONTROTELAIO':['L','T'],'LK_ZANZARIERA':['V','O'],'LK_DINOXILL':['DA','I3','I4'],
-  'LK_OSCURANTE':['V','D','P'],'LK_TIPO_FORO_PORTE':['N','P'],
-  'LK_TIPO_PORTA':['INT','BLI','REI'],'LK_SISTEMA_PORTE':['ST','DO','TP','FC','F_','SI','SE','LI','PI']
-};
-
+var currentLk=null, lkData=[];
+var ORDINI_LOOKUP={'LK_TIPO_SERR':['I','F','PF','FF','VF','S'],'LK_TIPO_FORO_SERR':['A','D','P'],'LK_SENSI_APERTURA':['D','S','W','F'],'LK_SCHERMATURA':['A','AM','AE','AR','S','TZ','TM','CA','CT'],'LK_VETRO':['D','T'],'LK_COPRIFILI':['P','L','A'],'LK_CASSONETTO':['P','L'],'LK_CONTROTELAIO':['L','T'],'LK_ZANZARIERA':['V','O'],'LK_DINOXILL':['DA','I3','I4'],'LK_OSCURANTE':['V','D','P'],'LK_TIPO_FORO_PORTE':['N','P'],'LK_TIPO_PORTA':['INT','BLI','REI'],'LK_SISTEMA_PORTE':['ST','DO','TP','FC','F_','SI','SE','LI','PI']};
 async function loadLookup(table) {
-  if (!table) return;
-  currentLk = table.toUpperCase();
-  document.getElementById('btnAddLk').style.display = '';
-  var container = document.getElementById('lkContainer');
-  Utils.showLoading(container);
-  var res = await API.adminGetLookup(table);
-  if (!res.success) { Utils.showError(res.error); return; }
-  lkData = res.data; renderLookup(lkData);
+  if (!table) return; currentLk=table.toUpperCase(); document.getElementById('btnAddLk').style.display='';
+  var c=document.getElementById('lkContainer'); Utils.showLoading(c);
+  var res=await API.adminGetLookup(table); if (!res.success){Utils.showError(res.error);return;} lkData=res.data; renderLookup(lkData);
 }
-
 function sortLookupRows(rows) {
-  var ord = ORDINI_LOOKUP[currentLk];
-  if (ord) return rows.slice().sort(function(a,b){ var ka=a.sigla!==undefined?String(a.sigla):'',kb=b.sigla!==undefined?String(b.sigla):'',ia=ord.indexOf(ka),ib=ord.indexOf(kb);return(ia<0?999:ia)-(ib<0?999:ib); });
-  if (currentLk==='LK_PIANO') return rows.slice().sort(function(a,b){ return (parseFloat(a.piano)||0)-(parseFloat(b.piano)||0); });
-  if (currentLk==='LK_N_CAMPI') return rows.slice().sort(function(a,b){ return (parseFloat(a.n_campi)||0)-(parseFloat(b.n_campi)||0); });
+  var ord=ORDINI_LOOKUP[currentLk];
+  if (ord) return rows.slice().sort(function(a,b){var ka=a.sigla!==undefined?String(a.sigla):'',kb=b.sigla!==undefined?String(b.sigla):'',ia=ord.indexOf(ka),ib=ord.indexOf(kb);return(ia<0?999:ia)-(ib<0?999:ib);});
+  if (currentLk==='LK_PIANO') return rows.slice().sort(function(a,b){return(parseFloat(a.piano)||0)-(parseFloat(b.piano)||0);});
+  if (currentLk==='LK_N_CAMPI') return rows.slice().sort(function(a,b){return(parseFloat(a.n_campi)||0)-(parseFloat(b.n_campi)||0);});
   return rows;
 }
-
 function renderLookup(rows) {
-  var container = document.getElementById('lkContainer');
-  if (!rows.length) { container.innerHTML='<div style="padding:20px;text-align:center;color:var(--c-text-sec);">Tabella vuota.</div>'; return; }
-  var sorted = sortLookupRows(rows);
-  var skip = new Set(['id','created_at','updated_at','updated_by','stato']);
-  var cols = Object.keys(rows[0]).filter(function(c){ return !skip.has(c); });
-  var bodyRows = sorted.map(function(r) {
-    var cells = cols.map(function(c){ return '<td>' + (r[c]!==null&&r[c]!==undefined?String(r[c]):'—') + '</td>'; }).join('');
-    var attivo = r.stato === 'attivo';
-    return '<tr>' + cells + '<td style="text-align:right;"><span class="badge-' + (attivo?'attivo':'disattivo') + '">' + r.stato + '</span>&nbsp;<button class="btn btn-xs ' + (attivo?'btn-danger':'btn-outline') + '" onclick="toggleLk(\'' + r.id + '\')">' + (attivo?'Disattiva':'Riattiva') + '</button></td></tr>';
-  }).join('');
-  container.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr>' + cols.map(function(c){ return '<th>' + c + '</th>'; }).join('') + '<th style="text-align:right;">Stato</th></tr></thead><tbody>' + bodyRows + '</tbody></table></div>';
+  var c=document.getElementById('lkContainer');
+  if (!rows.length){c.innerHTML='<div style="padding:20px;text-align:center;color:var(--c-text-sec);">Tabella vuota.</div>';return;}
+  var sorted=sortLookupRows(rows), skip=new Set(['id','created_at','updated_at','updated_by','stato']), cols=Object.keys(rows[0]).filter(function(c){return !skip.has(c);});
+  var body=sorted.map(function(r){var att=r.stato==='attivo';return '<tr>'+cols.map(function(col){return '<td>'+(r[col]!==null&&r[col]!==undefined?String(r[col]):'—')+'</td>';}).join('')+'<td style="text-align:right;"><span class="badge-'+(att?'attivo':'disattivo')+'">'+r.stato+'</span>&nbsp;<button class="btn btn-xs '+(att?'btn-danger':'btn-outline')+'" onclick="toggleLk(\''+r.id+'\')">'+(att?'Disattiva':'Riattiva')+'</button></td></tr>';}).join('');
+  c.innerHTML='<div style="overflow-x:auto;"><table class="data-table"><thead><tr>'+cols.map(function(col){return '<th>'+col+'</th>';}).join('')+'<th style="text-align:right;">Stato</th></tr></thead><tbody>'+body+'</tbody></table></div>';
 }
-
-async function toggleLk(id) {
-  var res = await API.adminToggleLookup(currentLk, id);
-  if (res.success) { Utils.showSuccess('Stato aggiornato.'); await loadLookup(currentLk.toLowerCase()); }
-  else Utils.showError(res.error);
-}
-
-function openModalAddLk() {
-  document.getElementById('lkNewSigla').value = ''; document.getElementById('lkNewDesc').value = '';
-  Utils.openModal('modalAddLk'); setTimeout(function(){ document.getElementById('lkNewSigla').focus(); }, 100);
-}
-
-async function salvaLk() {
-  var sigla=document.getElementById('lkNewSigla').value.trim(), desc=document.getElementById('lkNewDesc').value.trim();
-  if (!desc) { Utils.showWarning('Descrizione obbligatoria.'); return; }
-  var btn=document.getElementById('btnSalvaLk'); btn.disabled=true; btn.textContent='Salvataggio...';
-  var data={ descrizione:desc, stato:'attivo' }; if (sigla) data.sigla=sigla;
-  var res = await API.adminAddLookup(currentLk.toLowerCase(), data);
-  btn.disabled=false; btn.textContent='Aggiungi';
-  if (res.success) { Utils.showSuccess('Voce aggiunta.'); Utils.closeModal('modalAddLk'); await loadLookup(currentLk.toLowerCase()); }
-  else Utils.showError(res.error);
-}
+async function toggleLk(id){var res=await API.adminToggleLookup(currentLk,id);if(res.success){Utils.showSuccess('Stato aggiornato.');await loadLookup(currentLk.toLowerCase());}else Utils.showError(res.error);}
+function openModalAddLk(){document.getElementById('lkNewSigla').value='';document.getElementById('lkNewDesc').value='';Utils.openModal('modalAddLk');setTimeout(function(){document.getElementById('lkNewSigla').focus();},100);}
+async function salvaLk(){var sigla=document.getElementById('lkNewSigla').value.trim(),desc=document.getElementById('lkNewDesc').value.trim();if(!desc){Utils.showWarning('Descrizione obbligatoria.');return;}var btn=document.getElementById('btnSalvaLk');btn.disabled=true;btn.textContent='Salvataggio...';var data={descrizione:desc,stato:'attivo'};if(sigla)data.sigla=sigla;var res=await API.adminAddLookup(currentLk.toLowerCase(),data);btn.disabled=false;btn.textContent='Aggiungi';if(res.success){Utils.showSuccess('Voce aggiunta.');Utils.closeModal('modalAddLk');await loadLookup(currentLk.toLowerCase());}else Utils.showError(res.error);}
 
 // ================================================================
-// DATI TECNICI (tubolarita + regole lati)
+// DATI TECNICI SERRAMENTO — draft+revisione
 // ================================================================
-async function loadDatiTecnici() { await Promise.all([loadDatiComuni(), loadRegoleLati()]); }
+var tecDraft = {};     // { 'serr_ID': {id, valore_mm_orig, valore_mm_new} | 'lati_SIG': {sigla, ...} }
+var tecDataSerr = [], tecDataLati = [];
+
+async function loadDatiTecnici() {
+  await Promise.all([loadDatiComuni(), loadRegoleLati()]);
+}
 
 async function loadDatiComuni() {
   var res = await API.adminGetDatiComuni();
-  var container = document.getElementById('tabellaComuni');
-  if (!res.success) { Utils.showError(res.error); return; }
-  var data = res.data;
-  if (!data.length) { Utils.showEmptyState(container,'Nessun dato.'); return; }
-  container.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>ID</th><th>Categoria</th><th>Parametro</th><th>Descrizione</th><th style="width:140px;">Valore (mm)</th></tr></thead><tbody>' +
-    data.map(function(r){ return '<tr><td><code>'+r.id+'</code></td><td style="color:var(--c-text-sec);">'+r.categoria+' / '+r.sottocategoria+'</td><td>'+r.parametro+'</td><td style="color:var(--c-text-sec);font-size:.78rem;">'+r.descrizione+'</td><td><div class="inline-edit"><input type="number" value="'+r.valore_mm+'" id="dc_'+r.id+'" step="0.01"><button class="btn btn-xs btn-primary" onclick="salvaDatoComune('+r.id+')">&#128190;</button></div></td></tr>'; }).join('') +
-    '</tbody></table></div>';
-}
-
-async function salvaDatoComune(id) {
-  var val = parseFloat(document.getElementById('dc_' + id).value);
-  if (isNaN(val)) { Utils.showWarning('Valore non valido.'); return; }
-  var res = await API.adminUpdateDatiComuni(id, val);
-  if (res.success) Utils.showSuccess('Salvato.'); else Utils.showError(res.error);
+  var c = document.getElementById('tabellaComuni');
+  if (!res.success){ Utils.showError(res.error); return; }
+  tecDataSerr = res.data;
+  if (!tecDataSerr.length){ Utils.showEmptyState(c,'Nessun dato.'); return; }
+  var lastCat = '';
+  var rows = tecDataSerr.map(function(r){
+    var draftR = tecDraft['serr_'+r.id];
+    var val = draftR ? draftR.valore_mm_new : r.valore_mm;
+    var isDirty = draftR && draftR.valore_mm_new !== r.valore_mm;
+    var catHdr = '';
+    if (r.categoria !== lastCat){ catHdr='<tr class="tec-area-hdr"><td colspan="5">'+r.categoria+'</td></tr>'; lastCat=r.categoria; }
+    return catHdr+'<tr><td><code>'+r.id+'</code></td><td style="color:var(--c-text-sec);">'+r.categoria+' / '+r.sottocategoria+'</td><td>'+r.parametro+'</td><td style="color:var(--c-text-sec);font-size:.78rem;">'+r.descrizione+'</td><td><input class="posa-input'+(isDirty?' dirty':'')+'" type="number" value="'+val+'" step="0.01" data-key="serr_'+r.id+'" data-id="'+r.id+'" data-orig="'+r.valore_mm+'" onchange="markDirtyTec(this)"></td></tr>';
+  }).join('');
+  c.innerHTML='<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>ID</th><th>Categoria</th><th>Parametro</th><th>Descrizione</th><th style="width:120px;">Valore (mm)</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 
 async function loadRegoleLati() {
   var res = await API.adminGetRegoleLati();
-  var container = document.getElementById('tabellaRegole');
-  if (!res.success) { Utils.showError(res.error); return; }
-  var data = res.data;
-  container.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Sigla</th><th>Tipo serramento</th><th>Lati coprifilo</th><th>Dinoxill disponibile</th><th>Lati scelta</th></tr></thead><tbody>' +
-    data.map(function(r){ return '<tr><td><strong>'+r.sigla+'</strong></td><td>'+r.tipo_serramento+'</td><td><select id="rl_lati_'+r.sigla+'" class="form-control" style="width:70px;">'+[0,3,4].map(function(n){ return '<option value="'+n+'"'+(r.coprifili_lati==n?' selected':'')+'>'+n+'</option>'; }).join('')+'</select></td><td><input type="checkbox" id="rl_din_'+r.sigla+'"'+(r.dinoxill_disponibile?' checked':'')+' ></td><td style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="rl_lsc_'+r.sigla+'"'+(r.dinoxill_lati_scelta?' checked':'')+' ><button class="btn btn-xs btn-primary" onclick="salvaRegoleLati(\''+r.sigla+'\')">&#128190;</button></td></tr>'; }).join('') +
-    '</tbody></table></div>';
+  var c = document.getElementById('tabellaRegole');
+  if (!res.success){ Utils.showError(res.error); return; }
+  tecDataLati = res.data;
+  var rows = tecDataLati.map(function(r){
+    var draftR = tecDraft['lati_'+r.sigla];
+    var lati   = draftR ? draftR.coprifili_lati    : r.coprifili_lati;
+    var din    = draftR ? draftR.dinoxill_disponibile : r.dinoxill_disponibile;
+    var lsc    = draftR ? draftR.dinoxill_lati_scelta : r.dinoxill_lati_scelta;
+    var dirty  = draftR ? ' style="background:#fffbeb;"' : '';
+    return '<tr'+dirty+'><td><strong>'+r.sigla+'</strong></td><td>'+r.tipo_serramento+'</td>'+
+      '<td><select class="form-control" style="width:70px;" data-key="lati_'+r.sigla+'" data-field="coprifili_lati" onchange="markDirtyLati(this)">'+[0,3,4].map(function(n){return '<option value="'+n+'"'+(lati==n?' selected':'')+'>'+n+'</option>';}).join('')+'</select></td>'+
+      '<td><input type="checkbox" data-key="lati_'+r.sigla+'" data-field="dinoxill_disponibile" onchange="markDirtyLati(this)"'+(din?' checked':'')+' ></td>'+
+      '<td><input type="checkbox" data-key="lati_'+r.sigla+'" data-field="dinoxill_lati_scelta" onchange="markDirtyLati(this)"'+(lsc?' checked':'')+' ></td>'+
+      '</tr>';
+  }).join('');
+  c.innerHTML='<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Sigla</th><th>Tipo serramento</th><th>Lati coprifilo</th><th>Dinoxill disp.</th><th>Lati scelta</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 
-async function salvaRegoleLati(sigla) {
-  var data = { coprifili_lati:parseInt(document.getElementById('rl_lati_'+sigla).value), dinoxill_disponibile:document.getElementById('rl_din_'+sigla).checked, dinoxill_lati_scelta:document.getElementById('rl_lsc_'+sigla).checked };
-  var res = await API.adminUpdateRegoleLati(sigla, data);
-  if (res.success) Utils.showSuccess('Salvato.'); else Utils.showError(res.error);
+function markDirtyTec(input) {
+  var key = input.getAttribute('data-key');
+  var orig = parseFloat(input.getAttribute('data-orig'));
+  var val = parseFloat(input.value);
+  var isDirty = !isNaN(val) && val !== orig;
+  input.classList.toggle('dirty', isDirty);
+  if (isDirty) tecDraft[key] = { id: input.getAttribute('data-id'), valore_mm_new: val, valore_mm_orig: orig };
+  else delete tecDraft[key];
+  updateDraftBar();
+}
+
+function markDirtyLati(input) {
+  var key = input.getAttribute('data-key');
+  var sigla = key.replace('lati_','');
+  var orig = tecDataLati.find(function(r){ return r.sigla===sigla; });
+  if (!orig) return;
+  if (!tecDraft[key]) tecDraft[key] = { sigla:sigla, coprifili_lati:orig.coprifili_lati, dinoxill_disponibile:orig.dinoxill_disponibile, dinoxill_lati_scelta:orig.dinoxill_lati_scelta };
+  var field = input.getAttribute('data-field');
+  tecDraft[key][field] = input.type==='checkbox' ? input.checked : parseInt(input.value);
+  // Se tutti i valori tornano all'originale, rimuovi dalla draft
+  var d = tecDraft[key];
+  if (d.coprifili_lati===orig.coprifili_lati && d.dinoxill_disponibile===orig.dinoxill_disponibile && d.dinoxill_lati_scelta===orig.dinoxill_lati_scelta) delete tecDraft[key];
+  // Evidenzia riga
+  var tr = input.closest('tr');
+  if (tr) tr.style.background = tecDraft[key] ? '#fffbeb' : '';
+  updateDraftBar();
 }
 
 // ================================================================
-// DATI COMUNI POSA — Editor con draft
+// DATI POSA — draft+revisione
 // ================================================================
-var posaDraft = {};       // { id: { id, h_pos_orig, min_cantiere_orig, h_pos_new, min_cantiere_new } }
-var posaDataLoaded = [];  // righe caricate dal DB
-var posaTabCorrente = 'SERR';
+var posaDraft = {}, posaDataLoaded = [], posaTabCorrente = 'SERR';
 
 function showPosaTab(tipo, btn) {
   posaTabCorrente = tipo;
   document.querySelectorAll('.posa-tab').forEach(function(b){ b.classList.remove('active'); });
-  btn.classList.add('active');
-  loadDatiPosa(tipo);
+  btn.classList.add('active'); loadDatiPosa(tipo);
 }
 
 async function loadDatiPosa(tipo) {
-  var container = document.getElementById('tabellaPosa');
-  Utils.showLoading(container);
-  var res = await API.adminGetPosa(tipo);
-  if (!res.success) { Utils.showError(res.error); return; }
-  posaDataLoaded = res.data;
-  renderDatiPosa(posaDataLoaded);
+  var c = document.getElementById('tabellaPosa'); Utils.showLoading(c);
+  var res = await API.adminGetPosa(tipo); if (!res.success){ Utils.showError(res.error); return; }
+  posaDataLoaded = res.data; renderDatiPosa(posaDataLoaded);
 }
 
-function fmtHpos(v) { if (v === null || v === undefined) return '—'; var n = parseFloat(v); return isNaN(n) ? '—' : (Math.round(n*10000)/10000).toString(); }
+function fmtN(v) { if (v===null||v===undefined) return ''; return (Math.round(parseFloat(v)*100000)/100000).toString(); }
 
 function renderDatiPosa(rows) {
-  var container = document.getElementById('tabellaPosa');
-  if (!rows.length) { Utils.showEmptyState(container, 'Nessun dato.'); return; }
+  var c = document.getElementById('tabellaPosa');
+  if (!rows.length){ Utils.showEmptyState(c,'Nessun dato.'); return; }
   var lastArea = '';
-  var bodyRows = rows.map(function(r) {
-    var draftR = posaDraft[r.id];
-    var hVal  = draftR ? draftR.h_pos_new       : r.h_pos;
-    var mVal  = draftR ? draftR.min_cantiere_new : r.min_cantiere;
-    var hDirty  = draftR && draftR.h_pos_new       !== r.h_pos;
-    var mDirty  = draftR && draftR.min_cantiere_new !== r.min_cantiere;
-    var areaHdr = '';
-    if (r.area !== lastArea) { areaHdr = '<tr class="posa-area-hdr"><td colspan="7">' + r.area + '</td></tr>'; lastArea = r.area; }
-    var ctx = '';
-    if (r.piano !== null && r.piano !== undefined) ctx += 'P' + (r.piano >= 0 ? '+' : '') + r.piano;
-    if (r.n_campi !== null && r.n_campi !== undefined) ctx += (ctx?' ':'') + r.n_campi + 'C';
-    if (r.sistema) ctx += (ctx?' ':'') + r.sistema;
-    return areaHdr +
-      '<tr>' +
-      '<td><code style="font-size:.74rem;">' + r.codice + '</code></td>' +
-      '<td style="color:var(--c-text-sec);font-size:.78rem;">' + r.voce + '</td>' +
-      '<td style="color:var(--c-text-sec);font-size:.76rem;">' + (r.descrizione||'') + '</td>' +
-      '<td style="font-size:.78rem;color:#6b7280;">' + ctx + '</td>' +
-      '<td><input class="posa-input' + (hDirty?' dirty':'') + '" type="number" step="0.00001" value="' + (hVal!==null&&hVal!==undefined?fmtHpos(hVal):'') + '" data-id="' + r.id + '" data-field="h_pos" onchange="markDirty(this)"></td>' +
-      '<td><input class="posa-input' + (mDirty?' dirty':'') + '" type="number" step="0.00001" value="' + (mVal!==null&&mVal!==undefined?fmtHpos(mVal):'') + '" data-id="' + r.id + '" data-field="min_cantiere" onchange="markDirty(this)"></td>' +
-      '</tr>';
+  var mostraGru = posaTabCorrente === 'SERR';
+  var thGru = mostraGru ? '<th style="width:90px;">h/pos GRU</th>' : '';
+  var body = rows.map(function(r){
+    var dr = posaDraft[r.id];
+    var hV  = dr ? dr.h_pos_new       : r.h_pos;
+    var mV  = dr ? dr.min_cantiere_new : r.min_cantiere;
+    var gV  = dr ? dr.h_pos_gru_new    : r.h_pos_gru;
+    var hD  = dr && dr.h_pos_new       !== r.h_pos;
+    var mD  = dr && dr.min_cantiere_new !== r.min_cantiere;
+    var gD  = dr && dr.h_pos_gru_new   !== r.h_pos_gru;
+    var aHdr = '';
+    if (r.area !== lastArea){ aHdr='<tr class="posa-area-hdr"><td colspan="'+(mostraGru?7:6)+'">'+r.area+'</td></tr>'; lastArea=r.area; }
+    var ctx=''; if(r.piano!==null&&r.piano!==undefined)ctx+='P'+(r.piano>=0?'+':'')+r.piano; if(r.n_campi!==null&&r.n_campi!==undefined)ctx+=(ctx?' ':'')+r.n_campi+'C'; if(r.sistema)ctx+=(ctx?' ':'')+r.sistema;
+    var isPosSERR = mostraGru && r.voce === 'POSIZIONAMENTO SERR' && r.piano !== null;
+    var tdGru = mostraGru ? '<td>'+(isPosSERR?'<input class="posa-input'+(gD?' dirty':'')+'" type="number" step="0.00001" value="'+fmtN(gV)+'" data-id="'+r.id+'" data-field="h_pos_gru" onchange="markDirtyPosa(this)">':'<span style="color:#9ca3af;font-size:.74rem;">n/a</span>')+'</td>' : '';
+    return aHdr+'<tr><td><code style="font-size:.74rem;">'+r.codice+'</code></td><td style="font-size:.78rem;color:var(--c-text-sec);">'+r.voce+'</td><td style="font-size:.76rem;color:var(--c-text-sec);">'+(r.descrizione||'')+'</td><td style="font-size:.78rem;color:#6b7280;">'+ctx+'</td><td><input class="posa-input'+(hD?' dirty':'')+'" type="number" step="0.00001" value="'+fmtN(hV)+'" data-id="'+r.id+'" data-field="h_pos" onchange="markDirtyPosa(this)"></td><td><input class="posa-input'+(mD?' dirty':'')+'" type="number" step="0.00001" value="'+fmtN(mV)+'" data-id="'+r.id+'" data-field="min_cantiere" onchange="markDirtyPosa(this)"></td>'+tdGru+'</tr>';
   }).join('');
-  container.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr>' +
-    '<th style="width:50px;">Cod.</th><th style="width:140px;">Voce</th><th>Descrizione</th>' +
-    '<th style="width:60px;">Contesto</th>' +
-    '<th style="width:90px;">h/pos</th><th style="width:90px;">Min. cant.</th>' +
-    '</tr></thead><tbody>' + bodyRows + '</tbody></table></div>';
+  c.innerHTML='<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th style="width:50px;">Cod.</th><th style="width:140px;">Voce</th><th>Descrizione</th><th style="width:60px;">Ctx</th><th style="width:90px;">h/pos</th><th style="width:90px;">Min. cant.</th>'+thGru+'</tr></thead><tbody>'+body+'</tbody></table></div>';
 }
 
-function markDirty(input) {
-  var id    = input.getAttribute('data-id');
-  var field = input.getAttribute('data-field');
-  var val   = input.value.trim() === '' ? null : parseFloat(input.value);
-  var orig  = posaDataLoaded.find(function(r){ return r.id === id; });
-  if (!orig) return;
-  if (!posaDraft[id]) posaDraft[id] = { id:id, h_pos_new:orig.h_pos, min_cantiere_new:orig.min_cantiere };
-  posaDraft[id][field + '_new'] = val;
-  var origVal = field === 'h_pos' ? orig.h_pos : orig.min_cantiere;
-  var isDirty = val !== origVal;
-  input.classList.toggle('dirty', isDirty);
-  // Rimuove dalla draft se tornato al valore originale
-  if (!isDirty) {
-    var other = field === 'h_pos' ? 'min_cantiere_new' : 'h_pos_new';
-    var otherOrig = field === 'h_pos' ? orig.min_cantiere : orig.h_pos;
-    if (posaDraft[id][other] === otherOrig) delete posaDraft[id];
-  }
+function markDirtyPosa(input) {
+  var id = input.getAttribute('data-id'), field = input.getAttribute('data-field');
+  var val = input.value.trim()==='' ? null : parseFloat(input.value);
+  var orig = posaDataLoaded.find(function(r){ return r.id===id; }); if (!orig) return;
+  if (!posaDraft[id]) posaDraft[id] = { id:id, h_pos_new:orig.h_pos, min_cantiere_new:orig.min_cantiere, h_pos_gru_new:orig.h_pos_gru };
+  posaDraft[id][field+'_new'] = val;
+  var origVal = field==='h_pos' ? orig.h_pos : (field==='min_cantiere' ? orig.min_cantiere : orig.h_pos_gru);
+  input.classList.toggle('dirty', val !== origVal);
+  // Rimuovi se tornato ai valori originali
+  var d = posaDraft[id];
+  if (d.h_pos_new===orig.h_pos && d.min_cantiere_new===orig.min_cantiere && d.h_pos_gru_new===orig.h_pos_gru) delete posaDraft[id];
   updateDraftBar();
 }
 
-function countDirty() { return Object.keys(posaDraft).length; }
+// ================================================================
+// DRAFT BAR — unificata per posa e tecnico
+// ================================================================
+function countDirty() { return Object.keys(posaDraft).length + Object.keys(tecDraft).length; }
 
 function updateDraftBar() {
   var n = countDirty();
@@ -617,66 +512,76 @@ function updateDraftBar() {
 }
 
 function annullaDraft() {
-  posaDraft = {};
+  posaDraft = {}; tecDraft = {};
   updateDraftBar();
-  renderDatiPosa(posaDataLoaded);
+  if (panelCorrente === 'posa')  renderDatiPosa(posaDataLoaded);
+  if (panelCorrente === 'dati')  loadDatiTecnici();
 }
 
 function apriModalRevisione() {
-  var n = countDirty();
-  if (n === 0) { Utils.showWarning('Nessuna modifica da salvare.'); return; }
+  var n = countDirty(); if (n===0){ Utils.showWarning('Nessuna modifica da salvare.'); return; }
+  var nPosa = Object.keys(posaDraft).length, nTec = Object.keys(tecDraft).length;
   document.getElementById('revDraftCount').textContent = n;
+  var desc = [];
+  if (nPosa > 0) desc.push(nPosa + ' parametri posa');
+  if (nTec  > 0) desc.push(nTec  + ' parametri tecnici serramento');
+  document.getElementById('revTipoDesc').textContent = 'Tipo: ' + desc.join(' + ');
   document.getElementById('revNote').value = '';
   Utils.openModal('modalRevisione');
 }
 
 async function salvaRevisione() {
-  var aggiornamenti = Object.values(posaDraft).map(function(d) {
-    return { id: d.id, h_pos: d.h_pos_new, min_cantiere: d.min_cantiere_new };
-  });
   var note = document.getElementById('revNote').value.trim();
   var btn = document.getElementById('btnConfermaRevisione');
   btn.disabled = true; btn.textContent = 'Salvataggio...';
-  var res = await API.creaRevisione(aggiornamenti, note);
+  var nPosa = Object.keys(posaDraft).length, nTec = Object.keys(tecDraft).length;
+  var res;
+  if (nPosa > 0 && nTec === 0) {
+    // Solo posa
+    var agg = Object.values(posaDraft).map(function(d){ return { id:d.id, h_pos:d.h_pos_new, min_cantiere:d.min_cantiere_new, h_pos_gru:d.h_pos_gru_new }; });
+    res = await API.creaRevisione(agg, note);
+  } else if (nTec > 0 && nPosa === 0) {
+    // Solo tecnico
+    var aggSerr = Object.values(tecDraft).filter(function(d){ return d.id; }).map(function(d){ return { id:d.id, valore_mm:d.valore_mm_new }; });
+    var aggLati = Object.values(tecDraft).filter(function(d){ return d.sigla; });
+    res = await API.creaRevisioneTecnico(aggSerr, aggLati, note);
+  } else {
+    // Entrambi — salva prima tecnico poi posa, unificando in una revisione
+    var aggSerrM = Object.values(tecDraft).filter(function(d){ return d.id; }).map(function(d){ return { id:d.id, valore_mm:d.valore_mm_new }; });
+    var aggLatiM = Object.values(tecDraft).filter(function(d){ return d.sigla; });
+    var aggPosa  = Object.values(posaDraft).map(function(d){ return { id:d.id, h_pos:d.h_pos_new, min_cantiere:d.min_cantiere_new, h_pos_gru:d.h_pos_gru_new }; });
+    res = await API.creaRevisioneTecnico(aggSerrM, aggLatiM, note);
+    if (res.success && aggPosa.length) res = await API.creaRevisione(aggPosa, note + ' (aggiornamento posa)');
+  }
   btn.disabled = false; btn.innerHTML = '&#128190; Crea revisione';
   if (res.success) {
-    Utils.showSuccess('Revisione ' + res.data.numero_revisione + ' creata con successo.');
+    Utils.showSuccess('Revisione ' + res.data.numero_revisione + ' creata.');
     Utils.closeModal('modalRevisione');
-    posaDraft = {};
+    posaDraft = {}; tecDraft = {};
     updateDraftBar();
-    await loadDatiPosa(posaTabCorrente);
-  } else {
-    Utils.showError(res.error);
-  }
+    if (panelCorrente === 'posa') renderDatiPosa(posaDataLoaded);
+    if (panelCorrente === 'dati') loadDatiTecnici();
+  } else Utils.showError(res.error);
 }
 
 // ================================================================
-// STORICO REVISIONI
+// REVISIONI
 // ================================================================
 async function loadRevisioni() {
-  var container = document.getElementById('listaRevisioni');
-  Utils.showLoading(container);
-  var res = await API.getRevisioni();
-  if (!res.success) { Utils.showError(res.error); return; }
+  var c = document.getElementById('listaRevisioni'); Utils.showLoading(c);
+  var res = await API.getRevisioni(); if (!res.success){ Utils.showError(res.error); return; }
   var revs = res.data;
   document.getElementById('cntRevisioni').textContent = revs.length + ' revisioni';
-  if (!revs.length) { Utils.showEmptyState(container,'Nessuna revisione.'); return; }
+  if (!revs.length){ Utils.showEmptyState(c,'Nessuna revisione.'); return; }
   var html = '';
-  revs.forEach(function(r, i) {
-    var isLast = i === 0;
-    var d = new Date(r.data_revisione || r.created_at);
-    var dataStr = d.toLocaleDateString('it-IT') + ' ' + d.toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'});
-    html += '<div class="rev-card' + (isLast?' rev-attuale':'') + '">' +
-      '<div class="rev-card-hdr">' +
-        '<span class="rev-num">Rev. ' + r.numero_revisione + '</span>' +
-        (isLast?'<span style="font-size:.74rem;background:#d1fae5;color:#065f46;padding:1px 8px;border-radius:10px;font-weight:700;">&#10003; Corrente</span>':'') +
-        '<span class="rev-data">' + dataStr + '</span>' +
-      '</div>' +
-      '<div class="rev-autore">&#128100; ' + (r.autore_nome||'—') + '</div>' +
-      (r.note ? '<div class="rev-note">&#128221; ' + r.note + '</div>' : '<div class="rev-note" style="color:#9ca3af;font-style:italic;">Nessuna nota</div>') +
-    '</div>';
+  revs.forEach(function(r,i){
+    var isLast = i===0;
+    var d = new Date(r.data_revisione||r.created_at);
+    var dataStr = d.toLocaleDateString('it-IT')+' '+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    var tipoClass = r.tipo==='TECNICO' ? 'tecnico' : (r.tipo==='COMPLETO' ? 'completo' : '');
+    html += '<div class="rev-card'+(isLast?' rev-attuale':'')+'"><div class="rev-card-hdr"><span class="rev-num '+tipoClass+'">Rev. '+r.numero_revisione+'</span><span style="font-size:.74rem;background:#f3f4f6;padding:1px 8px;border-radius:10px;">'+r.tipo+'</span>'+(isLast?'<span style="font-size:.74rem;background:#d1fae5;color:#065f46;padding:1px 8px;border-radius:10px;font-weight:700;">&#10003; Corrente</span>':'')+'<span style="font-size:.78rem;color:var(--c-text-sec);">'+dataStr+'</span></div><div style="font-size:.82rem;font-weight:600;">&#128100; '+(r.autore_nome||'—')+'</div>'+(r.note?'<div style="font-size:.80rem;color:var(--c-text-sec);margin-top:3px;">&#128221; '+r.note+'</div>':'<div style="font-size:.78rem;color:#9ca3af;font-style:italic;margin-top:2px;">Nessuna nota</div>')+'</div>';
   });
-  container.innerHTML = '<div style="padding:16px;">' + html + '</div>';
+  c.innerHTML = '<div style="padding:16px;">'+html+'</div>';
 }
 
 // ================================================================
@@ -684,33 +589,20 @@ async function loadRevisioni() {
 // ================================================================
 async function loadDbProdotti() {
   var results = await Promise.all([API.getDbSerramento(), API.getDbPorte()]);
-  renderDbSerr(results[0].success ? results[0].data : []);
-  renderDbPorte(results[1].success ? results[1].data : []);
+  renderDbSerr(results[0].success?results[0].data:[]); renderDbPorte(results[1].success?results[1].data:[]);
 }
-
 function renderDbSerr(rows) {
-  document.getElementById('cntSerr').textContent = rows.length + ' codici';
-  var c = document.getElementById('tabellaDbSerr');
-  if (!rows.length) { Utils.showEmptyState(c,'Nessun prodotto.'); return; }
-  c.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Codice</th><th>Materiale</th><th>Sistema</th><th>Stile</th><th>Variante</th><th>Nasc.(mm)</th><th>Aletta(mm)</th><th>Stato</th></tr></thead><tbody>' +
-    rows.slice(0,50).map(function(r){ return '<tr><td><code>'+r.codice+'</code></td><td>'+r.materiale+'</td><td>'+(r.descrizione||'—')+'</td><td>'+(r.stile_design||'—')+'</td><td>'+(r.variante_telaio||'—')+'</td><td>'+(r.telaio_nascosto_mm||0)+'</td><td>'+(r.aletta_mm||0)+'</td><td><span class="badge-'+r.stato+'">'+r.stato+'</span></td></tr>'; }).join('') +
-    (rows.length>50?'<tr><td colspan="8" style="text-align:center;color:var(--c-text-sec);">... e altri '+(rows.length-50)+' codici</td></tr>':'') +
-    '</tbody></table></div>';
+  document.getElementById('cntSerr').textContent=rows.length+' codici';
+  var c=document.getElementById('tabellaDbSerr'); if(!rows.length){Utils.showEmptyState(c,'Nessun prodotto.');return;}
+  c.innerHTML='<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Codice</th><th>Materiale</th><th>Sistema</th><th>Stile</th><th>Variante</th><th>Nasc.(mm)</th><th>Aletta(mm)</th><th>Stato</th></tr></thead><tbody>'+rows.slice(0,50).map(function(r){return '<tr><td><code>'+r.codice+'</code></td><td>'+r.materiale+'</td><td>'+(r.descrizione||'—')+'</td><td>'+(r.stile_design||'—')+'</td><td>'+(r.variante_telaio||'—')+'</td><td>'+(r.telaio_nascosto_mm||0)+'</td><td>'+(r.aletta_mm||0)+'</td><td><span class="badge-'+r.stato+'">'+r.stato+'</span></td></tr>';}).join('')+(rows.length>50?'<tr><td colspan="8" style="text-align:center;color:var(--c-text-sec);">... e altri '+(rows.length-50)+' codici</td></tr>':'')+'</tbody></table></div>';
 }
-
 function renderDbPorte(rows) {
-  document.getElementById('cntPorte').textContent = rows.length + ' codici';
-  var c = document.getElementById('tabellaDbPorte');
-  if (!rows.length) { Utils.showEmptyState(c,'Nessun prodotto.'); return; }
-  c.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Codice</th><th>Fornitore</th><th>Tipo</th><th>Sistema</th><th>Foro</th><th>Sopraluce</th><th>Stato</th></tr></thead><tbody>' +
-    rows.slice(0,50).map(function(r){ return '<tr><td><code>'+r.codice+'</code></td><td>'+r.fornitore+'</td><td>'+r.tipo_porta+'</td><td>'+r.sistema+'</td><td>'+(r.tipo_foro||'—')+'</td><td>'+(r.sopraluce?'SI':'NO')+'</td><td><span class="badge-'+r.stato+'">'+r.stato+'</span></td></tr>'; }).join('') +
-    (rows.length>50?'<tr><td colspan="7" style="text-align:center;color:var(--c-text-sec);">... e altri '+(rows.length-50)+' codici</td></tr>':'') +
-    '</tbody></table></div>';
+  document.getElementById('cntPorte').textContent=rows.length+' codici';
+  var c=document.getElementById('tabellaDbPorte'); if(!rows.length){Utils.showEmptyState(c,'Nessun prodotto.');return;}
+  c.innerHTML='<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Codice</th><th>Fornitore</th><th>Tipo</th><th>Sistema</th><th>Foro</th><th>Sopraluce</th><th>Stato</th></tr></thead><tbody>'+rows.slice(0,50).map(function(r){return '<tr><td><code>'+r.codice+'</code></td><td>'+r.fornitore+'</td><td>'+r.tipo_porta+'</td><td>'+r.sistema+'</td><td>'+(r.tipo_foro||'—')+'</td><td>'+(r.sopraluce?'SI':'NO')+'</td><td><span class="badge-'+r.stato+'">'+r.stato+'</span></td></tr>';}).join('')+(rows.length>50?'<tr><td colspan="7" style="text-align:center;color:var(--c-text-sec);">... e altri '+(rows.length-50)+' codici</td></tr>':'')+'</tbody></table></div>';
 }
 
-// ================================================================
 // INIT
-// ================================================================
 loadUtenti();
 </script>
 </body>

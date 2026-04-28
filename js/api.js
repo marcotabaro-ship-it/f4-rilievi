@@ -917,9 +917,108 @@ Object.assign(API, {
     try { const rows = await _sb.get('utenti', { order: 'nome.asc', select: '*' }); return this._ok(rows || []); }
     catch(e) { return this._err(e); }
   },
-  async adminGetPosa(tipo)              { return this._ok([]); },
-  async adminUpdatePosa(tipo, id, data) { return this._ok(null); },
+  // ================================================================
+  // DATI COMUNI POSA — lettura e scrittura da Supabase
+  // ================================================================
+  async getDatiComuniPosa(tipo) {
+    try {
+      var params = { stato: 'eq.attivo', order: 'codice.asc,piano.asc,n_campi.asc,sistema.asc', select: '*' };
+      if (tipo) params.tipo = 'eq.' + tipo;
+      var rows = await _sb.get('dati_comuni_posa', params);
+      return this._ok(rows || []);
+    } catch(e) { return this._err(e); }
+  },
+
+  async adminGetPosa(tipo) {
+    return this.getDatiComuniPosa(tipo);
+  },
+
+  async adminUpdatePosa(id, data) {
+    try {
+      await _sb.patch('dati_comuni_posa', { id: 'eq.' + id }, Object.assign({}, data, { updated_at: new Date().toISOString() }));
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
+  },
+
+  // ================================================================
+  // REVISIONI PARAMETRI
+  // ================================================================
+  async getRevisioni() {
+    try {
+      var rows = await _sb.get('revisioni_parametri', { stato: 'eq.attivo', order: 'numero_revisione.desc', select: 'id,numero_revisione,tipo,data_revisione,autore_nome,note,created_at' });
+      return this._ok(rows || []);
+    } catch(e) { return this._err(e); }
+  },
+
+  async getRevisioneDettaglio(id) {
+    try {
+      var rows = await _sb.get('revisioni_parametri', { id: 'eq.' + id, select: '*' });
+      return rows && rows.length ? this._ok(rows[0]) : this._err({ message: 'Revisione non trovata.' });
+    } catch(e) { return this._err(e); }
+  },
+
+  async getNumRevisioneCorrente() {
+    try {
+      var rows = await _sb.get('revisioni_parametri', { stato: 'eq.attivo', order: 'numero_revisione.desc', limit: '1', select: 'numero_revisione' });
+      return this._ok(rows && rows.length ? rows[0].numero_revisione : 0);
+    } catch(e) { return this._err(e); }
+  },
+
+  async creaRevisione(aggiornamenti, note) {
+    // aggiornamenti = array di { id, h_pos, min_cantiere } — dati modificati dall'admin
+    // 1. Applica gli aggiornamenti a dati_comuni_posa
+    // 2. Legge snapshot completo aggiornato
+    // 3. Calcola numero revisione
+    // 4. Inserisce in revisioni_parametri
+    // 5. Aggiorna versione_posa_num su rilievi (opzionale — gestito separatamente)
+    try {
+      var user = Auth.getUser();
+      // Step 1: applica aggiornamenti
+      for (var i = 0; i < aggiornamenti.length; i++) {
+        var a = aggiornamenti[i];
+        var patch = { updated_at: new Date().toISOString() };
+        if (a.h_pos !== undefined) patch.h_pos = a.h_pos;
+        if (a.min_cantiere !== undefined) patch.min_cantiere = a.min_cantiere;
+        await _sb.patch('dati_comuni_posa', { id: 'eq.' + a.id }, patch);
+      }
+      // Step 2: snapshot completo post-aggiornamento
+      var allRows = await _sb.get('dati_comuni_posa', { stato: 'eq.attivo', order: 'tipo.asc,codice.asc,piano.asc,n_campi.asc,sistema.asc', select: '*' });
+      // Step 3: numero revisione
+      var revRows = await _sb.get('revisioni_parametri', { stato: 'eq.attivo', order: 'numero_revisione.desc', limit: '1', select: 'numero_revisione' });
+      var numRev = revRows && revRows.length ? revRows[0].numero_revisione + 1 : 1;
+      // Step 4: inserisci revisione
+      var revData = {
+        numero_revisione: numRev,
+        tipo: 'COMPLETO',
+        autore_id: user ? user.id : null,
+        autore_nome: user ? user.nome : 'Sistema',
+        note: (note || '').trim() || null,
+        snapshot_posa: allRows || []
+      };
+      var inserted = await _sb.post('revisioni_parametri', revData);
+      return this._ok({ numero_revisione: numRev, id: inserted[0] ? inserted[0].id : null });
+    } catch(e) { return this._err(e); }
+  },
+
   async adminNuovaVersionePosa(tipo, n) { return this._ok(null); },
+
+  // Controlla se il rilievo usa una revisione posa obsoleta
+  async checkVersionePosaRilievo(idRilievo) {
+    try {
+      var revRows = await _sb.get('revisioni_parametri', { stato: 'eq.attivo', order: 'numero_revisione.desc', limit: '1', select: 'numero_revisione' });
+      var numCorrente = revRows && revRows.length ? revRows[0].numero_revisione : 1;
+      var rilRows = await _sb.get('rilievi', { id: 'eq.' + idRilievo, select: 'versione_posa_num' });
+      var numRilievo = rilRows && rilRows.length ? (rilRows[0].versione_posa_num || 0) : 0;
+      return this._ok({ corrente: numCorrente, rilievo: numRilievo, aggiornamento: numRilievo < numCorrente });
+    } catch(e) { return this._err(e); }
+  },
+
+  async salvaVersionePosaRilievo(idRilievo, numRev) {
+    try {
+      await _sb.patch('rilievi', { id: 'eq.' + idRilievo }, { versione_posa_num: numRev });
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
+  },
   async adminGetDatiComuni() {
     try { const rows = await _sb.get('dati_comuni_serr', { order: 'id.asc', select: '*' }); return this._ok(rows || []); }
     catch(e) { return this._err(e); }

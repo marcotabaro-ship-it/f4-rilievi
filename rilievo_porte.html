@@ -68,6 +68,56 @@
     .btn-cap-edit:hover { color: #fff; }
     .btn-cap-del { background: none; border: none; color: #FF8A65; cursor: pointer; font-size: .8rem; padding: 0 4px; }
     .btn-cap-del:hover { color: #FFAB91; }
+
+    /* ── PORTA DRAWER ── */
+    .drawer-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.35);
+      z-index: 199; display: none;
+    }
+    .drawer-overlay.open { display: block; }
+    .porta-drawer {
+      position: fixed; top: 0; right: -62%; width: 60%; height: 100%;
+      background: #fff; box-shadow: -4px 0 24px rgba(0,0,0,.18);
+      z-index: 200; transition: right .28s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .porta-drawer.open { right: 0; }
+    .drawer-hdr {
+      background: #E65100; color: #fff; padding: 14px 18px; flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .drawer-hdr-top { display: flex; align-items: center; justify-content: space-between; }
+    .drawer-hdr-title { font-size: 1rem; font-weight: 700; }
+    .drawer-hdr-meta { font-size: .78rem; opacity: .85; display: flex; gap: 10px; flex-wrap: wrap; }
+    .drawer-hdr-badge { background: rgba(255,255,255,.2); border-radius: 12px; padding: 1px 9px; font-size: .76rem; font-weight: 700; }
+    .drawer-close { background: none; border: none; color: rgba(255,255,255,.8); font-size: 1.2rem; cursor: pointer; padding: 0; line-height: 1; }
+    .drawer-close:hover { color: #fff; }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 16px 18px; }
+    .drawer-footer {
+      border-top: 1px solid #e5e7eb; padding: 10px 16px;
+      display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; background: #fafafa;
+    }
+    .drawer-sec { margin-bottom: 16px; }
+    .drawer-sec-title {
+      font-size: .76rem; font-weight: 700; color: #E65100;
+      text-transform: uppercase; letter-spacing: .5px;
+      padding-bottom: 4px; border-bottom: 2px solid #E65100; margin-bottom: 10px;
+    }
+    .dg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .dg3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .dg1 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .dg2-span2 { grid-column: span 2; }
+    .drawer-img-guide {
+      display: flex; gap: 10px; margin-bottom: 12px;
+    }
+    .drawer-img-card {
+      flex: 1; border: 1px solid var(--c-border); border-radius: var(--radius);
+      overflow: hidden; background: #fafafa;
+    }
+    .drawer-img-card img { width: 100%; height: 80px; object-fit: contain; padding: 4px; display: block; }
+    .drawer-img-card .dic-lbl { text-align: center; font-size: .72rem; color: var(--c-text-sec); padding: 4px; border-top: 1px solid var(--c-border); }
+    .ctl-checks { display: flex; gap: 12px; flex-wrap: wrap; }
+    .ctl-checks .checkbox-group { margin: 0; }
   </style>
 </head>
 <body>
@@ -198,160 +248,181 @@
  </main>
 </div>
 
-<!-- MODAL POSIZIONE -->
-<div class="modal" id="modalPosizione" style="padding-top:70px;">
-  <div class="modal-box modal-box-lg">
-    <div class="modal-header" style="background:#E65100;color:white;border-radius:12px 12px 0 0;">
-      <span class="modal-title" id="modalPosizioneTitle" style="color:white;">Nuova posizione</span>
-      <button class="modal-close" style="color:rgba(255,255,255,.8);" onclick="Utils.closeModal('modalPosizione')">&#10005;</button>
+<!-- DRAWER POSIZIONE PORTA -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawerPorta()"></div>
+<div class="porta-drawer" id="portaDrawer">
+  <div class="drawer-hdr">
+    <div class="drawer-hdr-top">
+      <span class="drawer-hdr-title" id="dTitle">Nuova posizione</span>
+      <button class="drawer-close" onclick="closeDrawerPorta()">&#10005;</button>
     </div>
-    <div class="modal-body" style="padding:16px;">
-
-      <div id="portaImgGuida" style="display:none;margin-bottom:14px;">
-        <div class="alert alert-info" style="font-size:.82rem;margin-bottom:8px;">
-          &#128208; Riferimento misure per il tipo di foro selezionato:
-        </div>
-        <div class="porta-info-grid" style="max-width:400px;">
-          <div class="porta-info-card">
-            <img id="portaImgH" src="" alt="H">
-            <div class="porta-info-label">Misura H</div>
-          </div>
-          <div class="porta-info-card">
-            <img id="portaImgL" src="" alt="L">
-            <div class="porta-info-label">Misura L</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row form-row-3">
-
-        <div>
-          <div style="font-weight:600;font-size:.82rem;color:#E65100;margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid #E65100;">
-            &#128203; IDENTIFICAZIONE
-          </div>
-          <div class="form-group">
-            <label class="form-label">N&#176; posizione <span style="font-size:.72rem;color:var(--c-text-sec);">(max 7 car.)</span></label>
-            <input class="form-control" type="text" id="pNumAlfa" maxlength="7"
-              placeholder="es. CAM01, 001A"
-              style="font-family:monospace;font-weight:700;letter-spacing:.5px;text-transform:uppercase;"
-              oninput="this.value=this.value.toUpperCase()">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Piano <span class="req">*</span></label>
-            <select class="form-control" id="pPiano"><option value="">—</option></select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Ambiente</label>
-            <input class="form-control" type="text" id="pAmbiente" placeholder="es. Camera da letto">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Fornitore <span class="req">*</span></label>
-            <select class="form-control" id="pFornitore" onchange="onFornitoreChange()"><option value="">—</option></select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Tipo porta <span class="req">*</span></label>
-            <select class="form-control" id="pTipoPorta" onchange="onTipoPortaChange()"><option value="">—</option></select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Sistema <span class="req">*</span></label>
-            <select class="form-control" id="pSistema" onchange="onSistemaChange()" disabled><option value="">—</option></select>
-          </div>
-          <div class="form-group" id="grpSopraluce" style="display:none;">
-            <div class="checkbox-group">
-              <input type="checkbox" id="pSopraluce">
-              <label for="pSopraluce">Con sopraluce</label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Tipo foro <span class="req">*</span></label>
-            <select class="form-control" id="pTipoForo" onchange="onTipoForoChange()"><option value="">—</option></select>
-          </div>
-          <div class="form-row form-row-2">
-            <div class="form-group">
-              <label class="form-label">H (mm) <span class="req">*</span></label>
-              <input class="form-control" type="number" id="pHmm" placeholder="es. 2100">
-            </div>
-            <div class="form-group">
-              <label class="form-label">L (mm) <span class="req">*</span></label>
-              <input class="form-control" type="number" id="pLmm" placeholder="es. 800">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Spessore muro (mm)</label>
-            <input class="form-control" type="number" id="pSpMuro" placeholder="es. 200">
-          </div>
-          <div class="form-group" id="grpDecentrato" style="display:none;">
-            <label class="form-label">Telaio decentrato (mm)</label>
-            <input class="form-control" type="number" id="pDecentrato" placeholder="es. 50">
-          </div>
-        </div>
-
-        <div>
-          <div style="font-weight:600;font-size:.82rem;color:#E65100;margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid #E65100;">
-            &#128682; CARATTERISTICHE
-          </div>
-          <div class="form-group"><label class="form-label">Collezione</label><input class="form-control" type="text" id="pCollezione" placeholder="Nome collezione"></div>
-          <div class="form-group"><label class="form-label">Modello</label><input class="form-control" type="text" id="pModello" placeholder="Nome modello"></div>
-          <div class="form-group"><label class="form-label">Versione</label><input class="form-control" type="text" id="pVersione" placeholder="Es. Standard, Premium"></div>
-          <div class="form-group"><label class="form-label">Essenza / Finitura</label><input class="form-control" type="text" id="pEssenza" placeholder="Es. Rovere naturale"></div>
-          <div class="form-group"><label class="form-label">Verso di apertura</label><input class="form-control" type="text" id="pVerso" placeholder="Es. DX, SX, a libro"></div>
-          <div class="form-group"><label class="form-label">Vetri</label><input class="form-control" type="text" id="pVetri" placeholder="Es. Senza, Con vetro satinato"></div>
-          <div class="form-group"><label class="form-label">Tipo serratura</label><input class="form-control" type="text" id="pSerratura" placeholder="Es. Normale, Privacy"></div>
-          <div class="form-group"><label class="form-label">Mostrine</label><input class="form-control" type="text" id="pMostrine" placeholder="Es. Standard, Quadra"></div>
-          <div class="form-row form-row-2">
-            <div class="form-group"><label class="form-label">Colore serratura</label><input class="form-control" type="text" id="pColoreSerr" placeholder="Es. Cromo"></div>
-            <div class="form-group"><label class="form-label">Colore cerniere</label><input class="form-control" type="text" id="pColoreCerniere" placeholder="Es. Oro"></div>
-          </div>
-        </div>
-
-        <div>
-          <div style="font-weight:600;font-size:.82rem;color:#E65100;margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid #E65100;">
-            &#128295; ALLARGAMENTI E POSA
-          </div>
-          <div class="form-group">
-            <div class="checkbox-group">
-              <input type="checkbox" id="pAllargamento" onchange="onAllargamentoChange()">
-              <label for="pAllargamento">Allargamento telaio necessario</label>
-            </div>
-          </div>
-          <div class="form-group" id="grpAllargMm" style="display:none;">
-            <label class="form-label">Allargamento (mm)</label>
-            <input class="form-control" type="number" id="pAllargMm" placeholder="es. 50">
-          </div>
-
-          <div style="font-weight:600;font-size:.78rem;color:#E65100;margin:14px 0 10px;">FORNITURA CONTROTELAIO</div>
-          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pFornCTLInt"><label for="pFornCTLInt">Porta interna</label></div></div>
-          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pFornCTLBli"><label for="pFornCTLBli">Porta blindata</label></div></div>
-          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pFornCTLRei"><label for="pFornCTLRei">Porta REI</label></div></div>
-
-          <div style="font-weight:600;font-size:.78rem;color:#E65100;margin:14px 0 10px;">INSTALLAZIONE CONTROTELAIO</div>
-          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pInstCTLInt"><label for="pInstCTLInt">Porta interna</label></div></div>
-          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pInstCTLBli"><label for="pInstCTLBli">Porta blindata</label></div></div>
-          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pInstCTLRei"><label for="pInstCTLRei">Porta REI</label></div></div>
-
-          <div style="font-weight:600;font-size:.78rem;color:#E65100;margin:14px 0 10px;">MANIGLIA</div>
-          <div class="form-group"><label class="form-label">Marca</label><input class="form-control" type="text" id="pManiMarca" placeholder="Es. Colombo, Fusital"></div>
-          <div class="form-group"><label class="form-label">Modello</label><input class="form-control" type="text" id="pManiModello"></div>
-          <div class="form-group"><label class="form-label">Colore / Materiale</label><input class="form-control" type="text" id="pManiColore" placeholder="Es. Cromo satinato"></div>
-
-          <div style="font-weight:600;font-size:.78rem;color:#E65100;margin:14px 0 10px;">ALTRO</div>
-          <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="pRimozione"><label for="pRimozione">Rimozione porta esistente</label></div></div>
-          <div class="form-group"><label class="form-label">Note</label><textarea class="form-control" id="pNote" rows="3"></textarea></div>
-        </div>
-
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="Utils.closeModal('modalPosizione')">Annulla</button>
-      <button class="btn btn-secondary" id="btnSalvaAggiungi" onclick="salvaPosizioneEAggiungi()" style="display:none;">
-        &#128190; Salva e aggiungi altra
-      </button>
-      <button class="btn btn-primary" id="btnSalvaPosizione" onclick="salvaPosizione()">
-        &#128190; Salva posizione
-      </button>
-    </div>
+    <div class="drawer-hdr-meta" id="dMeta"></div>
   </div>
-</div>
+
+  <div class="drawer-body">
+    <!-- Guida immagini tipo foro -->
+    <div id="dImgGuide" style="display:none;" class="drawer-img-guide">
+      <div class="drawer-img-card"><img id="dImgH" src="" alt="H"><div class="dic-lbl">Misura H</div></div>
+      <div class="drawer-img-card"><img id="dImgL" src="" alt="L"><div class="dic-lbl">Misura L</div></div>
+    </div>
+
+    <!-- IDENTIFICAZIONE -->
+    <div class="drawer-sec">
+      <div class="drawer-sec-title">&#128203; Identificazione</div>
+      <div class="dg2">
+        <div class="form-group">
+          <label class="form-label">N&#176; posizione <span style="font-size:.72rem;color:var(--c-text-sec);">(max 7 car.)</span></label>
+          <input class="form-control" type="text" id="pNumAlfa" maxlength="7" placeholder="es. CAM01"
+            style="font-family:monospace;font-weight:700;text-transform:uppercase;"
+            oninput="this.value=this.value.toUpperCase()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Piano <span class="req">*</span></label>
+          <select class="form-control" id="pPiano"><option value="">—</option></select>
+        </div>
+        <div class="form-group dg2-span2">
+          <label class="form-label">Ambiente</label>
+          <input class="form-control" type="text" id="pAmbiente" placeholder="es. Camera da letto">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo foro <span class="req">*</span></label>
+          <select class="form-control" id="pTipoForo" onchange="onTipoForoChange()"><option value="">—</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Spessore muro (mm)</label>
+          <input class="form-control" type="number" id="pSpMuro" placeholder="es. 200">
+        </div>
+        <div class="form-group">
+          <label class="form-label">H (mm) <span class="req">*</span></label>
+          <input class="form-control" type="number" id="pHmm" placeholder="es. 2100">
+        </div>
+        <div class="form-group">
+          <label class="form-label">L (mm) <span class="req">*</span></label>
+          <input class="form-control" type="number" id="pLmm" placeholder="es. 800">
+        </div>
+        <div class="form-group" id="grpDecentrato" style="display:none;">
+          <label class="form-label">Telaio decentrato (mm)</label>
+          <input class="form-control" type="number" id="pDecentrato" placeholder="es. 50">
+        </div>
+      </div>
+    </div>
+
+    <!-- SISTEMA -->
+    <div class="drawer-sec">
+      <div class="drawer-sec-title">&#128682; Sistema</div>
+      <div class="dg2">
+        <div class="form-group">
+          <label class="form-label">Fornitore <span class="req">*</span></label>
+          <select class="form-control" id="pFornitore" onchange="onFornitoreChange()"><option value="">—</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo porta <span class="req">*</span></label>
+          <select class="form-control" id="pTipoPorta" onchange="onTipoPortaChange()" disabled><option value="">—</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sistema <span class="req">*</span></label>
+          <select class="form-control" id="pSistema" onchange="onSistemaChange()" disabled><option value="">—</option></select>
+        </div>
+        <div class="form-group" id="grpSopraluce" style="display:none;">
+          <label class="form-label">&nbsp;</label>
+          <div class="checkbox-group" style="margin-top:8px;">
+            <input type="checkbox" id="pSopraluce">
+            <label for="pSopraluce">Con sopraluce</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARATTERISTICHE -->
+    <div class="drawer-sec">
+      <div class="drawer-sec-title">&#127912; Caratteristiche</div>
+      <div class="dg2">
+        <div class="form-group"><label class="form-label">Collezione</label><input class="form-control" type="text" id="pCollezione" placeholder="Nome collezione"></div>
+        <div class="form-group"><label class="form-label">Modello</label><input class="form-control" type="text" id="pModello" placeholder="Nome modello"></div>
+        <div class="form-group"><label class="form-label">Versione</label><input class="form-control" type="text" id="pVersione" placeholder="Es. Standard, Premium"></div>
+        <div class="form-group"><label class="form-label">Essenza / Finitura</label><input class="form-control" type="text" id="pEssenza" placeholder="Es. Rovere naturale"></div>
+        <div class="form-group"><label class="form-label">Verso di apertura</label><input class="form-control" type="text" id="pVerso" placeholder="Es. DX, SX, a libro"></div>
+        <div class="form-group"><label class="form-label">Vetri</label><input class="form-control" type="text" id="pVetri" placeholder="Es. Senza, Con vetro satinato"></div>
+        <div class="form-group"><label class="form-label">Tipo serratura</label><input class="form-control" type="text" id="pSerratura" placeholder="Es. Normale, Privacy"></div>
+        <div class="form-group"><label class="form-label">Mostrine</label><input class="form-control" type="text" id="pMostrine" placeholder="Es. Standard, Quadra"></div>
+        <div class="form-group"><label class="form-label">Colore serratura</label><input class="form-control" type="text" id="pColoreSerr" placeholder="Es. Cromo"></div>
+        <div class="form-group"><label class="form-label">Colore cerniere</label><input class="form-control" type="text" id="pColoreCerniere" placeholder="Es. Oro"></div>
+      </div>
+    </div>
+
+    <!-- POSA & CTL -->
+    <div class="drawer-sec">
+      <div class="drawer-sec-title">&#128295; Posa e controtelaio</div>
+      <div class="dg2" style="margin-bottom:10px;">
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="pAllargamento" onchange="onAllargamentoChange()">
+            <label for="pAllargamento">Allargamento telaio necessario</label>
+          </div>
+        </div>
+        <div class="form-group" id="grpAllargMm" style="display:none;">
+          <label class="form-label">Allargamento (mm)</label>
+          <input class="form-control" type="number" id="pAllargMm" placeholder="es. 50">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:#E65100;margin-bottom:6px;">FORNITURA CTL</div>
+          <div class="ctl-checks">
+            <div class="checkbox-group"><input type="checkbox" id="pFornCTLInt"><label for="pFornCTLInt">Interna</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="pFornCTLBli"><label for="pFornCTLBli">Blindata</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="pFornCTLRei"><label for="pFornCTLRei">REI</label></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:#E65100;margin-bottom:6px;">INSTALLAZIONE CTL</div>
+          <div class="ctl-checks">
+            <div class="checkbox-group"><input type="checkbox" id="pInstCTLInt"><label for="pInstCTLInt">Interna</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="pInstCTLBli"><label for="pInstCTLBli">Blindata</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="pInstCTLRei"><label for="pInstCTLRei">REI</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:10px;">
+        <div class="checkbox-group">
+          <input type="checkbox" id="pRimozione">
+          <label for="pRimozione">Rimozione porta esistente</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANIGLIA -->
+    <div class="drawer-sec">
+      <div class="drawer-sec-title">&#128273; Maniglia</div>
+      <div class="dg2">
+        <div class="form-group"><label class="form-label">Marca</label><input class="form-control" type="text" id="pManiMarca" placeholder="Es. Colombo, Fusital"></div>
+        <div class="form-group"><label class="form-label">Modello</label><input class="form-control" type="text" id="pManiModello"></div>
+        <div class="form-group dg2-span2"><label class="form-label">Colore / Materiale</label><input class="form-control" type="text" id="pManiColore" placeholder="Es. Cromo satinato"></div>
+      </div>
+    </div>
+
+    <!-- NOTE -->
+    <div class="drawer-sec">
+      <div class="drawer-sec-title">&#128203; Note</div>
+      <div class="dg1">
+        <div class="form-group">
+          <textarea class="form-control" id="pNote" rows="3" placeholder="Note libere sulla posizione..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div><!-- /drawer-body -->
+
+  <div class="drawer-footer">
+    <button class="btn btn-outline" onclick="closeDrawerPorta()">Annulla</button>
+    <button class="btn btn-secondary" id="btnSalvaAggiungi" onclick="salvaPosizioneEAggiungi()" style="display:none;">
+      &#128190; Salva e aggiungi altra
+    </button>
+    <button class="btn btn-primary" id="btnSalvaPosizione" onclick="salvaPosizione()">
+      &#128190; Salva posizione
+    </button>
+  </div>
+</div><!-- /porta-drawer -->
+
 
 <div class="modal" id="modalCopiaPos">
   <div class="modal-box modal-box-sm">
@@ -568,7 +639,8 @@ function renderPosizioni() {
       var piano=(p.piano!==undefined&&p.piano!==null)?('P'+(p.piano>=0?'+':'')+p.piano):'—';
       var numDisp=p.numero_pos_alfa||p.numero_pos;
       html += '<tr draggable="true" data-tipo="pos" data-id="'+p.ID_pos+'" data-ordine="'+r.ordine+'"'+
-        ' ondragstart="onDragStart(event)" ondragover="onDragOver(event)" ondrop="onDrop(event)" ondragleave="onDragLeave(event)">'+
+        ' ondragstart="onDragStart(event)" ondragover="onDragOver(event)" ondrop="onDrop(event)" ondragleave="onDragLeave(event)"'+
+        ' onclick="openDrawerPorta(''+p.ID_pos+'')" style="cursor:pointer;">'+
         '<td><span class="pos-num-cell" title="seq: '+p.numero_pos+'">'+numDisp+'</span></td>'+
         '<td>'+piano+'</td>'+
         '<td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(p.ambiente||'—')+'</td>'+
@@ -602,13 +674,35 @@ function populateModalDropdowns() {
   Utils.fillSelect('pFornitore', fornitori.map(function(f) { return { value: f, label: f }; }), '— Fornitore —');
 }
 
-function openModalPosizione(id) {
+function openModalPosizione(id) { openDrawerPorta(id); }
+
+function openDrawerPorta(id) {
   posizioneEditId = id;
-  document.getElementById('modalPosizioneTitle').textContent = id ? 'Modifica posizione' : 'Nuova posizione';
+  document.getElementById('dTitle').textContent = id ? 'Modifica posizione' : 'Nuova posizione';
   document.getElementById('btnSalvaAggiungi').style.display = id ? 'none' : '';
   resetModal();
-  if (id) { var pos = posizioni.find(function(p) { return p.ID_pos === id; }); if (pos) fillModal(pos); }
-  Utils.openModal('modalPosizione');
+  if (id) {
+    var pos = posizioni.find(function(p) { return p.ID_pos === id; });
+    if (pos) {
+      fillModal(pos);
+      var piano = (pos.piano !== undefined && pos.piano !== null) ? ('P'+(pos.piano>=0?'+':'')+pos.piano) : '—';
+      var numDisp = pos.numero_pos_alfa || pos.numero_pos;
+      document.getElementById('dMeta').innerHTML =
+        '<span class="drawer-hdr-badge">Pos. ' + numDisp + '</span>' +
+        '<span>' + piano + '</span>' +
+        '<span>' + (pos.ambiente || '') + '</span>' +
+        '<span>' + (pos.fornitore||'') + ' / ' + (pos.sistema||'') + '</span>';
+    }
+  } else {
+    document.getElementById('dMeta').innerHTML = '';
+  }
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('portaDrawer').classList.add('open');
+}
+
+function closeDrawerPorta() {
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('portaDrawer').classList.remove('open');
 }
 
 function resetModal() {
@@ -628,7 +722,7 @@ function resetModal() {
   document.getElementById('grpSopraluce').style.display = 'none';
   document.getElementById('grpDecentrato').style.display = 'none';
   document.getElementById('grpAllargMm').style.display = 'none';
-  document.getElementById('portaImgGuida').style.display = 'none';
+  document.getElementById('dImgGuide').style.display = 'none';
 }
 
 function fillModal(p) {
@@ -707,11 +801,11 @@ function onSistemaChange(silent) {
 
 function onTipoForoChange() {
   var foro = document.getElementById('pTipoForo').value;
-  if (!foro) { document.getElementById('portaImgGuida').style.display = 'none'; return; }
-  document.getElementById('portaImgGuida').style.display = '';
+  if (!foro) { document.getElementById('dImgGuide').style.display = 'none'; return; }
+  document.getElementById('dImgGuide').style.display = '';
   var imgCfg = APP_CONFIG.PORTA_IMAGES || {};
-  document.getElementById('portaImgH').src = imgCfg[foro + '_H'] || '';
-  document.getElementById('portaImgL').src = imgCfg[foro + '_L'] || '';
+  document.getElementById('dImgH').src = imgCfg[foro + '_H'] || '';
+  document.getElementById('dImgL').src = imgCfg[foro + '_L'] || '';
 }
 
 function onAllargamentoChange() {
@@ -729,14 +823,14 @@ async function salvaPosizione(chiudiModal) {
   if (res.success) {
     Utils.showSuccess(posizioneEditId ? 'Posizione aggiornata.' : 'Posizione ' + (res.numero_pos||'') + ' creata.');
     await loadPosizioni();
-    if (chiudiModal !== false) Utils.closeModal('modalPosizione');
+    if (chiudiModal !== false) closeDrawerPorta();
     return true;
   } else { Utils.showError(res.error); return false; }
 }
 
 async function salvaPosizioneEAggiungi() {
   var ok = await salvaPosizione(false);
-  if (ok) { posizioneEditId = null; resetModal(); document.getElementById('modalPosizioneTitle').textContent = 'Nuova posizione'; }
+  if (ok) { posizioneEditId = null; resetModal(); document.getElementById('dTitle').textContent = 'Nuova posizione'; document.getElementById('dMeta').innerHTML = ''; }
 }
 
 function raccogliDati() {

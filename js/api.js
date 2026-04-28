@@ -798,9 +798,11 @@ Object.assign(API, {
   async createPosizionePorta(data) {
     try {
       const user = Auth.getUser();
-      const existing = await _sb.get('posizioni_porte', { id_rilievo: 'eq.' + data.ID_rilievo, stato: 'eq.attivo', select: 'numero_pos', order: 'numero_pos.desc', limit: '1' });
+      const existing = await _sb.get('posizioni_porte', { id_rilievo: 'eq.' + data.ID_rilievo, stato: 'eq.attivo', select: 'numero_pos,ordine', order: 'numero_pos.desc', limit: '1' });
       const nextPos = existing && existing.length ? (existing[0].numero_pos + 1) : 1;
-      const rows = await _sb.post('posizioni_porte', Object.assign(_in.posPorta(data), { numero_pos: nextPos, utente_creazione: user ? user.id : null }));
+      const maxOrd  = existing && existing.length ? ((existing[0].ordine || existing[0].numero_pos) + 1) : 1;
+      const payload = Object.assign(_in.posPorta(data), { numero_pos: nextPos, ordine: maxOrd, utente_creazione: user ? user.id : null });
+      const rows = await _sb.post('posizioni_porte', payload);
       const created = rows[0];
       return { success: true, id: created.id, numero_pos: created.numero_pos };
     } catch(e) { return this._err(e); }

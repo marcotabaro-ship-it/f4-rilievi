@@ -815,11 +815,11 @@ function onAllargamentoChange() {
 async function salvaPosizione(chiudiModal) {
   var data = raccogliDati(); if (!data) return false;
   var btn = document.getElementById('btnSalvaPosizione');
-  btn.disabled = true; btn.textContent = 'Salvataggio...';
+  btn.disabled = true; btn.textContent = 'Salvataggio…';
   var res;
   if (posizioneEditId) { res = await API.updatePosizionePorta(posizioneEditId, data); }
   else { data.ID_rilievo = idRilievo; res = await API.createPosizionePorta(data); }
-  btn.disabled = false; btn.textContent = '&#128190; Salva posizione';
+  btn.disabled = false; btn.innerHTML = '&#128190; Salva posizione';
   if (res.success) {
     Utils.showSuccess(posizioneEditId ? 'Posizione aggiornata.' : 'Posizione ' + (res.numero_pos||'') + ' creata.');
     await loadPosizioni();

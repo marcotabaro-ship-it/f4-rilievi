@@ -47,6 +47,27 @@
       font-family: monospace; font-size: .82rem;
     }
     .badge-porte { background: #FFF3E0; color: #E65100; }
+    /* ── CAPITOLI ── */
+    .tr-cap-inizio td {
+      background: #BF360C; color: #FFCCBC; font-weight: 700; font-size: .8rem;
+      letter-spacing: .8px; padding: 7px 10px; border-top: 3px solid #E65100;
+      cursor: grab; user-select: none;
+    }
+    .tr-cap-fine td {
+      background: #FFF3E0; color: #BF360C; font-size: .75rem;
+      padding: 5px 10px; border-bottom: 2px solid #FFCCBC; cursor: grab; user-select: none;
+    }
+    .tr-cap-subtot td {
+      background: #FFF8F5; color: #E65100; font-size: .74rem; font-weight: 600;
+      padding: 4px 10px; border-bottom: 2px solid #FFCCBC;
+    }
+    .tr-drag-over { outline: 2px dashed #E65100; outline-offset: -2px; }
+    .pos-table tr[draggable] { cursor: grab; }
+    .pos-table tr[draggable]:active { cursor: grabbing; opacity: .7; }
+    .btn-cap-edit { background: none; border: none; color: #FFCCBC; cursor: pointer; font-size: .8rem; padding: 0 4px; }
+    .btn-cap-edit:hover { color: #fff; }
+    .btn-cap-del { background: none; border: none; color: #FF8A65; cursor: pointer; font-size: .8rem; padding: 0 4px; }
+    .btn-cap-del:hover { color: #FFAB91; }
   </style>
 </head>
 <body>
@@ -74,10 +95,11 @@
       <div class="rh-meta" id="rhMeta">—</div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;"
-              onclick="openModalClona()">&#128203; Clona / Revisione</button>
-      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;"
-              onclick="Utils.navigate('report_posa.html',{idRilievo:idRilievo,tipo:'PORTE'})">&#9201;&#65039; Report Posa</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="openModalClona()">&#128203; Clona</button>
+      <span style="width:1px;height:20px;background:rgba(255,255,255,.25);display:inline-block;margin:0 4px;vertical-align:middle;"></span>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="Utils.navigate('report_rilievo_porte.html',{idRilievo:idRilievo})">&#128196; Rilievo</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:white;" onclick="Utils.navigate('report_posa_porte.html',{idRilievo:idRilievo})">&#9201;&#65039; Posa</button>
+      <button class="btn btn-sm" style="background:#dc2626;color:white;" onclick="Utils.navigate('stampa_combinata_porte.html',{idRilievo:idRilievo})">&#128438; Stampa</button>
     </div>
   </div>
 
@@ -90,7 +112,10 @@
   <div class="tab-panel active" id="tabPosizioni">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
       <span style="font-size:.9rem;color:var(--c-text-sec);" id="countPosizioni">0 posizioni</span>
-      <button class="btn btn-primary" onclick="openModalPosizione(null)">&#10133; Nuova posizione</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline" onclick="nuovoCapitolo()">&#128193; Capitolo</button>
+        <button class="btn btn-primary" onclick="openModalPosizione(null)">&#10133; Nuova posizione</button>
+      </div>
     </div>
     <div id="posizioniContainer">
       <div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>
@@ -379,7 +404,7 @@ Layout.init('clienti');
 const idRilievo = Utils.getParam('idRilievo');
 if (!idRilievo) window.location.href = 'clienti.html';
 
-var rilievo = null, posizioni = [], lookups = {}, dbPorte = [];
+var rilievo = null, posizioni = [], lookups = {}, dbPorte = [], capitoli = [];
 var posizioneEditId = null, posizioneCopiaId = null, posizioneEliminaId = null;
 
 async function init() {
@@ -462,40 +487,108 @@ function showTab(id, btn) {
 }
 
 async function loadPosizioni() {
-  var res = await API.getPosizioniPorte(idRilievo);
-  if (!res.success) { Utils.showError(res.error); return; }
-  posizioni = res.data; renderPosizioni();
+  var resP = await API.getPosizioniPorte(idRilievo);
+  var resC = await API.getCapitoli(idRilievo);
+  if (!resP.success) { Utils.showError(resP.error); return; }
+  posizioni = resP.data;
+  capitoli  = resC.success ? resC.data : [];
+  renderPosizioni();
 }
 
 function renderPosizioni() {
   var c = document.getElementById('posizioniContainer');
-  document.getElementById('countPosizioni').textContent = posizioni.length + ' posizioni';
-  if (!posizioni.length) { Utils.showEmptyState(c,'Nessuna posizione. Clicca "+ Nuova posizione".','&#128682;'); return; }
-  var rows = posizioni.map(function(p) {
-    var piano = (p.piano !== undefined && p.piano !== null) ? ('P'+(p.piano>=0?'+':'')+p.piano) : '—';
-    var numDisp = p.numero_pos_alfa || p.numero_pos;
-    return '<tr>' +
-      '<td><span class="pos-num-cell" title="seq: '+p.numero_pos+'">' + numDisp + '</span></td>' +
-      '<td>' + piano + '</td>' +
-      '<td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (p.ambiente||'—') + '</td>' +
-      '<td><span class="badge badge-porte">' + (p.tipo_porta||'—') + '</span></td>' +
-      '<td style="font-size:.8rem;"><div style="font-weight:600;">' + (p.fornitore||'—') + ' / ' + (p.sistema||'—') + '</div>' +
-        '<div style="color:var(--c-text-sec);font-size:.76rem;">' + (p.modello||'') + '</div></td>' +
-      '<td>' + (p.H_mm||'—') + '</td>' +
-      '<td>' + (p.L_mm||'—') + '</td>' +
-      '<td style="font-size:.78rem;max-width:100px;overflow:hidden;text-overflow:ellipsis;">' + (p.note||'—') + '</td>' +
-      '<td style="white-space:nowrap;text-align:right;">' +
-        '<button class="btn-icon" title="Modifica" onclick="openModalPosizione(\''+p.ID_pos+'\')">&#9999;&#65039;</button>' +
-        '<button class="btn-icon" title="Copia" onclick="openModalCopiaPos(\''+p.ID_pos+'\')">&#128203;</button>' +
-        '<button class="btn-icon" title="Elimina" onclick="openModalEliminaPos(\''+p.ID_pos+'\',\''+numDisp+'\')">&#128465;&#65039;</button>' +
-      '</td></tr>';
-  }).join('');
-  c.innerHTML = '<div style="overflow-x:auto;"><table class="pos-table"><thead><tr>' +
-    '<th>N&#176;</th><th>Piano</th><th>Ambiente</th><th>Tipo</th>' +
-    '<th>Fornitore / Sistema</th><th>H (mm)</th><th>L (mm)</th>' +
-    '<th>Note</th><th style="text-align:right;">Azioni</th>' +
-    '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+  var posReali = posizioni.filter(function(p){ return !p.is_capitolo; });
+  document.getElementById('countPosizioni').textContent = posReali.length + ' posizioni';
+  if (!posReali.length && !capitoli.length) {
+    Utils.showEmptyState(c,'Nessuna posizione. Clicca "+ Nuova posizione".','&#128682;');
+    return;
+  }
+
+  var righe = [];
+  posizioni.forEach(function(p){
+    var ord = (p.ordine !== null && p.ordine !== undefined) ? p.ordine : p.numero_pos;
+    righe.push({tipo:'pos', ordine:ord, data:p});
+  });
+  capitoli.forEach(function(cap){
+    righe.push({tipo:'cap_inizio', ordine:cap.ordine_inizio, data:cap});
+    righe.push({tipo:'cap_fine',   ordine:cap.ordine_fine,   data:cap});
+  });
+  righe.sort(function(a,b){ return a.ordine - b.ordine; });
+
+  function flushSubtot(cap, posCap) {
+    if (!posCap.length) return '';
+    var nRim=0, nCTLI=0, nCTLB=0, nCTLR=0, nAll=0, tipiMap={};
+    posCap.forEach(function(p){
+      if (p.rimozione==='SI'||p.rimozione===true) nRim++;
+      if (p.fornitura_ctl_int==='SI'||p.install_ctl_int==='SI') nCTLI++;
+      if (p.fornitura_ctl_bli==='SI'||p.install_ctl_bli==='SI') nCTLB++;
+      if (p.fornitura_ctl_rei==='SI'||p.install_ctl_rei==='SI') nCTLR++;
+      if (p.allargamento_telaio==='SI'||p.allargamento_telaio===true) nAll++;
+      var tp = p.tipo_porta||'—'; tipiMap[tp]=(tipiMap[tp]||0)+1;
+    });
+    var chips = '<span style="color:#E65100;font-weight:700;">'+posCap.length+' pos.</span>';
+    Object.keys(tipiMap).forEach(function(t){ chips += ' &nbsp;<span class="acc-chip">'+t+': '+tipiMap[t]+'</span>'; });
+    if (nRim)  chips += ' <span class="acc-chip">Rim: '+nRim+'</span>';
+    if (nCTLI) chips += ' <span class="acc-chip">CTL-Int: '+nCTLI+'</span>';
+    if (nCTLB) chips += ' <span class="acc-chip">CTL-Bli: '+nCTLB+'</span>';
+    if (nCTLR) chips += ' <span class="acc-chip">CTL-REI: '+nCTLR+'</span>';
+    if (nAll)  chips += ' <span class="acc-chip">Allarg: '+nAll+'</span>';
+    return '<tr class="tr-cap-subtot"><td colspan="9">Subtotale &mdash; '+chips+'</td></tr>';
+  }
+
+  var html = '<div style="overflow-x:auto;"><table class="pos-table" id="posTable">'+
+    '<thead><tr>'+
+    '<th>N&#176;</th><th>Piano</th><th>Ambiente</th><th>Tipo</th>'+
+    '<th>Fornitore / Sistema</th><th>H (mm)</th><th>L (mm)</th>'+
+    '<th>Note</th><th style="text-align:right;">Azioni</th>'+
+    '</tr></thead><tbody id="posTableBody">';
+
+  var capCorrente=null, posCap=[];
+
+  righe.forEach(function(r){
+    if (r.tipo==='cap_inizio') {
+      capCorrente=r.data; posCap=[];
+      html += '<tr class="tr-cap-inizio" draggable="true" data-tipo="cap_inizio" data-id="'+r.data.id+'" data-ordine="'+r.ordine+'"'+
+        ' ondragstart="onDragStart(event)" ondragover="onDragOver(event)" ondrop="onDrop(event)" ondragleave="onDragLeave(event)">'+
+        '<td colspan="9">'+
+          '<span style="letter-spacing:2px;opacity:.5">\u2550\u2550\u2550</span> '+
+          r.data.titolo+' <span style="letter-spacing:2px;opacity:.5">\u2550\u2550\u2550</span>'+
+          ' &nbsp;<button class="btn-cap-edit" onclick="rinominaCapitolo(\''+r.data.id+'\',\''+r.data.titolo.replace(/'/g,"\\'")+'\')" title="Rinomina">&#9999;&#65039;</button>'+
+          '<button class="btn-cap-del" onclick="eliminaCapitolo(\''+r.data.id+'\')" title="Elimina">&#128465;&#65039;</button>'+
+        '</td></tr>';
+    } else if (r.tipo==='cap_fine') {
+      html += flushSubtot(capCorrente, posCap);
+      capCorrente=null; posCap=[];
+      html += '<tr class="tr-cap-fine" draggable="true" data-tipo="cap_fine" data-id="'+r.data.id+'" data-ordine="'+r.ordine+'"'+
+        ' ondragstart="onDragStart(event)" ondragover="onDragOver(event)" ondrop="onDrop(event)" ondragleave="onDragLeave(event)">'+
+        '<td colspan="9"><span style="opacity:.4">\u2500\u2500\u2500</span> Fine: '+r.data.titolo+' <span style="opacity:.4">\u2500\u2500\u2500</span></td></tr>';
+    } else {
+      var p=r.data;
+      if (capCorrente) posCap.push(p);
+      var piano=(p.piano!==undefined&&p.piano!==null)?('P'+(p.piano>=0?'+':'')+p.piano):'—';
+      var numDisp=p.numero_pos_alfa||p.numero_pos;
+      html += '<tr draggable="true" data-tipo="pos" data-id="'+p.ID_pos+'" data-ordine="'+r.ordine+'"'+
+        ' ondragstart="onDragStart(event)" ondragover="onDragOver(event)" ondrop="onDrop(event)" ondragleave="onDragLeave(event)">'+
+        '<td><span class="pos-num-cell" title="seq: '+p.numero_pos+'">'+numDisp+'</span></td>'+
+        '<td>'+piano+'</td>'+
+        '<td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(p.ambiente||'—')+'</td>'+
+        '<td><span class="badge badge-porte">'+(p.tipo_porta||'—')+'</span></td>'+
+        '<td style="font-size:.8rem;"><div style="font-weight:600;">'+(p.fornitore||'—')+' / '+(p.sistema||'—')+'</div>'+
+          '<div style="color:var(--c-text-sec);font-size:.76rem;">'+(p.modello||'')+'</div></td>'+
+        '<td>'+(p.H_mm||'—')+'</td><td>'+(p.L_mm||'—')+'</td>'+
+        '<td style="font-size:.78rem;max-width:100px;overflow:hidden;text-overflow:ellipsis;">'+(p.note||'—')+'</td>'+
+        '<td style="white-space:nowrap;text-align:right;" onclick="event.stopPropagation()">'+
+          '<button class="btn-icon" title="Modifica" onclick="openModalPosizione(\''+p.ID_pos+'\')">&#9999;&#65039;</button>'+
+          '<button class="btn-icon" title="Copia" onclick="openModalCopiaPos(\''+p.ID_pos+'\')">&#128203;</button>'+
+          '<button class="btn-icon" title="Elimina" onclick="openModalEliminaPos(\''+p.ID_pos+'\',\''+numDisp+'\')">&#128465;&#65039;</button>'+
+        '</td></tr>';
+    }
+  });
+
+  html += '</tbody></table></div>';
+  c.innerHTML = html;
 }
+
 
 function populateModalDropdowns() {
   Utils.fillSelect('pPiano',
@@ -720,6 +813,99 @@ async function eseguiClona() {
     Utils.closeModal('modalClona');
     Utils.navigate('rilievo_porte.html', { idRilievo: res.id });
   } else Utils.showError(res.error);
+}
+
+// ================================================================
+// DRAG & DROP
+// ================================================================
+var _dragSrc = null;
+
+function onDragStart(e) {
+  _dragSrc = e.currentTarget;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', _dragSrc.dataset.id);
+  setTimeout(function(){ _dragSrc.style.opacity='0.4'; }, 0);
+}
+function onDragOver(e) {
+  e.preventDefault(); e.dataTransfer.dropEffect='move';
+  e.currentTarget.classList.add('tr-drag-over');
+}
+function onDragLeave(e) { e.currentTarget.classList.remove('tr-drag-over'); }
+
+async function onDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  var target = e.currentTarget;
+  target.classList.remove('tr-drag-over');
+  if (!_dragSrc || _dragSrc===target) { _dragSrc=null; return; }
+  _dragSrc.style.opacity = '';
+  var tbody = document.getElementById('posTableBody');
+  if (!tbody) { _dragSrc=null; return; }
+  var allRows = Array.from(tbody.querySelectorAll('tr[data-tipo]'));
+  var srcIdx = allRows.indexOf(_dragSrc);
+  var tgtIdx = allRows.indexOf(target);
+  if (srcIdx<0||tgtIdx<0) { _dragSrc=null; return; }
+  var srcTipo = _dragSrc.dataset.tipo;
+  var srcId   = _dragSrc.dataset.id;
+  if (srcTipo==='cap_inizio') {
+    var fineIdx=allRows.findIndex(function(r){return r.dataset.tipo==='cap_fine'&&r.dataset.id===srcId;});
+    if (tgtIdx>fineIdx) { Utils.showWarning('Non puoi spostare l\'inizio capitolo dopo la propria fine.'); _dragSrc=null; return; }
+  }
+  if (srcTipo==='cap_fine') {
+    var inizioIdx=allRows.findIndex(function(r){return r.dataset.tipo==='cap_inizio'&&r.dataset.id===srcId;});
+    if (tgtIdx<=inizioIdx) { Utils.showWarning('Non puoi spostare la fine capitolo prima dell\'inizio.'); _dragSrc=null; return; }
+  }
+  tbody.insertBefore(_dragSrc, srcIdx<tgtIdx ? target.nextSibling : target);
+  _dragSrc = null;
+  await salvaOrdiniDaDom();
+}
+
+async function salvaOrdiniDaDom() {
+  var tbody = document.getElementById('posTableBody');
+  if (!tbody) return;
+  var allRows = Array.from(tbody.querySelectorAll('tr[data-tipo]'));
+  var ordine = 1;
+  var righePos = [];
+  allRows.forEach(function(row){
+    row.dataset.ordine = ordine;
+    var tipo=row.dataset.tipo, id=row.dataset.id;
+    if (tipo==='pos') { righePos.push({id:id, ordine:ordine}); }
+    else if (tipo==='cap_inizio') { var cap=capitoli.find(function(c){return c.id===id;}); if(cap)cap.ordine_inizio=ordine; }
+    else if (tipo==='cap_fine')   { var cap=capitoli.find(function(c){return c.id===id;}); if(cap)cap.ordine_fine=ordine; }
+    ordine++;
+  });
+  var res = await API.aggiornaOrdiniPorte(idRilievo, righePos, capitoli);
+  if (!res.success) Utils.showWarning('Errore salvataggio ordine: '+(res.error||''));
+  await loadPosizioni();
+}
+
+// ================================================================
+// CAPITOLI
+// ================================================================
+async function nuovoCapitolo() {
+  var titolo = prompt('Titolo del capitolo:', 'Capitolo');
+  if (!titolo || !titolo.trim()) return;
+  titolo = titolo.trim();
+  var maxOrd = 0;
+  posizioni.forEach(function(p){ var o=p.ordine||p.numero_pos; if(o>maxOrd)maxOrd=o; });
+  capitoli.forEach(function(c){ if(c.ordine_fine>maxOrd)maxOrd=c.ordine_fine; });
+  var res = await API.createCapitolo(idRilievo, titolo, maxOrd+1, maxOrd+2);
+  if (res.success) { Utils.showSuccess('Capitolo "'+titolo+'" creato.'); await loadPosizioni(); }
+  else Utils.showError(res.error);
+}
+
+async function rinominaCapitolo(id, titoloCorrente) {
+  var nuovoTitolo = prompt('Nuovo titolo:', titoloCorrente);
+  if (!nuovoTitolo || !nuovoTitolo.trim() || nuovoTitolo.trim()===titoloCorrente) return;
+  var res = await API.updateCapitoloTitolo(id, nuovoTitolo.trim());
+  if (res.success) await loadPosizioni(); else Utils.showError(res.error);
+}
+
+async function eliminaCapitolo(id) {
+  var cap = capitoli.find(function(c){return c.id===id;});
+  if (!confirm('Eliminare il capitolo "'+(cap?cap.titolo:'questo capitolo')+'"?\nLe posizioni al suo interno resteranno nel rilievo.')) return;
+  var res = await API.deleteCapitolo(id);
+  if (res.success) { Utils.showSuccess('Capitolo eliminato.'); await loadPosizioni(); }
+  else Utils.showError(res.error);
 }
 
 init();

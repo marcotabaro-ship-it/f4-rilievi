@@ -136,6 +136,28 @@
     }
     .posatori-row strong { color: #1a1a2e; }
 
+    /* ── CAPITOLI POSA ── */
+    .cap-posa-hdr {
+      background: #1a1a2e; color: #a5b4fc;
+      padding: 8px 14px; margin: 16px 0 8px;
+      border-radius: 8px; font-size: .88rem; font-weight: 700;
+      letter-spacing: .5px; display: flex; align-items: center; gap: 10px;
+      page-break-after: avoid;
+    }
+    .cap-posa-hdr .cpn { background: #4f46e5; color: #fff; border-radius: 4px; padding: 1px 8px; font-size: .8rem; }
+    .cap-posa-hdr .cps { flex:1; height:2px; background:#374151; }
+    .cap-posa-subtot {
+      background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px;
+      padding: 8px 14px; margin: 6px 0 20px; font-size: .8rem;
+      display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+    }
+    .cap-posa-subtot .cps-lbl { font-weight: 700; color: #3730a3; }
+    .cap-posa-subtot .cps-v { background: #c7d2fe; color: #1e1b4b; border-radius: 8px; padding: 1px 9px; font-weight: 600; }
+    .totali-globali-posa {
+      background: #064e3b; color: #a7f3d0;
+      padding: 8px 14px; margin: 20px 0 8px;
+      border-radius: 8px; font-size: .88rem; font-weight: 700; letter-spacing: .5px;
+    }
     /* print */
     @media print {
       @page { size: A4 portrait; margin: 8mm 8mm 8mm 8mm; }
@@ -517,7 +539,7 @@ function savePrev(v) {
 }
 
 // ---- render ----
-function renderAll(voci, adj) {
+function renderAll(voci, adj, tuttePos, caps) {
   var tbody = document.getElementById('tbody-posa');
   var tfoot = document.getElementById('tfoot-posa');
   var html = '';
@@ -582,6 +604,11 @@ function renderAll(voci, adj) {
     }
   });
   renderSummary(areaMap, totFin, oreProgFin);
+
+  // ── CAPITOLI: sezioni per capitolo sotto il report globale ──
+  if (tuttePos && caps && caps.length) {
+    renderCapitoliPosa(tuttePos, caps, adj);
+  }
 }
 
 function renderSummary(areaMap, totFin, orePrev) {
@@ -706,11 +733,11 @@ function init() {
   ADJ_LS_KEY  = 'f4_posa_adj_'  + ID_RILIEVO;
   PREV_LS_KEY = 'f4_posa_prev_' + ID_RILIEVO;
 
-  var loaded = { ril: null, pos: null };
+  var loaded = { ril: null, pos: null, caps: null };
   var errored = false;
 
   function tryRender() {
-    if (!loaded.ril || !loaded.pos || errored) return;
+    if (!loaded.ril || !loaded.pos || !loaded.caps || errored) return;
 
     var r    = loaded.ril;
     var pos  = loaded.pos;
@@ -732,7 +759,7 @@ function init() {
 
     renderTipoGrid(pos);
     VOCI_GLOBALI = calcolaVoci(pos);
-    renderAll(VOCI_GLOBALI, loadAdj());
+    renderAll(VOCI_GLOBALI, loadAdj(), pos, loaded.caps || []);
     // ripristina nota
     var notaEl = document.getElementById('note-posa');
     if (notaEl) notaEl.value = loadNote();
@@ -749,10 +776,116 @@ function init() {
   );
 
   doFetch(
-    'posizioni_serr?id_rilievo=eq.' + ID_RILIEVO + '&stato=eq.attivo&select=*&order=numero_pos.asc',
+    'posizioni_serr?id_rilievo=eq.' + ID_RILIEVO + '&stato=eq.attivo&select=*&order=ordine.asc',
     function(rows) { loaded.pos = rows || []; tryRender(); },
     function(e) { errored=true; setStato('Errore posizioni: '+e, true); }
   );
+
+  doFetch(
+    'capitoli_rilievo?id_rilievo=eq.' + ID_RILIEVO + '&stato=eq.attivo&select=*&order=ordine_inizio.asc',
+    function(rows) { loaded.caps = rows || []; tryRender(); },
+    function(e) { loaded.caps = []; tryRender(); }
+  );
+}
+
+// ================================================================
+// CAPITOLI POSA
+// ================================================================
+function renderCapitoliPosa(tuttePos, caps, adj) {
+  // Costruisci lista ordinata
+  var righe = [];
+  tuttePos.forEach(function(p) {
+    var ord = (p.ordine !== undefined && p.ordine !== null) ? p.ordine : p.numero_pos;
+    righe.push({tipo:'pos', ordine:ord, data:p});
+  });
+  caps.forEach(function(cap) {
+    righe.push({tipo:'cap_inizio', ordine:cap.ordine_inizio, data:cap});
+    righe.push({tipo:'cap_fine',   ordine:cap.ordine_fine,   data:cap});
+  });
+  righe.sort(function(a,b){ return a.ordine - b.ordine; });
+
+  // Raggruppa posizioni per capitolo
+  var gruppi = [];
+  var capCorr = null, posCorr = [];
+  var posizioniFuori = [];
+
+  righe.forEach(function(r) {
+    if (r.tipo === 'cap_inizio') { capCorr = r.data; posCorr = []; }
+    else if (r.tipo === 'cap_fine') {
+      if (capCorr) gruppi.push({cap: capCorr, pos: posCorr.slice()});
+      capCorr = null; posCorr = [];
+    } else {
+      if (capCorr) posCorr.push(r.data); else posizioniFuori.push(r.data);
+    }
+  });
+  if (posizioniFuori.length) gruppi.push({cap: {titolo:'Senza capitolo'}, pos: posizioniFuori});
+
+  // Contenitore esistente: aggiungo dopo ore-block
+  var wrap = document.querySelector('.ore-block');
+  if (!wrap) return;
+
+  var container = document.getElementById('cap-posa-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'cap-posa-container';
+    wrap.parentNode.insertBefore(container, wrap.nextSibling);
+  }
+
+  var html = '<div class="totali-globali-posa">&#128293; Dettaglio per capitolo</div>';
+
+  gruppi.forEach(function(g) {
+    if (!g.pos.length) return;
+    var voci = calcolaVoci(g.pos);
+    var totOre = 0, oreDir = 0, oreInd = 0;
+    voci.forEach(function(v) {
+      var fin = Math.max(0, Math.round(v.oreCalc * 1000) / 1000);
+      totOre += fin;
+      if (v.tipo === 'dir') oreDir += fin; else oreInd += fin;
+    });
+
+    html += '<div class="cap-posa-hdr">'+
+      '<span class="cpn">'+g.pos.length+' pos.</span>'+
+      '<span style="letter-spacing:2px;opacity:.6">\u2550\u2550</span> '+
+      g.cap.titolo+
+      ' <span style="letter-spacing:2px;opacity:.6">\u2550\u2550</span>'+
+      '<span class="cps"></span></div>';
+
+    // Tabella semplificata senza adj inputs
+    html += '<div class="table-wrap"><table class="t-posa" style="font-size:11px;"><thead><tr>'+
+      '<th style="width:24%">Area</th><th style="width:42%">Servizio</th>'+
+      '<th class="c">N</th><th class="c">h/pos</th><th class="c">Min.cant.</th><th class="c">Ore</th>'+
+      '</tr></thead><tbody>';
+    var lastArea = '';
+    voci.forEach(function(v) {
+      if (v.n === 0 && v.oreCalc === 0) return; // nascondi righe zero
+      if (v.area !== lastArea) {
+        html += '<tr class="tr-sez"><td colspan="6">'+v.area+'</td></tr>';
+        lastArea = v.area;
+      }
+      var fin = Math.max(0, Math.round(v.oreCalc * 1000) / 1000);
+      html += '<tr class="tr-voce">'+
+        '<td>'+v.area+'</td><td>'+v.serv+'</td>'+
+        '<td class="c">'+(v.n > 0 ? v.n : '—')+'</td>'+
+        '<td class="c">'+(v.dp ? fmtH(v.dp[0]) : '—')+'</td>'+
+        '<td class="c">'+(v.dp && v.dp[1] ? fmtH(v.dp[1]) : '—')+'</td>'+
+        '<td class="ore-fin">'+fmtH(fin)+'</td>'+
+      '</tr>';
+    });
+    html += '<tr class="tr-tot"><td colspan="5">TOTALE '+g.cap.titolo+'</td>'+
+      '<td class="ore-fin">'+fmtH(totOre)+'</td></tr>';
+    html += '</tbody></table></div>';
+
+    var giorni = totOre > 0 ? Math.ceil(totOre / 16 * 10) / 10 : 0;
+    html += '<div class="cap-posa-subtot">'+
+      '<span class="cps-lbl">'+g.cap.titolo+'</span>'+
+      '<span class="cps-v">Ore dirette: '+fmtH(oreDir)+'</span>'+
+      '<span class="cps-v">Ore indirette: '+fmtH(oreInd)+'</span>'+
+      '<span class="cps-v">Ore totali: '+fmtH(totOre)+'</span>'+
+      '<span class="cps-v">Giorni stimati: '+giorni+'</span>'+
+    '</div>';
+  });
+
+  container.innerHTML = html;
 }
 
 // ---- note handlers ----

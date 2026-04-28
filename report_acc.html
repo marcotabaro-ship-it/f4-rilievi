@@ -516,7 +516,7 @@ function renderDettaglioAcc(pc) {
 
 function mkG(titolo,img,totLabel,subs){
   var h='<div class="acc-group"><div class="acc-group-hdr">';
-  if(img) h+='<img class="acc-img" src="'+esc(img)+'" alt="" onerror="this.style.display='none'">';
+  if(img) h+='<img class="acc-img" src="'+esc(img)+'" alt="" onerror="this.style.display=\'none\'">';
   else h+='<div style="width:52px;height:36px;flex-shrink:0;"></div>';
   h+='<div class="acc-titolo">'+esc(titolo)+'</div>';
   h+='<div class="acc-tot">'+totLabel+'</div>';

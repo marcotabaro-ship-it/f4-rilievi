@@ -514,26 +514,6 @@ function renderDettaglioAcc(pc) {
   return html;
 }
 
-// ================================================================ HELPER mkGtitolo,img,totLabel,subs){
-  var h='<div class="acc-group"><div class="acc-group-hdr">';
-  if(img) h+='<img class="acc-img" src="'+esc(img)+'" alt="" onerror="this.style.display=\'none\'">';
-  else h+='<div style="width:52px;height:36px;flex-shrink:0;"></div>';
-  h+='<div class="acc-titolo">'+esc(titolo)+'</div>';
-  h+='<div class="acc-tot">'+totLabel+'</div>';
-  h+='</div><div class="acc-body">';
-  subs.forEach(function(s){
-    var ps=s.pos.map(function(x){return String(x);}).join(', ');
-    h+='<div class="acc-sub">';
-    if(subs.length>1) h+='<div class="acc-sublabel">'+s.l+'</div>';
-    h+='<div class="acc-row">'+s.chips;
-    h+='<div class="acc-pos-list">Pos: '+esc(ps)+'</div>';
-    h+='<button class="btn-copy" onclick="copia(\''+ps.replace(/'/g,"\\'")+'\')" title="Copia posizioni">&#128203;</button>';
-    h+='</div></div>';
-  });
-  h+='</div></div>';
-  return h;
-}
-
 function mkG(titolo,img,totLabel,subs){
   var h='<div class="acc-group"><div class="acc-group-hdr">';
   if(img) h+='<img class="acc-img" src="'+esc(img)+'" alt="" onerror="this.style.display='none'">';

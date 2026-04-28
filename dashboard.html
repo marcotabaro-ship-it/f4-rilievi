@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard — F4 Rilievi</title>
+  <title>Dashboard &mdash; F4 Rilievi</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
 </head>
@@ -16,7 +16,6 @@
         <p class="page-subtitle">Benvenuto, <strong data-user-nome>—</strong></p>
       </div>
     </div>
-
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-value" id="kpiClienti">—</div>
@@ -31,71 +30,81 @@
         <div class="kpi-label">Rilievi Porte</div>
       </div>
     </div>
-
     <div class="card">
       <div class="card-header">
         <span class="card-title">Clienti recenti</span>
-        <a href="clienti.html" class="btn btn-sm btn-outline">Tutti i clienti →</a>
+        <a href="clienti.html" class="btn btn-sm btn-outline">Tutti i clienti &#8594;</a>
       </div>
       <div id="clientiRecenti">
         <div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>
       </div>
     </div>
-
     <div class="card">
       <div class="card-header"><span class="card-title">Azioni rapide</span></div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;">
         <button class="btn btn-primary" onclick="Utils.navigate('clienti.html')">
-          ➕ Nuovo cliente
+          &#10133; Nuovo cliente
         </button>
         <button class="btn btn-secondary" onclick="Utils.navigate('clienti.html')">
-          🔍 Cerca cantiere
+          &#128269; Cerca cantiere
         </button>
       </div>
     </div>
   </main>
 </div>
-
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/layout.js"></script>
 <script>
-  const currentUser = Auth.requireLogin();
-  if (currentUser) {
-    Layout.init('dashboard');
-    loadDashboard();
-  }
+var currentUser = Auth.requireLogin();
+if (currentUser) {
+  Layout.init('dashboard');
+  loadDashboard();
+}
 
-  async function loadDashboard() {
-    const res = await API.getClienti();
-    if (!res.success) { Utils.showError(res.error); return; }
-    const clienti = res.data.filter(c => c.stato === 'attivo');
-    document.getElementById('kpiClienti').textContent = clienti.length;
-    document.getElementById('kpiRilieviSerr').textContent = '—';
-    document.getElementById('kpiRilieviPorte').textContent = '—';
+async function loadDashboard() {
+  // Carico clienti, rilievi serr e rilievi porte in parallelo
+  var results = await Promise.all([
+    API.getClienti(),
+    API.getRilieviTutti('SERR'),
+    API.getRilieviTutti('PORTE')
+  ]);
 
-    const container = document.getElementById('clientiRecenti');
-    if (clienti.length === 0) {
-      Utils.showEmptyState(container, 'Nessun cliente. Clicca "Nuovo cliente" per iniziare.', '👥');
-      return;
-    }
-    const recent = Utils.sortByName(clienti, 'nome').slice(0, 6);
-    container.innerHTML = recent.map(c => `
-      <div class="pos-card" style="cursor:pointer;"
-           onclick="Utils.navigate('cantiere.html',{idCliente:'${c.ID_cliente}'})">
-        <div class="pos-num" style="background:var(--c-red)">
-          ${(c.nome||'?').charAt(0).toUpperCase()}
-        </div>
-        <div class="pos-info">
-          <div class="pos-title">${c.nome}</div>
-          <div class="pos-subtitle">${c.telefono||''} ${c.email||''}</div>
-        </div>
-        <span style="color:var(--c-text-sec)">›</span>
-      </div>
-    `).join('');
+  var resClienti = results[0];
+  var resSerr    = results[1];
+  var resPorte   = results[2];
+
+  if (!resClienti.success) { Utils.showError(resClienti.error); return; }
+
+  var clienti = resClienti.data.filter(function(c) { return c.stato === 'attivo'; });
+  document.getElementById('kpiClienti').textContent = clienti.length;
+
+  // KPI rilievi
+  var nSerr  = resSerr.success  ? resSerr.data.length  : 0;
+  var nPorte = resPorte.success ? resPorte.data.length : 0;
+  document.getElementById('kpiRilieviSerr').textContent  = nSerr;
+  document.getElementById('kpiRilieviPorte').textContent = nPorte;
+
+  // Clienti recenti
+  var container = document.getElementById('clientiRecenti');
+  if (!clienti.length) {
+    Utils.showEmptyState(container, 'Nessun cliente. Clicca "Nuovo cliente" per iniziare.', '&#128101;');
+    return;
   }
+  var recent = Utils.sortByName(clienti, 'nome').slice(0, 6);
+  container.innerHTML = recent.map(function(c) {
+    return '<div class="pos-card" style="cursor:pointer;" onclick="Utils.navigate(\'cantiere.html\',{idCliente:\'' + c.ID_cliente + '\'})">' +
+      '<div class="pos-num" style="background:var(--c-red)">' + (c.nome||'?').charAt(0).toUpperCase() + '</div>' +
+      '<div class="pos-info">' +
+        '<div class="pos-title">' + c.nome + '</div>' +
+        '<div class="pos-subtitle">' + (c.telefono||'') + (c.telefono&&c.email?' &nbsp;':'') + (c.email||'') + '</div>' +
+      '</div>' +
+      '<span style="color:var(--c-text-sec)">&#8250;</span>' +
+    '</div>';
+  }).join('');
+}
 </script>
 </body>
 </html>

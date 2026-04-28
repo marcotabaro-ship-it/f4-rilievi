@@ -640,7 +640,7 @@ function renderPosizioni() {
       var numDisp=p.numero_pos_alfa||p.numero_pos;
       html += '<tr draggable="true" data-tipo="pos" data-id="'+p.ID_pos+'" data-ordine="'+r.ordine+'"'+
         ' ondragstart="onDragStart(event)" ondragover="onDragOver(event)" ondrop="onDrop(event)" ondragleave="onDragLeave(event)"'+
-        ' onclick="openDrawerPorta(''+p.ID_pos+'')" style="cursor:pointer;">'+
+        ' onclick="openDrawerPorta(\''+p.ID_pos+'\')" style="cursor:pointer;">'+
         '<td><span class="pos-num-cell" title="seq: '+p.numero_pos+'">'+numDisp+'</span></td>'+
         '<td>'+piano+'</td>'+
         '<td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(p.ambiente||'—')+'</td>'+

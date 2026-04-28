@@ -218,6 +218,7 @@
       <span class="tipo-lbl">Posizioni:</span>
     </div>
 
+    <div id="titolo-globale-posa" style="display:none;background:#064e3b;color:#a7f3d0;font-weight:700;font-size:.9rem;padding:8px 14px;margin-bottom:8px;border-radius:8px;">&#8721; Totali complessivi — tutti i capitoli</div>
     <div class="table-wrap">
       <table class="t-posa">
         <thead>
@@ -605,10 +606,6 @@ function renderAll(voci, adj, tuttePos, caps) {
   });
   renderSummary(areaMap, totFin, oreProgFin);
 
-  // ── CAPITOLI: sezioni per capitolo sotto il report globale ──
-  if (tuttePos && caps && caps.length) {
-    renderCapitoliPosa(tuttePos, caps, adj);
-  }
 }
 
 function renderSummary(areaMap, totFin, orePrev) {
@@ -759,6 +756,12 @@ function init() {
 
     renderTipoGrid(pos);
     VOCI_GLOBALI = calcolaVoci(pos);
+    var hasCaps = loaded.caps && loaded.caps.length > 0;
+    if (hasCaps) {
+      renderCapitoliPosa(pos, loaded.caps, loadAdj());
+      var tg = document.getElementById('titolo-globale-posa');
+      if (tg) tg.style.display = '';
+    }
     renderAll(VOCI_GLOBALI, loadAdj(), pos, loaded.caps || []);
     // ripristina nota
     var notaEl = document.getElementById('note-posa');
@@ -824,11 +827,17 @@ function renderCapitoliPosa(tuttePos, caps, adj) {
   var wrap = document.querySelector('.ore-block');
   if (!wrap) return;
 
+  // Inserisci PRIMA della tabella globale (non dopo ore-block)
   var container = document.getElementById('cap-posa-container');
   if (!container) {
     container = document.createElement('div');
     container.id = 'cap-posa-container';
-    wrap.parentNode.insertBefore(container, wrap.nextSibling);
+    var tableWrap = document.querySelector('#report-content .table-wrap');
+    if (tableWrap) {
+      tableWrap.parentNode.insertBefore(container, tableWrap);
+    } else if (wrap) {
+      wrap.parentNode.insertBefore(container, wrap);
+    }
   }
 
   var html = '<div class="totali-globali-posa">&#128293; Dettaglio per capitolo</div>';

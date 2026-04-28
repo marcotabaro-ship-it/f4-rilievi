@@ -188,7 +188,9 @@ const _map = {
       angolari_pvc:             row.angolari_pvc === true,
       note:                     row.note                  || '',
       ID_stratigrafia_override: row.id_stratigrafia_override || '',
-      stato:                    row.stato
+      stato:                    row.stato,
+      ordine:                   row.ordine !== undefined ? row.ordine : null,
+      id_capitolo:              row.id_capitolo || null
     };
   },
 
@@ -233,7 +235,9 @@ const _map = {
       maniglia_colore_mat:  row.maniglia_colore_mat  || '',
       rimozione:            row.rimozione ? 'SI' : 'NO',
       note:                 row.note                 || '',
-      stato:                row.stato
+      stato:                row.stato,
+      ordine:               row.ordine !== undefined ? row.ordine : null,
+      id_capitolo:          row.id_capitolo || null
     };
   },
 
@@ -322,7 +326,9 @@ const _in = {
       taglio_marmo:             data.taglio_marmo === true,
       angolari_pvc:             data.angolari_pvc === true,
       note:                     data.note                 || null,
-      id_stratigrafia_override: data.ID_stratigrafia_override || null
+      id_stratigrafia_override: data.ID_stratigrafia_override || null,
+      ordine:                   data.ordine !== undefined ? parseFloat(data.ordine) : null,
+      id_capitolo:              data.id_capitolo || null
     };
   },
 
@@ -487,6 +493,106 @@ const API = {
     catch(e) { return this._err(e); }
   },
   async getRilievi(idCantiere) { return this.getRilieviCantiere(idCantiere); },
+  // ================================================================
+  // CAPITOLI
+  // ================================================================
+  async getCapitoli(idRilievo) {
+    try {
+      const rows = await _sb.get('capitoli_rilievo', { id_rilievo: 'eq.' + idRilievo, stato: 'eq.attivo', order: 'ordine_inizio.asc', select: '*' });
+      return this._ok((rows || []).map(r => ({
+        id:            r.id,
+        id_rilievo:    r.id_rilievo,
+        titolo:        r.titolo,
+        ordine_inizio: r.ordine_inizio,
+        ordine_fine:   r.ordine_fine,
+        stato:         r.stato
+      })));
+    } catch(e) { return this._err(e); }
+  },
+
+  async createCapitolo(idRilievo, titolo, ordineInizio, ordineFine) {
+    try {
+      const user = Auth.getUser();
+      const rows = await _sb.post('capitoli_rilievo', {
+        id_rilievo:    idRilievo,
+        titolo:        titolo || 'Capitolo',
+        ordine_inizio: ordineInizio,
+        ordine_fine:   ordineFine,
+        stato:         'attivo'
+      });
+      return this._ok({ id: rows[0].id, titolo: rows[0].titolo });
+    } catch(e) { return this._err(e); }
+  },
+
+  async updateCapitoloTitolo(id, titolo) {
+    try {
+      await _sb.patch('capitoli_rilievo', { id: 'eq.' + id }, { titolo: titolo });
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
+  },
+
+  async updateCapitoloOrdini(id, ordineInizio, ordineFine) {
+    try {
+      await _sb.patch('capitoli_rilievo', { id: 'eq.' + id }, { ordine_inizio: ordineInizio, ordine_fine: ordineFine });
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
+  },
+
+  async deleteCapitolo(id) {
+    try {
+      // Scollega le posizioni da questo capitolo
+      await _sb.patch('posizioni_serr',  { id_capitolo: 'eq.' + id }, { id_capitolo: null });
+      await _sb.patch('posizioni_porte', { id_capitolo: 'eq.' + id }, { id_capitolo: null });
+      // Archivia il capitolo
+      await _sb.patch('capitoli_rilievo', { id: 'eq.' + id }, { stato: 'eliminato' });
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
+  },
+
+  // Aggiorna l'ordine di tutte le posizioni + ricalcola id_capitolo
+  async aggiornaOrdiniSerr(idRilievo, righe, capitoli) {
+    // righe = [{id, ordine}] — tutte le posizioni nell'ordine corrente
+    // capitoli = [{id, ordine_inizio, ordine_fine}]
+    try {
+      // 1. Aggiorna ordine posizioni
+      for (var i = 0; i < righe.length; i++) {
+        var r = righe[i];
+        // Calcola id_capitolo: quale capitolo contiene questo ordine?
+        var idCap = null;
+        for (var j = 0; j < capitoli.length; j++) {
+          var c = capitoli[j];
+          if (r.ordine > c.ordine_inizio && r.ordine < c.ordine_fine) { idCap = c.id; break; }
+        }
+        await _sb.patch('posizioni_serr', { id: 'eq.' + r.id }, { ordine: r.ordine, id_capitolo: idCap });
+      }
+      // 2. Aggiorna ordini capitoli
+      for (var k = 0; k < capitoli.length; k++) {
+        var cap = capitoli[k];
+        await _sb.patch('capitoli_rilievo', { id: 'eq.' + cap.id }, { ordine_inizio: cap.ordine_inizio, ordine_fine: cap.ordine_fine });
+      }
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
+  },
+
+  async aggiornaOrdiniPorte(idRilievo, righe, capitoli) {
+    try {
+      for (var i = 0; i < righe.length; i++) {
+        var r = righe[i];
+        var idCap = null;
+        for (var j = 0; j < capitoli.length; j++) {
+          var c = capitoli[j];
+          if (r.ordine > c.ordine_inizio && r.ordine < c.ordine_fine) { idCap = c.id; break; }
+        }
+        await _sb.patch('posizioni_porte', { id: 'eq.' + r.id }, { ordine: r.ordine, id_capitolo: idCap });
+      }
+      for (var k = 0; k < capitoli.length; k++) {
+        var cap = capitoli[k];
+        await _sb.patch('capitoli_rilievo', { id: 'eq.' + cap.id }, { ordine_inizio: cap.ordine_inizio, ordine_fine: cap.ordine_fine });
+      }
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
+  },
+
   async getRilieviTutti(tipo) {
     try { const rows = await _sb.get('rilievi', { tipo: 'eq.' + tipo, stato: 'neq.archiviato', select: 'id,codice_completo,referente,tipo,id_cantiere' }); return this._ok(rows || []); }
     catch(e) { return this._err(e.message); }
@@ -649,15 +755,17 @@ Object.assign(API, {
   async setDefaultStrat(id, idRilievo) { return this.setDefaultStratigrafia(id, idRilievo); },
 
   async getPosizioniSerr(idRilievo) {
-    try { const rows = await _sb.get('posizioni_serr', { id_rilievo: 'eq.' + idRilievo, stato: 'eq.attivo', order: 'numero_pos.asc', select: '*' }); return this._ok((rows || []).map(_map.posSerr)); }
+    try { const rows = await _sb.get('posizioni_serr', { id_rilievo: 'eq.' + idRilievo, stato: 'eq.attivo', order: 'ordine.asc', select: '*' }); return this._ok((rows || []).map(_map.posSerr)); }
     catch(e) { return this._err(e); }
   },
   async createPosizioneSerr(data) {
     try {
       const user = Auth.getUser();
-      const existing = await _sb.get('posizioni_serr', { id_rilievo: 'eq.' + data.ID_rilievo, stato: 'eq.attivo', select: 'numero_pos', order: 'numero_pos.desc', limit: '1' });
+      const existing = await _sb.get('posizioni_serr', { id_rilievo: 'eq.' + data.ID_rilievo, stato: 'eq.attivo', select: 'numero_pos,ordine', order: 'numero_pos.desc', limit: '1' });
       const nextPos = existing && existing.length ? (existing[0].numero_pos + 1) : 1;
-      const rows = await _sb.post('posizioni_serr', Object.assign(_in.posSerr(data), { numero_pos: nextPos, utente_creazione: user ? user.id : null }));
+      const maxOrd = existing && existing.length ? ((existing[0].ordine || existing[0].numero_pos) + 1) : 1;
+      const payload = Object.assign(_in.posSerr(data), { numero_pos: nextPos, ordine: maxOrd, utente_creazione: user ? user.id : null });
+      const rows = await _sb.post('posizioni_serr', payload);
       const created = rows[0];
       return { success: true, id: created.id, numero_pos: created.numero_pos };
     } catch(e) { return this._err(e); }
@@ -684,7 +792,7 @@ Object.assign(API, {
   },
 
   async getPosizioniPorte(idRilievo) {
-    try { const rows = await _sb.get('posizioni_porte', { id_rilievo: 'eq.' + idRilievo, stato: 'eq.attivo', order: 'numero_pos.asc', select: '*' }); return this._ok((rows || []).map(_map.posPorta)); }
+    try { const rows = await _sb.get('posizioni_porte', { id_rilievo: 'eq.' + idRilievo, stato: 'eq.attivo', order: 'ordine.asc', select: '*' }); return this._ok((rows || []).map(_map.posPorta)); }
     catch(e) { return this._err(e); }
   },
   async createPosizionePorta(data) {

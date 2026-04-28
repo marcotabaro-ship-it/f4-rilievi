@@ -494,7 +494,7 @@
         '<td style="text-align:right;">' +
           '<span class="badge-' + (r.stato === 'attivo' ? 'attivo' : 'disattivo') + '">' + r.stato + '</span>' +
           '&nbsp;<button class="btn btn-xs ' + (r.stato === 'attivo' ? 'btn-danger' : 'btn-outline') + '" ' +
-          'onclick="toggleLk(' + JSON.stringify(r.id) + ')">' +
+          'onclick="toggleLk(\'' + r.id + '\')">' +
           (r.stato === 'attivo' ? 'Disattiva' : 'Riattiva') + '</button>' +
         '</td></tr>'
       ).join('') +

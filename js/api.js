@@ -375,6 +375,44 @@ const _in = {
   }
 };
 
+// ================================================================
+// LOOKUP SORT — ordini esatti da foglio Excel
+// ================================================================
+function _sortLookup(table, rows) {
+  var T = table.toUpperCase();
+  var ORDINE = {
+    'LK_TIPO_SERR':      ['I','F','PF','FF','VF','S'],
+    'LK_TIPO_FORO_SERR': ['A','D','P'],
+    'LK_SENSI_APERTURA': ['D','S','W','F'],
+    'LK_SCHERMATURA':    ['A','AM','AE','AR','S','TZ','TM','CA','CT'],
+    'LK_VETRO':          ['D','T'],
+    'LK_COPRIFILI':      ['P','L','A'],
+    'LK_CASSONETTO':     ['P','L'],
+    'LK_CONTROTELAIO':   ['L','T'],
+    'LK_ZANZARIERA':     ['V','O'],
+    'LK_DINOXILL':       ['DA','I3','I4'],
+    'LK_OSCURANTE':      ['V','D','P'],
+    'LK_TIPO_FORO_PORTE':['N','P'],
+    'LK_TIPO_PORTA':     ['INT','BLI','REI'],
+    'LK_SISTEMA_PORTE':  ['ST','DO','TP','FC','F_','SI','SE','LI','PI']
+  };
+  var NUMERICO = ['LK_N_CAMPI','LK_PIANO'];
+  if (ORDINE[T]) {
+    var ord = ORDINE[T];
+    return rows.slice().sort(function(a,b) {
+      var ka = a.sigla !== undefined ? a.sigla : (a.tipo_porta||'');
+      var kb = b.sigla !== undefined ? b.sigla : (b.tipo_porta||'');
+      var ia = ord.indexOf(ka), ib = ord.indexOf(kb);
+      return (ia<0?999:ia) - (ib<0?999:ib);
+    });
+  }
+  if (NUMERICO.indexOf(T) >= 0) {
+    var key = T === 'LK_PIANO' ? 'piano' : 'n_campi';
+    return rows.slice().sort(function(a,b){ return (parseFloat(a[key])||0) - (parseFloat(b[key])||0); });
+  }
+  return rows;
+}
+
 const API = {
   _ok(data)  { return { success: true,  data }; },
   _err(e)    {
@@ -408,7 +446,7 @@ const API = {
   async getLookup(table) {
     try {
       const rows = await _sb.get(table.toLowerCase(), { stato: 'eq.attivo', order: 'id.asc' });
-      return this._ok(rows || []);
+      return this._ok(_sortLookup(table, rows || []));
     } catch(e) { return this._err(e); }
   },
 

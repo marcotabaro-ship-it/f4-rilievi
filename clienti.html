@@ -21,10 +21,18 @@
     </div>
 
     <div class="card" style="padding:14px;margin-bottom:16px;">
-      <div class="search-box">
-        <span class="search-icon">&#128269;</span>
-        <input class="form-control" type="text" id="searchInput"
-               placeholder="Cerca per nome cliente..." oninput="filterClienti(this.value)">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div class="search-box" style="flex:1;min-width:200px;">
+          <span class="search-icon">&#128269;</span>
+          <input class="form-control" type="text" id="searchInput"
+                 placeholder="Cerca per nome cliente..." oninput="applyFilters()">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+          <label style="font-size:.82rem;color:var(--c-text-sec);white-space:nowrap;">Referente:</label>
+          <select class="form-control" id="filterReferente" style="min-width:160px;" onchange="applyFilters()">
+            <option value="">— Tutti —</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -141,19 +149,86 @@ Layout.init('clienti');
 
 var tuttiClienti = [];
 var clienteEditId = null;
+var referentiMap = {}; // { ID_cliente: ['Ref1','Ref2'] }
 
 async function init() {
-  var res = await API.getClienti();
-  if (!res.success) { Utils.showError(res.error); return; }
-  tuttiClienti = res.data;
+  var results = await Promise.all([
+    API.getClienti(),
+    API.getRilieviTutti('SERR'),
+    API.getRilieviTutti('PORTE')
+  ]);
+  var resC = results[0], resS = results[1], resP = results[2];
+  if (!resC.success) { Utils.showError(resC.error); return; }
+  tuttiClienti = resC.data;
+
+  // Costruisci mappa referenti per cliente
+  referentiMap = {};
+  var allRilievi = [];
+  if (resS.success) allRilievi = allRilievi.concat(resS.data);
+  if (resP.success) allRilievi = allRilievi.concat(resP.data);
+  allRilievi.forEach(function(r) {
+    if (!r.referente || !r.id_cantiere) return;
+    // Trovo il cliente tramite cantiere
+    // I dati rilievo hanno id_cantiere, ma non ID_cliente direttamente
+    // uso un workaround: dopo il render mappo via api separata
+  });
+
+  // Carica referenti via query diretta rilievi + cantieri
+  caricaReferenti();
   renderClienti(tuttiClienti);
+  applyFilters();
 }
 
-function filterClienti(q) {
-  q = q.trim().toLowerCase();
-  renderClienti(q ? tuttiClienti.filter(function(c) {
-    return (c.nome||'').toLowerCase().includes(q) || (c.email||'').toLowerCase().includes(q) || (c.comune||'').toLowerCase().includes(q);
-  }) : tuttiClienti);
+async function caricaReferenti() {
+  // Query: rilievi con join cantieri per avere ID_cliente
+  var SU = APP_CONFIG.SUPABASE_URL, SK = APP_CONFIG.SUPABASE_ANON_KEY;
+  var tok = (typeof Auth !== 'undefined' && Auth.getToken) ? Auth.getToken() : SK;
+  var url = SU + '/rest/v1/rilievi?stato=neq.archiviato&select=referente,cantieri(id_cliente)';
+  try {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, false); // sincrono solo per semplicita
+    xhr.setRequestHeader('apikey', SK);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + (tok || SK));
+    xhr.send();
+    if (xhr.status >= 200 && xhr.status < 300) {
+      var rows = JSON.parse(xhr.responseText);
+      referentiMap = {};
+      rows.forEach(function(r) {
+        if (!r.referente || !r.cantieri) return;
+        var idC = r.cantieri.id_cliente || r.cantieri.ID_cliente;
+        if (!idC) return;
+        idC = String(idC);
+        if (!referentiMap[idC]) referentiMap[idC] = [];
+        if (referentiMap[idC].indexOf(r.referente) < 0) referentiMap[idC].push(r.referente);
+      });
+      // Aggiorna select referenti
+      var allRef = [];
+      Object.values(referentiMap).forEach(function(arr) {
+        arr.forEach(function(r) { if (allRef.indexOf(r) < 0) allRef.push(r); });
+      });
+      allRef.sort();
+      var sel = document.getElementById('filterReferente');
+      if (sel) {
+        sel.innerHTML = '<option value="">— Tutti —</option>' +
+          allRef.map(function(r) { return '<option value="' + r + '">' + r + '</option>'; }).join('');
+      }
+      // Ri-renderizza con referenti
+      applyFilters();
+    }
+  } catch(e) { console.warn('caricaReferenti:', e); }
+}
+
+function filterClienti(q) { applyFilters(); }
+
+function applyFilters() {
+  var q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+  var ref = (document.getElementById('filterReferente').value || '').trim();
+  var lista = tuttiClienti.filter(function(c) {
+    var matchQ = !q || (c.nome||'').toLowerCase().includes(q) || (c.email||'').toLowerCase().includes(q) || (c.comune||'').toLowerCase().includes(q);
+    var matchRef = !ref || (referentiMap[String(c.ID_cliente)] || []).indexOf(ref) >= 0;
+    return matchQ && matchRef;
+  });
+  renderClienti(lista);
 }
 
 function renderClienti(lista) {
@@ -177,6 +252,7 @@ function renderClienti(lista) {
             '<span class="badge '+(attivo?'badge-attivo':'badge-obsoleto')+'">'+(attivo?'Attivo':'Non attivo')+'</span>' +
           '</div>' +
           '<div style="font-size:.79rem;color:var(--c-text-sec);margin-top:2px;">' + (contatti||'Nessun contatto') + '</div>' +
+          (referentiMap[String(c.ID_cliente)] ? '<div style="font-size:.76rem;color:var(--c-primary);margin-top:1px;">&#128100; ' + referentiMap[String(c.ID_cliente)].join(' &middot; ') + '</div>' : '') +
           (addrLine ? '<div style="font-size:.76rem;color:var(--c-text-sec);">&#128205; '+addrLine+'</div>' : '') +
         '</div>' +
         '<div style="padding:0 10px;display:flex;align-items:center;gap:4px;">' +

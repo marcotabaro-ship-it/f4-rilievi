@@ -835,6 +835,15 @@ Object.assign(API, {
     } catch(e) { return this._err(e); }
   },
 
+  async getDbPorte() {
+    try {
+      const rows = await _sb.get('db_porte', { stato: 'eq.attivo', order: 'fornitore.asc', select: '*' });
+      return this._ok((rows || []).map(function(r) {
+        return { fornitore: r.fornitore || '', tipo_porta: r.tipo_porta || '', sistema_sigla: r.sistema_sigla || r.sistema || '', descrizione: r.descrizione || '', stato: r.stato };
+      }));
+    } catch(e) { return this._err(e); }
+  },
+
   async getInitData(idRilievo) {
     if (!idRilievo) return this._err({ message: 'ID rilievo mancante.' });
     try {

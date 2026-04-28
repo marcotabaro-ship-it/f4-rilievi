@@ -935,7 +935,8 @@ Object.assign(API, {
 
   async adminUpdatePosa(id, data) {
     try {
-      await _sb.patch('dati_comuni_posa', { id: 'eq.' + id }, Object.assign({}, data, { updated_at: new Date().toISOString() }));
+      var patch = Object.assign({}, data, { updated_at: new Date().toISOString() });
+      await _sb.patch('dati_comuni_posa', { id: 'eq.' + id }, patch);
       return this._ok(null);
     } catch(e) { return this._err(e); }
   },
@@ -964,6 +965,37 @@ Object.assign(API, {
     } catch(e) { return this._err(e); }
   },
 
+  async adminGetDatiComuniSerr() {
+    try { var rows = await _sb.get('dati_comuni_serr', { stato: 'eq.attivo', order: 'id.asc', select: '*' }); return this._ok(rows||[]); } catch(e) { return this._err(e); }
+  },
+
+  async creaRevisioneTecnico(aggiornamenti_serr, aggiornamenti_lati, note) {
+    // Salva modifiche a dati_comuni_serr e regole_lati + crea revisione con snapshot_tecnico
+    try {
+      var user = Auth.getUser();
+      for (var i = 0; i < aggiornamenti_serr.length; i++) {
+        var a = aggiornamenti_serr[i];
+        await _sb.patch('dati_comuni_serr', { id: 'eq.' + a.id }, { valore_mm: a.valore_mm, updated_at: new Date().toISOString(), updated_by: user ? user.id : null });
+      }
+      for (var j = 0; j < aggiornamenti_lati.length; j++) {
+        var b = aggiornamenti_lati[j];
+        await _sb.patch('regole_lati', { sigla: 'eq.' + b.sigla }, { coprifili_lati: b.coprifili_lati, dinoxill_disponibile: b.dinoxill_disponibile, dinoxill_lati_scelta: b.dinoxill_lati_scelta, updated_by: user ? user.id : null });
+      }
+      var snapSerr = await _sb.get('dati_comuni_serr', { stato: 'eq.attivo', order: 'id.asc', select: '*' });
+      var snapLati = await _sb.get('regole_lati', { order: 'sigla.asc', select: '*' });
+      var revRows = await _sb.get('revisioni_parametri', { stato: 'eq.attivo', order: 'numero_revisione.desc', limit: '1', select: 'numero_revisione' });
+      var numRev = revRows && revRows.length ? revRows[0].numero_revisione + 1 : 1;
+      var revData = {
+        numero_revisione: numRev, tipo: 'TECNICO',
+        autore_id: user ? user.id : null, autore_nome: user ? user.nome : 'Sistema',
+        note: (note||'').trim()||null,
+        snapshot_tecnico: { dati_comuni_serr: snapSerr||[], regole_lati: snapLati||[] }
+      };
+      var inserted = await _sb.post('revisioni_parametri', revData);
+      return this._ok({ numero_revisione: numRev, id: inserted[0] ? inserted[0].id : null });
+    } catch(e) { return this._err(e); }
+  },
+
   async creaRevisione(aggiornamenti, note) {
     // aggiornamenti = array di { id, h_pos, min_cantiere } — dati modificati dall'admin
     // 1. Applica gli aggiornamenti a dati_comuni_posa
@@ -979,6 +1011,7 @@ Object.assign(API, {
         var patch = { updated_at: new Date().toISOString() };
         if (a.h_pos !== undefined) patch.h_pos = a.h_pos;
         if (a.min_cantiere !== undefined) patch.min_cantiere = a.min_cantiere;
+        if (a.h_pos_gru !== undefined) patch.h_pos_gru = a.h_pos_gru;
         await _sb.patch('dati_comuni_posa', { id: 'eq.' + a.id }, patch);
       }
       // Step 2: snapshot completo post-aggiornamento

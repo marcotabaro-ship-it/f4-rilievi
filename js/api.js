@@ -487,6 +487,10 @@ const API = {
     catch(e) { return this._err(e); }
   },
   async getRilievi(idCantiere) { return this.getRilieviCantiere(idCantiere); },
+  async getRilieviTutti(tipo) {
+    try { const rows = await _sb.get('rilievi', { tipo: 'eq.' + tipo, stato: 'neq.archiviato', select: 'id,codice_completo,referente,tipo,id_cantiere' }); return this._ok(rows || []); }
+    catch(e) { return this._err(e.message); }
+  },
 
   async getRilievo(id) {
     try { const rows = await _sb.get('rilievi', { id: 'eq.' + id, select: '*' }); if (!rows || !rows.length) throw new Error('Rilievo non trovato.'); const ril = rows[0]; const cantPath = await _getCantierePath(ril.id_cantiere); return this._ok(_map.rilievo(ril, cantPath)); }

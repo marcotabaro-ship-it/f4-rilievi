@@ -451,11 +451,11 @@ function sfetch(path,cb,eb){
 }
 
 function loadAndRender(wR,wA,wP){
-  var D={ril:null,pos:null,strat:null,db:null};
-  var done=0,tot=4;
+  var D={ril:null,pos:null,strat:null,db:null,caps:null};
+  var done=0,tot=5;
   function chk(){done++;if(done<tot)return;
     document.getElementById('stato-msg').style.display='none';
-    var html=renderAll(D.ril,D.pos||[],D.strat||[],D.db||[],wR,wA,wP);
+    var html=renderAll(D.ril,D.pos||[],D.strat||[],D.db||[],D.caps||[],wR,wA,wP);
     var out=document.getElementById('out');
     out.innerHTML=html; out.style.display='';
     document.getElementById('tb-titolo').textContent='Stampa '+esc(D.ril&&D.ril.codice_completo||'');
@@ -463,16 +463,18 @@ function loadAndRender(wR,wA,wP){
   }
   sfetch('rilievi?id=eq.'+idRilievo+'&select=id,codice_completo,referente,data_rilievo,data_posa,intervento,gru,allarme,note_commerciali,cantieri(nome_cantiere,tipo_via,indirizzo,comune,provincia,cap,clienti(nome,telefono,email))',
     function(r){D.ril=r&&r[0]||{};chk();},function(){D.ril={};chk();});
-  sfetch('posizioni_serr?id_rilievo=eq.'+idRilievo+'&stato=eq.attivo&select=*&order=numero_pos.asc',
+  sfetch('posizioni_serr?id_rilievo=eq.'+idRilievo+'&stato=eq.attivo&select=*&order=ordine.asc',
     function(r){D.pos=r||[];chk();},function(){D.pos=[];chk();});
   sfetch('stratigrafie?id_rilievo=eq.'+idRilievo+'&stato=eq.attivo&select=*&order=ordine.asc',
     function(r){D.strat=r||[];chk();},function(){D.strat=[];chk();});
   sfetch('db_serramento?stato=eq.attivo&select=materiale,descrizione,stile_design,variante_telaio,telaio_nascosto_mm,aletta_mm,telaio_a_vista_mm',
     function(r){D.db=r||[];chk();},function(){D.db=[];chk();});
+  sfetch('capitoli_rilievo?id_rilievo=eq.'+idRilievo+'&stato=eq.attivo&select=*&order=ordine_inizio.asc',
+    function(r){D.caps=r||[];chk();},function(){D.caps=[];chk();});
 }
 
 // ================================================================ RENDER ALL
-function renderAll(ril,pos,strat,db,wR,wA,wP){
+function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
   var cp=ril.cantieri||{},cli=cp.clienti||{};
   var codice=ril.codice_completo||idRilievo;
   var locStr=((cp.tipo_via||'')+' '+(cp.indirizzo||'')).trim();
@@ -505,6 +507,32 @@ function renderAll(ril,pos,strat,db,wR,wA,wP){
     if(ncParts.length)h+='<div style="padding:5px 12px;font-size:10px;background:#fafafe;border-top:1px solid #e5e7eb;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;"><span style="font-weight:700;color:#4f46e5;text-transform:uppercase;font-size:9px;">NOTE COMM.</span>'+ncParts.map(function(s){return'<span>'+esc(s)+'</span>';}).join('')+'</div>';
     h+='</div>';
     return h;
+  }
+
+  // Funzione raggruppa posizioni per capitolo
+  function groupByCap(pcArr, capsArr) {
+    var righe=[];
+    pcArr.forEach(function(p){
+      var ord=(p.ordine!==undefined&&p.ordine!==null)?p.ordine:p.numero_pos;
+      righe.push({tipo:'pos',ordine:ord,data:p});
+    });
+    (capsArr||[]).forEach(function(cap){
+      righe.push({tipo:'cap_inizio',ordine:cap.ordine_inizio,data:cap});
+      righe.push({tipo:'cap_fine',  ordine:cap.ordine_fine,  data:cap});
+    });
+    righe.sort(function(a,b){return a.ordine-b.ordine;});
+    var gruppi=[],capCorr=null,posCorr=[],posiFuori=[];
+    righe.forEach(function(r){
+      if(r.tipo==='cap_inizio'){capCorr=r.data;posCorr=[];}
+      else if(r.tipo==='cap_fine'){
+        if(capCorr)gruppi.push({cap:capCorr,pos:posCorr.slice()});
+        capCorr=null;posCorr=[];
+      } else {
+        if(capCorr)posCorr.push(r.data);else posiFuori.push(r.data);
+      }
+    });
+    if(posiFuori.length)gruppi.push({cap:{titolo:'Senza capitolo',id:'__fuori__'},pos:posiFuori});
+    return gruppi;
   }
 
   // pre-calcola per posizioni
@@ -566,7 +594,33 @@ function renderAll(ril,pos,strat,db,wR,wA,wP){
     h+='<th class="gsep c">DIN</th><th class="c">ANG</th><th class="c">RimS</th><th class="c">RimA</th>';
     h+='<th class="gsep c">MRM</th><th>SENSI/STRAT.</th>';
     h+='</tr></thead><tbody>';
+    // Costruisci righe con capitoli
+    var righeRil=[];
     posCalc.forEach(function(p){
+      var ord=(p.ordine!==undefined&&p.ordine!==null)?p.ordine:p.numero_pos;
+      righeRil.push({tipo:'pos',ordine:ord,data:p});
+    });
+    (caps||[]).forEach(function(cap){
+      righeRil.push({tipo:'cap_inizio',ordine:cap.ordine_inizio,data:cap});
+      righeRil.push({tipo:'cap_fine',  ordine:cap.ordine_fine,  data:cap});
+    });
+    righeRil.sort(function(a,b){return a.ordine-b.ordine;});
+    var capCorrR=null,posCapR=[];
+    righeRil.forEach(function(r){
+      if(r.tipo==='cap_inizio'){
+        capCorrR=r.data;posCapR=[];
+        h+='<tr style="background:#1a1a2e"><td colspan="30" style="color:#a5b4fc;font-weight:700;font-size:9px;padding:4px 8px;letter-spacing:1px;">══ '+esc(r.data.titolo)+' ══</td></tr>';
+        return;
+      }
+      if(r.tipo==='cap_fine'){
+        var nP=posCapR.length;
+        h+='<tr style="background:#eef2ff"><td colspan="30" style="color:#3730a3;font-size:8px;font-weight:600;padding:3px 8px;">Subtotale — '+esc(capCorrR?capCorrR.titolo:'')+': <b>'+nP+'</b> pos.</td></tr>';
+        h+='<tr style="background:#f5f5ff"><td colspan="30" style="color:#9ca3af;font-size:7.5px;padding:2px 8px;">── Fine: '+esc(r.data.titolo)+' ──</td></tr>';
+        capCorrR=null;posCapR=[];
+        return;
+      }
+      var p=r.data;
+      if(capCorrR)posCapR.push(p);
       var piano=(p.piano!==undefined&&p.piano!==null)?('P'+(parseInt(p.piano)>=0?'+':'')+p.piano):'—';
       var Lt=p._t?Math.round(p._t.Lt):null,Ht=p._t?Math.round(p._t.Ht):null;
       h+='<tr>';
@@ -624,6 +678,22 @@ function renderAll(ril,pos,strat,db,wR,wA,wP){
       g+='</div></div>';return g;
     }
 
+    // Accessori: per capitolo se esistono caps, poi totali
+    if(caps&&caps.length){
+      var gruppiAcc=groupByCap(posCalc,caps);
+      gruppiAcc.forEach(function(g){
+        if(!g.pos.length)return;
+        h+='<div style="background:#1a1a2e;color:#a5b4fc;font-weight:700;font-size:.82rem;padding:6px 12px;margin:10px 0 6px;border-radius:5px;">══ '+esc(g.cap.titolo)+' ══ <span style="font-size:.74rem;opacity:.7;">('+g.pos.length+' pos.)</span></div>';
+        h+=renderAccDettaglio(g.pos);
+        h+=renderAccSubtot(g.cap.titolo,g.pos);
+      });
+      h+='<div style="background:#064e3b;color:#a7f3d0;font-weight:700;font-size:.82rem;padding:6px 12px;margin:14px 0 6px;border-radius:5px;">∑ Totali complessivi</div>';
+    }
+    h+=renderAccDettaglio(posCalc);
+  }
+
+  function renderAccDettaglio(posCalc){
+    var h='';
     // coprifili
     var cim={};posCalc.forEach(function(p){if(!p.coprifilo_int_mat)return;var k=p.coprifilo_int_mat.toUpperCase()+'|'+(p.coprifilo_int_dim||'');if(!cim[k])cim[k]={mat:p.coprifilo_int_mat,dim:p.coprifilo_int_dim||'—',b:0,pos:[]};cim[k].b+=p._bci;cim[k].pos.push(numPos(p));});
     if(Object.keys(cim).length){var tb=0;Object.values(cim).forEach(function(v){tb+=v.b;});h+=mkG('Coprifili interni','',tb+' barre TOT.',Object.values(cim).map(function(v){return{l:v.mat+' \u2014 '+v.dim+' mm',chips:'<span class="chip-n">'+v.b+' barre</span>',pos:v.pos};}));}
@@ -671,7 +741,25 @@ function renderAll(ril,pos,strat,db,wR,wA,wP){
       h+='<div class="mat-c"><div class="mn">'+item.n+'</div><div class="mv">'+item.v+'</div><div class="mu">'+item.u+'</div></div>';
     });
     h+='</div></div></div>';
-    sections.push(h);
+    return h;
+  }
+
+  function renderAccSubtot(titolo,pc){
+    var nCI=0,nCE=0,nAvv=0,nScur=0,nCtlL=0,nCtlT=0,tLin=0;
+    pc.forEach(function(p){if(p._bci)nCI+=p._bci;if(p._bce)nCE+=p._bce;
+      var sc=(p.schermatura||'').toUpperCase();
+      if(sc==='A'||sc==='AM'||sc==='AE'||sc==='AR')nAvv++;else if(sc==='S')nScur++;
+      if(p.controtelaio==='L')nCtlL++;else if(p.controtelaio==='T')nCtlT++;
+      tLin+=p._sch+p._bg+p._mu+p._bv;});
+    var cs=function(v,l){return v?'<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 7px;font-size:9px;font-weight:600;">'+l+': '+v+'</span> ':'';};
+    return '<div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;margin:4px 0 14px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">'+
+      '<span style="font-weight:700;color:#3730a3;font-size:.78rem;">Subtotale '+esc(titolo)+'</span>'+
+      cs(nCI,'CopI')+cs(nCE,'CopE')+cs(nAvv,'Avv')+cs(nScur,'Scur')+cs(nCtlL,'CTL-L')+cs(nCtlT,'TC')+
+      '<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 7px;font-size:9px;font-weight:600;">Posa: '+n2(tLin)+' m</span></div>';
+  }
+
+  // raccogli sezione accessori in sections
+  sections.push(h);
   }
 
   // ============================================================ SEZIONE POSA

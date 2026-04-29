@@ -146,39 +146,56 @@ var ID_RILIEVO=(new URLSearchParams(window.location.search)).get('idRilievo');
 if(!ID_RILIEVO)window.location.href='clienti.html';
 var VOCI_GLOBALI=[];
 
-// ================================================================
-// TABELLE DI LOOKUP (da foglio "Dati comuni Posa")
-// ================================================================
-
-// Posizionamento CTL per piano (h/pos)
-var POS_CTL_PORTE = {
-  '-1':0.16667, '0':0.16667, '1':0.16667, '2':0.25,
-  '3':0.33333,  '4':0.5,     '5':0.58333, '6':0.66667,
-  '7':0.75,     '8':0.83333, '9':0.91667, '10':1.0
-};
-var POS_CTL_PORTE_MIN = 0.5;
-
-// Posizionamento porte per piano (h/pos)
-var POS_PORTE = {
-  '-1':0.33333, '0':0.33333, '1':0.33333, '2':0.5,
-  '3':0.5,      '4':0.5,     '5':0.66667, '6':0.66667,
-  '7':0.66667,  '8':0.83333, '9':0.83333, '10':0.83333
-};
-var POS_PORTE_MIN = 1.0;
-
-// Ore installazione per sistema porta interna
-var ORE_INST_INT = {
-  'ST': 1.5,    // Standard
-  'DO': 2.0,    // Doppia
-  'TP': 1.33333,// Telaio passaggio
-  'FC': 2.66667,// Filo muro SI CTL
-  'F_': 2.33333,// Filo muro NO CTL
-  'SI': 2.0,    // Scorrevole interna
-  'SE': 2.5,    // Scorrevole esterna
-  'LI': 2.0,    // Libro
-  'PI': 2.0     // Pivot
-};
+// Tabelle dinamiche — popolate da buildTablesPorteFromPosa()
+var POS_CTL_PORTE = {};
+var POS_PORTE = {};
+var ORE_INST_INT = {};
 var ORE_SOPRALUCE = 0.5;
+var POS_CTL_PORTE_MIN = 0.5;
+var POS_PORTE_MIN = 1.0;
+var DP_PORTE = {};
+
+var V2DP_PORTE = {
+  'PROGETTAZIONE':'prog','GESTIONE ORDINI':'gord','INCONTRI IN CANTIERE':'incant',
+  'SCARICO E CARICO CTL':'scCtl','TRASPORTO CTL':'trCtl',
+  'SCARICO E CARICO PORTE':'scPorte','TRASPORTO PORTE':'trPorte',
+  'RIMOZIONE PORTE':'rimPorta',
+  'ASSEMBLAGGIO CTL':'assCtl','INSTALLAZIONE CTL':'instCtl',
+  'REGISTRAZIONE COLLAUDO':'regColl','PULIZIA CANTIERE':'puliz',
+  'SMALTIMENTO PORTE':'smalt','ALLARGAMENTO TELAIO':'allarg'
+};
+
+function buildTablesPorteFromPosa(rows) {
+  POS_CTL_PORTE = {}; POS_PORTE = {}; ORE_INST_INT = {}; DP_PORTE = {};
+  rows.forEach(function(r) {
+    var v = r.voce;
+    if (v === 'POSIZIONAMENTO CTL PORTE' && r.piano !== null) {
+      POS_CTL_PORTE[String(r.piano)] = parseFloat(r.h_pos)||0.16667;
+      if (r.min_cantiere) POS_CTL_PORTE_MIN = parseFloat(r.min_cantiere);
+    }
+    if (v === 'POSIZIONAMENTO PORTE' && r.piano !== null) {
+      POS_PORTE[String(r.piano)] = parseFloat(r.h_pos)||0.33333;
+      if (r.min_cantiere) POS_PORTE_MIN = parseFloat(r.min_cantiere);
+    }
+    if (v === 'INST PORTE INT' && r.sistema) {
+      if (r.sistema === 'SOPRALUCE') ORE_SOPRALUCE = parseFloat(r.h_pos)||0.5;
+      else ORE_INST_INT[r.sistema] = parseFloat(r.h_pos)||1.5;
+    }
+    if (v === 'INST BLINDATE' && r.sistema === 'BLI') {
+      DP_PORTE['instBLI'] = [parseFloat(r.h_pos)||4, null];
+    }
+    if (v === 'INST REI' && r.sistema === 'REI') {
+      DP_PORTE['instREI'] = [parseFloat(r.h_pos)||1.5, null];
+    }
+    var dpKey = V2DP_PORTE[v];
+    if (dpKey && r.piano === null && r.n_campi === null && !r.sistema) {
+      DP_PORTE[dpKey] = [parseFloat(r.h_pos)||0, r.min_cantiere !== null ? parseFloat(r.min_cantiere) : null];
+    }
+  });
+  // Fallback defaults se Supabase non ha dati completi
+  if (!DP_PORTE['instBLI']) DP_PORTE['instBLI'] = [4.0, null];
+  if (!DP_PORTE['instREI']) DP_PORTE['instREI'] = [1.5, null];
+}
 
 function pianoKey(p) {
   var n = parseInt(p, 10);
@@ -244,23 +261,8 @@ function calcolaVociPorte(pos) {
   orePosCTL  = nCTL > 0 ? Math.max(orePosCTL,  POS_CTL_PORTE_MIN) : 0;
   orePosPorte = nT  > 0 ? Math.max(orePosPorte, POS_PORTE_MIN)     : 0;
 
-  // DP = [h/pos, min_cantiere]
-  var DP = {
-    prog:    [0,        0],
-    gord:    [7/60,     20/60],
-    incant:  [10/60,    30/60],
-    scCtl:   [15/60,    30/60],
-    trCtl:   [7/60,     30/60],
-    scPorte: [10/60,    30/60],
-    trPorte: [10/60,    30/60],
-    rimPorta:[1.0,      2.0],
-    assCtl:  [0,        0],
-    instCtl: [1.0,      1.0],
-    regColl: [10/60,    20/60],
-    puliz:   [10/60,    30/60],
-    smalt:   [10/60,    null],
-    allarg:  [40/60,    null]
-  };
+  // DP = [h/pos, min_cantiere] — caricato da Supabase via buildTablesPorteFromPosa
+  var DP = DP_PORTE;
 
   var nPorteInt = nT - nBLI - nREI;
 
@@ -426,9 +428,10 @@ function setStato(msg, isErr) { var el = document.getElementById('stato-msg'); e
 function showReport() { document.getElementById('stato-msg').style.display = 'none'; document.getElementById('report-content').style.display = ''; }
 
 function init() {
-  var loaded = { ril: null, pos: null, caps: null }; var errored = false;
+  var loaded = { ril: null, pos: null, caps: null, posa: null }; var errored = false;
   function tryRender() {
-    if (!loaded.ril || !loaded.pos || !loaded.caps || errored) return;
+    if (!loaded.ril || !loaded.pos || !loaded.caps || !loaded.posa || errored) return;
+    buildTablesPorteFromPosa(loaded.posa);
     var r = loaded.ril, pos = loaded.pos, caps = loaded.caps;
     var cant = r.cantieri || {}, cli = (cant.clienti && cant.clienti.nome) ? cant.clienti.nome : '—';
     var codice = r.codice_completo || ID_RILIEVO;
@@ -447,7 +450,7 @@ function init() {
     renderAll(VOCI_GLOBALI);
     showReport();
   }
-  doFetch('rilievi?id=eq.' + ID_RILIEVO + '&select=id,codice_completo,referente,data_rilievo,cantieri(nome_cantiere,clienti(nome))',
+  doFetch('rilievi?id=eq.' + ID_RILIEVO + '&select=id,codice_completo,referente,data_rilievo,versione_posa_num,cantieri(nome_cantiere,clienti(nome))',
     function(r) { if (!r.length) { errored = true; setStato('Rilievo non trovato.', true); return; } loaded.ril = r[0]; tryRender(); },
     function(e) { errored = true; setStato('Errore: ' + e, true); });
   doFetch('posizioni_porte?id_rilievo=eq.' + ID_RILIEVO + '&stato=eq.attivo&select=*&order=ordine.asc',
@@ -456,6 +459,9 @@ function init() {
   doFetch('capitoli_rilievo?id_rilievo=eq.' + ID_RILIEVO + '&stato=eq.attivo&select=*&order=ordine_inizio.asc',
     function(r) { loaded.caps = r || []; tryRender(); },
     function() { loaded.caps = []; tryRender(); });
+  doFetch('dati_comuni_posa?tipo=eq.PORTE&stato=eq.attivo&select=*&order=codice.asc,piano.asc',
+    function(r) { loaded.posa = r || []; tryRender(); },
+    function() { loaded.posa = []; tryRender(); });
 }
 init();
 </script>

@@ -149,10 +149,22 @@ function buildPage(posaRows, revRows) {
   html += '</div></div>';
 
   // ================================================================
-  // 4. POSA PORTE
+  // SEZIONE C — INSTALLAZIONE SERRAMENTI PER TIPO E N. CAMPI
   // ================================================================
-  html += '<div class="sez"><div class="sez-hdr"><h2>&#128682; Posa Porte Interne &mdash; Parametri</h2>' + revBadge + '</div><div class="sez-body">';
+  html += '<div class="sez"><div class="sez-hdr"><h2>&#9201; Sezione C &mdash; Installazione serramenti per tipo e n. campi</h2>' + revBadge + '</div><div class="sez-body">';
+  html += '<p style="font-size:12px;color:#6b7280;margin:0 0 12px;">Le ore di installazione dipendono dal tipo di serramento e dal numero di campi. Ogni campo aggiuntivo (dal 2&deg; in poi) aggiunge un incremento fisso rispetto al valore base a 1 campo.</p>';
+  html += '<div class="formula-box" style="margin-bottom:14px;"><div class="f-label">Formula installazione multi-campo</div><code>Ore(tipo, n_campi) = h_pos(tipo, 1C) + incremento(tipo) &times; (n_campi &minus; 1)</code></div>';
+  html += buildTabellaMultiCampo(serrRows);
+  html += '</div></div>';
+
+  // ================================================================
+  // SEZIONE D — POSA PORTE: VOCI, LOOKUP POSIZIONAMENTO
+  // ================================================================
+  html += '<div class="sez"><div class="sez-hdr"><h2>&#128682; Sezione D &mdash; Posa Porte Interne</h2>' + revBadge + '</div><div class="sez-body">';
+  html += '<p style="font-size:12px;color:#6b7280;margin:0 0 12px;">Parametri e lookup per il calcolo delle ore di posa porte interne.</p>';
   html += buildTabellaVoci(porteRows, true);
+  html += '<div style="height:16px;"></div>';
+  html += buildLookupPosizionamentoPorte(porteRows);
   html += '</div></div>';
 
   html += '<div style="text-align:center;font-size:11px;color:#9ca3af;margin-top:10px;">Valori caricati in tempo reale da Supabase &mdash; Rev. attiva: ' + (revCorr ? revCorr.numero_revisione : '—') + ' &mdash; ' + revData + '<br>&#9888; Le formule di tubolarit&agrave; verranno aggiornate con il Telaio Misto per lato (punto #6)</div>';
@@ -160,6 +172,139 @@ function buildPage(posaRows, revRows) {
   document.getElementById('contenuto').innerHTML = html;
   document.getElementById('stato-caricamento').style.display = 'none';
   document.getElementById('contenuto').style.display = '';
+}
+
+function buildTabellaMultiCampo(rows) {
+  // Incrementi fissi da foglio Excel — valore nella colonna "+" accanto ad ogni riga N>1
+  var INCREMENTI = {
+    'INST INGRESSI':       60,   // +60 min per campo
+    'INST FINESTRE':       30,   // +30 min per campo
+    'INST PORTE FINESTRE': 40,   // +40 min per campo
+    'INST FINESTRE FISSE': 40,   // +40 min per campo
+    'INST VETRATE FISSE':  60,   // +60 min per campo
+    'INST SCORREVOLI':     90    // +90 min per campo
+  };
+  var TIPI_SERR = [
+    { voce:'INST INGRESSI',       label:'Ingressi (I)' },
+    { voce:'INST FINESTRE',       label:'Finestre (F)' },
+    { voce:'INST PORTE FINESTRE', label:'Porte finestre (PF)' },
+    { voce:'INST FINESTRE FISSE', label:'Finestre fisse (FF)' },
+    { voce:'INST VETRATE FISSE',  label:'Vetrate fisse (VF)' },
+    { voce:'INST SCORREVOLI',     label:'Scorrevoli (S)' }
+  ];
+
+  var html = '<div class="formula-box" style="margin-bottom:14px;">';
+  html += '<div class="f-label">Formula &mdash; incremento fisso per campo aggiuntivo</div>';
+  html += '<code>Ore(tipo, n_campi) = Base(tipo, 1C) + Incremento(tipo) &times; (n_campi &minus; 1)</code>';
+  html += '<code style="font-size:11px;color:#6b7280;margin-top:4px;">L\'incremento &egrave; costante per ogni campo aggiuntivo (2&deg;, 3&deg;, 4&deg;, 5&deg;)</code>';
+  html += '</div>';
+
+  html += '<div style="overflow-x:auto;margin-bottom:16px;">';
+  html += '<table class="lookup-tbl"><thead><tr><th style="text-align:left;">Tipo serramento</th>';
+  for (var c = 1; c <= 5; c++) html += '<th>' + c + (c===1?' campo':' campi') + '</th>';
+  html += '<th style="background:#1a1a2e;color:#a5b4fc;">Incr. / campo</th></tr></thead><tbody>';
+
+  TIPI_SERR.forEach(function(t) {
+    var base1C = rows.find(function(x){ return x.voce === t.voce && x.n_campi === 1; });
+    var incMin = INCREMENTI[t.voce] || 0;
+
+    html += '<tr><td style="text-align:left;font-weight:600;">' + t.label + '</td>';
+    for (var c = 1; c <= 5; c++) {
+      var r = rows.find(function(x){ return x.voce === t.voce && x.n_campi === c; });
+      html += '<td>' + (r ? fmtH(r.h_pos) : '—') + '</td>';
+    }
+    html += '<td style="background:#dbeafe;font-weight:700;color:#1e3a8a;">+' + incMin + 'min</td>';
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+
+  // Nota esplicativa con esempio concreto
+  var r1F = rows.find(function(x){ return x.voce==='INST FINESTRE' && x.n_campi===1; });
+  var r3F = rows.find(function(x){ return x.voce==='INST FINESTRE' && x.n_campi===3; });
+  if (r1F && r3F) {
+    html += '<div class="nota"><strong>Esempio:</strong> Finestra (F) a 3 campi = ' +
+      fmtH(r1F.h_pos) + ' (base 1C) + 30min &times; 2 campi aggiuntivi = ' + fmtH(r3F.h_pos) + '</div>';
+  }
+
+  return html;
+}
+
+function buildLookupPosizionamentoPorte(rows) {
+  var pianiOrd = [-1,0,1,2,3,4,5,6,7,8,9,10];
+  var pianoLabel = function(p){ return p === -1 ? 'P -1' : (p === 0 ? 'P 0' : 'P +' + p); };
+
+  // Posizionamento CTL porte
+  var ctlRows   = rows.filter(function(r){ return r.voce === 'POSIZIONAMENTO CTL PORTE' && r.piano !== null; });
+  var porteRows = rows.filter(function(r){ return r.voce === 'POSIZIONAMENTO PORTE'     && r.piano !== null; });
+
+  var html = '';
+
+  // CTL porte
+  html += '<div style="font-size:12px;font-weight:700;color:#E65100;margin-bottom:8px;">Posizionamento Controtelai Porte (per piano)</div>';
+  html += '<div style="overflow-x:auto;margin-bottom:16px;"><table class="lookup-tbl"><thead><tr><th>Piano</th>';
+  pianiOrd.forEach(function(p){ html += '<th>' + pianoLabel(p) + '</th>'; });
+  html += '<th>Min. cant.</th></tr></thead><tbody><tr><td style="font-weight:700;">h/pos CTL</td>';
+  pianiOrd.forEach(function(p){
+    var r = ctlRows.find(function(x){ return x.piano === p; });
+    html += '<td>' + (r ? fmtH(r.h_pos) : '—') + '</td>';
+  });
+  var ctlMin = ctlRows.length ? ctlRows[0].min_cantiere : null;
+  html += '<td style="background:#fff3e0;font-weight:600;">' + (ctlMin !== null ? fmtH(ctlMin) : '30min') + '</td>';
+  html += '</tr></tbody></table></div>';
+
+  // Posizionamento porte
+  html += '<div style="font-size:12px;font-weight:700;color:#E65100;margin-bottom:8px;">Posizionamento Porte (per piano)</div>';
+  html += '<div style="overflow-x:auto;margin-bottom:16px;"><table class="lookup-tbl"><thead><tr><th>Piano</th>';
+  pianiOrd.forEach(function(p){ html += '<th>' + pianoLabel(p) + '</th>'; });
+  html += '<th>Min. cant.</th></tr></thead><tbody><tr><td style="font-weight:700;">h/pos Porta</td>';
+  pianiOrd.forEach(function(p){
+    var r = porteRows.find(function(x){ return x.piano === p; });
+    html += '<td>' + (r ? fmtH(r.h_pos) : '—') + '</td>';
+  });
+  var portaMin = porteRows.length ? porteRows[0].min_cantiere : null;
+  html += '<td style="background:#fff3e0;font-weight:600;">' + (portaMin !== null ? fmtH(portaMin) : '1h') + '</td>';
+  html += '</tr></tbody></table></div>';
+
+  // Installazione per sistema — riepilogo visivo
+  html += '<div style="font-size:12px;font-weight:700;color:#E65100;margin-bottom:8px;">Riepilogo ore installazione per sistema</div>';
+  var sistRows = rows.filter(function(r){ return r.voce === 'INST PORTE INT' && r.sistema && r.sistema !== 'SOPRALUCE'; });
+  var soprRow  = rows.find(function(r){ return r.voce === 'INST PORTE INT' && r.sistema === 'SOPRALUCE'; });
+  var bliRow   = rows.find(function(r){ return r.voce === 'INST BLINDATE'; });
+  var reiRow   = rows.find(function(r){ return r.voce === 'INST REI'; });
+
+  html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">';
+  sistRows.forEach(function(r){
+    html += '<div style="background:#fff3e0;border:1px solid #ffccaa;border-radius:8px;padding:8px 14px;text-align:center;min-width:90px;">' +
+      '<div style="font-size:15px;font-weight:700;color:#E65100;">' + fmtH(r.h_pos) + '</div>' +
+      '<div style="font-size:11px;color:#7a2d00;margin-top:2px;">' + r.sistema + '</div>' +
+      '<div style="font-size:10px;color:#9ca3af;">' + (r.descrizione||'').replace(/\s*\([^)]*\)/,'') + '</div>' +
+      '</div>';
+  });
+  if (soprRow) {
+    html += '<div style="background:#fce7f3;border:1px solid #f9a8d4;border-radius:8px;padding:8px 14px;text-align:center;min-width:90px;">' +
+      '<div style="font-size:15px;font-weight:700;color:#be185d;">+' + fmtH(soprRow.h_pos) + '</div>' +
+      '<div style="font-size:11px;color:#be185d;margin-top:2px;">Sopraluce</div>' +
+      '<div style="font-size:10px;color:#9ca3af;">aggiuntivo</div>' +
+      '</div>';
+  }
+  if (bliRow) {
+    html += '<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:8px 14px;text-align:center;min-width:90px;">' +
+      '<div style="font-size:15px;font-weight:700;color:#dc2626;">' + fmtH(bliRow.h_pos) + '</div>' +
+      '<div style="font-size:11px;color:#dc2626;margin-top:2px;">BLI</div>' +
+      '<div style="font-size:10px;color:#9ca3af;">blindata</div>' +
+      '</div>';
+  }
+  if (reiRow) {
+    html += '<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:8px 14px;text-align:center;min-width:90px;">' +
+      '<div style="font-size:15px;font-weight:700;color:#dc2626;">' + fmtH(reiRow.h_pos) + '</div>' +
+      '<div style="font-size:11px;color:#dc2626;margin-top:2px;">REI</div>' +
+      '<div style="font-size:10px;color:#9ca3af;">antincendio</div>' +
+      '</div>';
+  }
+  html += '</div>';
+
+  return html;
 }
 
 function buildTabellaVoci(rows, isPorte) {

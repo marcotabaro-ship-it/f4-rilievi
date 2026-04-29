@@ -228,7 +228,8 @@
           <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="tGru"><label for="tGru">&#127959;&#65039; Utilizzo gru / autoscala</label></div></div>
           <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="tAllarme"><label for="tAllarme">&#9888;&#65039; Allarme presente</label></div></div>
         </div>
-        <div class="form-group"><label class="form-label">Note</label><textarea class="form-control" id="tNote" rows="3"></textarea></div>
+        <div class="form-group"><label class="form-label">Note rilievo</label><textarea class="form-control" id="tNote" rows="2" placeholder="Note tecniche generali del rilievo..."></textarea></div>
+        <div class="form-group"><label class="form-label">&#128221; Note generali (visibili nel report)</label><textarea class="form-control" id="tNoteGenerali" rows="3" placeholder="Note generali sul cantiere, condizioni particolari, istruzioni per l'installatore..."></textarea></div>
 
         <div class="nc-section-title">&#127912; Note Commerciali (colori accessori / maniglia)</div>
         <div class="form-row form-row-2">
@@ -614,6 +615,7 @@ function populateTestataSel() {
   document.getElementById('tDataPosa').value=rilievo.data_posa||'';
   document.getElementById('tGru').checked=rilievo.gru==='SI';
   document.getElementById('tNote').value=rilievo.note||'';
+  document.getElementById('tNoteGenerali').value=rilievo.note_generali||'';
   document.getElementById('tAllarme').checked=rilievo.allarme===true;
   var nc=rilievo.note_commerciali||{};
   document.getElementById('tNcAvvol').value     = nc.colore_avvol      || '';
@@ -643,7 +645,7 @@ async function salvaTestata() {
   };
   var data={referente:document.getElementById('tReferente').value,intervento:document.getElementById('tIntervento').value,
     data_rilievo:document.getElementById('tDataRilievo').value,data_posa:document.getElementById('tDataPosa').value,
-    gru:document.getElementById('tGru').checked?'SI':'NO',note:document.getElementById('tNote').value.trim(),
+    gru:document.getElementById('tGru').checked?'SI':'NO',note:document.getElementById('tNote').value.trim(),note_generali:document.getElementById('tNoteGenerali').value.trim(),
     allarme:document.getElementById('tAllarme').checked,note_commerciali:nc};
   var res=await API.updateRilievo(idRilievo,data);
   if(res.success){Utils.showSuccess('Salvato.');rilievo=Object.assign({},rilievo,data);renderTestata();}
@@ -770,7 +772,7 @@ function renderPosizioni() {
         '<td class="dim-cell"><div class="dim-main">'+(p.L_mm||'—')+'</div>'+(dimCalc.Ltub?'<div class="dim-sub">('+Math.round(dimCalc.Ltub)+')</div>':'')+'</td>'+
         '<td class="dim-cell"><div class="dim-main">'+(p.H_mm||'—')+'</div>'+(dimCalc.Htub?'<div class="dim-sub">('+Math.round(dimCalc.Htub)+')</div>':'')+'</td>'+
         '<td style="font-size:.78rem;">'+(p.tipo_foro||'—')+'</td>'+
-        '<td style="font-size:.8rem;"><div style="font-weight:600;">'+(p.sistema||'—')+'</div><div style="color:var(--c-text-sec);font-size:.74rem;">'+(p.variante_telaio||'—')+(p.stile_design?' / '+p.stile_design:'')+'</div></td>'+
+        '<td style="font-size:.8rem;"><div style="font-weight:600;">'+(p.sistema||'—')+'</div><div style="color:var(--c-text-sec);font-size:.74rem;">'+(p.telaio_misto?'<span title="↑'+p.variante_alto+' ↓'+p.variante_basso+' ←'+p.variante_sx+' →'+p.variante_dx+'" style="color:#4f46e5;font-weight:700;">MIX</span>':p.variante_telaio||'—')+(p.stile_design?' / '+p.stile_design:'')+'</div></td>'+
         '<td><div class="acc-chips">'+acc.map(function(a){return'<span class="acc-chip">'+a+'</span>';}).join('')+'</div></td>'+
         '<td class="td-actions" onclick="event.stopPropagation()">'+
           '<button class="btn-icon" title="Copia" onclick="openModalCopiaPos(\''+p.ID_pos+'\')">&#128203;</button>'+

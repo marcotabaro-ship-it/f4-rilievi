@@ -71,11 +71,15 @@
 var SUPA_URL = APP_CONFIG.SUPABASE_URL;
 var SUPA_KEY = APP_CONFIG.SUPABASE_ANON_KEY;
 
+// Autenticazione obbligatoria — senza token le RLS bloccano le letture
+var _u = Auth.requireLogin();
+if (!_u) throw new Error('not logged');
+
 function doFetch(path, cb, eb) {
   var x = new XMLHttpRequest();
   x.open('GET', SUPA_URL + '/rest/v1/' + path, true);
   x.setRequestHeader('apikey', SUPA_KEY);
-  x.setRequestHeader('Authorization', 'Bearer ' + SUPA_KEY);
+  x.setRequestHeader('Authorization', 'Bearer ' + (Auth.getToken() || SUPA_KEY));
   x.onload = function() {
     if (x.status >= 200 && x.status < 300) { try { cb(JSON.parse(x.responseText)); } catch(e) { eb(e); } }
     else eb('HTTP ' + x.status);

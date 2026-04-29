@@ -1094,6 +1094,15 @@ function dOnStileChange(silent) {
   Utils.fillSelect('dVarianteTelaio',Object.keys(varSeen).sort().map(function(v){return{value:v,label:v};}),'— Variante —');
   document.getElementById('dVarianteTelaio').disabled=false;
   if(!silent) document.getElementById('dVarianteTelaio').classList.add('field-invalid');
+  // Sincronizza i 4 select misto con le stesse opzioni
+  if (document.getElementById('dTelaioMisto').checked) {
+    var html = document.getElementById('dVarianteTelaio').innerHTML;
+    ['dVarAlto','dVarBasso','dVarSx','dVarDx'].forEach(function(id){
+      var sel = document.getElementById(id);
+      sel.innerHTML = html;
+      sel.disabled = false;
+    });
+  }
 }
 function dOnVarianteChange(silent) {
   document.getElementById('dVarianteTelaio').classList.remove('field-invalid');

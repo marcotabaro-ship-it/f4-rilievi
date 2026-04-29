@@ -868,17 +868,79 @@ Object.assign(API, {
 
   async getDbSerramento() {
     try {
-      const rows = await _sb.get('db_serramento', { stato: 'eq.attivo', order: 'codice.asc', select: '*' });
-      return this._ok((rows || []).map(r => ({ codice: r.codice, materiale: r.materiale, materiale_sigla: r.materiale_sigla, descrizione: r.descrizione || '', stile_design: r.stile_design || '', variante_telaio: r.variante_telaio || '', telaio_nascosto_mm: r.telaio_nascosto_mm || 0, aletta_mm: r.aletta_mm || 0, stato: r.stato })));
+      var rows = await _sb.get('db_serramento', { stato: 'eq.attivo', order: 'codice.asc', select: '*' });
+      return this._ok(rows || []);
     } catch(e) { return this._err(e); }
   },
 
   async getDbPorte() {
     try {
-      const rows = await _sb.get('db_porte', { stato: 'eq.attivo', order: 'fornitore.asc', select: '*' });
-      return this._ok((rows || []).map(function(r) {
-        return { fornitore: r.fornitore || '', tipo_porta: r.tipo_porta || '', sistema_sigla: r.sistema_sigla || r.sistema || '', descrizione: r.descrizione || '', stato: r.stato };
-      }));
+      var rows = await _sb.get('db_porte', { stato: 'eq.attivo', order: 'fornitore.asc,codice.asc', select: '*' });
+      return this._ok(rows || []);
+    } catch(e) { return this._err(e); }
+  },
+
+  // ── Admin DB Serramenti ──
+  async adminGetDbSerramento() {
+    try {
+      var rows = await _sb.get('db_serramento', { order: 'codice.asc', select: '*' });
+      return this._ok(rows || []);
+    } catch(e) { return this._err(e); }
+  },
+
+  async adminAddDbSerramento(data) {
+    try {
+      var rows = await _sb.post('db_serramento', Object.assign({}, data, { stato: 'attivo' }));
+      return this._ok(rows[0] || null);
+    } catch(e) { return this._err(e); }
+  },
+
+  async adminUpdateDbSerramento(id, data) {
+    try {
+      await _sb.patch('db_serramento', { id: 'eq.' + id }, data);
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
+  },
+
+  async adminToggleDbSerramento(id) {
+    try {
+      var rows = await _sb.get('db_serramento', { id: 'eq.' + id, select: 'stato' });
+      if (!rows || !rows.length) throw new Error('Record non trovato.');
+      var nuovoStato = rows[0].stato === 'attivo' ? 'disattivo' : 'attivo';
+      await _sb.patch('db_serramento', { id: 'eq.' + id }, { stato: nuovoStato });
+      return this._ok({ stato: nuovoStato });
+    } catch(e) { return this._err(e); }
+  },
+
+  // ── Admin DB Porte ──
+  async adminGetDbPorte() {
+    try {
+      var rows = await _sb.get('db_porte', { order: 'fornitore.asc,codice.asc', select: '*' });
+      return this._ok(rows || []);
+    } catch(e) { return this._err(e); }
+  },
+
+  async adminAddDbPorte(data) {
+    try {
+      var rows = await _sb.post('db_porte', Object.assign({}, data, { stato: 'attivo' }));
+      return this._ok(rows[0] || null);
+    } catch(e) { return this._err(e); }
+  },
+
+  async adminUpdateDbPorte(id, data) {
+    try {
+      await _sb.patch('db_porte', { id: 'eq.' + id }, data);
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
+  },
+
+  async adminToggleDbPorte(id) {
+    try {
+      var rows = await _sb.get('db_porte', { id: 'eq.' + id, select: 'stato' });
+      if (!rows || !rows.length) throw new Error('Record non trovato.');
+      var nuovoStato = rows[0].stato === 'attivo' ? 'disattivo' : 'attivo';
+      await _sb.patch('db_porte', { id: 'eq.' + id }, { stato: nuovoStato });
+      return this._ok({ stato: nuovoStato });
     } catch(e) { return this._err(e); }
   },
 

@@ -449,6 +449,15 @@ function init() {
     VOCI_GLOBALI = calcolaVociPorte(pos);
     renderAll(VOCI_GLOBALI);
     showReport();
+
+    // Aggiorna versione_posa_num sul rilievo con la revisione corrente
+    API.getNumRevisioneCorrente().then(function(res) {
+      if (res.success && res.data) {
+        var numCorr = res.data;
+        var numRil  = loaded.ril.versione_posa_num || 0;
+        if (numRil < numCorr) API.salvaVersionePosaRilievo(ID_RILIEVO, numCorr);
+      }
+    });
   }
   doFetch('rilievi?id=eq.' + ID_RILIEVO + '&select=id,codice_completo,referente,data_rilievo,versione_posa_num,cantieri(nome_cantiere,clienti(nome))',
     function(r) { if (!r.length) { errored = true; setStato('Rilievo non trovato.', true); return; } loaded.ril = r[0]; tryRender(); },

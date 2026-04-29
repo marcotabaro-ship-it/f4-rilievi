@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Formule di calcolo &mdash; F4 Rilievi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css"/>
+  <style>
+    body { background:#f5f6fa; font-size:13px; }
+    #toolbar { background:#1a1a2e; color:#fff; padding:10px 20px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:100; box-shadow:0 2px 6px rgba(0,0,0,.3); }
+    #toolbar h1 { font-size:15px; margin:0; flex:1; font-weight:600; }
+    .btn-tb { border:none; border-radius:6px; padding:6px 14px; font-size:12px; font-weight:600; cursor:pointer; color:#fff; }
+    .btn-tb-back { background:rgba(255,255,255,.15); }
+    .btn-tb-print { background:#4f46e5; }
+    #wrap { max-width:1080px; margin:24px auto; padding:0 16px 80px; }
+    .sez { background:#fff; border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,.08); margin-bottom:20px; overflow:hidden; }
+    .sez-hdr { background:#1a1a2e; color:#fff; padding:12px 18px; display:flex; align-items:center; gap:10px; }
+    .sez-hdr h2 { margin:0; font-size:14px; font-weight:700; flex:1; }
+    .badge-warn { background:#f59e0b; color:#1a1a2e; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; white-space:nowrap; }
+    .badge-rev { background:#4f46e5; color:#fff; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; white-space:nowrap; }
+    .badge-data { background:rgba(255,255,255,.15); color:#a5b4fc; font-size:10px; padding:2px 8px; border-radius:10px; white-space:nowrap; }
+    .sez-body { padding:18px; }
+    .formula-box { background:#eef2ff; border:2px solid #4f46e5; border-radius:8px; padding:14px 18px; margin:12px 0; font-family:monospace; font-size:13px; line-height:1.8; }
+    .formula-box .f-label { font-family:Roboto,sans-serif; font-size:11px; font-weight:700; color:#4f46e5; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+    .formula-box code { display:block; color:#1a1a2e; font-size:13px; }
+    .nota { background:#fff8e1; border-left:4px solid #f59e0b; padding:10px 14px; border-radius:0 6px 6px 0; font-size:12px; color:#78350f; margin:10px 0; }
+    .nota-update { background:#fce7f3; border-left:4px solid #ec4899; padding:10px 14px; border-radius:0 6px 6px 0; font-size:12px; color:#831843; margin:10px 0; }
+    table.ft { width:100%; border-collapse:collapse; font-size:12px; }
+    table.ft th { background:#4f46e5; color:#fff; padding:7px 10px; text-align:left; font-size:11px; font-weight:600; white-space:nowrap; }
+    table.ft th.c { text-align:center; }
+    table.ft td { padding:6px 10px; border-bottom:1px solid #f0f0f8; color:#374151; }
+    table.ft td.c { text-align:center; }
+    table.ft td.mono { font-family:monospace; font-size:11px; color:#4f46e5; }
+    table.ft tr:nth-child(even) td { background:#f8f8ff; }
+    table.ft tr.area-hdr td { background:#e0e7ff; color:#1a1a2e; font-weight:700; font-size:11px; padding:4px 10px; letter-spacing:.3px; }
+    table.ft td.warn { color:#b45309; font-weight:600; }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .tub-param { display:grid; grid-template-columns:auto 1fr; gap:4px 14px; font-size:12px; margin:10px 0; }
+    .tub-param dt { font-weight:700; color:#4f46e5; font-family:monospace; }
+    .tub-param dd { margin:0; color:#374151; }
+    .lookup-tbl { border-collapse:collapse; font-size:11px; }
+    .lookup-tbl th { background:#374151; color:#fff; padding:5px 8px; text-align:center; }
+    .lookup-tbl td { padding:4px 8px; border:1px solid #e5e7eb; text-align:center; }
+    .lookup-tbl td:first-child { font-weight:700; background:#f3f4f6; color:#374151; }
+    #stato-caricamento { text-align:center; padding:40px; color:#6b7280; font-size:14px; }
+    @media print {
+      @page { size:A4 portrait; margin:10mm; }
+      body { background:#fff; }
+      #toolbar { display:none !important; }
+      #wrap { margin:0; padding:0; max-width:none; }
+      .sez { box-shadow:none; border:1px solid #ccc; border-radius:0; page-break-inside:avoid; margin-bottom:10px; }
+      .sez-hdr { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      table.ft th { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    }
+  </style>
+</head>
+<body>
+<div id="toolbar">
+  <h1>&#128220; Formule e parametri di calcolo &mdash; F4 Rilievi</h1>
+  <button class="btn-tb btn-tb-back" onclick="history.back()">&#8592; Indietro</button>
+  <button class="btn-tb btn-tb-print" onclick="window.print()">&#128438; Stampa / PDF</button>
+</div>
+<div id="wrap">
+  <div id="stato-caricamento">&#9203; Caricamento parametri da database&hellip;</div>
+  <div id="contenuto" style="display:none;"></div>
+</div>
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+var SUPA_URL = APP_CONFIG.SUPABASE_URL;
+var SUPA_KEY = APP_CONFIG.SUPABASE_ANON_KEY;
+
+function doFetch(path, cb, eb) {
+  var x = new XMLHttpRequest();
+  x.open('GET', SUPA_URL + '/rest/v1/' + path, true);
+  x.setRequestHeader('apikey', SUPA_KEY);
+  x.setRequestHeader('Authorization', 'Bearer ' + SUPA_KEY);
+  x.onload = function() {
+    if (x.status >= 200 && x.status < 300) { try { cb(JSON.parse(x.responseText)); } catch(e) { eb(e); } }
+    else eb('HTTP ' + x.status);
+  };
+  x.onerror = function() { eb('Rete'); };
+  x.send();
+}
+
+function fmtH(v) {
+  if (v === null || v === undefined) return '—';
+  var n = parseFloat(v);
+  if (isNaN(n)) return '—';
+  var m = Math.round(n * 60);
+  if (m === 0) return '0';
+  var h = Math.floor(m / 60), min = m % 60;
+  if (h === 0) return min + 'min';
+  if (min === 0) return h + 'h';
+  return h + 'h ' + min + 'min';
+}
+
+function fmtN(v) {
+  if (v === null || v === undefined) return '—';
+  var n = parseFloat(v);
+  return isNaN(n) ? '—' : (Math.round(n * 100000) / 100000).toString();
+}
+
+function buildPage(posaRows, revRows) {
+  var serrRows = posaRows.filter(function(r){ return r.tipo === 'SERR'; });
+  var porteRows = posaRows.filter(function(r){ return r.tipo === 'PORTE'; });
+  var revCorr = revRows.length ? revRows[0] : null;
+  var revData = revCorr ? new Date(revCorr.data_revisione || revCorr.created_at).toLocaleDateString('it-IT') : '—';
+
+  var revBadge = revCorr
+    ? '<span class="badge-rev">Rev. ' + revCorr.numero_revisione + '</span><span class="badge-data">' + revData + ' &mdash; ' + (revCorr.autore_nome||'Sistema') + '</span>'
+    : '';
+
+  var html = '';
+
+  // ================================================================
+  // 1. TUBOLARITA
+  // ================================================================
+  html += '<div class="sez"><div class="sez-hdr"><h2>&#128200; Tubolarit&agrave; Serramenti</h2><span class="badge-warn">&#9888; Aggiornamento previsto al punto #6 (Telaio misto)</span></div><div class="sez-body">';
+  html += '<p style="font-size:12px;color:#6b7280;margin:0 0 12px;">Le dimensioni di tubolarit&agrave; sono le misure nominali del serramento da ordinare, calcolate dalle misure del foro e dalle caratteristiche del telaio scelto.</p>';
+  html += '<div class="nota-update"><strong>Nota:</strong> il sistema applica un\'unica variante telaio a tutti e 4 i lati. Con il punto #6 la formula sar&agrave; estesa per varianti diverse per lato.</div>';
+  html += '<div class="grid2">';
+  html += '<div>';
+  html += '<div class="formula-box"><div class="f-label">Tipo foro A &mdash; Architettonico</div><code>L_tub = L_foro &minus; (2 &times; Nasc) + (2 &times; Aletta)</code><code>H_tub = H_foro &minus; (2 &times; Nasc) + (2 &times; Aletta)</code></div>';
+  html += '<div class="formula-box"><div class="f-label">Tipo foro D &mdash; Dimensione telaio</div><code>L_tub = L_foro &nbsp; (gi&agrave; dimensione telaio)</code><code>H_tub = H_foro &nbsp; (gi&agrave; dimensione telaio)</code></div>';
+  html += '<div class="formula-box"><div class="f-label">Tipo foro P &mdash; Posa in luce</div><code>L_tub = L_foro + (2 &times; Vista) &minus; (2 &times; Nasc) + (2 &times; Aletta)</code><code>H_tub = H_foro + (2 &times; Vista) &minus; (2 &times; Nasc) + (2 &times; Aletta)</code></div>';
+  html += '</div><div>';
+  html += '<div style="font-size:11px;font-weight:700;color:#4f46e5;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Legenda variabili</div>';
+  html += '<dl class="tub-param"><dt>L_foro, H_foro</dt><dd>Misure inserite nel rilievo (mm)</dd><dt>Nasc</dt><dd>Telaio nascosto (mm) &mdash; dal DB Serramento</dd><dt>Aletta</dt><dd>Aletta (mm) &mdash; dal DB Serramento</dd><dt>Vista</dt><dd>Telaio a vista (mm) &mdash; dal DB Serramento</dd></dl>';
+  html += '<div class="nota-update"><strong>Futuro (punto #6):</strong><br>L_tub = L_foro &minus; (Nasc_sx + Nasc_dx) + (Aletta_sx + Aletta_dx)<br>H_tub = H_foro &minus; (Nasc_alto + Nasc_basso) + (Aletta_alto + Aletta_basso)</div>';
+  html += '</div></div></div></div>';
+
+  // ================================================================
+  // 2. POSA SERRAMENTI
+  // ================================================================
+  html += '<div class="sez"><div class="sez-hdr"><h2>&#9201; Posa Serramenti &mdash; Parametri</h2>' + revBadge + '</div><div class="sez-body">';
+  html += '<p style="font-size:12px;color:#6b7280;margin:0 0 12px;">Ore = max(N &times; h/pos, Minimo cantiere). I valori sono aggiornati in tempo reale dalla tabella di configurazione in Amministrazione.</p>';
+  html += buildTabellaVoci(serrRows, false);
+  html += '</div></div>';
+
+  // ================================================================
+  // 3. LOOKUP POSIZIONAMENTO SERR
+  // ================================================================
+  html += '<div class="sez"><div class="sez-hdr"><h2>&#128200; Lookup Posizionamento Serramenti</h2>' + revBadge + '</div><div class="sez-body">';
+  html += '<p style="font-size:12px;color:#6b7280;margin:0 0 8px;">Ore per posizionamento serramento (piano &times; campi). Minimo cantiere: <strong>' + fmtH(2) + '</strong>.</p>';
+  html += '<p style="font-size:11px;color:#6b7280;margin:0 0 8px;">La colonna <strong>GRU</strong> mostra il valore alternativo applicato quando il rilievo ha il flag GRU attivo (piano &ge; +1 e campi &gt; 1).</p>';
+  html += buildLookupPosizionamento(serrRows);
+  html += '</div></div>';
+
+  // ================================================================
+  // 4. POSA PORTE
+  // ================================================================
+  html += '<div class="sez"><div class="sez-hdr"><h2>&#128682; Posa Porte Interne &mdash; Parametri</h2>' + revBadge + '</div><div class="sez-body">';
+  html += buildTabellaVoci(porteRows, true);
+  html += '</div></div>';
+
+  html += '<div style="text-align:center;font-size:11px;color:#9ca3af;margin-top:10px;">Valori caricati in tempo reale da Supabase &mdash; Rev. attiva: ' + (revCorr ? revCorr.numero_revisione : '—') + ' &mdash; ' + revData + '<br>&#9888; Le formule di tubolarit&agrave; verranno aggiornate con il Telaio Misto per lato (punto #6)</div>';
+
+  document.getElementById('contenuto').innerHTML = html;
+  document.getElementById('stato-caricamento').style.display = 'none';
+  document.getElementById('contenuto').style.display = '';
+}
+
+function buildTabellaVoci(rows, isPorte) {
+  var skipVoce = ['POSIZIONAMENTO CTL', 'POSIZIONAMENTO SERR', 'POSIZIONAMENTO CTL PORTE', 'POSIZIONAMENTO PORTE', 'INST PORTE INT', 'INST BLINDATE', 'INST REI'];
+  var filtered = rows.filter(function(r){ return skipVoce.indexOf(r.voce) === -1 && r.piano === null && r.n_campi === null; });
+  var instTipi = rows.filter(function(r){ return ['INST INGRESSI','INST FINESTRE','INST PORTE FINESTRE','INST FINESTRE FISSE','INST VETRATE FISSE','INST SCORREVOLI'].indexOf(r.voce) !== -1 && r.n_campi === 1; });
+  var instPorteSist = rows.filter(function(r){ return r.voce === 'INST PORTE INT' && r.sistema && r.sistema !== 'SOPRALUCE'; });
+  var instBLI = rows.find(function(r){ return r.voce === 'INST BLINDATE'; });
+  var instREI = rows.find(function(r){ return r.voce === 'INST REI'; });
+  var instSopr = rows.find(function(r){ return r.voce === 'INST PORTE INT' && r.sistema === 'SOPRALUCE'; });
+
+  var lastArea = '';
+  var html = '<div style="overflow-x:auto;"><table class="ft"><thead><tr><th>Cod.</th><th>Voce</th><th>Descrizione</th><th class="c">h/pos</th><th class="c">Min. cant.</th></tr></thead><tbody>';
+
+  function addRow(r) {
+    var aHdr = '';
+    if (r.area !== lastArea) { aHdr = '<tr class="area-hdr"><td colspan="5">' + r.area + '</td></tr>'; lastArea = r.area; }
+    return aHdr + '<tr><td class="mono">' + r.codice + '</td><td>' + r.voce + '</td><td style="color:#6b7280;font-size:.80rem;">' + (r.descrizione||'') + '</td><td class="c warn">' + fmtH(r.h_pos) + '</td><td class="c">' + (r.min_cantiere !== null ? fmtH(r.min_cantiere) : '—') + '</td></tr>';
+  }
+
+  filtered.forEach(function(r){ html += addRow(r); });
+
+  // Installazione per tipo (1 campo)
+  if (instTipi.length) {
+    html += '<tr class="area-hdr"><td colspan="5">INSTALLAZIONE PER TIPO (1 campo &mdash; base)</td></tr>';
+    lastArea = 'INSTALLAZIONE PER TIPO';
+    instTipi.forEach(function(r){ html += '<tr><td class="mono">' + r.codice + '</td><td>' + r.voce + '</td><td style="color:#6b7280;font-size:.80rem;">' + (r.descrizione||'') + '</td><td class="c warn">' + fmtH(r.h_pos) + '</td><td class="c">—</td></tr>'; });
+  }
+
+  // Per porte: installazione per sistema
+  if (isPorte && instPorteSist.length) {
+    html += '<tr class="area-hdr"><td colspan="5">INSTALLAZIONE PORTE PER SISTEMA</td></tr>';
+    lastArea = 'INSTALLAZIONE PORTE PER SISTEMA';
+    instPorteSist.forEach(function(r){ html += '<tr><td class="mono">' + r.codice + '</td><td>' + r.sistema + '</td><td style="color:#6b7280;font-size:.80rem;">' + (r.descrizione||'') + '</td><td class="c warn">' + fmtH(r.h_pos) + '</td><td class="c">—</td></tr>'; });
+    if (instSopr) html += '<tr><td class="mono">' + instSopr.codice + '</td><td>+ Sopraluce</td><td style="color:#6b7280;font-size:.80rem;">Extra sopraluce qualsiasi sistema</td><td class="c warn">' + fmtH(instSopr.h_pos) + '</td><td class="c">—</td></tr>';
+    if (instBLI) html += '<tr><td class="mono">' + instBLI.codice + '</td><td>BLI &mdash; Blindata</td><td style="color:#6b7280;font-size:.80rem;">' + (instBLI.descrizione||'') + '</td><td class="c warn">' + fmtH(instBLI.h_pos) + '</td><td class="c">—</td></tr>';
+    if (instREI) html += '<tr><td class="mono">' + instREI.codice + '</td><td>REI</td><td style="color:#6b7280;font-size:.80rem;">' + (instREI.descrizione||'') + '</td><td class="c warn">' + fmtH(instREI.h_pos) + '</td><td class="c">—</td></tr>';
+  }
+
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function buildLookupPosizionamento(rows) {
+  var serrRows = rows.filter(function(r){ return r.voce === 'POSIZIONAMENTO SERR' && r.piano !== null && r.n_campi !== null; });
+  var pianiOrd = [-1,0,1,2,3,4,5,6,7,8,9,10];
+  var pianoLabel = function(p){ return p === -1 ? 'P -1' : (p === 0 ? 'P 0' : 'P +' + p); };
+
+  var html = '<div style="overflow-x:auto;margin-bottom:16px;">';
+  html += '<table class="lookup-tbl"><thead><tr><th>Piano</th>';
+  for (var c = 1; c <= 5; c++) html += '<th>' + c + ' campo' + (c>1?'i':'') + ' NO GRU</th>';
+  for (var c = 1; c <= 5; c++) html += '<th>' + c + ' campo' + (c>1?'i':'') + ' GRU</th>';
+  html += '</tr></thead><tbody>';
+
+  pianiOrd.forEach(function(p) {
+    var row = '';
+    var hasGruDiff = false;
+    for (var c = 1; c <= 5; c++) {
+      var r = serrRows.find(function(x){ return x.piano === p && x.n_campi === c; });
+      row += '<td>' + (r ? fmtH(r.h_pos) : '—') + '</td>';
+    }
+    for (var c = 1; c <= 5; c++) {
+      var r = serrRows.find(function(x){ return x.piano === p && x.n_campi === c; });
+      var gruVal = r ? (r.h_pos_gru !== null && r.h_pos_gru !== undefined ? r.h_pos_gru : r.h_pos) : null;
+      var isDiff = r && r.h_pos_gru !== null && parseFloat(r.h_pos_gru) !== parseFloat(r.h_pos);
+      if (isDiff) hasGruDiff = true;
+      row += '<td style="' + (isDiff?'background:#dbeafe;font-weight:600;':'color:#9ca3af;') + '">' + (gruVal !== null ? fmtH(gruVal) : '—') + '</td>';
+    }
+    html += '<tr><td>' + pianoLabel(p) + (hasGruDiff?'':' <span style="font-size:.7rem;color:#9ca3af;">no diff.</span>') + '</td>' + row + '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+
+  // CTL
+  var ctlRows = rows.filter(function(r){ return r.voce === 'POSIZIONAMENTO CTL' && r.piano !== null; });
+  html += '<div style="font-size:11px;font-weight:700;color:#374151;margin:12px 0 6px;">Posizionamento CTL / Termocasse (per piano)</div>';
+  html += '<table class="lookup-tbl"><thead><tr>';
+  pianiOrd.forEach(function(p){ html += '<th>' + pianoLabel(p) + '</th>'; });
+  html += '<th>Min. cant.</th></tr></thead><tbody><tr>';
+  pianiOrd.forEach(function(p){
+    var r = ctlRows.find(function(x){ return x.piano === p; });
+    html += '<td>' + (r ? fmtH(r.h_pos) : '—') + '</td>';
+  });
+  var ctlMin = ctlRows.length ? ctlRows[0].min_cantiere : null;
+  html += '<td>' + (ctlMin !== null ? fmtH(ctlMin) : '1h') + '</td>';
+  html += '</tr></tbody></table>';
+  return html;
+}
+
+// INIT
+var loaded = { posa: null, rev: null };
+function tryBuild() {
+  if (!loaded.posa || !loaded.rev) return;
+  buildPage(loaded.posa, loaded.rev);
+}
+doFetch('dati_comuni_posa?stato=eq.attivo&select=*&order=tipo.asc,codice.asc,piano.asc,n_campi.asc,sistema.asc',
+  function(r){ loaded.posa = r||[]; tryBuild(); },
+  function(){ document.getElementById('stato-caricamento').textContent = 'Errore caricamento dati posa.'; });
+doFetch('revisioni_parametri?stato=eq.attivo&select=id,numero_revisione,tipo,data_revisione,autore_nome&order=numero_revisione.desc&limit=1',
+  function(r){ loaded.rev = r||[]; tryBuild(); },
+  function(){ loaded.rev = []; tryBuild(); });
+</script>
+</body>
+</html>

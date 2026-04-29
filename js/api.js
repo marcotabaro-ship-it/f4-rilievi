@@ -1033,6 +1033,18 @@ Object.assign(API, {
     } catch(e) { return this._err(e); }
   },
 
+  async checkVersionePosa(idRilievo) {
+    var res = await this.checkVersionePosaRilievo(idRilievo);
+    if (res.success) res.aggiornamentoDisponibile = res.data && res.data.aggiornamento;
+    return res;
+  },
+
+  async aggiornaVersionePosa(idRilievo) {
+    var revRes = await this.getNumRevisioneCorrente();
+    var numRev = revRes.success ? revRes.data : 1;
+    return this.salvaVersionePosaRilievo(idRilievo, numRev);
+  },
+
   async adminNuovaVersionePosa(tipo, n) { return this._ok(null); },
 
   // Controlla se il rilievo usa una revisione posa obsoleta

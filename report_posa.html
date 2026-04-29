@@ -776,6 +776,15 @@ function init() {
     var notaEl = document.getElementById('note-posa');
     if (notaEl) notaEl.value = loadNote();
     showReport();
+
+    // Aggiorna versione_posa_num sul rilievo con la revisione corrente
+    API.getNumRevisioneCorrente().then(function(res) {
+      if (res.success && res.data) {
+        var numCorr = res.data;
+        var numRil  = loaded.ril.versione_posa_num || 0;
+        if (numRil < numCorr) API.salvaVersionePosaRilievo(ID_RILIEVO, numCorr);
+      }
+    });
   }
 
   doFetch(

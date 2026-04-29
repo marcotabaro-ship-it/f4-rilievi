@@ -140,6 +140,7 @@ const _map = {
       gru:              row.gru ? 'SI' : 'NO',
       versione_posa:    row.versione_posa || 0,
       note:             row.note || '',
+      note_generali:    row.note_generali || '',
       allarme:          row.allarme || false,
       note_commerciali: row.note_commerciali || {},
       stato:            row.stato,
@@ -166,6 +167,11 @@ const _map = {
       sistema:                  row.sistema               || '',
       stile_design:             row.stile_design          || '',
       variante_telaio:          row.variante_telaio       || '',
+      telaio_misto:             row.telaio_misto === true,
+      variante_alto:            row.variante_alto         || '',
+      variante_basso:           row.variante_basso        || '',
+      variante_sx:              row.variante_sx           || '',
+      variante_dx:              row.variante_dx           || '',
       codice_serramento:        row.codice_serramento     || '',
       n_vetri:                  row.n_vetri               || '',
       colore_int:               row.colore_int            || '',
@@ -305,6 +311,11 @@ const _in = {
       sistema:                  data.sistema              || null,
       stile_design:             data.stile_design         || null,
       variante_telaio:          data.variante_telaio      || null,
+      telaio_misto:             data.telaio_misto === true,
+      variante_alto:            data.variante_alto        || null,
+      variante_basso:           data.variante_basso       || null,
+      variante_sx:              data.variante_sx          || null,
+      variante_dx:              data.variante_dx          || null,
       codice_serramento:        data.codice_serramento    || null,
       n_vetri:                  data.n_vetri              || null,
       colore_int:               data.colore_int           || null,
@@ -661,6 +672,7 @@ const API = {
       if (data.data_posa    !== undefined) patch.data_posa    = data.data_posa    || null;
       if (data.gru          !== undefined) patch.gru          = data.gru === 'SI';
       if (data.note         !== undefined) patch.note         = data.note         || null;
+      if (data.note_generali!== undefined) patch.note_generali= data.note_generali|| null;
       if (data.versione_posa!== undefined) patch.versione_posa = data.versione_posa;
       if (data.allarme          !== undefined) patch.allarme          = data.allarme === 'SI' || data.allarme === true;
       if (data.note_commerciali !== undefined) patch.note_commerciali = data.note_commerciali || {};

@@ -227,6 +227,9 @@
         </div>
       </div>
       <div class="nc-compact" id="sh-nc" style="display:none"></div>
+      <div id="sh-note-generali" style="display:none;background:#fffbeb;border-left:4px solid #f59e0b;padding:6px 10px;font-size:10px;margin-top:6px;border-radius:0 4px 4px 0;">
+        <strong style="color:#92400e;">&#128221; Note generali:</strong> <span class="ng-text" style="color:#78350f;"></span>
+      </div>
     </div>
 
     <div class="legenda-block">
@@ -543,7 +546,7 @@ function renderPosizioni(posizioni, stratigrafie, capitoli) {
     h += '<td class="c grp-sep">' + esc(v(p.n_campi)) + '</td>';
     h += '<td class="c">'   + esc(v(p.materiale)) + '</td>';
     h += '<td style="min-width:45px">' + esc(v(p.sistema)) + '</td>';
-    h += '<td class="c">'   + esc(v(p.stile_design)) + (p.variante_telaio?'/'+esc(v(p.variante_telaio)):'') + '</td>';
+    h += '<td class="c">'   + esc(v(p.stile_design)) + (p.telaio_misto ? '<br><span style="color:#4f46e5;font-size:8px;font-weight:700;">MIX &#8593;'+esc(v(p.variante_alto))+' &#8595;'+esc(v(p.variante_basso))+' &#8592;'+esc(v(p.variante_sx))+' &#8594;'+esc(v(p.variante_dx))+'</span>' : (p.variante_telaio?'/'+esc(v(p.variante_telaio)):'')) + '</td>';
     h += '<td class="c grp-sep">' + esc(v(p.tipo_foro)) + '</td>';
     h += '<td class="dim-cell"><div class="dim-main">'+lIns+'</div>'+(lCalc?'<div class="dim-calc">('+lCalc+')</div>':'')+'</td>';
     h += '<td class="dim-cell"><div class="dim-main">'+hIns+'</div>'+(hCalc?'<div class="dim-calc">('+hCalc+')</div>':'')+'</td>';
@@ -684,6 +687,12 @@ function caricaDati(idRil) {
     if (r.gru === 'SI' || r.gru === true) document.getElementById('sh-gru').style.display = '';
     if (r.allarme === true) document.getElementById('sh-alarm').style.display = '';
 
+    // Note generali del rilievo
+    if (r.note_generali) {
+      var ngEl = document.getElementById('sh-note-generali');
+      if (ngEl) { ngEl.style.display=''; ngEl.querySelector('.ng-text').textContent = r.note_generali; }
+    }
+
     var nc = r.note_commerciali || {};
     renderNC(nc);
     renderStratigrafie(loaded.strats);
@@ -692,7 +701,7 @@ function caricaDati(idRil) {
   }
 
   doFetch(
-    'rilievi?id=eq.'+idRil+'&select=id,codice_completo,referente,data_rilievo,data_posa,intervento,gru,allarme,note_commerciali,cantieri(nome_cantiere,tipo_via,indirizzo,comune,provincia,cap,clienti(nome,telefono,email))',
+    'rilievi?id=eq.'+idRil+'&select=id,codice_completo,referente,data_rilievo,data_posa,intervento,gru,allarme,note,note_generali,note_commerciali,cantieri(nome_cantiere,tipo_via,indirizzo,comune,provincia,cap,clienti(nome,telefono,email))',
     function(rows) {
       if (!rows.length) { errored=true; setStato('Rilievo non trovato.',true); return; }
       loaded.ril = rows[0]; tryRender();

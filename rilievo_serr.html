@@ -789,26 +789,24 @@ function calcolaRealtime(p) {
   if(!H||!L||!p.tipo_foro) return {Htub:0,Ltub:0};
   var at  = parseFloat(datiComuni[6])  || 10;
   var atv = parseFloat(datiComuni[16]) || 10;
-  var hasSoglia = (p.tipo_serramento==='PF' || p.tipo_serramento==='FF');
-  var nAlH = hasSoglia ? 2 : 1;
+  // L'aletta esiste sempre sia in alto che in basso — e' una caratteristica del profilo, non del tipo serramento
   var tf = p.tipo_foro, Ltub=0, Htub=0;
   if (p.telaio_misto) {
-    // Telaio misto: usa varianti per lato
     function getLD(varSigla) {
       var r = dbSerr.find(function(d){ return d&&d.materiale===p.materiale&&d.descrizione===p.sistema&&d.stile_design===p.stile_design&&d.variante_telaio===varSigla; });
       return { nasc: r?(parseFloat(r.telaio_nascosto_mm)||0):0, aletta: r?(parseFloat(r.aletta_mm)||0):0 };
     }
     var dA=getLD(p.variante_alto), dB=getLD(p.variante_basso), dS=getLD(p.variante_sx), dD=getLD(p.variante_dx);
-    if (tf==='A') { Ltub=L+dS.nasc+dD.nasc+dS.aletta+dD.aletta; Htub=H+dA.nasc+dB.nasc+dA.aletta+(hasSoglia?dB.aletta:0); }
-    else if (tf==='D') { Ltub=L+dS.aletta+dD.aletta; Htub=H+dA.aletta+(hasSoglia?dB.aletta:0); }
-    else if (tf==='P') { Ltub=L-2*at+dS.aletta+dD.aletta; Htub=H-atv+dA.aletta+(hasSoglia?dB.aletta:0); }
+    if (tf==='A') { Ltub=L+dS.nasc+dD.nasc+dS.aletta+dD.aletta; Htub=H+dA.nasc+dB.nasc+dA.aletta+dB.aletta; }
+    else if (tf==='D') { Ltub=L+dS.aletta+dD.aletta; Htub=H+dA.aletta+dB.aletta; }
+    else if (tf==='P') { Ltub=L-2*at+dS.aletta+dD.aletta; Htub=H-atv+dA.aletta+dB.aletta; }
   } else {
     var rec = dbSerr.find(function(d){ return d&&d.materiale===p.materiale&&d.descrizione===p.sistema&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio; });
     var nascosto=rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
     var aletta=rec?(parseFloat(rec.aletta_mm)||0):0;
-    if (tf==='A') { Ltub=L+2*nascosto+2*aletta; Htub=H+nascosto+nAlH*aletta; }
-    else if (tf==='D') { Ltub=L+2*aletta; Htub=H+nAlH*aletta; }
-    else if (tf==='P') { Ltub=L-2*at+2*aletta; Htub=H-atv+nAlH*aletta; }
+    if (tf==='A') { Ltub=L+2*nascosto+2*aletta; Htub=H+nascosto+2*aletta; }
+    else if (tf==='D') { Ltub=L+2*aletta; Htub=H+2*aletta; }
+    else if (tf==='P') { Ltub=L-2*at+2*aletta; Htub=H-atv+2*aletta; }
   }
   return {Ltub:Ltub,Htub:Htub};
 }
@@ -1245,11 +1243,8 @@ function dRicalcola() {
   var ridO = hasCtl ? (ao+so+at) : ao;
   var ridV = hasCtl ? (av+sv+atv) : av;
 
-  // PF e FF hanno soglia in basso: 2 alette in H (alto + basso)
-  // I, F, VF, S: 1 aletta in H (solo alto)
-  var hasSoglia = (ts==='PF' || ts==='FF');
-  var nAlH = hasSoglia ? 2 : 1;
 
+  // L'aletta esiste sempre sia in alto che in basso — caratteristica del profilo, non del tipo serramento
   var Htel=0, Ltel=0, Harch=0, Larch=0, Htub=0, Ltub=0;
 
   if (H && L && tf) {
@@ -1261,15 +1256,15 @@ function dRicalcola() {
       if (tf==='A') {
         Harch=H; Larch=L; Htel=H-2*ridV; Ltel=L-2*ridO;
         Ltub = L + 2*nasc + 2*aletta;
-        Htub = H + nasc + nAlH*aletta;
+        Htub = H + nasc + 2*aletta;
       } else if (tf==='D') {
         Htel=H; Ltel=L; Harch=H+2*ridV; Larch=L+2*ridO;
         Ltub = L + 2*aletta;
-        Htub = H + nAlH*aletta;
+        Htub = H + 2*aletta;
       } else if (tf==='P') {
         Htel=H; Ltel=L; Harch=H+2*ridV; Larch=L+2*ridO;
         Ltub = L - 2*at + 2*aletta;
-        Htub = H - atv + nAlH*aletta;
+        Htub = H - atv + 2*aletta;
       }
     } else {
       // --- Telaio misto (variante per lato) ---
@@ -1287,13 +1282,13 @@ function dRicalcola() {
       var aD = recD ? (parseFloat(recD.aletta_mm)||0) : 0;
       if (tf==='A') {
         Ltub = L + nS + nD + aS + aD;
-        Htub = H + nA + nB + aA + (hasSoglia ? aB : 0);
+        Htub = H + nA + nB + aA + aB;
       } else if (tf==='D') {
         Ltub = L + aS + aD;
-        Htub = H + aA + (hasSoglia ? aB : 0);
+        Htub = H + aA + aB;
       } else if (tf==='P') {
         Ltub = L - 2*at + aS + aD;
-        Htub = H - atv + aA + (hasSoglia ? aB : 0);
+        Htub = H - atv + aA + aB;
       }
     }
   }

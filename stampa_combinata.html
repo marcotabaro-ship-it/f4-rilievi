@@ -461,7 +461,7 @@ function loadAndRender(wR,wA,wP){
     document.getElementById('tb-titolo').textContent='Stampa '+esc(D.ril&&D.ril.codice_completo||'');
     document.title='Stampa '+(D.ril&&D.ril.codice_completo||'');
   }
-  sfetch('rilievi?id=eq.'+idRilievo+'&select=id,codice_completo,referente,data_rilievo,data_posa,intervento,gru,allarme,note_commerciali,cantieri(nome_cantiere,tipo_via,indirizzo,comune,provincia,cap,clienti(nome,telefono,email))',
+  sfetch('rilievi?id=eq.'+idRilievo+'&select=id,codice_completo,referente,data_rilievo,data_posa,intervento,gru,allarme,note,note_generali,note_commerciali,cantieri(nome_cantiere,tipo_via,indirizzo,comune,provincia,cap,clienti(nome,telefono,email))',
     function(r){D.ril=r&&r[0]||{};chk();},function(){D.ril={};chk();});
   sfetch('posizioni_serr?id_rilievo=eq.'+idRilievo+'&stato=eq.attivo&select=*&order=ordine.asc',
     function(r){D.pos=r||[];chk();},function(){D.pos=[];chk();});
@@ -505,6 +505,7 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
     h+='</div></div>';
     h+='</div>';
     if(ncParts.length)h+='<div style="padding:5px 12px;font-size:10px;background:#fafafe;border-top:1px solid #e5e7eb;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;"><span style="font-weight:700;color:#4f46e5;text-transform:uppercase;font-size:9px;">NOTE COMM.</span>'+ncParts.map(function(s){return'<span>'+esc(s)+'</span>';}).join('')+'</div>';
+    if(ril.note_generali)h+='<div style="padding:5px 12px;font-size:10px;background:#fffbeb;border-top:1px solid #f59e0b;"><strong style="color:#92400e;">&#128221; Note generali:</strong> <span style="color:#78350f;">'+esc(ril.note_generali)+'</span></div>';
     h+='</div>';
     return h;
   }
@@ -779,13 +780,20 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
         if(!g.pos.length)return;
         var vG=calcolaVoci(g.pos);
         var tG=0,oDG=0,oIG=0;
-        vG.forEach(function(vo){var f=Math.max(0,Math.round(vo.oreCalc*1000)/1000);tG+=f;if(vo.tipo==='dir')oDG+=f;else oIG+=f;});
+        vG.forEach(function(vo){
+          var minus=parseFloat((adj[vo.id]||{}).minus)||0;
+          var plus =parseFloat((adj[vo.id]||{}).plus )||0;
+          var f=Math.max(0,Math.round((vo.oreCalc-minus+plus)*1000)/1000);
+          tG+=f;if(vo.tipo==='dir')oDG+=f;else oIG+=f;
+        });
         h+='<div style="background:#1a1a2e;color:#a5b4fc;font-weight:700;font-size:.82rem;padding:6px 12px;margin:10px 0 6px;border-radius:5px;">══ '+esc(g.cap.titolo)+' ══ <span style="opacity:.7;font-size:.74rem;">('+g.pos.length+' pos.)</span></div>';
         var lA2='',tbG='';
         vG.forEach(function(vo){
-          if(vo.n===0&&vo.oreCalc===0)return;
+          var minus=parseFloat((adj[vo.id]||{}).minus)||0;
+          var plus =parseFloat((adj[vo.id]||{}).plus )||0;
+          var f=Math.max(0,Math.round((vo.oreCalc-minus+plus)*1000)/1000);
+          if(vo.n===0&&f===0)return;
           if(vo.area!==lA2){tbG+='<tr class="tr-sez"><td colspan="6">'+vo.area+'</td></tr>';lA2=vo.area;}
-          var f=Math.max(0,Math.round(vo.oreCalc*1000)/1000);
           tbG+='<tr class="tr-voce"><td>'+vo.area+'</td><td>'+vo.serv+'</td>'+
             '<td class="c">'+(vo.n>0?vo.n:'—')+'</td>'+
             '<td class="c">'+(vo.dp?fmtH(vo.dp[0]):'—')+'</td>'+
@@ -810,21 +818,27 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
     }
 
     var voci=calcolaVoci(pos);
+    // Legge aggiustamenti manuali salvati da report_posa (localStorage)
+    var adj={};
+    try { adj=JSON.parse(localStorage.getItem('f4_posa_adj_'+idRilievo))||{}; } catch(e){}
     var lastArea='',tCalc=0,tFin=0,areaMap={};
     var tbH='';
     voci.forEach(function(vo){
       if(vo.area!==lastArea){tbH+='<tr class="tr-sez"><td colspan="6">'+vo.area+'</td></tr>';lastArea=vo.area;}
-      var fin=Math.max(0,Math.round(vo.oreCalc*1000)/1000);
+      var minus=parseFloat((adj[vo.id]||{}).minus)||0;
+      var plus =parseFloat((adj[vo.id]||{}).plus )||0;
+      var fin=Math.max(0,Math.round((vo.oreCalc-minus+plus)*1000)/1000);
       tCalc+=vo.oreCalc;tFin+=fin;
       if(!areaMap[vo.area])areaMap[vo.area]={fin:0,tipo:vo.tipo};
       areaMap[vo.area].fin+=fin;
-      var isZero=vo.n===0&&vo.oreCalc===0;
+      var isZero=vo.n===0&&vo.oreCalc===0&&fin===0;
       var nStr=vo.n>0?String(vo.n):'—';
       var hpStr=vo.dp?fmtH(vo.dp[0]):'—';
       var mnStr=(vo.dp&&vo.dp[1])?fmtH(vo.dp[1]):'—';
+      var hasAdj=(minus>0||plus>0);
       tbH+='<tr class="tr-voce'+(isZero?' zero-row':'')+'">';
       tbH+='<td>'+vo.area+'</td><td>'+vo.serv+'</td><td class="c">'+nStr+'</td><td class="c">'+hpStr+'</td><td class="c">'+mnStr+'</td>';
-      tbH+='<td class="ore-f">'+fmtH(fin)+'</td></tr>';
+      tbH+='<td class="ore-f">'+fmtH(fin)+(hasAdj?'<span style="font-size:8px;color:#b45309;margin-left:3px;">'+(plus>0?'+'+fmtH(plus):'')+(minus>0?'-'+fmtH(minus):'')+'</span>':'')+'</td></tr>';
     });
     h+='<div class="tbl-outer"><table class="t-posa"><thead><tr>';
     h+='<th style="width:20%">Area</th><th style="width:36%">Servizio</th><th class="c">N</th><th class="c">h/pos</th><th class="c">Min.cant.</th><th class="c">Ore</th>';

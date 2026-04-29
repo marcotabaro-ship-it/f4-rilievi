@@ -126,13 +126,13 @@ function buildPage(posaRows, revRows) {
   html += '<p style="font-size:11px;color:#6b7280;margin:0 0 12px;"><strong>Costanti:</strong> ARIA2orizz e ARIA52vert sono caricate da database (Dati Tecnici &rarr; Dati comuni SerramentiAccessori). PF e FF hanno soglia in basso: 2 alette in H.</p>';
   html += '<div class="grid2">';
   html += '<div>';
-  html += '<div class="formula-box"><div class="f-label">Tipo foro A &mdash; Architettonico</div><code>L_tub = L_foro + (2 &times; Nasc) + (2 &times; Aletta)</code><code>H_tub = H_foro + Nasc + 1&times;Aletta &nbsp; [I, F, VF, S]</code><code>H_tub = H_foro + Nasc + 2&times;Aletta &nbsp; [PF, FF]</code></div>';
-  html += '<div class="formula-box"><div class="f-label">Tipo foro D &mdash; Dimensione telaio</div><code>L_tub = L_foro + (2 &times; Aletta)</code><code>H_tub = H_foro + 1&times;Aletta &nbsp; [I, F, VF, S]</code><code>H_tub = H_foro + 2&times;Aletta &nbsp; [PF, FF]</code></div>';
-  html += '<div class="formula-box"><div class="f-label">Tipo foro P &mdash; Posa in luce</div><code>L_tub = L_foro &minus; (2 &times; ARIA2orizz) + (2 &times; Aletta)</code><code>H_tub = H_foro &minus; ARIA52vert + 1&times;Aletta &nbsp; [I, F, VF, S]</code><code>H_tub = H_foro &minus; ARIA52vert + 2&times;Aletta &nbsp; [PF, FF]</code></div>';
+  html += '<div class="formula-box"><div class="f-label">Tipo foro A &mdash; Architettonico</div><code>L_tub = L_foro + (2 &times; Nasc) + (2 &times; Aletta)</code><code>H_tub = H_foro + Nasc + (2 &times; Aletta)</code></div>';
+  html += '<div class="formula-box"><div class="f-label">Tipo foro D &mdash; Dimensione telaio</div><code>L_tub = L_foro + (2 &times; Aletta)</code><code>H_tub = H_foro + (2 &times; Aletta)</code></div>';
+  html += '<div class="formula-box"><div class="f-label">Tipo foro P &mdash; Posa in luce</div><code>L_tub = L_foro &minus; (2 &times; ARIA2orizz) + (2 &times; Aletta)</code><code>H_tub = H_foro &minus; ARIA52vert + (2 &times; Aletta)</code></div>';
   html += '</div><div>';
   html += '<div style="font-size:11px;font-weight:700;color:#4f46e5;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Legenda variabili</div>';
   html += '<dl class="tub-param"><dt>L_foro, H_foro</dt><dd>Misure inserite nel rilievo (mm)</dd><dt>Nasc</dt><dd>Telaio nascosto (mm) &mdash; dal DB Serramento</dd><dt>Aletta</dt><dd>Aletta (mm) &mdash; dal DB Serramento</dd><dt>ARIA2orizz</dt><dd>Aria tra CTL e telaio interno orizzontale (da DB)</dd><dt>ARIA52vert</dt><dd>Aria tra CTL e telaio interno verticale (da DB)</dd></dl>';
-  html += '<div class="formula-box" style="border-color:#059669;background:#ecfdf5;"><div class="f-label" style="color:#059669;">Telaio misto per lato</div><code>L_tub = L_foro + Nasc_sx + Nasc_dx + Aletta_sx + Aletta_dx</code><code>H_tub = H_foro + Nasc_alto + Nasc_basso + Aletta_alto &nbsp; [I,F,VF,S]</code><code>H_tub = H_foro + Nasc_alto + Nasc_basso + Aletta_alto + Aletta_basso &nbsp; [PF,FF]</code></div>';
+  html += '<div class="formula-box" style="border-color:#059669;background:#ecfdf5;"><div class="f-label" style="color:#059669;">Telaio misto per lato</div><code>L_tub = L_foro + Nasc_sx + Nasc_dx + Aletta_sx + Aletta_dx</code><code>H_tub = H_foro + Nasc_alto + Nasc_basso + Aletta_alto + Aletta_basso</code></div>';
   html += '</div></div></div></div>';
 
   // ================================================================

@@ -309,72 +309,77 @@ var ID_RILIEVO = null;
 var ADJ_LS_KEY = '';
 var PREV_LS_KEY = '';
 var VOCI_GLOBALI = [];
+var USE_GRU = false;
 
-// ---- Posizionamento SERRAMENTI: lookup [piano+1][campi-1] ----
-// Valori da "Dati comuni Posa" foglio Excel serramenti
-var POS_SERR = {
-  '-1': [0.5, 0.75, 1.0, 1.25, 1.5],
-  '0':  [0.5, 0.917, 1.333, 1.75, 2.167],
-  '1':  [0.5, 0.792, 1.083, 1.278, 1.472],
-  '2':  [0.5, 0.875, 1.25, 1.5, 1.75],
-  '3':  [1.0, 1.458, 1.917, 2.222, 2.528],
-  '4':  [1.0, 1.542, 2.083, 2.444, 2.806],
-  '5':  [1.0, 1.625, 2.25, 2.639, 3.028],
-  '6':  [1.0, 1.708, 2.417, 2.833, 3.25],
-  '7':  [1.5, 2.042, 2.583, 3.0,   3.417],
-  '8':  [1.5, 2.125, 2.75, 3.194, 3.639],
-  '9':  [1.5, 2.208, 2.917, 3.389, 3.861],
-  '10': [1.5, 2.292, 3.083, 3.583, 4.083]
-};
-var POS_SERR_MIN = 1.0;
+// Tabelle dinamiche — popolate da buildTablesFromPosa()
+var DP = {};
+var POS_SERR = {};
+var POS_SERR_GRU = {};
+var POS_CTL = {};
+var POS_SERR_MIN = 2.0;
+var POS_CTL_MIN  = 1.0;
 
-// Posizionamento CTL per piano
-var POS_CTL = {
-  '-1': 0.5, '0': 0.5, '1': 0.5, '2': 0.667, '3': 0.833, '4': 1.0,
-  '5': 1.167, '6': 1.333, '7': 1.5, '8': 1.667, '9': 1.833, '10': 2.0
+// Mapping voce Supabase → chiave DP
+var V2DP = {
+  'PROGETTAZIONE':'prog','GESTIONE ORDINI':'gord','INCONTRI IN CANTIERE':'incant',
+  'SCARICO E CARICO CTL':'scCtl','TRASPORTO CTL':'trCtl',
+  'SCARICO E CARICO SERR':'scSerr','TRASPORTO SERR':'trSerr',
+  'RIMOZIONE SERRAMENTI':'rimSerr','RIMOZIONE ACCESSORI':'rimAcc',
+  'SMALTIMENTO SERR':'smSerr','SMALTIMENTO ACC':'smAcc',
+  'ASSEMBLAGGIO CTL':'assCtl','ASSEMBLAGGIO TERMOCASSE':'assTerm',
+  'ASSEMBLAGGIO DINOX DA':'assDinDA','ASSEMBLAGGIO DINOX IM':'assDinIM',
+  'INSTALL ANGOLARI PVC':'angPvc',
+  'INSTALLAZIONE CTL':'instCtl','INSTALLAZIONE TERMOCASSE':'instTerm',
+  'INSTALL DINOX DA':'instDinDA','INSTALL DINOX IM':'instDinIM',
+  'TAGLIO PIANI MARMO':'marmo','REGISTRAZIONE COLLAUDO':'regColl','PULIZIA CANTIERE':'pulizia'
 };
-var POS_CTL_MIN = 1.0;
+var INST_V2DP = {
+  'INST INGRESSI':'instI','INST FINESTRE':'instF','INST PORTE FINESTRE':'instPF',
+  'INST FINESTRE FISSE':'instFF','INST VETRATE FISSE':'instVF','INST SCORREVOLI':'instS'
+};
+var COD2DP = {
+  740:'instAvv',750:'instScur',760:'instTende',765:'instFrang',
+  770:'instCass',775:'instZanz',780:'coprInt',785:'coprEst'
+};
 
-// Dati ore per voce: [h/pos, min_cantiere] (null = no min)
-var DP = {
-  prog:      [1/3,  2.0],
-  gord:      [1/3,  2.0],
-  incant:    [1/3,  1.5],
-  scCtl:     [1/3,  1.0],
-  trCtl:     [0.5,  2.0],
-  scSerr:    [1/3,  1.0],
-  trSerr:    [0.5,  2.0],
-  rimSerr:   [1.0,  2.0],
-  rimAcc:    [0.5,  1.0],
-  smSerr:    [0.5,  null],
-  smAcc:     [0.5,  null],
-  assCtl:    [0.5,  1.0],
-  assTerm:   [1.0,  2.0],
-  assDinDA:  [0.5,  1.0],
-  assDinIM:  [0.5,  1.0],
-  angPvc:    [0.5,  1.0],
-  instCtl:   [2.0,  3.0],
-  instTerm:  [3.0,  4.0],
-  instDinDA: [1.0,  2.0],
-  instDinIM: [0.5,  1.0],
-  marmo:     [3.0,  5.0],
-  instI:     [8.0,  null],
-  instF:     [3.0,  null],
-  instPF:    [11/3, null],
-  instFF:    [11/3, null],
-  instVF:    [6.0,  null],
-  instS:     [9.0,  null],
-  instAvv:   [2.0,  3.0],
-  instScur:  [3.0,  4.0],
-  instTende: [3.0,  4.0],
-  instFrang: [3.0,  4.0],
-  instCass:  [3.0,  4.0],
-  instZanz:  [1.0,  1.5],
-  coprInt:   [0.5,  1.0],
-  coprEst:   [0.5,  1.0],
-  regColl:   [1/3,  2.0],
-  pulizia:   [1/3,  4.0]
-};
+function buildTablesFromPosa(rows) {
+  DP = {}; POS_SERR = {}; POS_SERR_GRU = {}; POS_CTL = {};
+  rows.forEach(function(r) {
+    var v = r.voce;
+    // Posizionamento CTL per piano
+    if (v === 'POSIZIONAMENTO CTL' && r.piano !== null && r.piano !== undefined) {
+      POS_CTL[String(r.piano)] = parseFloat(r.h_pos) || 0.5;
+    }
+    // Posizionamento SERR per piano x campi
+    if (v === 'POSIZIONAMENTO SERR' && r.piano !== null && r.n_campi !== null) {
+      var pk = String(r.piano);
+      if (!POS_SERR[pk]) POS_SERR[pk] = [];
+      POS_SERR[pk][r.n_campi - 1] = parseFloat(r.h_pos) || 0.5;
+      if (!POS_SERR_GRU[pk]) POS_SERR_GRU[pk] = [];
+      POS_SERR_GRU[pk][r.n_campi - 1] = parseFloat(r.h_pos_gru !== null && r.h_pos_gru !== undefined ? r.h_pos_gru : r.h_pos) || 0.5;
+    }
+    // Voci semplici senza piano/n_campi/sistema
+    var dpKey = V2DP[v];
+    if (dpKey && r.piano === null && r.n_campi === null && !r.sistema) {
+      DP[dpKey] = [parseFloat(r.h_pos)||0, r.min_cantiere !== null ? parseFloat(r.min_cantiere) : null];
+    }
+    // Installazione per tipo (1 campo = base)
+    var instKey = INST_V2DP[v];
+    if (instKey && r.n_campi === 1) {
+      DP[instKey] = [parseFloat(r.h_pos)||0, null];
+    }
+    // Accessori per codice (prima riga incontrata)
+    var accKey = COD2DP[r.codice];
+    if (accKey && !DP[accKey]) {
+      DP[accKey] = [parseFloat(r.h_pos)||0, r.min_cantiere !== null ? parseFloat(r.min_cantiere) : null];
+    }
+  });
+  // Leggi minimi cantiere dalle righe specifiche
+  var ctlMinR = rows.find(function(r){ return r.voce==='POSIZIONAMENTO CTL' && r.piano===(-1); });
+  if (ctlMinR && ctlMinR.min_cantiere) POS_CTL_MIN = parseFloat(ctlMinR.min_cantiere);
+  var serrMinR = rows.find(function(r){ return r.voce==='POSIZIONAMENTO SERR' && r.piano===(-1) && r.n_campi===1; });
+  if (serrMinR && serrMinR.min_cantiere) POS_SERR_MIN = parseFloat(serrMinR.min_cantiere);
+}
 
 function calcOre(n, dp) {
   if (!dp || n <= 0) return 0;
@@ -396,12 +401,14 @@ function getPianoKey(piano) {
   return String(p);
 }
 
-function posSerrH(piano, nCampi) {
+function posSerrH(piano, nCampi, useGru) {
   var key = getPianoKey(piano);
-  var lookup = POS_SERR[key];
+  var p = parseInt(piano, 10);
+  var tbl = (useGru && p >= 1) ? POS_SERR_GRU : POS_SERR;
+  var lookup = tbl[key] || POS_SERR[key];
   if (!lookup) return 0.5;
   var idx = Math.min(Math.max((parseInt(nCampi, 10) || 1) - 1, 0), 4);
-  return lookup[idx];
+  return lookup[idx] || 0.5;
 }
 
 function posCtlH(piano) {
@@ -409,7 +416,7 @@ function posCtlH(piano) {
   return POS_CTL[key] || 0.5;
 }
 
-function calcolaVoci(posizioni) {
+function calcolaVoci(posizioni, useGru) {
   var nTot = posizioni.length;
   var nCtlL = 0, nCtlT = 0;
   var nRim = 0, nRimAcc = 0, nMarmo = 0, nAng = 0;
@@ -461,7 +468,7 @@ function calcolaVoci(posizioni) {
       orePosCtl += posCtlH(p.piano);
     }
     // posizionamento SERR: per singola posizione piano + campi
-    orePosSerr += posSerrH(p.piano, p.n_campi || 1);
+    orePosSerr += posSerrH(p.piano, p.n_campi || 1, useGru);
   });
 
   var nCtl = nCtlL + nCtlT;
@@ -730,14 +737,17 @@ function init() {
   ADJ_LS_KEY  = 'f4_posa_adj_'  + ID_RILIEVO;
   PREV_LS_KEY = 'f4_posa_prev_' + ID_RILIEVO;
 
-  var loaded = { ril: null, pos: null, caps: null };
+  var loaded = { ril: null, pos: null, caps: null, posa: null };
   var errored = false;
 
   function tryRender() {
-    if (!loaded.ril || !loaded.pos || !loaded.caps || errored) return;
+    if (!loaded.ril || !loaded.pos || !loaded.caps || !loaded.posa || errored) return;
+
+    buildTablesFromPosa(loaded.posa);
 
     var r    = loaded.ril;
     var pos  = loaded.pos;
+    USE_GRU  = (r.gru === true || r.gru === 'SI');
     var cant = r.cantieri || {};
     var cli  = (cant.clienti && cant.clienti.nome) ? cant.clienti.nome : '—';
     var codice = r.codice_completo || ID_RILIEVO;
@@ -748,14 +758,14 @@ function init() {
     document.getElementById('rh-cantiere').textContent = cant.nome_cantiere || '—';
     document.getElementById('rh-data').textContent    = r.data_rilievo || '—';
     document.getElementById('rh-ref').textContent     = r.referente || '—';
-    document.getElementById('rh-gru').textContent     = r.gru ? 'Si' : 'No';
+    document.getElementById('rh-gru').textContent     = USE_GRU ? 'Si' : 'No';
     document.getElementById('tb-titolo').textContent  = 'Posa — ' + codice;
     document.title = 'Posa ' + codice;
 
     var prevSaved = loadPrev();
 
     renderTipoGrid(pos);
-    VOCI_GLOBALI = calcolaVoci(pos);
+    VOCI_GLOBALI = calcolaVoci(pos, USE_GRU);
     var hasCaps = loaded.caps && loaded.caps.length > 0;
     if (hasCaps) {
       renderCapitoliPosa(pos, loaded.caps, loadAdj());
@@ -763,14 +773,13 @@ function init() {
       if (tg) tg.style.display = '';
     }
     renderAll(VOCI_GLOBALI, loadAdj(), pos, loaded.caps || []);
-    // ripristina nota
     var notaEl = document.getElementById('note-posa');
     if (notaEl) notaEl.value = loadNote();
     showReport();
   }
 
   doFetch(
-    'rilievi?id=eq.' + ID_RILIEVO + '&select=id,codice_completo,referente,data_rilievo,gru,cantieri(nome_cantiere,clienti(nome))',
+    'rilievi?id=eq.' + ID_RILIEVO + '&select=id,codice_completo,referente,data_rilievo,gru,versione_posa_num,cantieri(nome_cantiere,clienti(nome))',
     function(rows) {
       if (!rows.length) { setStato('Rilievo non trovato.', true); errored=true; return; }
       loaded.ril = rows[0]; tryRender();
@@ -788,6 +797,12 @@ function init() {
     'capitoli_rilievo?id_rilievo=eq.' + ID_RILIEVO + '&stato=eq.attivo&select=*&order=ordine_inizio.asc',
     function(rows) { loaded.caps = rows || []; tryRender(); },
     function(e) { loaded.caps = []; tryRender(); }
+  );
+
+  doFetch(
+    'dati_comuni_posa?tipo=eq.SERR&stato=eq.attivo&select=*&order=codice.asc,piano.asc,n_campi.asc',
+    function(rows) { loaded.posa = rows || []; tryRender(); },
+    function(e) { loaded.posa = []; tryRender(); }
   );
 }
 
@@ -844,7 +859,7 @@ function renderCapitoliPosa(tuttePos, caps, adj) {
 
   gruppi.forEach(function(g) {
     if (!g.pos.length) return;
-    var voci = calcolaVoci(g.pos);
+    var voci = calcolaVoci(g.pos, USE_GRU);
     var totOre = 0, oreDir = 0, oreInd = 0;
     voci.forEach(function(v) {
       var fin = Math.max(0, Math.round(v.oreCalc * 1000) / 1000);

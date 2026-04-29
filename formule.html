@@ -121,18 +121,18 @@ function buildPage(posaRows, revRows) {
   // ================================================================
   // 1. TUBOLARITA
   // ================================================================
-  html += '<div class="sez"><div class="sez-hdr"><h2>&#128200; Tubolarit&agrave; Serramenti</h2><span class="badge-warn">&#9888; Aggiornamento previsto al punto #6 (Telaio misto)</span></div><div class="sez-body">';
-  html += '<p style="font-size:12px;color:#6b7280;margin:0 0 12px;">Le dimensioni di tubolarit&agrave; sono le misure nominali del serramento da ordinare, calcolate dalle misure del foro e dalle caratteristiche del telaio scelto.</p>';
-  html += '<div class="nota-update"><strong>Nota:</strong> il sistema applica un\'unica variante telaio a tutti e 4 i lati. Con il punto #6 la formula sar&agrave; estesa per varianti diverse per lato.</div>';
+  html += '<div class="sez"><div class="sez-hdr"><h2>&#128200; Tubolarit&agrave; Serramenti</h2></div><div class="sez-body">';
+  html += '<p style="font-size:12px;color:#6b7280;margin:0 0 12px;">Le dimensioni di tubolarit&agrave; (L_tub, H_tub) sono le misure nominali del serramento da ordinare a Internorm, calcolate dalle misure del foro e dalla variante telaio scelta.</p>';
+  html += '<p style="font-size:11px;color:#6b7280;margin:0 0 12px;"><strong>Costanti:</strong> ARIA2orizz e ARIA52vert sono caricate da database (Dati Tecnici &rarr; Dati comuni SerramentiAccessori). PF e FF hanno soglia in basso: 2 alette in H.</p>';
   html += '<div class="grid2">';
   html += '<div>';
-  html += '<div class="formula-box"><div class="f-label">Tipo foro A &mdash; Architettonico</div><code>L_tub = L_foro &minus; (2 &times; Nasc) + (2 &times; Aletta)</code><code>H_tub = H_foro &minus; (2 &times; Nasc) + (2 &times; Aletta)</code></div>';
-  html += '<div class="formula-box"><div class="f-label">Tipo foro D &mdash; Dimensione telaio</div><code>L_tub = L_foro &nbsp; (gi&agrave; dimensione telaio)</code><code>H_tub = H_foro &nbsp; (gi&agrave; dimensione telaio)</code></div>';
-  html += '<div class="formula-box"><div class="f-label">Tipo foro P &mdash; Posa in luce</div><code>L_tub = L_foro + (2 &times; Vista) &minus; (2 &times; Nasc) + (2 &times; Aletta)</code><code>H_tub = H_foro + (2 &times; Vista) &minus; (2 &times; Nasc) + (2 &times; Aletta)</code></div>';
+  html += '<div class="formula-box"><div class="f-label">Tipo foro A &mdash; Architettonico</div><code>L_tub = L_foro + (2 &times; Nasc) + (2 &times; Aletta)</code><code>H_tub = H_foro + Nasc + 1&times;Aletta &nbsp; [I, F, VF, S]</code><code>H_tub = H_foro + Nasc + 2&times;Aletta &nbsp; [PF, FF]</code></div>';
+  html += '<div class="formula-box"><div class="f-label">Tipo foro D &mdash; Dimensione telaio</div><code>L_tub = L_foro + (2 &times; Aletta)</code><code>H_tub = H_foro + 1&times;Aletta &nbsp; [I, F, VF, S]</code><code>H_tub = H_foro + 2&times;Aletta &nbsp; [PF, FF]</code></div>';
+  html += '<div class="formula-box"><div class="f-label">Tipo foro P &mdash; Posa in luce</div><code>L_tub = L_foro &minus; (2 &times; ARIA2orizz) + (2 &times; Aletta)</code><code>H_tub = H_foro &minus; ARIA52vert + 1&times;Aletta &nbsp; [I, F, VF, S]</code><code>H_tub = H_foro &minus; ARIA52vert + 2&times;Aletta &nbsp; [PF, FF]</code></div>';
   html += '</div><div>';
   html += '<div style="font-size:11px;font-weight:700;color:#4f46e5;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Legenda variabili</div>';
-  html += '<dl class="tub-param"><dt>L_foro, H_foro</dt><dd>Misure inserite nel rilievo (mm)</dd><dt>Nasc</dt><dd>Telaio nascosto (mm) &mdash; dal DB Serramento</dd><dt>Aletta</dt><dd>Aletta (mm) &mdash; dal DB Serramento</dd><dt>Vista</dt><dd>Telaio a vista (mm) &mdash; dal DB Serramento</dd></dl>';
-  html += '<div class="nota-update"><strong>Futuro (punto #6):</strong><br>L_tub = L_foro &minus; (Nasc_sx + Nasc_dx) + (Aletta_sx + Aletta_dx)<br>H_tub = H_foro &minus; (Nasc_alto + Nasc_basso) + (Aletta_alto + Aletta_basso)</div>';
+  html += '<dl class="tub-param"><dt>L_foro, H_foro</dt><dd>Misure inserite nel rilievo (mm)</dd><dt>Nasc</dt><dd>Telaio nascosto (mm) &mdash; dal DB Serramento</dd><dt>Aletta</dt><dd>Aletta (mm) &mdash; dal DB Serramento</dd><dt>ARIA2orizz</dt><dd>Aria tra CTL e telaio interno orizzontale (da DB)</dd><dt>ARIA52vert</dt><dd>Aria tra CTL e telaio interno verticale (da DB)</dd></dl>';
+  html += '<div class="formula-box" style="border-color:#059669;background:#ecfdf5;"><div class="f-label" style="color:#059669;">Telaio misto per lato</div><code>L_tub = L_foro + Nasc_sx + Nasc_dx + Aletta_sx + Aletta_dx</code><code>H_tub = H_foro + Nasc_alto + Nasc_basso + Aletta_alto &nbsp; [I,F,VF,S]</code><code>H_tub = H_foro + Nasc_alto + Nasc_basso + Aletta_alto + Aletta_basso &nbsp; [PF,FF]</code></div>';
   html += '</div></div></div></div>';
 
   // ================================================================

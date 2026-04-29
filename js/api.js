@@ -947,7 +947,7 @@ Object.assign(API, {
   async getInitData(idRilievo) {
     if (!idRilievo) return this._err({ message: 'ID rilievo mancante.' });
     try {
-      const LOOKUP_TABLES = ['LK_REFERENTI','LK_INTERVENTO','LK_TIPO_SERR','LK_TIPO_FORO_SERR','LK_SCHERMATURA','LK_COPRIFILI','LK_CASSONETTO','LK_CONTROTELAIO','LK_ZANZARIERA','LK_DINOXILL','LK_OSCURANTE','LK_COLORI','LK_SENSI_APERTURA','LK_N_CAMPI','LK_PIANO','LK_VETRO','LK_TIPO_PORTA','LK_SISTEMA_PORTE','LK_TIPO_FORO_PORTE','LK_FORNITORE_PORTE'];
+      const LOOKUP_TABLES = ['LK_REFERENTI','LK_INTERVENTO','LK_TIPO_SERR','LK_TIPO_FORO_SERR','LK_SCHERMATURA','LK_COPRIFILI','LK_CASSONETTO','LK_CONTROTELAIO','LK_ZANZARIERA','LK_DINOXILL','LK_OSCURANTE','LK_COLORI','LK_SENSI_APERTURA','LK_N_CAMPI','LK_PIANO','LK_VETRO','LK_TIPO_PORTA','LK_SISTEMA_PORTE','LK_TIPO_FORO_PORTE','LK_FORNITORE_PORTE','LK_VARIANTE_TELAIO'];
       const [rilRes, lookupRes, dcRes, rlRes, dbRes] = await Promise.all([this.getRilievo(idRilievo), this.getLookupMulti(LOOKUP_TABLES), this.getDatiComuni(), this.getRegoleLati(), this.getDbSerramento()]);
       if (!rilRes.success) return { success: false, data: { rilievoError: rilRes.error } };
       return { success: true, data: { rilievo: rilRes.data, lookups: lookupRes.success ? lookupRes.data : {}, datiComuni: dcRes.success ? dcRes.data : [], regoleLati: rlRes.success ? rlRes.data : [], dbSerramento: dbRes.success ? dbRes.data : [] } };

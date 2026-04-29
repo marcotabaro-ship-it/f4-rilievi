@@ -142,6 +142,10 @@
 
     <!-- REVISIONI -->
     <div id="panel-revisioni" class="adm-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+        <span style="font-size:.85rem;color:var(--c-text-sec);">Storico completo delle modifiche ai parametri di posa e tecnici.</span>
+        <a href="formule.html" target="_blank" class="btn btn-outline btn-sm">&#128220; Consulta formule e parametri</a>
+      </div>
       <div class="card">
         <div class="card-header">
           <span class="card-title">&#128220; Storico Revisioni Parametri</span>
@@ -154,11 +158,35 @@
     <!-- DB PRODOTTI -->
     <div id="panel-db" class="adm-panel">
       <div class="card" style="margin-bottom:16px;">
-        <div class="card-header"><span class="card-title">&#129695; DB Serramenti</span><span id="cntSerr" style="color:var(--c-text-sec);font-size:.82rem;"></span></div>
+        <div class="card-header">
+          <span class="card-title">&#129695; DB Serramenti</span>
+          <span id="cntSerr" style="color:var(--c-text-sec);font-size:.82rem;"></span>
+          <button class="btn btn-primary btn-sm" style="margin-left:auto;" onclick="openModalDbSerr(null)">&#10133; Nuovo articolo</button>
+        </div>
+        <div style="padding:8px 12px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--c-border);">
+          <label style="font-size:.80rem;color:var(--c-text-sec);margin:0;">Mostra:</label>
+          <select class="form-control" id="filtroSerr" style="width:160px;font-size:.80rem;" onchange="renderDbSerrFiltrato()">
+            <option value="tutti">Tutti</option>
+            <option value="attivo" selected>Solo attivi</option>
+            <option value="disattivo">Solo disattivi</option>
+          </select>
+        </div>
         <div id="tabellaDbSerr"><div class="loading-state"><div class="spinner"></div></div></div>
       </div>
       <div class="card">
-        <div class="card-header"><span class="card-title">&#128682; DB Porte</span><span id="cntPorte" style="color:var(--c-text-sec);font-size:.82rem;"></span></div>
+        <div class="card-header">
+          <span class="card-title">&#128682; DB Porte</span>
+          <span id="cntPorte" style="color:var(--c-text-sec);font-size:.82rem;"></span>
+          <button class="btn btn-primary btn-sm" style="margin-left:auto;" onclick="openModalDbPorte(null)">&#10133; Nuovo articolo</button>
+        </div>
+        <div style="padding:8px 12px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--c-border);">
+          <label style="font-size:.80rem;color:var(--c-text-sec);margin:0;">Mostra:</label>
+          <select class="form-control" id="filtroPorte" style="width:160px;font-size:.80rem;" onchange="renderDbPorteFiltrato()">
+            <option value="tutti">Tutti</option>
+            <option value="attivo" selected>Solo attivi</option>
+            <option value="disattivo">Solo disattivi</option>
+          </select>
+        </div>
         <div id="tabellaDbPorte"><div class="loading-state"><div class="spinner"></div></div></div>
       </div>
     </div>
@@ -240,6 +268,88 @@
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="Utils.closeModal('modalRevisione')">Annulla</button>
       <button class="btn btn-primary" id="btnConfermaRevisione" onclick="salvaRevisione()" style="background:#4f46e5;">&#128190; Crea revisione</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DB SERRAMENTO -->
+<div class="modal" id="modalDbSerr">
+  <div class="modal-box" style="max-width:680px;">
+    <div class="modal-header"><span class="modal-title" id="modalDbSerrTitle">Nuovo serramento</span><button class="modal-close" onclick="Utils.closeModal('modalDbSerr')">&#10005;</button></div>
+    <div class="modal-body">
+      <div class="form-row form-row-2">
+        <div class="form-group"><label class="form-label">Codice <span class="req">*</span></label><input class="form-control" type="text" id="ds_codice" placeholder="Es. K-KF310--NR"></div>
+        <div class="form-group"><label class="form-label">Materiale <span class="req">*</span></label>
+          <select class="form-control" id="ds_materiale">
+            <option value="PVC">PVC</option><option value="ALLUMINIO">ALLUMINIO</option><option value="LEGNO">LEGNO</option><option value="LEGNO-ALLUMINIO">LEGNO-ALLUMINIO</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row form-row-2">
+        <div class="form-group"><label class="form-label">Sistema (descrizione)</label><input class="form-control" type="text" id="ds_descrizione" placeholder="Es. KF 310 HP"></div>
+        <div class="form-group"><label class="form-label">Stile design</label><input class="form-control" type="text" id="ds_stile" placeholder="Es. Line, Pure..."></div>
+      </div>
+      <div class="form-row form-row-2">
+        <div class="form-group"><label class="form-label">Variante telaio <span class="req">*</span></label><input class="form-control" type="text" id="ds_variante" placeholder="Es. NR, CR, IR, ZR"></div>
+        <div class="form-group"><label class="form-label">Materiale sigla</label><input class="form-control" type="text" id="ds_mat_sigla" placeholder="Es. K, A, H"></div>
+      </div>
+      <div class="form-row form-row-3">
+        <div class="form-group"><label class="form-label">Telaio nascosto (mm) <span class="req">*</span></label><input class="form-control" type="number" id="ds_nasc" step="0.1" placeholder="0"></div>
+        <div class="form-group"><label class="form-label">Aletta (mm)</label><input class="form-control" type="number" id="ds_aletta" step="0.1" placeholder="0"></div>
+        <div class="form-group"><label class="form-label">Telaio a vista (mm)</label><input class="form-control" type="number" id="ds_vista" step="0.1" placeholder="0"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="Utils.closeModal('modalDbSerr')">Annulla</button>
+      <button class="btn btn-primary" id="btnSalvaDbSerr" onclick="salvaDbSerr()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DB PORTE -->
+<div class="modal" id="modalDbPorte">
+  <div class="modal-box" style="max-width:640px;">
+    <div class="modal-header"><span class="modal-title" id="modalDbPorteTitle">Nuova porta</span><button class="modal-close" onclick="Utils.closeModal('modalDbPorte')">&#10005;</button></div>
+    <div class="modal-body">
+      <div class="form-row form-row-2">
+        <div class="form-group"><label class="form-label">Codice</label><input class="form-control" type="text" id="dp_codice" placeholder="Es. P-INT-001"></div>
+        <div class="form-group"><label class="form-label">Fornitore <span class="req">*</span></label><input class="form-control" type="text" id="dp_fornitore" placeholder="Es. Internorm"></div>
+      </div>
+      <div class="form-row form-row-2">
+        <div class="form-group"><label class="form-label">Tipo porta <span class="req">*</span></label>
+          <select class="form-control" id="dp_tipo">
+            <option value="INT">INT — Interna standard</option>
+            <option value="BLI">BLI — Blindata</option>
+            <option value="REI">REI — Antincendio</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Sistema <span class="req">*</span></label>
+          <select class="form-control" id="dp_sistema">
+            <option value="ST">ST — Standard</option><option value="DO">DO — Doppia</option>
+            <option value="TP">TP — Telaio passaggio</option><option value="FC">FC — Filo muro SI CTL</option>
+            <option value="F_">F_ — Filo muro NO CTL</option><option value="SI">SI — Scorrevole interna</option>
+            <option value="SE">SE — Scorrevole esterna</option><option value="LI">LI — A libro</option>
+            <option value="PI">PI — Pivot</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row form-row-2">
+        <div class="form-group"><label class="form-label">Tipo foro</label>
+          <select class="form-control" id="dp_tipo_foro">
+            <option value="N">N — Normale</option><option value="P">P — Porta a filo</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Sopraluce</label>
+          <select class="form-control" id="dp_sopraluce">
+            <option value="false">No</option><option value="true">Si</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Descrizione</label><input class="form-control" type="text" id="dp_descrizione" placeholder="Note o descrizione aggiuntiva"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="Utils.closeModal('modalDbPorte')">Annulla</button>
+      <button class="btn btn-primary" id="btnSalvaDbPorte" onclick="salvaDbPorte()">Salva</button>
     </div>
   </div>
 </div>
@@ -585,21 +695,167 @@ async function loadRevisioni() {
 }
 
 // ================================================================
-// DB PRODOTTI
+// DB PRODOTTI — CRUD completo
 // ================================================================
+var dbSerrData = [], dbPorteData = [];
+var dbSerrEditId = null, dbPorteEditId = null;
+
 async function loadDbProdotti() {
-  var results = await Promise.all([API.getDbSerramento(), API.getDbPorte()]);
-  renderDbSerr(results[0].success?results[0].data:[]); renderDbPorte(results[1].success?results[1].data:[]);
+  var results = await Promise.all([API.adminGetDbSerramento(), API.adminGetDbPorte()]);
+  dbSerrData  = results[0].success ? results[0].data : [];
+  dbPorteData = results[1].success ? results[1].data : [];
+  renderDbSerrFiltrato(); renderDbPorteFiltrato();
 }
+
+function renderDbSerrFiltrato() {
+  var filtro = document.getElementById('filtroSerr').value;
+  var rows = filtro === 'tutti' ? dbSerrData : dbSerrData.filter(function(r){ return r.stato === filtro; });
+  var att = dbSerrData.filter(function(r){ return r.stato === 'attivo'; }).length;
+  document.getElementById('cntSerr').textContent = att + ' attivi / ' + dbSerrData.length + ' totali';
+  renderDbSerr(rows);
+}
+
+function renderDbPorteFiltrato() {
+  var filtro = document.getElementById('filtroPorte').value;
+  var rows = filtro === 'tutti' ? dbPorteData : dbPorteData.filter(function(r){ return r.stato === filtro; });
+  var att = dbPorteData.filter(function(r){ return r.stato === 'attivo'; }).length;
+  document.getElementById('cntPorte').textContent = att + ' attivi / ' + dbPorteData.length + ' totali';
+  renderDbPorte(rows);
+}
+
 function renderDbSerr(rows) {
-  document.getElementById('cntSerr').textContent=rows.length+' codici';
-  var c=document.getElementById('tabellaDbSerr'); if(!rows.length){Utils.showEmptyState(c,'Nessun prodotto.');return;}
-  c.innerHTML='<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Codice</th><th>Materiale</th><th>Sistema</th><th>Stile</th><th>Variante</th><th>Nasc.(mm)</th><th>Aletta(mm)</th><th>Stato</th></tr></thead><tbody>'+rows.slice(0,50).map(function(r){return '<tr><td><code>'+r.codice+'</code></td><td>'+r.materiale+'</td><td>'+(r.descrizione||'—')+'</td><td>'+(r.stile_design||'—')+'</td><td>'+(r.variante_telaio||'—')+'</td><td>'+(r.telaio_nascosto_mm||0)+'</td><td>'+(r.aletta_mm||0)+'</td><td><span class="badge-'+r.stato+'">'+r.stato+'</span></td></tr>';}).join('')+(rows.length>50?'<tr><td colspan="8" style="text-align:center;color:var(--c-text-sec);">... e altri '+(rows.length-50)+' codici</td></tr>':'')+'</tbody></table></div>';
+  var c = document.getElementById('tabellaDbSerr');
+  if (!rows.length) { Utils.showEmptyState(c, 'Nessun articolo.'); return; }
+  c.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr>' +
+    '<th>Codice</th><th>Materiale</th><th>Sistema</th><th>Stile</th><th>Variante</th>' +
+    '<th class="c">Nasc.(mm)</th><th class="c">Aletta(mm)</th><th class="c">Vista(mm)</th>' +
+    '<th>Stato</th><th style="text-align:right;">Azioni</th></tr></thead><tbody>' +
+    rows.map(function(r) {
+      var att = r.stato === 'attivo';
+      return '<tr style="' + (att?'':'opacity:.55;') + '">' +
+        '<td><code style="font-size:.78rem;">' + (r.codice||'—') + '</code></td>' +
+        '<td style="font-size:.80rem;">' + (r.materiale||'—') + '</td>' +
+        '<td style="font-size:.80rem;">' + (r.descrizione||'—') + '</td>' +
+        '<td style="font-size:.80rem;">' + (r.stile_design||'—') + '</td>' +
+        '<td><strong>' + (r.variante_telaio||'—') + '</strong></td>' +
+        '<td class="c">' + (r.telaio_nascosto_mm||0) + '</td>' +
+        '<td class="c">' + (r.aletta_mm||0) + '</td>' +
+        '<td class="c">' + (r.vista_mm||0) + '</td>' +
+        '<td><span class="badge-' + (att?'attivo':'disattivo') + '">' + r.stato + '</span></td>' +
+        '<td style="text-align:right;white-space:nowrap;">' +
+          '<button class="btn btn-xs btn-outline" onclick="openModalDbSerr(\'' + r.id + '\')">&#9999;&#65039;</button>&nbsp;' +
+          '<button class="btn btn-xs ' + (att?'btn-danger':'btn-outline') + '" onclick="toggleDbSerr(\'' + r.id + '\')">' + (att?'Disattiva':'Riattiva') + '</button>' +
+        '</td></tr>';
+    }).join('') + '</tbody></table></div>';
 }
+
 function renderDbPorte(rows) {
-  document.getElementById('cntPorte').textContent=rows.length+' codici';
-  var c=document.getElementById('tabellaDbPorte'); if(!rows.length){Utils.showEmptyState(c,'Nessun prodotto.');return;}
-  c.innerHTML='<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Codice</th><th>Fornitore</th><th>Tipo</th><th>Sistema</th><th>Foro</th><th>Sopraluce</th><th>Stato</th></tr></thead><tbody>'+rows.slice(0,50).map(function(r){return '<tr><td><code>'+r.codice+'</code></td><td>'+r.fornitore+'</td><td>'+r.tipo_porta+'</td><td>'+r.sistema+'</td><td>'+(r.tipo_foro||'—')+'</td><td>'+(r.sopraluce?'SI':'NO')+'</td><td><span class="badge-'+r.stato+'">'+r.stato+'</span></td></tr>';}).join('')+(rows.length>50?'<tr><td colspan="7" style="text-align:center;color:var(--c-text-sec);">... e altri '+(rows.length-50)+' codici</td></tr>':'')+'</tbody></table></div>';
+  var c = document.getElementById('tabellaDbPorte');
+  if (!rows.length) { Utils.showEmptyState(c, 'Nessun articolo.'); return; }
+  c.innerHTML = '<div style="overflow-x:auto;"><table class="data-table"><thead><tr>' +
+    '<th>Codice</th><th>Fornitore</th><th>Tipo</th><th>Sistema</th><th>Foro</th>' +
+    '<th>Sopraluce</th><th>Descrizione</th><th>Stato</th><th style="text-align:right;">Azioni</th>' +
+    '</tr></thead><tbody>' +
+    rows.map(function(r) {
+      var att = r.stato === 'attivo';
+      return '<tr style="' + (att?'':'opacity:.55;') + '">' +
+        '<td><code style="font-size:.78rem;">' + (r.codice||'—') + '</code></td>' +
+        '<td style="font-size:.80rem;">' + (r.fornitore||'—') + '</td>' +
+        '<td><strong>' + (r.tipo_porta||'—') + '</strong></td>' +
+        '<td>' + (r.sistema||'—') + '</td>' +
+        '<td class="c">' + (r.tipo_foro||'—') + '</td>' +
+        '<td class="c">' + (r.sopraluce?'SI':'NO') + '</td>' +
+        '<td style="font-size:.78rem;color:var(--c-text-sec);">' + (r.descrizione||'—') + '</td>' +
+        '<td><span class="badge-' + (att?'attivo':'disattivo') + '">' + r.stato + '</span></td>' +
+        '<td style="text-align:right;white-space:nowrap;">' +
+          '<button class="btn btn-xs btn-outline" onclick="openModalDbPorte(\'' + r.id + '\')">&#9999;&#65039;</button>&nbsp;' +
+          '<button class="btn btn-xs ' + (att?'btn-danger':'btn-outline') + '" onclick="toggleDbPorte(\'' + r.id + '\')">' + (att?'Disattiva':'Riattiva') + '</button>' +
+        '</td></tr>';
+    }).join('') + '</tbody></table></div>';
+}
+
+function openModalDbSerr(id) {
+  dbSerrEditId = id;
+  var r = id ? dbSerrData.find(function(x){ return x.id === id; }) : null;
+  document.getElementById('modalDbSerrTitle').textContent = id ? 'Modifica serramento' : 'Nuovo serramento';
+  document.getElementById('ds_codice').value     = r ? (r.codice||'') : '';
+  document.getElementById('ds_materiale').value  = r ? (r.materiale||'PVC') : 'PVC';
+  document.getElementById('ds_descrizione').value= r ? (r.descrizione||'') : '';
+  document.getElementById('ds_stile').value      = r ? (r.stile_design||'') : '';
+  document.getElementById('ds_variante').value   = r ? (r.variante_telaio||'') : '';
+  document.getElementById('ds_mat_sigla').value  = r ? (r.materiale_sigla||'') : '';
+  document.getElementById('ds_nasc').value       = r ? (r.telaio_nascosto_mm||0) : 0;
+  document.getElementById('ds_aletta').value     = r ? (r.aletta_mm||0) : 0;
+  document.getElementById('ds_vista').value      = r ? (r.vista_mm||0) : 0;
+  Utils.openModal('modalDbSerr');
+  setTimeout(function(){ document.getElementById('ds_codice').focus(); }, 100);
+}
+
+async function salvaDbSerr() {
+  var codice = document.getElementById('ds_codice').value.trim().toUpperCase();
+  var variante = document.getElementById('ds_variante').value.trim().toUpperCase();
+  if (!codice)   { Utils.showWarning('Codice obbligatorio.'); return; }
+  if (!variante) { Utils.showWarning('Variante telaio obbligatoria.'); return; }
+  var data = {
+    codice: codice, materiale: document.getElementById('ds_materiale').value,
+    materiale_sigla: document.getElementById('ds_mat_sigla').value.trim()||null,
+    descrizione: document.getElementById('ds_descrizione').value.trim()||null,
+    stile_design: document.getElementById('ds_stile').value.trim()||null,
+    variante_telaio: variante,
+    telaio_nascosto_mm: parseFloat(document.getElementById('ds_nasc').value)||0,
+    aletta_mm: parseFloat(document.getElementById('ds_aletta').value)||0,
+    vista_mm: parseFloat(document.getElementById('ds_vista').value)||0
+  };
+  var btn = document.getElementById('btnSalvaDbSerr'); btn.disabled=true; btn.textContent='Salvataggio...';
+  var res = dbSerrEditId ? await API.adminUpdateDbSerramento(dbSerrEditId,data) : await API.adminAddDbSerramento(data);
+  btn.disabled=false; btn.textContent='Salva';
+  if (res.success) { Utils.showSuccess(dbSerrEditId?'Aggiornato.':'Articolo aggiunto.'); Utils.closeModal('modalDbSerr'); await loadDbProdotti(); }
+  else Utils.showError(res.error);
+}
+
+async function toggleDbSerr(id) {
+  var res = await API.adminToggleDbSerramento(id);
+  if (res.success) { Utils.showSuccess('Stato aggiornato.'); await loadDbProdotti(); }
+  else Utils.showError(res.error);
+}
+
+function openModalDbPorte(id) {
+  dbPorteEditId = id;
+  var r = id ? dbPorteData.find(function(x){ return x.id === id; }) : null;
+  document.getElementById('modalDbPorteTitle').textContent = id ? 'Modifica porta' : 'Nuova porta';
+  document.getElementById('dp_codice').value     = r ? (r.codice||'') : '';
+  document.getElementById('dp_fornitore').value  = r ? (r.fornitore||'') : '';
+  document.getElementById('dp_tipo').value       = r ? (r.tipo_porta||'INT') : 'INT';
+  document.getElementById('dp_sistema').value    = r ? (r.sistema||'ST') : 'ST';
+  document.getElementById('dp_tipo_foro').value  = r ? (r.tipo_foro||'N') : 'N';
+  document.getElementById('dp_sopraluce').value  = r ? (r.sopraluce?'true':'false') : 'false';
+  document.getElementById('dp_descrizione').value= r ? (r.descrizione||'') : '';
+  Utils.openModal('modalDbPorte');
+  setTimeout(function(){ document.getElementById('dp_fornitore').focus(); }, 100);
+}
+
+async function salvaDbPorte() {
+  var fornitore = document.getElementById('dp_fornitore').value.trim();
+  if (!fornitore) { Utils.showWarning('Fornitore obbligatorio.'); return; }
+  var data = {
+    codice: document.getElementById('dp_codice').value.trim().toUpperCase()||null,
+    fornitore: fornitore, tipo_porta: document.getElementById('dp_tipo').value,
+    sistema: document.getElementById('dp_sistema').value,
+    tipo_foro: document.getElementById('dp_tipo_foro').value,
+    sopraluce: document.getElementById('dp_sopraluce').value === 'true',
+    descrizione: document.getElementById('dp_descrizione').value.trim()||null
+  };
+  var btn = document.getElementById('btnSalvaDbPorte'); btn.disabled=true; btn.textContent='Salvataggio...';
+  var res = dbPorteEditId ? await API.adminUpdateDbPorte(dbPorteEditId,data) : await API.adminAddDbPorte(data);
+  btn.disabled=false; btn.textContent='Salva';
+  if (res.success) { Utils.showSuccess(dbPorteEditId?'Aggiornato.':'Articolo aggiunto.'); Utils.closeModal('modalDbPorte'); await loadDbProdotti(); }
+  else Utils.showError(res.error);
+}
+
+async function toggleDbPorte(id) {
+  var res = await API.adminToggleDbPorte(id);
+  if (res.success) { Utils.showSuccess('Stato aggiornato.'); await loadDbProdotti(); }
+  else Utils.showError(res.error);
 }
 
 // INIT

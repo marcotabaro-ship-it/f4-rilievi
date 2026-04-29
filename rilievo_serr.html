@@ -797,16 +797,20 @@ function calcolaRealtime(p) {
       return { nasc: r?(parseFloat(r.telaio_nascosto_mm)||0):0, aletta: r?(parseFloat(r.aletta_mm)||0):0 };
     }
     var dA=getLD(p.variante_alto), dB=getLD(p.variante_basso), dS=getLD(p.variante_sx), dD=getLD(p.variante_dx);
-    if (tf==='A') { Ltub=L+dS.nasc+dD.nasc+dS.aletta+dD.aletta; Htub=H+dA.nasc+dB.nasc+dA.aletta+dB.aletta; }
-    else if (tf==='D') { Ltub=L+dS.aletta+dD.aletta; Htub=H+dA.aletta+dB.aletta; }
-    else if (tf==='P') { Ltub=L-2*at+dS.aletta+dD.aletta; Htub=H-atv+dA.aletta+dB.aletta; }
+    // nAlH=2 per F e FF: ha aletta sia su lato alto che basso
+    // nAlH=1 per I, PF, VF, S: solo lato alto (basso ha soglia/guida)
+    var nAlH2m = (p.tipo_serramento==='F' || p.tipo_serramento==='FF') ? 1 : 0;
+    if (tf==='A') { Ltub=L+dS.nasc+dD.nasc+dS.aletta+dD.aletta; Htub=H+dA.nasc+dB.nasc+dA.aletta+nAlH2m*dB.aletta; }
+    else if (tf==='D') { Ltub=L+dS.aletta+dD.aletta; Htub=H+dA.aletta+nAlH2m*dB.aletta; }
+    else if (tf==='P') { Ltub=L-2*at+dS.aletta+dD.aletta; Htub=H-atv+dA.aletta+nAlH2m*dB.aletta; }
   } else {
     var rec = dbSerr.find(function(d){ return d&&d.materiale===p.materiale&&d.descrizione===p.sistema&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio; });
     var nascosto=rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
     var aletta=rec?(parseFloat(rec.aletta_mm)||0):0;
-    if (tf==='A') { Ltub=L+2*nascosto+2*aletta; Htub=H+nascosto+2*aletta; }
-    else if (tf==='D') { Ltub=L+2*aletta; Htub=H+2*aletta; }
-    else if (tf==='P') { Ltub=L-2*at+2*aletta; Htub=H-atv+2*aletta; }
+    var nAlH2 = (p.tipo_serramento==='F' || p.tipo_serramento==='FF') ? 2 : 1;
+    if (tf==='A') { Ltub=L+2*nascosto+2*aletta; Htub=H+nascosto+nAlH2*aletta; }
+    else if (tf==='D') { Ltub=L+2*aletta; Htub=H+nAlH2*aletta; }
+    else if (tf==='P') { Ltub=L-2*at+2*aletta; Htub=H-atv+nAlH2*aletta; }
   }
   return {Ltub:Ltub,Htub:Htub};
 }
@@ -1248,6 +1252,9 @@ function dRicalcola() {
   var Htel=0, Ltel=0, Harch=0, Larch=0, Htub=0, Ltub=0;
 
   if (H && L && tf) {
+    // nAlH=2: F e FF (frame completo top+bottom — confermato da formula Excel)
+    // nAlH=1: I, PF, VF, S (soglia/guida in basso)
+    var nAlH2 = (ts==='F' || ts==='FF') ? 2 : 1;
     if (!misto) {
       // --- Telaio uniforme (tutti i lati uguale) ---
       var rec = dGetRec();
@@ -1256,15 +1263,15 @@ function dRicalcola() {
       if (tf==='A') {
         Harch=H; Larch=L; Htel=H-2*ridV; Ltel=L-2*ridO;
         Ltub = L + 2*nasc + 2*aletta;
-        Htub = H + nasc + 2*aletta;
+        Htub = H + nasc + nAlH2*aletta;
       } else if (tf==='D') {
         Htel=H; Ltel=L; Harch=H+2*ridV; Larch=L+2*ridO;
         Ltub = L + 2*aletta;
-        Htub = H + 2*aletta;
+        Htub = H + nAlH2*aletta;
       } else if (tf==='P') {
         Htel=H; Ltel=L; Harch=H+2*ridV; Larch=L+2*ridO;
         Ltub = L - 2*at + 2*aletta;
-        Htub = H - atv + 2*aletta;
+        Htub = H - atv + nAlH2*aletta;
       }
     } else {
       // --- Telaio misto (variante per lato) ---
@@ -1280,15 +1287,17 @@ function dRicalcola() {
       var aB = recB ? (parseFloat(recB.aletta_mm)||0) : 0;
       var aS = recS ? (parseFloat(recS.aletta_mm)||0) : 0;
       var aD = recD ? (parseFloat(recD.aletta_mm)||0) : 0;
+      // inclBasso: solo F e FF hanno aletta anche sul lato basso
+      var inclBasso = (ts==='F' || ts==='FF');
       if (tf==='A') {
         Ltub = L + nS + nD + aS + aD;
-        Htub = H + nA + nB + aA + aB;
+        Htub = H + nA + nB + aA + (inclBasso ? aB : 0);
       } else if (tf==='D') {
         Ltub = L + aS + aD;
-        Htub = H + aA + aB;
+        Htub = H + aA + (inclBasso ? aB : 0);
       } else if (tf==='P') {
         Ltub = L - 2*at + aS + aD;
-        Htub = H - atv + aA + aB;
+        Htub = H - atv + aA + (inclBasso ? aB : 0);
       }
     }
   }

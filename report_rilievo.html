@@ -546,7 +546,7 @@ function renderPosizioni(posizioni, stratigrafie, capitoli) {
     h += '<td class="c grp-sep">' + esc(v(p.n_campi)) + '</td>';
     h += '<td class="c">'   + esc(v(p.materiale)) + '</td>';
     h += '<td style="min-width:45px">' + esc(v(p.sistema)) + '</td>';
-    h += '<td class="c">'   + esc(v(p.stile_design)) + (p.telaio_misto ? '<br><span style="color:#4f46e5;font-size:8px;font-weight:700;">MIX &#8593;'+esc(v(p.variante_alto))+' &#8595;'+esc(v(p.variante_basso))+' &#8592;'+esc(v(p.variante_sx))+' &#8594;'+esc(v(p.variante_dx))+'</span>' : (p.variante_telaio?'/'+esc(v(p.variante_telaio)):'')) + '</td>';
+    h += '<td class="c">'   + esc(v(p.stile_design)) + (p.telaio_misto ? '<br><span style="color:#4f46e5;font-size:8px;font-weight:700;">Su('+esc(v(p.variante_alto))+') Giu('+esc(v(p.variante_basso))+') Sx('+esc(v(p.variante_sx))+') Dx('+esc(v(p.variante_dx))+')</span>' : (p.variante_telaio?'/'+esc(v(p.variante_telaio)):'')) + '</td>';
     h += '<td class="c grp-sep">' + esc(v(p.tipo_foro)) + '</td>';
     h += '<td class="dim-cell"><div class="dim-main">'+lIns+'</div>'+(lCalc?'<div class="dim-calc">('+lCalc+')</div>':'')+'</td>';
     h += '<td class="dim-cell"><div class="dim-main">'+hIns+'</div>'+(hCalc?'<div class="dim-calc">('+hCalc+')</div>':'')+'</td>';

@@ -1,7 +1,7 @@
 // ================================================================
 // FILE: js/layout.js
-// PROGETTO: F4 Rilievi - Gestione sidebar hamburger e topbar
-// VERSIONE: 2.2 (Guida in stessa scheda, history.back() funzionante)
+// PROGETTO: F4 Rilievi
+// VERSIONE: 2.3 (Guida con ?back= per bottone Indietro corretto)
 // ================================================================
 
 const Layout = {
@@ -35,7 +35,8 @@ const Layout = {
       </a>
       <div class="topbar-spacer"></div>
       <div class="topbar-user">
-        <a href="guida.html"
+        <a href="#"
+           onclick="event.preventDefault();window.location.href='guida.html?back='+encodeURIComponent(window.location.href);"
            style="color:rgba(255,255,255,.8);text-decoration:none;font-size:.82rem;font-weight:500;
                   padding:5px 10px;border:1px solid rgba(255,255,255,.2);border-radius:6px;
                   white-space:nowrap;margin-right:8px;transition:background .2s;"
@@ -53,7 +54,7 @@ const Layout = {
             <a href="clienti.html">&#128101; Clienti</a>
             ${Auth.isAdmin() ? '<a href="admin.html">&#9881;&#65039; Amministrazione</a>' : ''}
             <div class="dd-sep"></div>
-            <a href="guida.html">&#10067; Guida utilizzo</a>
+            <a href="#" onclick="event.preventDefault();window.location.href='guida.html?back='+encodeURIComponent(window.location.href);">&#10067; Guida utilizzo</a>
             <div class="dd-sep"></div>
             <a href="#" class="dd-danger" onclick="Auth.logout()">&#128682; Esci</a>
           </div>
@@ -71,12 +72,12 @@ const Layout = {
     sidebar.id = 'sidebar';
 
     const pages = [
-      { href: 'dashboard.html', icon: '&#127968;', label: 'Dashboard',      id: 'dashboard' },
-      { href: 'clienti.html',   icon: '&#128101;', label: 'Clienti',         id: 'clienti'   },
+      { href: 'dashboard.html', icon: '&#127968;', label: 'Dashboard',    id: 'dashboard' },
+      { href: 'clienti.html',   icon: '&#128101;', label: 'Clienti',       id: 'clienti'   },
       { sep: true },
       { section: 'RILIEVI' },
-      { href: 'clienti.html',   icon: '&#129695;', label: 'Serramenti',      id: 'serramenti' },
-      { href: 'clienti.html',   icon: '&#128682;', label: 'Porte Interne',   id: 'porte'      },
+      { href: 'clienti.html',   icon: '&#129695;', label: 'Serramenti',    id: 'serramenti' },
+      { href: 'clienti.html',   icon: '&#128682;', label: 'Porte Interne', id: 'porte'      },
     ];
 
     if (isAdmin) {
@@ -85,7 +86,7 @@ const Layout = {
     }
 
     pages.push({ sep: true });
-    pages.push({ href: 'guida.html', icon: '&#10067;', label: 'Guida utilizzo', id: 'guida' });
+    pages.push({ icon: '&#10067;', label: 'Guida utilizzo', id: 'guida', isGuida: true });
 
     let html = '<nav class="sidebar-nav">';
     pages.forEach(p => {
@@ -93,6 +94,13 @@ const Layout = {
         html += '<div class="sidebar-sep"></div>';
       } else if (p.section) {
         html += `<div class="sidebar-section-label">${p.section}</div>`;
+      } else if (p.isGuida) {
+        const active = this.currentPage === p.id ? ' active' : '';
+        html += `
+          <a href="#" onclick="event.preventDefault();window.location.href='guida.html?back='+encodeURIComponent(window.location.href);" class="${active}">
+            <span class="nav-icon">${p.icon}</span>
+            <span class="nav-label">${p.label}</span>
+          </a>`;
       } else {
         const active = this.currentPage === p.id ? ' active' : '';
         html += `

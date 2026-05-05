@@ -1,7 +1,7 @@
 // ================================================================
 // FILE: js/layout.js
 // PROGETTO: F4 Rilievi
-// VERSIONE: 2.3 (Guida con ?back= per bottone Indietro corretto)
+// VERSIONE: 2.4 (tipoRilievo sidebar + formule routing)
 // ================================================================
 
 const Layout = {
@@ -72,12 +72,12 @@ const Layout = {
     sidebar.id = 'sidebar';
 
     const pages = [
-      { href: 'dashboard.html', icon: '&#127968;', label: 'Dashboard',    id: 'dashboard' },
-      { href: 'clienti.html',   icon: '&#128101;', label: 'Clienti',       id: 'clienti'   },
+      { href: 'dashboard.html',                    icon: '&#127968;', label: 'Dashboard',    id: 'dashboard' },
+      { href: 'clienti.html',                      icon: '&#128101;', label: 'Clienti',       id: 'clienti'   },
       { sep: true },
       { section: 'RILIEVI' },
-      { href: 'clienti.html',   icon: '&#129695;', label: 'Serramenti',    id: 'serramenti' },
-      { href: 'clienti.html',   icon: '&#128682;', label: 'Porte Interne', id: 'porte'      },
+      { href: 'clienti.html?tipoRilievo=SERR',     icon: '&#129695;', label: 'Serramenti',    id: 'serramenti' },
+      { href: 'clienti.html?tipoRilievo=PORTE',    icon: '&#128682;', label: 'Porte Interne', id: 'porte'      },
     ];
 
     if (isAdmin) {

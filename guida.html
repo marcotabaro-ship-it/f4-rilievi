@@ -106,10 +106,7 @@
       <h2 class="sez-title">&#128218; Introduzione a F4 Rilievi</h2>
       <p class="sez-sub">Cos e l app, a cosa serve, come e organizzata.</p>
       <hr class="sez-divider">
-      <p style="line-height:1.8;margin-bottom:12px;">
-        <strong>F4 Rilievi</strong> e l app di Gruppo F4 per la gestione dei rilievi preliminari di serramenti e porte interne.
-        Permette di rilevare le misure dei fori, scegliere i prodotti Internorm, calcolare le tubolarita e stimare le ore di posa.
-      </p>
+      <p style="line-height:1.8;margin-bottom:12px;"><strong>F4 Rilievi</strong> e l app di Gruppo F4 per la gestione dei rilievi preliminari di serramenti e porte interne. Permette di rilevare le misure dei fori, scegliere i prodotti Internorm, calcolare le tubolarita e stimare le ore di posa.</p>
       <p style="line-height:1.8;margin-bottom:16px;">L app e organizzata in tre aree principali:</p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
         <div style="background:#eef2ff;border-radius:8px;padding:14px;text-align:center;">
@@ -188,27 +185,34 @@
       <strong style="font-size:.88rem;display:block;margin-bottom:10px;">Procedura completa</strong>
       <ol class="steps">
         <li><p><strong>Crea il rilievo</strong> — Dal cantiere clicca <strong>+ Rilievo Serramenti</strong>. Il sistema assegna automaticamente un codice progressivo.</p></li>
-        <li><p><strong>Compila la testata</strong> — Inserisci data rilievo, referente in cantiere, tipo di intervento, e spunta <strong>GRU</strong> se il cantiere prevede l uso del carroponti.</p></li>
+        <li><p><strong>Compila la testata</strong> — Inserisci data rilievo, referente, tipo intervento. Spunta <strong>GRU</strong> se il cantiere prevede il carroponti. Usa il campo <strong>Note generali</strong> per annotazioni visibili in tutti i report.</p></li>
         <li><p><strong>Aggiungi le posizioni</strong> — Clicca <strong>+ Nuova posizione</strong>. Si apre il drawer laterale. Compila tutti i campi della posizione.</p></li>
-        <li><p><strong>Organizza in capitoli</strong> — Clicca <strong>+ Capitolo</strong> per raggruppare le posizioni per zona. Trascina i capitoli per riordinarli.</p></li>
-        <li><p><strong>Controlla la tubolarita</strong> — Ogni posizione mostra automaticamente L_tub e H_tub calcolati. Usa il bottone <strong>&#8505; formula</strong> per vedere i passaggi dettagliati.</p></li>
+        <li><p><strong>Organizza in capitoli</strong> — Clicca <strong>+ Capitolo</strong> per raggruppare le posizioni per zona (es. PIANO TERRA, PIANO PRIMO). Trascina le righe per riordinarle.</p></li>
+        <li><p><strong>Controlla la tubolarita</strong> — Ogni posizione mostra automaticamente L_tub e H_tub calcolati. Clicca il bottone <strong>&#8505; formula</strong> accanto alle dimensioni di ordine per vedere i passaggi dettagliati con i valori reali del DB.</p></li>
         <li><p><strong>Genera i report</strong> — Usa i bottoni in toolbar: <strong>Rilievo</strong>, <strong>Accessori</strong>, <strong>Posa</strong>, <strong>Formule</strong>, <strong>Stampa</strong>.</p></li>
       </ol>
       <div class="tip">&#128161; Il bottone <strong>Formule</strong> apre direttamente le formule dei serramenti, pre-filtrate sulla sezione corretta.</div>
       <div class="tip">&#128161; Il flag <strong>GRU</strong> cambia i tempi di posizionamento serramenti per i piani dal +1 in su.</div>
-      <div class="warn">&#9888; Se appare il banner <strong>"Tempi di posa aggiornati"</strong> clicca <strong>Aggiorna</strong> per ricalcolare con i valori correnti.</div>
+      <div class="warn">&#9888; Se appare il banner <strong>"Tempi di posa aggiornati"</strong> clicca <strong>Aggiorna</strong> per ricalcolare con i valori correnti di Supabase.</div>
+
+      <strong style="font-size:.88rem;display:block;margin:16px 0 10px;">Telaio misto per lato</strong>
+      <p style="font-size:.82rem;color:#374151;line-height:1.7;margin-bottom:10px;">Ogni posizione puo avere varianti telaio diverse sui quattro lati (alto, basso, sinistra, destra). Spunta <strong>Telaio misto per lato</strong> nel drawer per abilitare i quattro selettori. La formula di tubolarita viene calcolata considerando Nasc e Aletta specifici per ogni lato.</p>
+      <div class="tip">&#128161; Con telaio misto, il Nasc contribuisce solo dal lato alto in H — mai dal basso. Questo comportamento segue le regole del foglio Excel Internorm.</div>
+
       <strong style="font-size:.88rem;display:block;margin:16px 0 10px;">Aggiustamenti posa</strong>
-      <p style="font-size:.82rem;color:#374151;line-height:1.7;margin-bottom:10px;">Nel report posa, se il rilievo ha capitoli, puoi scegliere tra due modalita di aggiustamento:</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <p style="font-size:.82rem;color:#374151;line-height:1.7;margin-bottom:10px;">Nel report posa, se il rilievo ha capitoli, puoi scegliere tra due modalita di aggiustamento ore:</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
         <div style="background:#eef2ff;border-radius:8px;padding:12px 14px;">
           <strong style="font-size:.82rem;color:#4f46e5;">&#931; Sul totale</strong>
-          <p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Aggiusti le ore nella tabella complessiva. I capitoli mostrano la ripartizione proporzionale.</p>
+          <p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Aggiusti le ore nella tabella complessiva. I capitoli mostrano la ripartizione proporzionale in sola lettura.</p>
         </div>
         <div style="background:#eef2ff;border-radius:8px;padding:12px 14px;">
           <strong style="font-size:.82rem;color:#4f46e5;">&#128195; Per capitolo</strong>
-          <p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Aggiusti le ore in ogni capitolo. Il totale somma automaticamente tutti i capitoli.</p>
+          <p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Aggiusti le ore in ogni capitolo singolarmente. Il totale somma automaticamente tutti i capitoli.</p>
         </div>
       </div>
+      <div class="warn">&#9888; Cambiare modalita azzera gli aggiustamenti della modalita precedente. Gli aggiustamenti vengono mantenuti anche nella stampa combinata.</div>
+
       <strong style="font-size:.88rem;display:block;margin:16px 0 10px;">Campi della posizione serramento</strong>
       <div class="campo-grid">
         <div class="c-hdr">Campo</div><div class="c-hdr">Descrizione</div>
@@ -219,10 +223,19 @@
         <div class="c-row"><div class="c-nome">Piano <span class="c-obblig">*</span></div><div class="c-desc">Piano dell edificio da -1 a +10. Usato per i tempi di posizionamento</div></div>
         <div class="c-row"><div class="c-nome">Materiale / Sistema</div><div class="c-desc">Combinazione Internorm (es. PVC — KF 310 HP)</div></div>
         <div class="c-row"><div class="c-nome">Variante telaio</div><div class="c-desc">NR=Nascosto, CR=Classico nascosto, IR=con Aletta, ZR=con Aletta estesa</div></div>
+        <div class="c-row"><div class="c-nome">Telaio misto</div><div class="c-desc">Abilita variante diversa per ogni lato: alto, basso, sinistra, destra</div></div>
         <div class="c-row"><div class="c-nome">Rimozione</div><div class="c-desc">Spunta se va rimosso il serramento esistente</div></div>
         <div class="c-row"><div class="c-nome">Controtelaio</div><div class="c-desc">L=Legno, T=Termoisolante</div></div>
         <div class="c-row"><div class="c-nome">Schermatura</div><div class="c-desc">Tipo di oscurante o schermatura solare</div></div>
         <div class="c-row"><div class="c-nome">Note</div><div class="c-desc">Osservazioni libere sulla posizione</div></div>
+      </div>
+      <strong style="font-size:.88rem;display:block;margin:16px 0 10px;">Campi della testata rilievo</strong>
+      <div class="campo-grid">
+        <div class="c-hdr">Campo</div><div class="c-hdr">Descrizione</div>
+        <div class="c-row"><div class="c-nome">Note generali</div><div class="c-desc">Testo libero visibile nell intestazione di tutti i report e della stampa combinata, evidenziato in giallo</div></div>
+        <div class="c-row"><div class="c-nome">GRU</div><div class="c-desc">Se spuntato, i tempi di posizionamento serramenti ai piani superiori usano i valori GRU da Supabase</div></div>
+        <div class="c-row"><div class="c-nome">Allarme</div><div class="c-desc">Flag visivo nel codice rilievo e nell intestazione dei report</div></div>
+        <div class="c-row"><div class="c-nome">Note commerciali</div><div class="c-desc">Colori e modelli di accessori (avvolgibili, maniglie, coprifili, ecc.) visibili nella stampa combinata</div></div>
       </div>
     </div>
 
@@ -234,26 +247,29 @@
       <ol class="steps">
         <li><p><strong>Crea il rilievo</strong> — Dal cantiere clicca <strong>+ Rilievo Porte</strong>.</p></li>
         <li><p><strong>Compila la testata</strong> — Data, referente, tipo intervento.</p></li>
-        <li><p><strong>Aggiungi le posizioni</strong> — Clicca <strong>+ Nuova posizione</strong> per aprire il drawer.</p></li>
-        <li><p><strong>Organizza in capitoli</strong> — Raggruppa le porte per stanza o zona.</p></li>
-        <li><p><strong>Genera i report</strong> — <strong>Rilievo</strong> per il report misure, <strong>Posa</strong> per le ore, <strong>Formule</strong> per i parametri porte, <strong>Stampa</strong> per il documento completo.</p></li>
+        <li><p><strong>Aggiungi le posizioni</strong> — Clicca <strong>+ Nuova posizione</strong> per aprire il drawer. Compila i campi obbligatori (tipo porta, sistema, foro, piano).</p></li>
+        <li><p><strong>Usa la guida misure</strong> — Il tab <strong>Guida misure</strong> in cima alla pagina mostra le immagini esplicative per rilevare H e L corretti per tipo foro N e P.</p></li>
+        <li><p><strong>Organizza in capitoli</strong> — Raggruppa le porte per stanza o zona (es. PIANO TERRA, BAGNO).</p></li>
+        <li><p><strong>Genera i report</strong> — <strong>Rilievo</strong> per il report misure, <strong>Posa</strong> per le ore con aggiustamenti, <strong>Formule</strong> per i parametri porte, <strong>Stampa</strong> per il documento completo.</p></li>
       </ol>
       <div class="tip">&#128161; Il bottone <strong>Formule</strong> apre direttamente le formule delle porte interne, pre-filtrate sulla sezione corretta.</div>
-      <div class="tip">&#128161; Anche il report posa porte supporta gli aggiustamenti per capitolo o sul totale, con la stessa logica dei serramenti.</div>
+      <div class="tip">&#128161; Anche il report posa porte supporta gli aggiustamenti per capitolo o sul totale, con la stessa logica dei serramenti. La modalita scelta viene rispettata anche nella stampa combinata.</div>
+      <div class="tip">&#128161; Per le porte di tipo <strong>FC</strong> (filo muro con CTL) le ore di posa sono maggiori rispetto a <strong>F_</strong> (filo muro senza CTL) perche il controtelaio richiede installazione separata.</div>
+
       <strong style="font-size:.88rem;display:block;margin:16px 0 10px;">Campi della posizione porta</strong>
       <div class="campo-grid">
         <div class="c-hdr">Campo</div><div class="c-hdr">Descrizione</div>
-        <div class="c-row"><div class="c-nome">Tipo porta <span class="c-obblig">*</span></div><div class="c-desc">INT=Interna standard, BLI=Blindata, REI=Antincendio</div></div>
+        <div class="c-row"><div class="c-nome">Tipo porta <span class="c-obblig">*</span></div><div class="c-desc">INT=Interna standard, BLI=Blindata, REI=Antincendio. Determina le ore di installazione</div></div>
         <div class="c-row"><div class="c-nome">Sistema <span class="c-obblig">*</span></div><div class="c-desc">ST=Standard, DO=Doppia, TP=Telaio passaggio, FC=Filo muro con CTL, F_=Filo muro senza CTL, SI=Scorrevole interna, SE=Scorrevole esterna, LI=A libro, PI=Pivot</div></div>
-        <div class="c-row"><div class="c-nome">Tipo foro</div><div class="c-desc">N=Normale, P=Porta a filo</div></div>
+        <div class="c-row"><div class="c-nome">Tipo foro</div><div class="c-desc">N=Netta passaggio, P=Posa in luce. Vedi tab Guida misure per le immagini esplicative</div></div>
         <div class="c-row"><div class="c-nome">L_foro / H_foro <span class="c-obblig">*</span></div><div class="c-desc">Larghezza e altezza del foro in millimetri</div></div>
-        <div class="c-row"><div class="c-nome">Piano <span class="c-obblig">*</span></div><div class="c-desc">Piano dell edificio — usato per calcolare il posizionamento</div></div>
-        <div class="c-row"><div class="c-nome">Sopraluce</div><div class="c-desc">Spunta se la porta ha un sopraluce fisso sopra</div></div>
-        <div class="c-row"><div class="c-nome">Allargamento telaio</div><div class="c-desc">Spunta se il telaio murario va allargato</div></div>
+        <div class="c-row"><div class="c-nome">Piano <span class="c-obblig">*</span></div><div class="c-desc">Piano dell edificio — usato per calcolare le ore di posizionamento</div></div>
+        <div class="c-row"><div class="c-nome">Sopraluce</div><div class="c-desc">Spunta se la porta ha un sopraluce fisso sopra — aggiunge ore extra di installazione</div></div>
+        <div class="c-row"><div class="c-nome">Allargamento telaio</div><div class="c-desc">Spunta se il telaio murario va allargato — aggiunge voce specifica nel report posa</div></div>
+        <div class="c-row"><div class="c-nome">Fornitura / Install. CTL</div><div class="c-desc">Spunta separatamente fornitura e installazione controtelaio per interne, blindate e REI</div></div>
         <div class="c-row"><div class="c-nome">Rimozione</div><div class="c-desc">Spunta se la porta esistente va rimossa</div></div>
-        <div class="c-row"><div class="c-nome">Note</div><div class="c-desc">Osservazioni libere</div></div>
+        <div class="c-row"><div class="c-nome">Note</div><div class="c-desc">Osservazioni libere sulla posizione</div></div>
       </div>
-      <div class="tip">&#128161; Per le porte di tipo <strong>FC</strong> e <strong>F_</strong> le ore di posa sono diverse: il CTL richiede installazione separata.</div>
     </div>
 
     <div class="sez" id="sez-report" data-ruoli="tutti">
@@ -263,21 +279,22 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
         <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px;">
           <div style="font-weight:700;margin-bottom:6px;">&#128196; Report Rilievo</div>
-          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">Elenco posizioni con misure, tubolarita calcolata, accessori e note.</div>
+          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">Elenco posizioni con misure, tubolarita calcolata, accessori e note. Include le note generali nell intestazione se presenti.</div>
         </div>
         <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px;">
           <div style="font-weight:700;margin-bottom:6px;">&#128202; Report Accessori</div>
-          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">Riepilogo quantitativo di tutti gli accessori raggruppati per tipo.</div>
+          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">Riepilogo quantitativo di tutti gli accessori raggruppati per tipo, con subtotali per capitolo se presenti.</div>
         </div>
         <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px;">
           <div style="font-weight:700;margin-bottom:6px;">&#9201;&#65039; Report Posa</div>
-          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">Stima delle ore di lavoro per tutte le voci. Supporta aggiustamenti per capitolo o sul totale.</div>
+          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">Stima ore di lavoro per tutte le voci, parametri letti da Supabase. Con capitoli attivi: switcher modalita aggiustamenti <strong>Sul totale</strong> o <strong>Per capitolo</strong>. La modalita e la stampa combinata sono allineate.</div>
         </div>
         <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px;">
           <div style="font-weight:700;margin-bottom:6px;">&#128438; Stampa combinata</div>
-          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">Documento unico con tutti i report selezionati, ottimizzato per stampa A4.</div>
+          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">Documento unico con tutti i report selezionati, ottimizzato per stampa A4. Rispetta la modalita aggiustamenti posa scelta nel report posa interattivo.</div>
         </div>
       </div>
+      <div class="tip">&#128161; Le note generali del rilievo compaiono nell intestazione di tutti i report e della stampa combinata, evidenziate in giallo.</div>
       <div class="tip">&#128161; Per vedere i valori esatti di ciascuna voce vai su <strong>Formule di calcolo</strong> dalla toolbar del rilievo.</div>
     </div>
 
@@ -285,16 +302,16 @@
       <h2 class="sez-title">&#128200; Formule di calcolo <span class="badge-ruolo br-tutti">Tutti</span></h2>
       <p class="sez-sub">Dove trovare le formule e come interpretarle.</p>
       <hr class="sez-divider">
-      <p style="line-height:1.8;margin-bottom:12px;">La pagina <strong>Formule di calcolo</strong> mostra in tempo reale tutti i parametri usati dall app, caricati direttamente dal database. Usa i tab in alto per filtrare per tipo.</p>
+      <p style="line-height:1.8;margin-bottom:12px;">La pagina <strong>Formule di calcolo</strong> mostra in tempo reale tutti i parametri usati dall app, caricati direttamente da Supabase. Usa i tab in alto per filtrare per tipo.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
         <a href="formule.html?tipo=SERR" class="btn btn-outline" style="font-size:.82rem;text-decoration:none;">&#128200; Formule Serramenti</a>
         <a href="formule.html?tipo=PORTE" class="btn btn-outline" style="font-size:.82rem;text-decoration:none;">&#128682; Formule Porte Interne</a>
       </div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;">
-        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;"><strong style="font-size:.85rem;">Sezione A — Tubolarita</strong><p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Formula L_tub e H_tub per tipo foro A, D, P</p></div>
-        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;"><strong style="font-size:.85rem;">Sezione B — Posa Serramenti</strong><p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Lookup ore posizionamento per piano e campi, con e senza GRU</p></div>
-        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;"><strong style="font-size:.85rem;">Sezione C — Installazione per tipo</strong><p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Ore installazione per tipo serramento e numero di campi</p></div>
-        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;"><strong style="font-size:.85rem;">Sezione D — Posa Porte</strong><p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Ore per sistema porta, lookup posizionamento per piano</p></div>
+        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;"><strong style="font-size:.85rem;">Sezione A — Tubolarita</strong><p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Formula L_tub e H_tub per tipo foro A, D, P. Include variante telaio misto per lato.</p></div>
+        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;"><strong style="font-size:.85rem;">Sezione B — Posa Serramenti</strong><p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Lookup ore posizionamento per piano e campi, con e senza GRU. Tutti i valori da Supabase.</p></div>
+        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;"><strong style="font-size:.85rem;">Sezione C — Installazione per tipo</strong><p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Ore installazione per tipo serramento e numero di campi, con incremento per campo aggiuntivo.</p></div>
+        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;"><strong style="font-size:.85rem;">Sezione D — Posa Porte</strong><p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Ore per sistema porta, lookup posizionamento per piano, ore installazione per sistema.</p></div>
       </div>
     </div>
 
@@ -317,11 +334,11 @@
         </div>
         <div style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
           <div style="background:#1a1a2e;color:#fff;padding:8px 14px;font-size:.82rem;font-weight:700;">&#9201;&#65039; Tab Dati Posa</div>
-          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">Ore di posa per tutte le voci, inclusi valori con GRU.</div>
+          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">Ore di posa per tutte le voci serramenti e porte, inclusi valori con GRU. Stessa logica dei Dati Tecnici.</div>
         </div>
         <div style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
           <div style="background:#1a1a2e;color:#fff;padding:8px 14px;font-size:.82rem;font-weight:700;">&#128220; Tab Revisioni</div>
-          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">Storico datato di tutte le revisioni dei parametri.</div>
+          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">Storico datato di tutte le revisioni dei parametri. La revisione corrente e evidenziata in verde.</div>
         </div>
         <div style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
           <div style="background:#1a1a2e;color:#fff;padding:8px 14px;font-size:.82rem;font-weight:700;">&#128451;&#65039; Tab DB Prodotti</div>

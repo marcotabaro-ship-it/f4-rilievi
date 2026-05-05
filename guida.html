@@ -98,7 +98,7 @@
     <option value="titolare">Titolare</option>
     <option value="admin">Administrator</option>
   </select>
-  <button class="btn-tb btn-tb-back" onclick="history.back()">&#8592; Indietro</button>
+  <button class="btn-tb btn-tb-back" onclick="history.length > 1 ? history.back() : window.location.href='dashboard.html'">&#8592; Indietro</button>
   <button class="btn-tb btn-tb-print" onclick="window.print()">&#128438; Stampa PDF</button>
 </div>
 

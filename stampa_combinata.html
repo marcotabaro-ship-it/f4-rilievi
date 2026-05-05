@@ -7,27 +7,15 @@
   <link rel="stylesheet" href="css/main.css"/>
   <style>
     body { background: #f5f6fa; font-size: 12px; }
-
-    /* ====== MODAL SELEZIONE ====== */
-    #modal-sel {
-      position: fixed; inset: 0; z-index: 200;
-      background: rgba(15,15,35,.55); display: flex; align-items: center; justify-content: center;
-    }
-    .sel-box {
-      background: #fff; border-radius: 14px; padding: 32px 36px; max-width: 440px; width: 90%;
-      box-shadow: 0 20px 60px rgba(0,0,0,.25);
-    }
+    #modal-sel { position: fixed; inset: 0; z-index: 200; background: rgba(15,15,35,.55); display: flex; align-items: center; justify-content: center; }
+    .sel-box { background: #fff; border-radius: 14px; padding: 32px 36px; max-width: 440px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,.25); }
     .sel-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
     .sel-logo .lb { border: 2px solid #e53e3e; padding: 3px 9px; font-size: 18px; font-weight: 900; color: #1a1a2e; }
     .sel-logo .lt { font-size: 13px; font-weight: 700; color: #1a1a2e; }
     .sel-title { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px; }
     .sel-sub { font-size: 12px; color: #6b7280; margin-bottom: 22px; }
     .sel-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
-    .sel-opt {
-      display: flex; align-items: center; gap: 14px;
-      border: 2px solid #e5e7eb; border-radius: 10px; padding: 12px 16px; cursor: pointer;
-      transition: border-color .15s, background .15s;
-    }
+    .sel-opt { display: flex; align-items: center; gap: 14px; border: 2px solid #e5e7eb; border-radius: 10px; padding: 12px 16px; cursor: pointer; transition: border-color .15s, background .15s; }
     .sel-opt:hover { border-color: #c7d2fe; background: #f5f3ff; }
     .sel-opt input[type=checkbox] { width: 18px; height: 18px; accent-color: #4f46e5; flex-shrink: 0; cursor: pointer; }
     .sel-opt.checked { border-color: #4f46e5; background: #eef2ff; }
@@ -35,37 +23,19 @@
     .sel-opt-text .sel-opt-name { font-size: 13px; font-weight: 700; color: #1a1a2e; }
     .sel-opt-text .sel-opt-desc { font-size: 11px; color: #6b7280; }
     .sel-actions { display: flex; gap: 10px; }
-    .btn-avvia {
-      flex: 1; background: #4f46e5; color: #fff; border: none; border-radius: 8px;
-      padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer;
-    }
+    .btn-avvia { flex: 1; background: #4f46e5; color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
     .btn-avvia:hover { background: #4338ca; }
-    .btn-annulla {
-      background: #f3f4f6; color: #374151; border: none; border-radius: 8px;
-      padding: 12px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
-    }
+    .btn-annulla { background: #f3f4f6; color: #374151; border: none; border-radius: 8px; padding: 12px 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
     .btn-annulla:hover { background: #e5e7eb; }
-
-    /* ====== TOOLBAR ====== */
-    #toolbar {
-      background: #1a1a2e; color: #fff; padding: 10px 18px;
-      display: flex; align-items: center; gap: 8px;
-      position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 6px rgba(0,0,0,.25);
-    }
+    #toolbar { background: #1a1a2e; color: #fff; padding: 10px 18px; display: flex; align-items: center; gap: 8px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
     #toolbar h1 { font-size: 14px; margin: 0; flex: 1; font-weight: 600; }
     .btn-tb { border: none; border-radius: 6px; padding: 6px 13px; font-size: 12px; font-weight: 600; cursor: pointer; color: #fff; }
     .btn-tb-primary { background: #4f46e5; } .btn-tb-primary:hover { background: #4338ca; }
     .btn-tb-neutral { background: #374151; } .btn-tb-neutral:hover { background: #1f2937; }
     .btn-tb-sec { background: #6b7280; } .btn-tb-sec:hover { background: #4b5563; }
-
-    /* ====== WRAP ====== */
     #wrap { max-width: 1100px; margin: 20px auto; padding: 0 14px 48px; }
     #stato-msg { text-align: center; padding: 80px; color: #6b7280; font-size: 15px; }
-
-    /* ====== SEZIONE PAGE-BREAK ====== */
     .sezione { margin-bottom: 30px; }
-
-    /* ====== HEADER SCHEDA (condiviso) ====== */
     .scheda-hdr { background: #fff; border: 2px solid #1a1a2e; border-radius: 8px; margin-bottom: 10px; overflow: hidden; page-break-inside: avoid; }
     .sh-top { display: grid; grid-template-columns: 110px 1fr 220px; border-bottom: 2px solid #1a1a2e; }
     .sh-logo { background: #1a1a2e; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; font-size: 10px; font-weight: 700; text-align: center; }
@@ -80,23 +50,15 @@
     .sh-badge.blue { background: #ede9fe; color: #4f46e5; }
     .sh-badge.red { background: #fee2e2; color: #dc2626; }
     .sh-badge.green { background: #d1fae5; color: #065f46; }
-
-    /* ====== TITOLO SEZIONE ====== */
     .sez-hdr { display: flex; align-items: center; gap: 12px; margin: 14px 0 10px; }
     .sez-hdr-line { flex: 1; height: 2px; background: #e5e7eb; }
     .sez-hdr-txt { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #4f46e5; white-space: nowrap; }
-
-    /* ====== STRATIGRAFIE ====== */
     .strat-grid-c { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
     .strat-card-c { background: #fff; border: 1px solid #d1d5db; border-radius: 6px; padding: 7px; width: 140px; page-break-inside: avoid; }
     .strat-card-c img { width: 100%; height: 70px; object-fit: contain; background: #f9f9f9; border: 1px solid #e5e7eb; border-radius: 3px; margin-bottom: 4px; }
     .strat-card-c h4 { font-size: 10px; font-weight: 700; color: #1a1a2e; margin: 0 0 2px; }
     .strat-card-c .sq { font-size: 9px; color: #6b7280; line-height: 1.4; }
-
-    /* ====== NOTA SEZIONE ====== */
     .sez-nota { font-size: 10px; color: #4f46e5; font-style: italic; margin-bottom: 8px; }
-
-    /* ====== TABLE CONDIVISA ====== */
     .tbl-outer { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; overflow-x: auto; margin-bottom: 10px; }
     table.t-c { border-collapse: collapse; width: 100%; font-size: 11px; white-space: nowrap; }
     table.t-c thead tr.th-g th { background: #374151; color: #a5b4fc; padding: 3px 5px; text-align: center; font-size: 9px; font-weight: 700; text-transform: uppercase; border-right: 1px solid #4b5563; }
@@ -105,7 +67,7 @@
     table.t-c tr:nth-child(even) td { background: #fafafe; }
     table.t-c tr { page-break-inside: avoid; }
     table.t-c td.num { font-weight: 700; color: #1a1a2e; font-family: monospace; background: #f0f0ff !important; text-align: center; }
-    table.t-c td.c   { text-align: center; }
+    table.t-c td.c { text-align: center; }
     table.t-c td.tipo-cell { text-align: center; font-weight: 700; color: #4f46e5; }
     table.t-c td.dim-c { text-align: center; }
     .dm { font-weight: 700; font-size: 10px; }
@@ -116,15 +78,11 @@
     .badge-tipo { display: inline-block; padding: 1px 6px; border-radius: 10px; background: #E3F2FD; color: #1565C0; font-weight: 700; font-size: 10px; }
     .tot-bar { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
     .tot-chip { background: #d1fae5; color: #065f46; border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: 600; }
-
-    /* ====== LEGENDA ====== */
     .leg-block { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 12px; margin-bottom: 10px; page-break-inside: avoid; }
     .leg-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
     .leg-sec h4 { font-size: 9px; font-weight: 700; color: #4f46e5; margin: 0 0 3px; text-transform: uppercase; }
     .leg-row { font-size: 9px; line-height: 1.4; }
     .leg-row b { color: #e53e3e; margin-right: 2px; font-family: monospace; }
-
-    /* ====== ACCESSORI ====== */
     .acc-g { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden; margin-bottom: 8px; page-break-inside: avoid; }
     .acc-gh { background: #f5f7ff; border-bottom: 1px solid #e5e7eb; padding: 6px 12px; display: flex; align-items: center; gap: 10px; }
     .acc-gimg { width: 46px; height: 32px; object-fit: contain; flex-shrink: 0; border: 1px solid #e5e7eb; border-radius: 3px; background: #fff; padding: 2px; }
@@ -139,15 +97,11 @@
     .chip-n  { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; background: #FFF3E0; color: #E65100; white-space: nowrap; }
     .chip-m  { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; background: #F3E5F5; color: #6A1B9A; white-space: nowrap; }
     .acc-pl { flex: 1; font-size: 10px; font-weight: 600; color: #1a1a2e; font-family: monospace; background: #eef2ff; padding: 2px 8px; border-radius: 4px; }
-
-    /* ====== MATERIALI POSA ====== */
     .mat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 6px; }
     .mat-c { border: 1px solid #e5e7eb; border-radius: 6px; padding: 7px; background: #fff; text-align: center; }
     .mat-c .mn { font-size: 9px; color: #6b7280; margin-bottom: 3px; }
     .mat-c .mv { font-size: 1rem; font-weight: 700; color: #1a1a2e; }
     .mat-c .mu { font-size: 8px; color: #6b7280; }
-
-    /* ====== POSA: table ====== */
     table.t-posa { width: 100%; border-collapse: collapse; font-size: 11px; }
     table.t-posa thead th { background: #1a1a2e; color: #fff; padding: 7px 8px; text-align: left; font-size: 10px; font-weight: 600; white-space: nowrap; }
     table.t-posa thead th.c { text-align: center; }
@@ -159,8 +113,6 @@
     .tr-voce td.ore-f { text-align: center; font-weight: 700; color: #4f46e5; }
     .tr-tot td { background: #1a1a2e; color: #fff; font-weight: 700; padding: 7px 8px; font-size: 11px; }
     .tr-tot td.ore-f { text-align: center; color: #a5b4fc; font-size: 14px; }
-
-    /* POSA: summary + ore */
     .posa-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
     .sum-block { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 14px; }
     .sum-block h3 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #4f46e5; margin: 0 0 8px; padding-bottom: 4px; border-bottom: 2px solid #ede9fe; }
@@ -179,18 +131,13 @@
     .tipo-chip-c .sig { font-weight: 700; color: #1a1a2e; }
     .tipo-chip-c .cnt { font-weight: 700; color: #4f46e5; }
     .tipo-chip-c.zero { opacity: .35; }
-
-    /* ====== PRINT ====== */
     @media print {
       @page { size: A4 landscape; margin: 7mm; }
       body { background: #fff; }
       #modal-sel { display: none !important; }
       #toolbar    { display: none !important; }
       #wrap { margin: 0; padding: 0; max-width: none; }
-
-      /* page-break tra sezioni */
       .sezione-break { page-break-after: always; }
-
       .scheda-hdr { border-radius: 0; margin-bottom: 4px; }
       .sh-top { grid-template-columns: 90px 1fr 190px; }
       .sh-logo .lb2 { font-size: 13px; }
@@ -235,39 +182,26 @@
 </head>
 <body>
 
-<!-- ================================================================ MODAL -->
 <div id="modal-sel">
   <div class="sel-box">
-    <div class="sel-logo">
-      <div class="lb">[F4]</div>
-      <div class="lt">GRUPPO F4 &mdash; F4 Rilievi</div>
-    </div>
+    <div class="sel-logo"><div class="lb">[F4]</div><div class="lt">GRUPPO F4 &mdash; F4 Rilievi</div></div>
     <div class="sel-title">&#128438; Stampa combinata</div>
     <div class="sel-sub">Seleziona i report da includere nella stampa</div>
     <div class="sel-options">
       <label class="sel-opt checked" id="opt-rilievo">
         <input type="checkbox" id="chk-rilievo" checked onchange="updOpt(this,'opt-rilievo')">
         <span class="sel-opt-ico">&#128196;</span>
-        <span class="sel-opt-text">
-          <div class="sel-opt-name">Report Rilievo</div>
-          <div class="sel-opt-desc">Legenda, stratigrafie, tabella posizioni con dimensioni calcolate</div>
-        </span>
+        <span class="sel-opt-text"><div class="sel-opt-name">Report Rilievo</div><div class="sel-opt-desc">Legenda, stratigrafie, tabella posizioni con dimensioni calcolate</div></span>
       </label>
       <label class="sel-opt checked" id="opt-acc">
         <input type="checkbox" id="chk-acc" checked onchange="updOpt(this,'opt-acc')">
         <span class="sel-opt-ico">&#128202;</span>
-        <span class="sel-opt-text">
-          <div class="sel-opt-name">Report Accessori</div>
-          <div class="sel-opt-desc">Accessori per tipo con quantit&agrave;, barre coprifili, materiali posa</div>
-        </span>
+        <span class="sel-opt-text"><div class="sel-opt-name">Report Accessori</div><div class="sel-opt-desc">Accessori per tipo con quantit&agrave;, barre coprifili, materiali posa</div></span>
       </label>
       <label class="sel-opt checked" id="opt-posa">
         <input type="checkbox" id="chk-posa" checked onchange="updOpt(this,'opt-posa')">
         <span class="sel-opt-ico">&#9201;</span>
-        <span class="sel-opt-text">
-          <div class="sel-opt-name">Report Posa</div>
-          <div class="sel-opt-desc">Voci di posa con ore calcolate, riepilogo aree, ore totali</div>
-        </span>
+        <span class="sel-opt-text"><div class="sel-opt-name">Report Posa</div><div class="sel-opt-desc">Voci di posa con ore calcolate, riepilogo aree, ore totali</div></span>
       </label>
     </div>
     <div class="sel-actions">
@@ -277,7 +211,6 @@
   </div>
 </div>
 
-<!-- ================================================================ TOOLBAR -->
 <div id="toolbar" style="display:none">
   <h1 id="tb-titolo">Stampa combinata</h1>
   <button class="btn-tb btn-tb-sec" onclick="riaprModal()">&#9881;&#65039; Selezione</button>
@@ -285,12 +218,10 @@
   <button class="btn-tb btn-tb-primary" onclick="window.print()">&#128438; Stampa / PDF</button>
 </div>
 
-<!-- ================================================================ WRAP -->
 <div id="wrap">
   <div id="stato-msg">Seleziona i report e clicca "Genera e stampa".</div>
   <div id="out" style="display:none"></div>
 </div>
-
 <script src="js/config.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/api.js"></script>
@@ -303,8 +234,7 @@ if (!idRilievo) window.location.href='clienti.html';
 var STRAT_IMG = (typeof APP_CONFIG!=='undefined'&&APP_CONFIG.STRAT_IMAGES)?APP_CONFIG.STRAT_IMAGES:{};
 var TIPO_DESC = {'I':'Ingresso','F':'Finestra apribile','PF':'Porta finestra','FF':'Finestra fissa','VF':'Vetrata fissa','S':'Scorrevole'};
 var TIPO_ORD  = ['I','F','PF','FF','VF','S'];
-var SCHERM_DESC = {'A':'Avvolgibile man.','AM':'Avv. meccanico','AE':'Avv. elettronico','AR':'Avv. radio',
-  'S':'Scuretto','TZ':'Tenda ZIP','TM':'Tenda manuale','CA':'Frangisole cavo','CT':'Frangisole catena'};
+var SCHERM_DESC = {'A':'Avvolgibile man.','AM':'Avv. meccanico','AE':'Avv. elettronico','AR':'Avv. radio','S':'Scuretto','TZ':'Tenda ZIP','TM':'Tenda manuale','CA':'Frangisole cavo','CT':'Frangisole catena'};
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function v(x){return(!x&&x!==0)?'':String(x);}
@@ -312,7 +242,6 @@ function n2(x){return Math.round(x*100)/100;}
 function cUp(x){return Math.ceil(x);}
 function fmtH(x){if(!x&&x!==0)return'—';var r=Math.round(x*1000)/1000;return r.toFixed(3).replace(/0+$/,'').replace(/\.$/,'')||'0';}
 
-// ================================================================ COSTANTI CALCOLI
 var C={sfrido:50,pvcB:6000,legB:3500,aluB:6000,angLato:50,angB:6000,cassIngr:200,
   sch:{'A':{h:150,sx:30,dx:30,min:1.5},'AM':{h:150,sx:30,dx:30,min:1.5},'AE':{h:150,sx:30,dx:30,min:1.5},'AR':{h:150,sx:30,dx:30,min:1.5},
        'S':{h:0,sx:0,dx:0,min:0},'TZ':{h:100,sx:30,dx:30,min:0},'TM':{h:100,sx:30,dx:30,min:0},
@@ -327,7 +256,7 @@ function calcTub(p,db){
   var tf=(p.tipo_foro||'').toUpperCase(),ts=(p.tipo_serramento||'').toUpperCase();
   if(!H||!L||!tf)return null;
   var r=null;
-  for(var i=0;i<db.length;i++){var d=db[i];if(d&&d.materiale===p.materiale&&(d.descrizione===p.sistema)&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio){r=d;break;}}
+  for(var i=0;i<db.length;i++){var d=db[i];if(d&&d.materiale===p.materiale&&d.descrizione===p.sistema&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio){r=d;break;}}
   var na=r?(parseFloat(r.telaio_nascosto_mm)||0):0,al=r?(parseFloat(r.aletta_mm)||0):0,tv=r?(parseFloat(r.telaio_a_vista_mm)||0):0;
   var nH=(ts==='F'||ts==='FF')?2:1;
   var Lt=0,Ht=0;
@@ -342,7 +271,6 @@ function supSch(ts,cod,Lt,Ht,na,al){var c=C.sch[cod];if(!c)return 0;var nH=(ts==
 function supZan(ts,cod,Lt,Ht,na,al){var c=C.zan[cod];if(!c)return 0;var nH=(ts==='F'||ts==='FF')?2:1;var La=Lt-2*al-2*na,Ha=Ht-nH*al-nH*na;var s=Math.max((La+c.sx+c.dx)*(Ha+c.h)/1e6,c.min);if(ts==='S'&&cod==='V')s/=2;return s;}
 function matM(ts,Lt,Ht){var s=C.sfrido;return((ts==='F'||ts==='FF')?2*(Lt+2*s)+2*(Ht+2*s):1*(Lt+2*s)+2*(Ht+2*s))/1000;}
 
-// ================================================================ POSA CALCOLI
 var POS_SERR={'-1':[0.5,0.75,1.0,1.25,1.5],'0':[0.5,0.917,1.333,1.75,2.167],'1':[0.5,0.792,1.083,1.278,1.472],'2':[0.5,0.875,1.25,1.5,1.75],'3':[1.0,1.458,1.917,2.222,2.528],'4':[1.0,1.542,2.083,2.444,2.806],'5':[1.0,1.625,2.25,2.639,3.028],'6':[1.0,1.708,2.417,2.833,3.25],'7':[1.5,2.042,2.583,3.0,3.417],'8':[1.5,2.125,2.75,3.194,3.639],'9':[1.5,2.208,2.917,3.389,3.861],'10':[1.5,2.292,3.083,3.583,4.083]};
 var POS_CTL={'-1':0.5,'0':0.5,'1':0.5,'2':0.667,'3':0.833,'4':1.0,'5':1.167,'6':1.333,'7':1.5,'8':1.667,'9':1.833,'10':2.0};
 var DP={prog:[1/3,2],gord:[1/3,2],incant:[1/3,1.5],scCtl:[1/3,1],trCtl:[0.5,2],scSerr:[1/3,1],trSerr:[0.5,2],rimSerr:[1,2],rimAcc:[0.5,1],smSerr:[0.5,null],smAcc:[0.5,null],assCtl:[0.5,1],assTerm:[1,2],assDinDA:[0.5,1],assDinIM:[0.5,1],angPvc:[0.5,1],instCtl:[2,3],instTerm:[3,4],instDinDA:[1,2],instDinIM:[0.5,1],marmo:[3,5],instI:[8,null],instF:[3,null],instPF:[11/3,null],instFF:[11/3,null],instVF:[6,null],instS:[9,null],instAvv:[2,3],instScur:[3,4],instTende:[3,4],instFrang:[3,4],instCass:[3,4],instZanz:[1,1.5],coprInt:[0.5,1],coprEst:[0.5,1],regColl:[1/3,2],pulizia:[1/3,4]};
@@ -360,8 +288,7 @@ function calcolaVoci(pos){
     if(ctl==='L')nCL++;else if(ctl==='T')nCT++;
     if(p.rimozione==='SI'||p.rimozione===true){nRim++;nSS++;}
     if(p.rimozione_accessori===true){nRA++;nSA++;}
-    if(p.taglio_marmo===true)nMar++;
-    if(p.angolari_pvc===true)nAng++;
+    if(p.taglio_marmo===true)nMar++;if(p.angolari_pvc===true)nAng++;
     var ts=(p.tipo_serramento||'').toUpperCase();
     if(ts==='I')nI++;else if(ts==='F')nF++;else if(ts==='PF')nPF++;else if(ts==='FF')nFF++;else if(ts==='VF')nVF++;else if(ts==='S')nS++;
     var sc=(p.schermatura||'').toUpperCase();
@@ -376,60 +303,53 @@ function calcolaVoci(pos){
   var nCtl=nCL+nCT;
   oPCtl=nCtl>0?Math.max(oPCtl,1):0; oPSerr=nT>0?Math.max(oPSerr,1):0;
   var voci=[
-    {id:'prog',    area:'UFFICIO TECNICO',         serv:'Progettazione',                   n:nT,   dp:DP.prog,    tipo:'indir'},
-    {id:'gord',    area:'UFFICIO TECNICO',         serv:'Gestione ordini',                 n:nT,   dp:DP.gord,    tipo:'indir'},
-    {id:'incant',  area:'UFFICIO TECNICO',         serv:'Incontri in cantiere',             n:nT,   dp:DP.incant,  tipo:'indir'},
-    {id:'scCtl',   area:'MAGAZZINO',               serv:'Scarico / carico CTL e termocasse',n:nCtl, dp:DP.scCtl,  tipo:'indir'},
-    {id:'trCtl',   area:'TRASPORTO',               serv:'Trasporto CTL e termocasse',       n:nCtl, dp:DP.trCtl,  tipo:'indir'},
-    {id:'scSerr',  area:'MAGAZZINO',               serv:'Scarico / carico serramenti',      n:nT,   dp:DP.scSerr, tipo:'indir'},
-    {id:'trSerr',  area:'TRASPORTO',               serv:'Trasporto serramenti',             n:nT,   dp:DP.trSerr, tipo:'indir'},
-    {id:'posCtl',  area:'POSIZIONAMENTO',          serv:'Posizionamento CTL e termocasse',  n:nCtl, dp:null,fixed:oPCtl, tipo:'dir'},
-    {id:'posSerr', area:'POSIZIONAMENTO',          serv:'Posizionamento serramenti',        n:nT,   dp:null,fixed:oPSerr, tipo:'dir'},
-    {id:'rimSerr', area:'RIMOZIONE',               serv:'Rimozione serramenti esistenti',   n:nRim, dp:DP.rimSerr,tipo:'dir'},
-    {id:'rimAcc',  area:'RIMOZIONE',               serv:'Rimozione accessori esistenti',    n:nRA,  dp:DP.rimAcc, tipo:'dir'},
-    {id:'assCtl',  area:'ASSEMBLAGGIO CTL',        serv:'Assemblaggio controtelai',         n:nCL,  dp:DP.assCtl, tipo:'dir'},
-    {id:'assTerm', area:'ASSEMBLAGGIO CTL',        serv:'Assemblaggio termocasse',          n:nCT,  dp:DP.assTerm,tipo:'dir'},
-    {id:'assDinDA',area:'ASSEMBLAGGIO DINOX',      serv:'Assemblaggio Dinox davanzale',     n:nDA,  dp:DP.assDinDA,tipo:'dir'},
-    {id:'assDinIM',area:'ASSEMBLAGGIO DINOX',      serv:'Assemblaggio Dinox imbotte',       n:nIM,  dp:DP.assDinIM,tipo:'dir'},
-    {id:'angPvc',  area:'INSTALL. ANGOLARI PVC',   serv:'Installazione angolari PVC',       n:nAng, dp:DP.angPvc, tipo:'dir'},
-    {id:'instCtl', area:'INSTALL. CTL',            serv:'Installazione controtelai',        n:nCL,  dp:DP.instCtl,tipo:'dir'},
-    {id:'instTerm',area:'INSTALL. CTL',            serv:'Installazione termocasse',         n:nCT,  dp:DP.instTerm,tipo:'dir'},
-    {id:'instDinDA',area:'INSTALL. DINOX',         serv:'Installazione Dinox davanzale',    n:nDA,  dp:DP.instDinDA,tipo:'dir'},
-    {id:'instDinIM',area:'INSTALL. DINOX',         serv:'Installazione Dinox imbotte',      n:nIM,  dp:DP.instDinIM,tipo:'dir'},
-    {id:'marmo',   area:'POSA',                    serv:'Taglio piani marmo',               n:nMar, dp:DP.marmo,  tipo:'dir'},
-    {id:'instI',   area:'POSA',                    serv:'Installazione ingressi (I)',        n:nI,   dp:DP.instI,  tipo:'dir'},
-    {id:'instF',   area:'POSA',                    serv:'Installazione finestre (F)',        n:nF,   dp:DP.instF,  tipo:'dir'},
-    {id:'instPF',  area:'POSA',                    serv:'Installazione porte-finestre (PF)', n:nPF,  dp:DP.instPF, tipo:'dir'},
-    {id:'instFF',  area:'POSA',                    serv:'Installazione finestre fisse (FF)', n:nFF,  dp:DP.instFF, tipo:'dir'},
-    {id:'instVF',  area:'POSA',                    serv:'Installazione vetrate fisse (VF)', n:nVF,  dp:DP.instVF, tipo:'dir'},
-    {id:'instS',   area:'POSA',                    serv:'Installazione scorrevoli (S)',      n:nS,   dp:DP.instS,  tipo:'dir'},
-    {id:'instAvv', area:'POSA',                    serv:'Installazione avvolgibili',        n:nAv,  dp:DP.instAvv,tipo:'dir'},
-    {id:'instScur',area:'POSA',                    serv:'Installazione scuretti',           n:nSc,  dp:DP.instScur,tipo:'dir'},
-    {id:'instTende',area:'POSA',                   serv:'Installazione tende (TZ/TM)',      n:nTe,  dp:DP.instTende,tipo:'dir'},
-    {id:'instFrang',area:'POSA',                   serv:'Installazione frangisole',         n:nFr,  dp:DP.instFrang,tipo:'dir'},
-    {id:'instCass',area:'POSA',                    serv:'Installazione cassonetti',         n:nCas, dp:DP.instCass,tipo:'dir'},
-    {id:'instZanz',area:'POSA',                    serv:'Installazione zanzariere',         n:nZan, dp:DP.instZanz,tipo:'dir'},
-    {id:'coprInt', area:'POSA',                    serv:'Installazione coprifili interni',  n:nCI,  dp:DP.coprInt,tipo:'dir'},
-    {id:'coprEst', area:'POSA',                    serv:'Installazione coprifili esterni',  n:nCE,  dp:DP.coprEst,tipo:'dir'},
-    {id:'regColl', area:'POSA',                    serv:'Registrazione e collaudo',         n:nT,   dp:DP.regColl,tipo:'dir'},
-    {id:'pulizia', area:'POSA',                    serv:'Pulizia cantiere',                 n:nT,   dp:DP.pulizia,tipo:'dir'},
-    {id:'smSerr',  area:'SMALTIMENTO',             serv:'Smaltimento serramenti esistenti', n:nSS,  dp:DP.smSerr, tipo:'dir'},
-    {id:'smAcc',   area:'SMALTIMENTO',             serv:'Smaltimento accessori esistenti',  n:nSA,  dp:DP.smAcc,  tipo:'dir'}
+    {id:'prog',    area:'UFFICIO TECNICO',       serv:'Progettazione',                    n:nT,   dp:DP.prog,     tipo:'indir'},
+    {id:'gord',    area:'UFFICIO TECNICO',       serv:'Gestione ordini',                  n:nT,   dp:DP.gord,     tipo:'indir'},
+    {id:'incant',  area:'UFFICIO TECNICO',       serv:'Incontri in cantiere',             n:nT,   dp:DP.incant,   tipo:'indir'},
+    {id:'scCtl',   area:'MAGAZZINO',             serv:'Scarico / carico CTL e termocasse',n:nCtl, dp:DP.scCtl,    tipo:'indir'},
+    {id:'trCtl',   area:'TRASPORTO',             serv:'Trasporto CTL e termocasse',       n:nCtl, dp:DP.trCtl,    tipo:'indir'},
+    {id:'scSerr',  area:'MAGAZZINO',             serv:'Scarico / carico serramenti',      n:nT,   dp:DP.scSerr,   tipo:'indir'},
+    {id:'trSerr',  area:'TRASPORTO',             serv:'Trasporto serramenti',             n:nT,   dp:DP.trSerr,   tipo:'indir'},
+    {id:'posCtl',  area:'POSIZIONAMENTO',        serv:'Posizionamento CTL e termocasse',  n:nCtl, dp:null,fixed:oPCtl,  tipo:'dir'},
+    {id:'posSerr', area:'POSIZIONAMENTO',        serv:'Posizionamento serramenti',        n:nT,   dp:null,fixed:oPSerr, tipo:'dir'},
+    {id:'rimSerr', area:'RIMOZIONE',             serv:'Rimozione serramenti esistenti',   n:nRim, dp:DP.rimSerr,  tipo:'dir'},
+    {id:'rimAcc',  area:'RIMOZIONE',             serv:'Rimozione accessori esistenti',    n:nRA,  dp:DP.rimAcc,   tipo:'dir'},
+    {id:'assCtl',  area:'ASSEMBLAGGIO CTL',      serv:'Assemblaggio controtelai',         n:nCL,  dp:DP.assCtl,   tipo:'dir'},
+    {id:'assTerm', area:'ASSEMBLAGGIO CTL',      serv:'Assemblaggio termocasse',          n:nCT,  dp:DP.assTerm,  tipo:'dir'},
+    {id:'assDinDA',area:'ASSEMBLAGGIO DINOX',    serv:'Assemblaggio Dinox davanzale',     n:nDA,  dp:DP.assDinDA, tipo:'dir'},
+    {id:'assDinIM',area:'ASSEMBLAGGIO DINOX',    serv:'Assemblaggio Dinox imbotte',       n:nIM,  dp:DP.assDinIM, tipo:'dir'},
+    {id:'angPvc',  area:'INSTALL. ANGOLARI PVC', serv:'Installazione angolari PVC',       n:nAng, dp:DP.angPvc,   tipo:'dir'},
+    {id:'instCtl', area:'INSTALL. CTL',          serv:'Installazione controtelai',        n:nCL,  dp:DP.instCtl,  tipo:'dir'},
+    {id:'instTerm',area:'INSTALL. CTL',          serv:'Installazione termocasse',         n:nCT,  dp:DP.instTerm, tipo:'dir'},
+    {id:'instDinDA',area:'INSTALL. DINOX',       serv:'Installazione Dinox davanzale',    n:nDA,  dp:DP.instDinDA,tipo:'dir'},
+    {id:'instDinIM',area:'INSTALL. DINOX',       serv:'Installazione Dinox imbotte',      n:nIM,  dp:DP.instDinIM,tipo:'dir'},
+    {id:'marmo',   area:'POSA',                  serv:'Taglio piani marmo',               n:nMar, dp:DP.marmo,    tipo:'dir'},
+    {id:'instI',   area:'POSA',                  serv:'Installazione ingressi (I)',        n:nI,   dp:DP.instI,    tipo:'dir'},
+    {id:'instF',   area:'POSA',                  serv:'Installazione finestre (F)',        n:nF,   dp:DP.instF,    tipo:'dir'},
+    {id:'instPF',  area:'POSA',                  serv:'Installazione porte-finestre (PF)',n:nPF,  dp:DP.instPF,   tipo:'dir'},
+    {id:'instFF',  area:'POSA',                  serv:'Installazione finestre fisse (FF)',n:nFF,  dp:DP.instFF,   tipo:'dir'},
+    {id:'instVF',  area:'POSA',                  serv:'Installazione vetrate fisse (VF)', n:nVF,  dp:DP.instVF,   tipo:'dir'},
+    {id:'instS',   area:'POSA',                  serv:'Installazione scorrevoli (S)',      n:nS,   dp:DP.instS,    tipo:'dir'},
+    {id:'instAvv', area:'POSA',                  serv:'Installazione avvolgibili',        n:nAv,  dp:DP.instAvv,  tipo:'dir'},
+    {id:'instScur',area:'POSA',                  serv:'Installazione scuretti',           n:nSc,  dp:DP.instScur, tipo:'dir'},
+    {id:'instTende',area:'POSA',                 serv:'Installazione tende (TZ/TM)',      n:nTe,  dp:DP.instTende,tipo:'dir'},
+    {id:'instFrang',area:'POSA',                 serv:'Installazione frangisole',         n:nFr,  dp:DP.instFrang,tipo:'dir'},
+    {id:'instCass',area:'POSA',                  serv:'Installazione cassonetti',         n:nCas, dp:DP.instCass, tipo:'dir'},
+    {id:'instZanz',area:'POSA',                  serv:'Installazione zanzariere',         n:nZan, dp:DP.instZanz, tipo:'dir'},
+    {id:'coprInt', area:'POSA',                  serv:'Installazione coprifili interni',  n:nCI,  dp:DP.coprInt,  tipo:'dir'},
+    {id:'coprEst', area:'POSA',                  serv:'Installazione coprifili esterni',  n:nCE,  dp:DP.coprEst,  tipo:'dir'},
+    {id:'regColl', area:'POSA',                  serv:'Registrazione e collaudo',         n:nT,   dp:DP.regColl,  tipo:'dir'},
+    {id:'pulizia', area:'POSA',                  serv:'Pulizia cantiere',                 n:nT,   dp:DP.pulizia,  tipo:'dir'},
+    {id:'smSerr',  area:'SMALTIMENTO',           serv:'Smaltimento serramenti esistenti', n:nSS,  dp:DP.smSerr,   tipo:'dir'},
+    {id:'smAcc',   area:'SMALTIMENTO',           serv:'Smaltimento accessori esistenti',  n:nSA,  dp:DP.smAcc,    tipo:'dir'}
   ];
   voci.forEach(function(v){v.oreCalc=v.fixed!==undefined?v.fixed:cOre(v.n,v.dp);});
   return voci;
 }
 
-// ================================================================ MODAL
-function updOpt(chk, optId) {
-  document.getElementById(optId).classList.toggle('checked', chk.checked);
-}
-function riaprModal() {
-  document.getElementById('modal-sel').style.display='flex';
-  document.getElementById('toolbar').style.display='none';
-  document.getElementById('out').style.display='none';
-}
-function avvia() {
+function updOpt(chk, optId){document.getElementById(optId).classList.toggle('checked', chk.checked);}
+function riaprModal(){document.getElementById('modal-sel').style.display='flex';document.getElementById('toolbar').style.display='none';document.getElementById('out').style.display='none';}
+function avvia(){
   var wR=document.getElementById('chk-rilievo').checked;
   var wA=document.getElementById('chk-acc').checked;
   var wP=document.getElementById('chk-posa').checked;
@@ -441,7 +361,6 @@ function avvia() {
   loadAndRender(wR,wA,wP);
 }
 
-// ================================================================ DATI
 var SUPA_URL=APP_CONFIG.SUPABASE_URL,SUPA_KEY=APP_CONFIG.SUPABASE_ANON_KEY;
 function sfetch(path,cb,eb){
   var x=new XMLHttpRequest();x.open('GET',SUPA_URL+'/rest/v1/'+path,true);
@@ -457,7 +376,7 @@ function loadAndRender(wR,wA,wP){
     document.getElementById('stato-msg').style.display='none';
     var html=renderAll(D.ril,D.pos||[],D.strat||[],D.db||[],D.caps||[],wR,wA,wP);
     var out=document.getElementById('out');
-    out.innerHTML=html; out.style.display='';
+    out.innerHTML=html;out.style.display='';
     document.getElementById('tb-titolo').textContent='Stampa '+esc(D.ril&&D.ril.codice_completo||'');
     document.title='Stampa '+(D.ril&&D.ril.codice_completo||'');
   }
@@ -473,14 +392,12 @@ function loadAndRender(wR,wA,wP){
     function(r){D.caps=r||[];chk();},function(){D.caps=[];chk();});
 }
 
-// ================================================================ RENDER ALL
 function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
   var cp=ril.cantieri||{},cli=cp.clienti||{};
   var codice=ril.codice_completo||idRilievo;
   var locStr=((cp.tipo_via||'')+' '+(cp.indirizzo||'')).trim();
   var comuneStr=[cp.comune,cp.provincia?'('+cp.provincia+')':'',cp.cap].filter(Boolean).join(' ');
 
-  // header condiviso
   function mkHdr(sezione){
     var nc=ril.note_commerciali||{};
     var ncParts=[];
@@ -492,8 +409,7 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
     h+='<div class="sh-f"><label>Indirizzo:</label><span>'+esc(locStr||'—')+'</span></div>';
     h+='<div class="sh-f"><label>Comune:</label><span>'+esc(comuneStr||'—')+'</span></div>';
     h+='<div class="sh-f"><label>Tel / e-mail:</label><span>'+esc([cli.telefono,cli.email].filter(Boolean).join(' \u2014 ')||'—')+'</span></div>';
-    h+='</div>';
-    h+='<div class="sh-d">';
+    h+='</div><div class="sh-d">';
     h+='<div class="sh-f"><label>Intervento:</label><span>'+esc(ril.intervento||'—')+'</span></div>';
     h+='<div class="sh-f"><label>Referente:</label><span>'+esc(ril.referente||'—')+'</span></div>';
     h+='<div class="sh-f"><label>Data rilievo:</label><span>'+esc(ril.data_rilievo||'—')+'</span></div>';
@@ -502,41 +418,28 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
     if(ril.gru==='SI'||ril.gru===true)h+='<span class="sh-badge blue">&#127959; GRU</span>';
     if(ril.allarme===true)h+='<span class="sh-badge red">&#9888; ALLARME</span>';
     h+='<span class="sh-badge green">'+pos.length+' pos.</span>';
-    h+='</div></div>';
-    h+='</div>';
+    h+='</div></div></div>';
     if(ncParts.length)h+='<div style="padding:5px 12px;font-size:10px;background:#fafafe;border-top:1px solid #e5e7eb;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;"><span style="font-weight:700;color:#4f46e5;text-transform:uppercase;font-size:9px;">NOTE COMM.</span>'+ncParts.map(function(s){return'<span>'+esc(s)+'</span>';}).join('')+'</div>';
     if(ril.note_generali)h+='<div style="padding:5px 12px;font-size:10px;background:#fffbeb;border-top:1px solid #f59e0b;"><strong style="color:#92400e;">&#128221; Note generali:</strong> <span style="color:#78350f;">'+esc(ril.note_generali)+'</span></div>';
     h+='</div>';
     return h;
   }
 
-  // Funzione raggruppa posizioni per capitolo
   function groupByCap(pcArr, capsArr) {
     var righe=[];
-    pcArr.forEach(function(p){
-      var ord=(p.ordine!==undefined&&p.ordine!==null)?p.ordine:p.numero_pos;
-      righe.push({tipo:'pos',ordine:ord,data:p});
-    });
-    (capsArr||[]).forEach(function(cap){
-      righe.push({tipo:'cap_inizio',ordine:cap.ordine_inizio,data:cap});
-      righe.push({tipo:'cap_fine',  ordine:cap.ordine_fine,  data:cap});
-    });
+    pcArr.forEach(function(p){var ord=(p.ordine!==undefined&&p.ordine!==null)?p.ordine:p.numero_pos;righe.push({tipo:'pos',ordine:ord,data:p});});
+    (capsArr||[]).forEach(function(cap){righe.push({tipo:'cap_inizio',ordine:cap.ordine_inizio,data:cap});righe.push({tipo:'cap_fine',ordine:cap.ordine_fine,data:cap});});
     righe.sort(function(a,b){return a.ordine-b.ordine;});
     var gruppi=[],capCorr=null,posCorr=[],posiFuori=[];
     righe.forEach(function(r){
       if(r.tipo==='cap_inizio'){capCorr=r.data;posCorr=[];}
-      else if(r.tipo==='cap_fine'){
-        if(capCorr)gruppi.push({cap:capCorr,pos:posCorr.slice()});
-        capCorr=null;posCorr=[];
-      } else {
-        if(capCorr)posCorr.push(r.data);else posiFuori.push(r.data);
-      }
+      else if(r.tipo==='cap_fine'){if(capCorr)gruppi.push({cap:capCorr,pos:posCorr.slice()});capCorr=null;posCorr=[];}
+      else{if(capCorr)posCorr.push(r.data);else posiFuori.push(r.data);}
     });
     if(posiFuori.length)gruppi.push({cap:{titolo:'Senza capitolo',id:'__fuori__'},pos:posiFuori});
     return gruppi;
   }
 
-  // pre-calcola per posizioni
   var posCalc=pos.map(function(p){
     var tub=calcTub(p,db);var ts=(p.tipo_serramento||'').toUpperCase();
     var _ss=0,_sz=0,_bci=0,_bce=0,_sch=0,_mp=0,_bg=0,_mu=0,_bv=0,_vi=0,_cassM=0;
@@ -556,8 +459,6 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
   if(wR){
     var h='';
     h+=mkHdr('Report Rilievo');
-
-    // legenda compatta
     h+='<div class="leg-block"><div class="leg-grid">';
     h+='<div class="leg-sec"><h4>Serramento</h4><div class="leg-row"><b>I</b>Ingresso</div><div class="leg-row"><b>F</b>Finestra</div><div class="leg-row"><b>PF</b>Porta Fin.</div><div class="leg-row"><b>FF</b>Fin.Fissa</div><div class="leg-row"><b>VF</b>Vetrata</div><div class="leg-row"><b>S</b>Scorrevole</div></div>';
     h+='<div class="leg-sec"><h4>Materiale</h4><div class="leg-row"><b>A-</b>Alluminio</div><div class="leg-row"><b>P-</b>PVC</div><div class="leg-row"><b>PA</b>PVC-Alum.</div><div class="leg-row"><b>LA</b>Legno-Alum.</div><div class="leg-row"><b>L-</b>Legno</div><h4 style="margin-top:5px">Tipo foro</h4><div class="leg-row"><b>A</b>Architettonico</div><div class="leg-row"><b>D</b>Dim.telaio</div><div class="leg-row"><b>P</b>Posa in luce</div></div>';
@@ -568,7 +469,6 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
     h+='<div class="leg-sec"><h4>Sensi</h4><div class="leg-row"><b>D</b>Destra</div><div class="leg-row"><b>S</b>Sinistra</div><div class="leg-row"><b>W</b>Vasistas</div><div class="leg-row"><b>F</b>Fisso</div><h4 style="margin-top:5px">Flag</h4><div class="leg-row"><span class="chk on"></span> = attivo</div><div class="leg-row"><span class="chk"></span> = assente</div><h4 style="margin-top:5px">Dim. calc.</h4><div class="leg-row" style="color:#6b7280;font-style:italic">Valori in corsivo grigio = tubolarit\u00e0 calcolata</div></div>';
     h+='</div></div>';
 
-    // stratigrafie
     if(strat.length){
       h+='<div class="strat-grid-c">';
       strat.forEach(function(s){
@@ -583,7 +483,6 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
       h+='</div>';
     }
 
-    // tabella unica posizioni
     h+='<div class="tbl-outer"><table class="t-c"><thead>';
     h+='<tr class="th-g"><th colspan="4">IDENTIFICAZIONE</th><th colspan="4" class="gsep">SERRAMENTO</th><th colspan="3" class="gsep">GEOMETRIA</th><th colspan="3" class="gsep">VETRO/OSC</th><th colspan="4" class="gsep">COPRIFILI</th><th colspan="4" class="gsep">ACCESSORI</th><th colspan="4" class="gsep">RIM./FLAG</th><th colspan="2" class="gsep">SENSI/STRAT.</th></tr>';
     h+='<tr class="th-m"><th>N&deg;</th><th class="c">PIANO</th><th>AMBIENTE</th><th>TIPO</th>';
@@ -595,58 +494,27 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
     h+='<th class="gsep c">DIN</th><th class="c">ANG</th><th class="c">RimS</th><th class="c">RimA</th>';
     h+='<th class="gsep c">MRM</th><th>SENSI/STRAT.</th>';
     h+='</tr></thead><tbody>';
-    // Costruisci righe con capitoli
+
     var righeRil=[];
-    posCalc.forEach(function(p){
-      var ord=(p.ordine!==undefined&&p.ordine!==null)?p.ordine:p.numero_pos;
-      righeRil.push({tipo:'pos',ordine:ord,data:p});
-    });
-    (caps||[]).forEach(function(cap){
-      righeRil.push({tipo:'cap_inizio',ordine:cap.ordine_inizio,data:cap});
-      righeRil.push({tipo:'cap_fine',  ordine:cap.ordine_fine,  data:cap});
-    });
+    posCalc.forEach(function(p){var ord=(p.ordine!==undefined&&p.ordine!==null)?p.ordine:p.numero_pos;righeRil.push({tipo:'pos',ordine:ord,data:p});});
+    (caps||[]).forEach(function(cap){righeRil.push({tipo:'cap_inizio',ordine:cap.ordine_inizio,data:cap});righeRil.push({tipo:'cap_fine',ordine:cap.ordine_fine,data:cap});});
     righeRil.sort(function(a,b){return a.ordine-b.ordine;});
     var capCorrR=null,posCapR=[];
     righeRil.forEach(function(r){
-      if(r.tipo==='cap_inizio'){
-        capCorrR=r.data;posCapR=[];
-        h+='<tr style="background:#1a1a2e"><td colspan="30" style="color:#a5b4fc;font-weight:700;font-size:9px;padding:4px 8px;letter-spacing:1px;">══ '+esc(r.data.titolo)+' ══</td></tr>';
-        return;
-      }
-      if(r.tipo==='cap_fine'){
-        var nP=posCapR.length;
-        h+='<tr style="background:#eef2ff"><td colspan="30" style="color:#3730a3;font-size:8px;font-weight:600;padding:3px 8px;">Subtotale — '+esc(capCorrR?capCorrR.titolo:'')+': <b>'+nP+'</b> pos.</td></tr>';
-        h+='<tr style="background:#f5f5ff"><td colspan="30" style="color:#9ca3af;font-size:7.5px;padding:2px 8px;">── Fine: '+esc(r.data.titolo)+' ──</td></tr>';
-        capCorrR=null;posCapR=[];
-        return;
-      }
-      var p=r.data;
-      if(capCorrR)posCapR.push(p);
+      if(r.tipo==='cap_inizio'){capCorrR=r.data;posCapR=[];h+='<tr style="background:#1a1a2e"><td colspan="30" style="color:#a5b4fc;font-weight:700;font-size:9px;padding:4px 8px;letter-spacing:1px;">\u2550\u2550 '+esc(r.data.titolo)+' \u2550\u2550</td></tr>';return;}
+      if(r.tipo==='cap_fine'){var nP=posCapR.length;h+='<tr style="background:#eef2ff"><td colspan="30" style="color:#3730a3;font-size:8px;font-weight:600;padding:3px 8px;">Subtotale \u2014 '+esc(capCorrR?capCorrR.titolo:'')+': <b>'+nP+'</b> pos.</td></tr>';h+='<tr style="background:#f5f5ff"><td colspan="30" style="color:#9ca3af;font-size:7.5px;padding:2px 8px;">\u2500\u2500 Fine: '+esc(r.data.titolo)+' \u2500\u2500</td></tr>';capCorrR=null;posCapR=[];return;}
+      var p=r.data;if(capCorrR)posCapR.push(p);
       var piano=(p.piano!==undefined&&p.piano!==null)?('P'+(parseInt(p.piano)>=0?'+':'')+p.piano):'—';
       var Lt=p._t?Math.round(p._t.Lt):null,Ht=p._t?Math.round(p._t.Ht):null;
       h+='<tr>';
-      h+='<td class="num">'+esc(String(numPos(p)))+'</td>';
-      h+='<td class="c">'+piano+'</td>';
-      h+='<td style="white-space:normal;min-width:50px">'+esc(v(p.ambiente))+'</td>';
-      h+='<td class="tipo-cell">'+esc(v(p.tipo_serramento))+'</td>';
-      h+='<td class="c gsep">'+esc(v(p.n_campi))+'</td>';
-      h+='<td class="c">'+esc(v(p.materiale))+'</td>';
-      h+='<td style="min-width:40px">'+esc(v(p.sistema))+'</td>';
-      h+='<td class="c">'+esc(v(p.stile_design))+(p.variante_telaio?'/'+esc(v(p.variante_telaio)):'')+'</td>';
+      h+='<td class="num">'+esc(String(numPos(p)))+'</td><td class="c">'+piano+'</td><td style="white-space:normal;min-width:50px">'+esc(v(p.ambiente))+'</td><td class="tipo-cell">'+esc(v(p.tipo_serramento))+'</td>';
+      h+='<td class="c gsep">'+esc(v(p.n_campi))+'</td><td class="c">'+esc(v(p.materiale))+'</td><td style="min-width:40px">'+esc(v(p.sistema))+'</td><td class="c">'+esc(v(p.stile_design))+(p.variante_telaio?'/'+esc(v(p.variante_telaio)):'')+'</td>';
       h+='<td class="c gsep">'+esc(v(p.tipo_foro))+'</td>';
       h+='<td class="dim-c"><div class="dm">'+v(p.L_mm||p.l_mm||'—')+'</div>'+(Lt?'<div class="dc">('+Lt+')</div>':'')+'</td>';
       h+='<td class="dim-c"><div class="dm">'+v(p.H_mm||p.h_mm||'—')+'</div>'+(Ht?'<div class="dc">('+Ht+')</div>':'')+'</td>';
-      h+='<td class="c gsep">'+esc(v(p.n_vetri))+'</td>';
-      h+='<td class="c">'+esc(v(p.oscurante_tipo))+'</td>';
-      h+='<td class="c">'+esc(v(p.oscurante_meccanismo))+'</td>';
-      h+='<td class="c gsep">'+esc(v(p.coprifilo_int_mat))+'</td>';
-      h+='<td class="c">'+esc(v(p.coprifilo_int_dim))+'</td>';
-      h+='<td class="c">'+esc(v(p.coprifilo_est_mat))+'</td>';
-      h+='<td class="c">'+esc(v(p.coprifilo_est_dim))+'</td>';
-      h+='<td class="c gsep">'+esc(v(p.cassonetto))+'</td>';
-      h+='<td class="c">'+esc(v(p.schermatura))+'</td>';
-      h+='<td class="c">'+esc(v(p.zanzariera))+'</td>';
-      h+='<td class="c">'+esc(v(p.controtelaio))+'</td>';
+      h+='<td class="c gsep">'+esc(v(p.n_vetri))+'</td><td class="c">'+esc(v(p.oscurante_tipo))+'</td><td class="c">'+esc(v(p.oscurante_meccanismo))+'</td>';
+      h+='<td class="c gsep">'+esc(v(p.coprifilo_int_mat))+'</td><td class="c">'+esc(v(p.coprifilo_int_dim))+'</td><td class="c">'+esc(v(p.coprifilo_est_mat))+'</td><td class="c">'+esc(v(p.coprifilo_est_dim))+'</td>';
+      h+='<td class="c gsep">'+esc(v(p.cassonetto))+'</td><td class="c">'+esc(v(p.schermatura))+'</td><td class="c">'+esc(v(p.zanzariera))+'</td><td class="c">'+esc(v(p.controtelaio))+'</td>';
       h+='<td class="c gsep">'+esc(v(p.dinoxill))+'</td>';
       h+='<td class="c">'+(p.angolari_pvc?'<span class="chk on"></span>':'<span class="chk"></span>')+'</td>';
       h+='<td class="c">'+(p.rimozione==='SI'||p.rimozione===true?'<span class="chk on"></span>':'<span class="chk"></span>')+'</td>';
@@ -668,104 +536,85 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
       var g='<div class="acc-g"><div class="acc-gh">';
       if(img)g+='<img class="acc-gimg" src="'+esc(img)+'" alt="" onerror="this.style.display=\'none\'">';
       else g+='<div style="width:46px;height:32px;flex-shrink:0;"></div>';
-      g+='<div class="acc-gtit">'+esc(tit)+'</div><div class="acc-gtot">'+tot+'</div>';
-      g+='</div><div class="acc-gb">';
+      g+='<div class="acc-gtit">'+esc(tit)+'</div><div class="acc-gtot">'+tot+'</div></div><div class="acc-gb">';
       subs.forEach(function(s){
         var ps=s.pos.map(function(x){return String(x);}).join(', ');
-        g+='<div class="acc-sub">';
-        if(subs.length>1)g+='<div class="acc-sublbl">'+s.l+'</div>';
+        g+='<div class="acc-sub">';if(subs.length>1)g+='<div class="acc-sublbl">'+s.l+'</div>';
         g+='<div class="acc-row">'+s.chips+'<div class="acc-pl">Pos: '+esc(ps)+'</div></div></div>';
       });
       g+='</div></div>';return g;
     }
 
-    // Accessori: per capitolo se esistono caps, poi totali
     if(caps&&caps.length){
       var gruppiAcc=groupByCap(posCalc,caps);
       gruppiAcc.forEach(function(g){
         if(!g.pos.length)return;
-        h+='<div style="background:#1a1a2e;color:#a5b4fc;font-weight:700;font-size:.82rem;padding:6px 12px;margin:10px 0 6px;border-radius:5px;">══ '+esc(g.cap.titolo)+' ══ <span style="font-size:.74rem;opacity:.7;">('+g.pos.length+' pos.)</span></div>';
-        h+=renderAccDettaglio(g.pos);
+        h+='<div style="background:#1a1a2e;color:#a5b4fc;font-weight:700;font-size:.82rem;padding:6px 12px;margin:10px 0 6px;border-radius:5px;">\u2550\u2550 '+esc(g.cap.titolo)+' \u2550\u2550 <span style="font-size:.74rem;opacity:.7;">('+g.pos.length+' pos.)</span></div>';
+        h+=renderAccDettaglio(g.pos,mkG);
         h+=renderAccSubtot(g.cap.titolo,g.pos);
       });
-      h+='<div style="background:#064e3b;color:#a7f3d0;font-weight:700;font-size:.82rem;padding:6px 12px;margin:14px 0 6px;border-radius:5px;">∑ Totali complessivi</div>';
+      h+='<div style="background:#064e3b;color:#a7f3d0;font-weight:700;font-size:.82rem;padding:6px 12px;margin:14px 0 6px;border-radius:5px;">\u2211 Totali complessivi</div>';
     }
-    h+=renderAccDettaglio(posCalc);
+    h+=renderAccDettaglio(posCalc,mkG);
+    sections.push(h);
   }
 
-  function renderAccDettaglio(posCalc){
+  function renderAccDettaglio(posCalc,mkG){
     var h='';
-    // coprifili
     var cim={};posCalc.forEach(function(p){if(!p.coprifilo_int_mat)return;var k=p.coprifilo_int_mat.toUpperCase()+'|'+(p.coprifilo_int_dim||'');if(!cim[k])cim[k]={mat:p.coprifilo_int_mat,dim:p.coprifilo_int_dim||'—',b:0,pos:[]};cim[k].b+=p._bci;cim[k].pos.push(numPos(p));});
     if(Object.keys(cim).length){var tb=0;Object.values(cim).forEach(function(v){tb+=v.b;});h+=mkG('Coprifili interni','',tb+' barre TOT.',Object.values(cim).map(function(v){return{l:v.mat+' \u2014 '+v.dim+' mm',chips:'<span class="chip-n">'+v.b+' barre</span>',pos:v.pos};}));}
     var cem={};posCalc.forEach(function(p){if(!p.coprifilo_est_mat)return;var k=p.coprifilo_est_mat.toUpperCase()+'|'+(p.coprifilo_est_dim||'');if(!cem[k])cem[k]={mat:p.coprifilo_est_mat,dim:p.coprifilo_est_dim||'—',b:0,pos:[]};cem[k].b+=p._bce;cem[k].pos.push(numPos(p));});
     if(Object.keys(cem).length){var tb=0;Object.values(cem).forEach(function(v){tb+=v.b;});h+=mkG('Coprifili esterni','',tb+' barre TOT.',Object.values(cem).map(function(v){return{l:v.mat+' \u2014 '+v.dim+' mm',chips:'<span class="chip-n">'+v.b+' barre</span>',pos:v.pos};}));}
-    // avvolgibile
     var avm={};['A','AM','AE','AR'].forEach(function(k){posCalc.forEach(function(p){if(p.schermatura!==k)return;if(!avm[k])avm[k]={mq:0,n:0,pos:[]};avm[k].mq+=p._ss;avm[k].n++;avm[k].pos.push(numPos(p));});});
-    var avk=Object.keys(avm);if(avk.length){var tm=0,tn=0;avk.forEach(function(k){tm+=avm[k].mq;tn+=avm[k].n;});h+=mkG('Avvolgibile','img/Avvolgibile.jpeg',n2(tm)+' mq TOT. \u2014 '+tn+' pz',avk.map(function(k){var v=avm[k];return{l:SCHERM_DESC[k]||k,chips:'<span class="chip-mq">'+n2(v.mq)+' mq</span> <span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-    // scuretto
+    var avk=Object.keys(avm);if(avk.length){var tm=0,tn=0;avk.forEach(function(k){tm+=avm[k].mq;tn+=avm[k].n;});h+=mkG('Avvolgibile','img/Avvolgibile.jpeg',n2(tm)+' mq TOT. \u2014 '+tn+' pz',avk.map(function(k){var vv=avm[k];return{l:SCHERM_DESC[k]||k,chips:'<span class="chip-mq">'+n2(vv.mq)+' mq</span> <span class="chip-n">'+vv.n+' pz</span>',pos:vv.pos};}));}
     var scp=posCalc.filter(function(p){return p.schermatura==='S';});
     if(scp.length)h+=mkG('Scuretto','img/Scuretto.jpeg',scp.length+' pz',[{l:'Scuretto',chips:'<span class="chip-n">'+scp.length+' pz</span>',pos:scp.map(numPos)}]);
-    // tenda
     var tem={};['TZ','TM'].forEach(function(k){posCalc.forEach(function(p){if(p.schermatura!==k)return;if(!tem[k])tem[k]={n:0,pos:[]};tem[k].n++;tem[k].pos.push(numPos(p));});});
-    var tek=Object.keys(tem);if(tek.length){var tn=0;tek.forEach(function(k){tn+=tem[k].n;});h+=mkG('Tenda','img/Tenda_zip.jpeg',tn+' pz TOT.',tek.map(function(k){var v=tem[k];return{l:SCHERM_DESC[k]||k,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-    // frangisole
+    var tek=Object.keys(tem);if(tek.length){var tn=0;tek.forEach(function(k){tn+=tem[k].n;});h+=mkG('Tenda','img/Tenda_zip.jpeg',tn+' pz TOT.',tek.map(function(k){var vv=tem[k];return{l:SCHERM_DESC[k]||k,chips:'<span class="chip-n">'+vv.n+' pz</span>',pos:vv.pos};}));}
     var frm={};['CA','CT'].forEach(function(k){posCalc.forEach(function(p){if(p.schermatura!==k)return;if(!frm[k])frm[k]={n:0,pos:[]};frm[k].n++;frm[k].pos.push(numPos(p));});});
-    var frk=Object.keys(frm);if(frk.length){var fn=0;frk.forEach(function(k){fn+=frm[k].n;});h+=mkG('Frangisole','img/Frangisole.jpeg',fn+' pz TOT.',frk.map(function(k){var v=frm[k];return{l:SCHERM_DESC[k]||k,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-    // controtelaio L
+    var frk=Object.keys(frm);if(frk.length){var fn=0;frk.forEach(function(k){fn+=frm[k].n;});h+=mkG('Frangisole','img/Frangisole.jpeg',fn+' pz TOT.',frk.map(function(k){var vv=frm[k];return{l:SCHERM_DESC[k]||k,chips:'<span class="chip-n">'+vv.n+' pz</span>',pos:vv.pos};}));}
     var clm={};posCalc.forEach(function(p){if(p.controtelaio!=='L')return;var t=p.tipo_serramento||'?';if(!clm[t])clm[t]={n:0,pos:[]};clm[t].n++;clm[t].pos.push(numPos(p));});
-    if(Object.keys(clm).length){var cn=0;Object.values(clm).forEach(function(v){cn+=v.n;});var clk=TIPO_ORD.filter(function(t){return clm[t];});h+=mkG('Controtelaio legno','img/Controtelaio_legno.png',cn+' pz TOT.',clk.map(function(t){var v=clm[t];return{l:TIPO_DESC[t]||t,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-    // termocassa
+    if(Object.keys(clm).length){var cn=0;Object.values(clm).forEach(function(vv){cn+=vv.n;});var clk=TIPO_ORD.filter(function(t){return clm[t];});h+=mkG('Controtelaio legno','img/Controtelaio_legno.png',cn+' pz TOT.',clk.map(function(t){var vv=clm[t];return{l:TIPO_DESC[t]||t,chips:'<span class="chip-n">'+vv.n+' pz</span>',pos:vv.pos};}));}
     var ctm={};posCalc.forEach(function(p){if(p.controtelaio!=='T')return;var t=p.tipo_serramento||'?';if(!ctm[t])ctm[t]={n:0,pos:[]};ctm[t].n++;ctm[t].pos.push(numPos(p));});
-    if(Object.keys(ctm).length){var tn=0;Object.values(ctm).forEach(function(v){tn+=v.n;});var ctk=TIPO_ORD.filter(function(t){return ctm[t];});h+=mkG('Termocassa','img/Termocassa.jpeg',tn+' pz TOT.',ctk.map(function(t){var v=ctm[t];return{l:TIPO_DESC[t]||t,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-    // cassonetto
+    if(Object.keys(ctm).length){var tn=0;Object.values(ctm).forEach(function(vv){tn+=vv.n;});var ctk=TIPO_ORD.filter(function(t){return ctm[t];});h+=mkG('Termocassa','img/Termocassa.jpeg',tn+' pz TOT.',ctk.map(function(t){var vv=ctm[t];return{l:TIPO_DESC[t]||t,chips:'<span class="chip-n">'+vv.n+' pz</span>',pos:vv.pos};}));}
     var csm={};posCalc.forEach(function(p){if(!p.cassonetto)return;var k=p.cassonetto;if(!csm[k])csm[k]={m:0,pos:[]};csm[k].m+=p._cassM;csm[k].pos.push(numPos(p));});
-    if(Object.keys(csm).length){var tm=0;Object.values(csm).forEach(function(v){tm+=v.m;});var csd={'P':'PVC','L':'Legno'};h+=mkG('Cassonetto','img/Cassonetto_PVC.webp',n2(tm)+' m TOT.',Object.keys(csm).map(function(k){var v=csm[k];return{l:'Cassonetto '+(csd[k]||k),chips:'<span class="chip-m">'+n2(v.m)+' m</span>',pos:v.pos};}));}
-    // zanzariera
+    if(Object.keys(csm).length){var tm=0;Object.values(csm).forEach(function(vv){tm+=vv.m;});var csd={'P':'PVC','L':'Legno'};h+=mkG('Cassonetto','img/Cassonetto_PVC.webp',n2(tm)+' m TOT.',Object.keys(csm).map(function(k){var vv=csm[k];return{l:'Cassonetto '+(csd[k]||k),chips:'<span class="chip-m">'+n2(vv.m)+' m</span>',pos:vv.pos};}));}
     var znm={};posCalc.forEach(function(p){if(!p.zanzariera)return;var k=p.zanzariera;if(!znm[k])znm[k]={mq:0,n:0,pos:[]};znm[k].mq+=p._sz;znm[k].n++;znm[k].pos.push(numPos(p));});
-    if(Object.keys(znm).length){var tm=0;Object.values(znm).forEach(function(v){tm+=v.mq;});var znd={'V':'Verticale','O':'Orizzontale'};h+=mkG('Zanzariera','img/Zanzariera.jpeg',n2(tm)+' mq TOT.',Object.keys(znm).map(function(k){var v=znm[k];return{l:znd[k]||k,chips:'<span class="chip-mq">'+n2(v.mq)+' mq</span> <span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-    // dinox
+    if(Object.keys(znm).length){var tm=0;Object.values(znm).forEach(function(vv){tm+=vv.mq;});var znd={'V':'Verticale','O':'Orizzontale'};h+=mkG('Zanzariera','img/Zanzariera.jpeg',n2(tm)+' mq TOT.',Object.keys(znm).map(function(k){var vv=znm[k];return{l:znd[k]||k,chips:'<span class="chip-mq">'+n2(vv.mq)+' mq</span> <span class="chip-n">'+vv.n+' pz</span>',pos:vv.pos};}));}
     var dim={};var dnord=['DA','I3','I4'];var dnd={'DA':'Davanzale','I3':'Imbotte 3 lati','I4':'Imbotte 4 lati'};
     posCalc.forEach(function(p){if(!p.dinoxill)return;var k=p.dinoxill;if(!dim[k])dim[k]={n:0,pos:[]};dim[k].n++;dim[k].pos.push(numPos(p));});
-    if(Object.keys(dim).length){var dn=0;Object.values(dim).forEach(function(v){dn+=v.n;});var dik=dnord.filter(function(k){return dim[k];});h+=mkG('Dinoxill','',dn+' pz TOT.',dik.map(function(k){var v=dim[k];return{l:dnd[k]||k,chips:'<span class="chip-n">'+v.n+' pz</span>',pos:v.pos};}));}
-    // angolari pvc
+    if(Object.keys(dim).length){var dn=0;Object.values(dim).forEach(function(vv){dn+=vv.n;});var dik=dnord.filter(function(k){return dim[k];});h+=mkG('Dinoxill','',dn+' pz TOT.',dik.map(function(k){var vv=dim[k];return{l:dnd[k]||k,chips:'<span class="chip-n">'+vv.n+' pz</span>',pos:vv.pos};}));}
     var agp=posCalc.filter(function(p){return p.angolari_pvc===true;});
-    if(agp.length){var ab=0;agp.forEach(function(p){if(p._t){var sv=svCop(p._ts,p._t.Lt,p._t.Ht,C.angLato);ab+=cUp(sv/C.angB);}});h+=mkG('Angolari PVC','',agp.length+' pos.',[ {l:'Angolari PVC 50mm',chips:'<span class="chip-n">'+agp.length+' pos.</span> <span class="chip-n">'+ab+' barre</span>',pos:agp.map(numPos)}]);}
-    // rimozioni
-    var rs=posCalc.filter(function(p){return p.rimozione==='SI'||p.rimozione===true;});var ra=posCalc.filter(function(p){return p.rimozione_accessori===true;});var mr=posCalc.filter(function(p){return p.taglio_marmo===true;});
-    if(rs.length||ra.length||mr.length){var sr=[];if(rs.length)sr.push({l:'Rimozione serramento',chips:'<span class="chip-n">'+rs.length+' pz</span>',pos:rs.map(numPos)});if(ra.length)sr.push({l:'Rimozione accessori',chips:'<span class="chip-n">'+ra.length+' pz</span>',pos:ra.map(numPos)});if(mr.length)sr.push({l:'Taglio marmo',chips:'<span class="chip-n">'+mr.length+' pz</span>',pos:mr.map(numPos)});h+=mkG('Rimozione / Taglio','', (rs.length+ra.length+mr.length)+' interventi',sr);}
-    // materiali posa
+    if(agp.length){var ab=0;agp.forEach(function(p){if(p._t){var sv=svCop(p._ts,p._t.Lt,p._t.Ht,C.angLato);ab+=cUp(sv/C.angB);}});h+=mkG('Angolari PVC','',agp.length+' pos.',[{l:'Angolari PVC 50mm',chips:'<span class="chip-n">'+agp.length+' pos.</span> <span class="chip-n">'+ab+' barre</span>',pos:agp.map(numPos)}]);}
+    var rs=posCalc.filter(function(p){return p.rimozione==='SI'||p.rimozione===true;});
+    var ra=posCalc.filter(function(p){return p.rimozione_accessori===true;});
+    var mr=posCalc.filter(function(p){return p.taglio_marmo===true;});
+    if(rs.length||ra.length||mr.length){var sr=[];if(rs.length)sr.push({l:'Rimozione serramento',chips:'<span class="chip-n">'+rs.length+' pz</span>',pos:rs.map(numPos)});if(ra.length)sr.push({l:'Rimozione accessori',chips:'<span class="chip-n">'+ra.length+' pz</span>',pos:ra.map(numPos)});if(mr.length)sr.push({l:'Taglio marmo',chips:'<span class="chip-n">'+mr.length+' pz</span>',pos:mr.map(numPos)});h+=mkG('Rimozione / Taglio','',(rs.length+ra.length+mr.length)+' interventi',sr);}
     var tS=0,tPol=0,tBG=0,tMu=0,tBV=0,tVi=0;posCalc.forEach(function(p){tS+=p._sch;tPol+=p._mp;tBG+=p._bg;tMu+=p._mu;tBV+=p._bv;tVi+=p._vi;});var tLin=n2(tS+tBG+tMu+tBV);
-    h+='<div class="acc-g"><div class="acc-gh"><img class="acc-gimg" src="img/Posa.jpeg" alt="" onerror="this.style.display=\'none\'"><div class="acc-gtit">Materiali di posa</div><div class="acc-gtot">Lineare: '+tLin+' m</div></div><div class="acc-gb">';
-    h+='<div class="mat-grid">';
-    [{n:'Schiuma',v:n2(tS),u:'m'},{n:'MS Polimero',v:tPol,u:'flac.'},{n:'Nastro BG1',v:n2(tBG),u:'m'},{n:'Nastro Multi',v:n2(tMu),u:'m'},{n:'Bar.vapore',v:n2(tBV),u:'m'},{n:'Viti 1 kit',v:tVi,u:'kit'},{n:'Tot.lineare',v:tLin,u:'m'}].forEach(function(item){
-      h+='<div class="mat-c"><div class="mn">'+item.n+'</div><div class="mv">'+item.v+'</div><div class="mu">'+item.u+'</div></div>';
-    });
+    h+='<div class="acc-g"><div class="acc-gh"><img class="acc-gimg" src="img/Posa.jpeg" alt="" onerror="this.style.display=\'none\'"><div class="acc-gtit">Materiali di posa</div><div class="acc-gtot">Lineare: '+tLin+' m</div></div><div class="acc-gb"><div class="mat-grid">';
+    [{n:'Schiuma',v:n2(tS),u:'m'},{n:'MS Polimero',v:tPol,u:'flac.'},{n:'Nastro BG1',v:n2(tBG),u:'m'},{n:'Nastro Multi',v:n2(tMu),u:'m'},{n:'Bar.vapore',v:n2(tBV),u:'m'},{n:'Viti 1 kit',v:tVi,u:'kit'},{n:'Tot.lineare',v:tLin,u:'m'}].forEach(function(item){h+='<div class="mat-c"><div class="mn">'+item.n+'</div><div class="mv">'+item.v+'</div><div class="mu">'+item.u+'</div></div>';});
     h+='</div></div></div>';
     return h;
   }
 
   function renderAccSubtot(titolo,pc){
     var nCI=0,nCE=0,nAvv=0,nScur=0,nCtlL=0,nCtlT=0,tLin=0;
-    pc.forEach(function(p){if(p._bci)nCI+=p._bci;if(p._bce)nCE+=p._bce;
-      var sc=(p.schermatura||'').toUpperCase();
-      if(sc==='A'||sc==='AM'||sc==='AE'||sc==='AR')nAvv++;else if(sc==='S')nScur++;
-      if(p.controtelaio==='L')nCtlL++;else if(p.controtelaio==='T')nCtlT++;
-      tLin+=p._sch+p._bg+p._mu+p._bv;});
-    var cs=function(v,l){return v?'<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 7px;font-size:9px;font-weight:600;">'+l+': '+v+'</span> ':'';};
+    pc.forEach(function(p){if(p._bci)nCI+=p._bci;if(p._bce)nCE+=p._bce;var sc=(p.schermatura||'').toUpperCase();if(sc==='A'||sc==='AM'||sc==='AE'||sc==='AR')nAvv++;else if(sc==='S')nScur++;if(p.controtelaio==='L')nCtlL++;else if(p.controtelaio==='T')nCtlT++;tLin+=p._sch+p._bg+p._mu+p._bv;});
+    var cs=function(vv,l){return vv?'<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 7px;font-size:9px;font-weight:600;">'+l+': '+vv+'</span> ':'';};
     return '<div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;margin:4px 0 14px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">'+
       '<span style="font-weight:700;color:#3730a3;font-size:.78rem;">Subtotale '+esc(titolo)+'</span>'+
       cs(nCI,'CopI')+cs(nCE,'CopE')+cs(nAvv,'Avv')+cs(nScur,'Scur')+cs(nCtlL,'CTL-L')+cs(nCtlT,'TC')+
       '<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 7px;font-size:9px;font-weight:600;">Posa: '+n2(tLin)+' m</span></div>';
   }
 
-  // raccogli sezione accessori in sections
-  sections.push(h);
-
   // ============================================================ SEZIONE POSA
   if(wP){
     var h='';
     h+=mkHdr('Report Posa');
+
+    // ── AGGIUSTAMENTI: letti PRIMA del blocco capitoli ── FIX
+    var adj={};
+    try{adj=JSON.parse(localStorage.getItem('f4_posa_adj_'+idRilievo))||{};}catch(e){}
 
     // tipo-grid
     var ct={I:0,F:0,PF:0,FF:0,VF:0,S:0};pos.forEach(function(p){var t=(p.tipo_serramento||'').toUpperCase();if(ct[t]!==undefined)ct[t]++;});
@@ -773,7 +622,7 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
     TIPO_ORD.forEach(function(s){var n=ct[s]||0;h+='<span class="tipo-chip-c'+(n===0?' zero':'')+'" title="'+(TIPO_DESC[s]||s)+'"><span class="sig">'+s+'</span><span class="cnt">'+n+'</span></span>';});
     h+='</div>';
 
-    // ── POSA: capitoli prima, globale dopo ──
+    // capitoli
     if(caps&&caps.length){
       var gruppiPosa=groupByCap(posCalc,caps);
       gruppiPosa.forEach(function(g){
@@ -786,7 +635,7 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
           var f=Math.max(0,Math.round((vo.oreCalc-minus+plus)*1000)/1000);
           tG+=f;if(vo.tipo==='dir')oDG+=f;else oIG+=f;
         });
-        h+='<div style="background:#1a1a2e;color:#a5b4fc;font-weight:700;font-size:.82rem;padding:6px 12px;margin:10px 0 6px;border-radius:5px;">══ '+esc(g.cap.titolo)+' ══ <span style="opacity:.7;font-size:.74rem;">('+g.pos.length+' pos.)</span></div>';
+        h+='<div style="background:#1a1a2e;color:#a5b4fc;font-weight:700;font-size:.82rem;padding:6px 12px;margin:10px 0 6px;border-radius:5px;">\u2550\u2550 '+esc(g.cap.titolo)+' \u2550\u2550 <span style="opacity:.7;font-size:.74rem;">('+g.pos.length+' pos.)</span></div>';
         var lA2='',tbG='';
         vG.forEach(function(vo){
           var minus=parseFloat((adj[vo.id]||{}).minus)||0;
@@ -794,11 +643,12 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
           var f=Math.max(0,Math.round((vo.oreCalc-minus+plus)*1000)/1000);
           if(vo.n===0&&f===0)return;
           if(vo.area!==lA2){tbG+='<tr class="tr-sez"><td colspan="6">'+vo.area+'</td></tr>';lA2=vo.area;}
+          var hasAdj=(minus>0||plus>0);
           tbG+='<tr class="tr-voce"><td>'+vo.area+'</td><td>'+vo.serv+'</td>'+
             '<td class="c">'+(vo.n>0?vo.n:'—')+'</td>'+
             '<td class="c">'+(vo.dp?fmtH(vo.dp[0]):'—')+'</td>'+
             '<td class="c">'+(vo.dp&&vo.dp[1]?fmtH(vo.dp[1]):'—')+'</td>'+
-            '<td class="ore-f">'+fmtH(f)+'</td></tr>';
+            '<td class="ore-f">'+fmtH(f)+(hasAdj?'<span style="font-size:8px;color:#b45309;margin-left:3px;">'+(plus>0?'+'+fmtH(plus):'')+(minus>0?'-'+fmtH(minus):'')+'</span>':'')+'</td></tr>';
         });
         h+='<div class="tbl-outer"><table class="t-posa"><thead><tr>'+
           '<th style="width:20%">Area</th><th style="width:36%">Servizio</th>'+
@@ -811,15 +661,11 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
           '<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 8px;font-weight:600;">Ore dirette: '+fmtH(oDG)+'</span>'+
           '<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 8px;font-weight:600;">Ore indirette: '+fmtH(oIG)+'</span>'+
           '<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 8px;font-weight:600;">Ore totali: '+fmtH(tG)+'</span>'+
-          '<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 8px;font-weight:600;">Giorni: '+giG+'</span>'+
-        '</div>';
+          '<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 8px;font-weight:600;">Giorni: '+giG+'</span></div>';
       });
-      h+='<div style="background:#064e3b;color:#a7f3d0;font-weight:700;font-size:.82rem;padding:6px 12px;margin:14px 0 6px;border-radius:5px;">∑ Totali complessivi</div>';
+      h+='<div style="background:#064e3b;color:#a7f3d0;font-weight:700;font-size:.82rem;padding:6px 12px;margin:14px 0 6px;border-radius:5px;">\u2211 Totali complessivi</div>';
     }
 
-    // Legge aggiustamenti manuali — DEVE stare prima del blocco capitoli
-    var adj={};
-    try { adj=JSON.parse(localStorage.getItem('f4_posa_adj_'+idRilievo))||{}; } catch(e){}
     var voci=calcolaVoci(pos);
     var lastArea='',tCalc=0,tFin=0,areaMap={};
     var tbH='';
@@ -845,9 +691,7 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
     h+='</tr></thead><tbody>'+tbH+'</tbody>';
     h+='<tfoot><tr class="tr-tot"><td colspan="5">TOTALE</td><td class="ore-f">'+fmtH(tFin)+'</td></tr></tfoot></table></div>';
 
-    // summary
-    var oreDir=0,oreInd=0;
-    var aHtml='';
+    var oreDir=0,oreInd=0,aHtml='';
     Object.keys(areaMap).forEach(function(area){var d=areaMap[area];aHtml+='<div class="sum-row"><span class="lbl">'+area+'</span><span class="val">'+fmtH(d.fin)+'</span></div>';if(d.tipo==='dir')oreDir+=d.fin;else oreInd+=d.fin;});
     aHtml+='<div class="sum-row tot"><span class="lbl">TOTALE</span><span class="val">'+fmtH(tFin)+'</span></div>';
     var di=oreDir+oreInd;
@@ -868,11 +712,7 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
     sections.push(h);
   }
 
-  // combina sezioni con page-break
-  return sections.map(function(s,i){
-    var isLast=(i===sections.length-1);
-    return '<div class="sezione'+(isLast?'':' sezione-break')+'">'+s+'</div>';
-  }).join('');
+  return sections.map(function(s,i){var isLast=(i===sections.length-1);return '<div class="sezione'+(isLast?'':' sezione-break')+'">'+s+'</div>';}).join('');
 }
 </script>
 </body>

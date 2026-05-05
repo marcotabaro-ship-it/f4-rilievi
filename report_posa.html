@@ -589,7 +589,7 @@ function init() {
     VOCI_GLOBALI=calcolaVoci(pos,USE_GRU);
     var hasCaps=caps&&caps.length>0;
     if(hasCaps){
-      document.getElementById('mode-panel').style.display='';
+      document.getElementById('mode-panel').style.display='block';
       updateModeUI();
       renderCapitoliPosa(pos,caps,loadAdj());
       document.getElementById('titolo-globale-posa').style.display='';

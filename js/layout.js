@@ -1,6 +1,7 @@
 // ================================================================
 // FILE: js/layout.js
 // PROGETTO: F4 Rilievi - Gestione sidebar hamburger e topbar
+// VERSIONE: 2.1 (aggiunto link Guida in sidebar e topbar)
 // ================================================================
 // Include in ogni pagina DOPO auth.js e utils.js
 // ================================================================
@@ -37,17 +38,27 @@ const Layout = {
       </a>
       <div class="topbar-spacer"></div>
       <div class="topbar-user">
+        <a href="guida.html" target="_blank"
+           style="color:rgba(255,255,255,.8);text-decoration:none;font-size:.82rem;font-weight:500;
+                  padding:5px 10px;border:1px solid rgba(255,255,255,.2);border-radius:6px;
+                  white-space:nowrap;margin-right:8px;transition:background .2s;"
+           onmouseover="this.style.background='rgba(255,255,255,.1)'"
+           onmouseout="this.style.background=''">
+          &#10067; Guida
+        </a>
         <div class="user-avatar" data-user-sigla>${sigla}</div>
         <div class="topbar-menu">
           <button class="topbar-menu-btn" id="userMenuBtn">
-            <span data-user-nome>${nome}</span> ▾
+            <span data-user-nome>${nome}</span> &#9662;
           </button>
           <div class="topbar-dropdown" id="userMenu">
-            <a href="dashboard.html">🏠 Dashboard</a>
-            <a href="clienti.html">👥 Clienti</a>
-            ${Auth.isAdmin() ? '<a href="admin.html">⚙️ Amministrazione</a>' : ''}
+            <a href="dashboard.html">&#127968; Dashboard</a>
+            <a href="clienti.html">&#128101; Clienti</a>
+            ${Auth.isAdmin() ? '<a href="admin.html">&#9881;&#65039; Amministrazione</a>' : ''}
             <div class="dd-sep"></div>
-            <a href="#" class="dd-danger" onclick="Auth.logout()">🚪 Esci</a>
+            <a href="guida.html" target="_blank">&#10067; Guida utilizzo</a>
+            <div class="dd-sep"></div>
+            <a href="#" class="dd-danger" onclick="Auth.logout()">&#128682; Esci</a>
           </div>
         </div>
       </div>
@@ -63,18 +74,28 @@ const Layout = {
     sidebar.id = 'sidebar';
 
     const pages = [
-      { href: 'dashboard.html', icon: '🏠', label: 'Dashboard', id: 'dashboard' },
-      { href: 'clienti.html',   icon: '👥', label: 'Clienti',   id: 'clienti' },
+      { href: 'dashboard.html', icon: '&#127968;', label: 'Dashboard', id: 'dashboard' },
+      { href: 'clienti.html',   icon: '&#128101;', label: 'Clienti',   id: 'clienti' },
       { sep: true },
       { section: 'RILIEVI' },
-      { href: 'clienti.html', icon: '🪟', label: 'Serramenti',    id: 'serramenti' },
-      { href: 'clienti.html', icon: '🚪', label: 'Porte Interne', id: 'porte' },
+      { href: 'clienti.html', icon: '&#129695;', label: 'Serramenti',    id: 'serramenti' },
+      { href: 'clienti.html', icon: '&#128682;', label: 'Porte Interne', id: 'porte' },
     ];
 
     if (isAdmin) {
       pages.push({ sep: true });
-      pages.push({ href: 'admin.html', icon: '⚙️', label: 'Amministrazione', id: 'admin' });
+      pages.push({ href: 'admin.html', icon: '&#9881;&#65039;', label: 'Amministrazione', id: 'admin' });
     }
+
+    // Separatore e link Guida in fondo
+    pages.push({ sep: true });
+    pages.push({
+      href: 'guida.html',
+      icon: '&#10067;',
+      label: 'Guida utilizzo',
+      id: 'guida',
+      target: '_blank'
+    });
 
     let html = '<nav class="sidebar-nav">';
     pages.forEach(p => {
@@ -84,8 +105,9 @@ const Layout = {
         html += `<div class="sidebar-section-label">${p.section}</div>`;
       } else {
         const active = this.currentPage === p.id ? ' active' : '';
+        const target = p.target ? ` target="${p.target}"` : '';
         html += `
-          <a href="${p.href}" class="${active}">
+          <a href="${p.href}"${target} class="${active}">
             <span class="nav-icon">${p.icon}</span>
             <span class="nav-label">${p.label}</span>
           </a>`;

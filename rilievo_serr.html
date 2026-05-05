@@ -268,7 +268,7 @@
     <div class="drawer-inner">
       <div class="drawer-header">
         <h3 id="drawerTitle">Posizione —</h3>
-        <button class="drawer-save-top" onclick="salvaPosizione()">&#128190; Salva</button>
+        <button class="btn btn-primary" style="margin-left:auto;padding:5px 14px;font-size:.82rem;" onclick="salvaDrawer()">&#128190; Salva</button>
         <button class="drawer-close" onclick="closeDrawer()">&#10005;</button>
       </div>
       <div class="drawer-body" id="drawerBody">
@@ -546,6 +546,19 @@
   </div>
 </div>
 
+<!-- MODAL CONFIRM CUSTOM -->
+<div class="modal" id="modalConfirmCustom" style="z-index:9999;">
+  <div class="modal-box modal-box-sm">
+    <div class="modal-header" id="modalConfirmHdr">
+      <span class="modal-title" id="modalConfirmTitle">Conferma</span>
+    </div>
+    <div class="modal-body"><p id="modalConfirmMsg" style="margin:0;font-size:.9rem;"></p></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="modalConfirmCancel">Annulla</button>
+      <button class="btn btn-primary" id="modalConfirmOk">OK</button>
+    </div>
+  </div>
+</div>
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
@@ -554,6 +567,24 @@
 <script>
 const currentUser = Auth.requireLogin();
 if (!currentUser) throw new Error('not logged');
+// Confirm dialog custom (sostituisce confirm() nativo)
+function confirmCustom(msg, title) {
+  return new Promise(function(resolve) {
+    document.getElementById('modalConfirmTitle').textContent = title || 'Conferma';
+    document.getElementById('modalConfirmMsg').textContent = msg;
+    Utils.openModal('modalConfirmCustom');
+    var okBtn     = document.getElementById('modalConfirmOk');
+    var cancelBtn = document.getElementById('modalConfirmCancel');
+    function cleanup(val) {
+      Utils.closeModal('modalConfirmCustom');
+      okBtn.onclick = null; cancelBtn.onclick = null;
+      resolve(val);
+    }
+    okBtn.onclick     = function(){ cleanup(true); };
+    cancelBtn.onclick = function(){ cleanup(false); };
+  });
+}
+
 Layout.init('clienti');
 
 // Aggiunge link Guida al sidebar e all'area avatar
@@ -851,9 +882,9 @@ function calcolaRealtime(p) {
   return {Ltub:Ltub,Htub:Htub};
 }
 
-function openDrawer(id) {
+async function openDrawer(id) {
   if(drawerDirty && drawerPosId && drawerPosId!==id) {
-    if(!confirm('Ci sono modifiche non salvate. Continuare?')) return;
+    if(!(await confirmCustom('Ci sono modifiche non salvate. Continuare?','Modifiche non salvate'))) return;
   }
   drawerPosId=id; drawerDirty=false;
   var pos=posizioni.find(function(p){return p.ID_pos===id;});
@@ -864,15 +895,15 @@ function openDrawer(id) {
   renderPosizioni();
 }
 
-function closeDrawer() {
-  if(drawerDirty) { if(!confirm('Modifiche non salvate. Chiudere?')) return; }
+async function closeDrawer() {
+  if(drawerDirty) { if(!(await confirmCustom('Modifiche non salvate. Chiudere?','Modifiche non salvate'))) return; }
   drawerPosId=null; drawerDirty=false;
   document.getElementById('rilievoDrawer').classList.remove('open');
   renderPosizioni();
 }
 
 function nuovaPosizione() {
-  if(drawerDirty){if(!confirm('Modifiche non salvate. Continuare?'))return;}
+  if(drawerDirty){if(!(await confirmCustom('Modifiche non salvate. Continuare?','Modifiche non salvate')))return;}
   drawerPosId=null; drawerDirty=false;
   resetDrawer();
   document.getElementById('drawerTitle').textContent='Nuova posizione';
@@ -1702,7 +1733,7 @@ async function rinominaCapitolo(id, titoloCorrente) {
 async function eliminaCapitolo(id) {
   var cap = capitoli.find(function(c){ return c.id===id; });
   var titolo = cap ? cap.titolo : 'questo capitolo';
-  if (!confirm('Eliminare il capitolo "'+titolo+'"?\nLe posizioni al suo interno resteranno nel rilievo senza capitolo.')) return;
+  if (!(await confirmCustom('Eliminare il capitolo "'+titolo+'"? Le posizioni resteranno nel rilievo senza capitolo.','Elimina capitolo'))) return;
   var res = await API.deleteCapitolo(id);
   if (res.success) {
     Utils.showSuccess('Capitolo eliminato.');

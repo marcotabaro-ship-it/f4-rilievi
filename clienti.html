@@ -12,10 +12,10 @@
   <main class="main-content">
     <div class="page-header">
       <div class="page-header-text">
-        <h1>Clienti</h1>
-        <p class="page-subtitle">Gestione anagrafiche clienti e cantieri</p>
+        <h1 id="pageTitle">Clienti</h1>
+        <p class="page-subtitle" id="pageSubtitle">Gestione anagrafiche clienti e cantieri</p>
       </div>
-      <div class="header-actions">
+      <div class="header-actions" id="headerActions">
         <button class="btn btn-primary" onclick="openModalNuovoCliente()">&#10133; Nuovo cliente</button>
       </div>
     </div>
@@ -32,6 +32,10 @@
           <select class="form-control" id="filterReferente" style="min-width:160px;" onchange="applyFilters()">
             <option value="">— Tutti —</option>
           </select>
+        </div>
+        <div id="filtroAttivoBadge" style="display:none;flex-shrink:0;">
+          <span id="filtroAttivoLabel" style="background:#eef2ff;color:#4f46e5;border-radius:8px;padding:4px 12px;font-size:.80rem;font-weight:600;"></span>
+          <a href="clienti.html" style="font-size:.78rem;color:#6b7280;margin-left:8px;text-decoration:none;">&#10005; Rimuovi filtro</a>
         </div>
       </div>
     </div>
@@ -50,29 +54,17 @@
       <button class="modal-close" onclick="Utils.closeModal('modalCliente')">&#10005;</button>
     </div>
     <div class="modal-body">
-
-      <!-- DATI ANAGRAFICI -->
       <div style="font-size:.78rem;font-weight:700;color:var(--c-primary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">&#128100; Anagrafica</div>
       <div class="form-group">
         <label class="form-label">Nome / Ragione sociale <span class="req">*</span></label>
         <input class="form-control" type="text" id="clienteNome" placeholder="Es. Rossi Mario">
       </div>
       <div class="form-row form-row-2">
-        <div class="form-group">
-          <label class="form-label">Telefono</label>
-          <input class="form-control" type="tel" id="clienteTel" placeholder="es. 0434 000000">
-        </div>
-        <div class="form-group">
-          <label class="form-label">E-mail</label>
-          <input class="form-control" type="email" id="clienteEmail">
-        </div>
+        <div class="form-group"><label class="form-label">Telefono</label><input class="form-control" type="tel" id="clienteTel" placeholder="es. 0434 000000"></div>
+        <div class="form-group"><label class="form-label">E-mail</label><input class="form-control" type="email" id="clienteEmail"></div>
       </div>
-
-      <!-- INDIRIZZO -->
-      <div style="font-size:.78rem;font-weight:700;color:var(--c-primary);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 10px;padding-top:10px;border-top:1px solid var(--c-border);">&#128205; Indirizzo di residenza / sede</div>
-      <div class="form-hint" style="margin-bottom:10px;">
-        Questo indirizzo viene proposto come predefinito quando si crea un nuovo cantiere.
-      </div>
+      <div style="font-size:.78rem;font-weight:700;color:var(--c-primary);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 10px;padding-top:10px;border-top:1px solid var(--c-border);">&#128205; Indirizzo</div>
+      <div class="form-hint" style="margin-bottom:10px;">Proposto come predefinito per nuovi cantieri.</div>
       <div class="form-row form-row-2">
         <div class="form-group">
           <label class="form-label">Tipo via</label>
@@ -83,10 +75,7 @@
             <option>Piazzale</option><option>Calle</option><option>Contrada</option>
           </select>
         </div>
-        <div class="form-group">
-          <label class="form-label">Indirizzo</label>
-          <input class="form-control" type="text" id="clienteIndirizzo" placeholder="es. Roma, 12">
-        </div>
+        <div class="form-group"><label class="form-label">Indirizzo</label><input class="form-control" type="text" id="clienteIndirizzo" placeholder="es. Roma, 12"></div>
       </div>
       <div class="form-group">
         <label class="form-label">Comune</label>
@@ -99,17 +88,9 @@
         </div>
       </div>
       <div class="form-row form-row-2">
-        <div class="form-group">
-          <label class="form-label">Provincia</label>
-          <input class="form-control" type="text" id="clienteProv" maxlength="2" placeholder="es. PN">
-        </div>
-        <div class="form-group">
-          <label class="form-label">CAP</label>
-          <input class="form-control" type="text" id="clienteCap" placeholder="es. 33170">
-        </div>
+        <div class="form-group"><label class="form-label">Provincia</label><input class="form-control" type="text" id="clienteProv" maxlength="2" placeholder="es. PN"></div>
+        <div class="form-group"><label class="form-label">CAP</label><input class="form-control" type="text" id="clienteCap" placeholder="es. 33170"></div>
       </div>
-
-      <!-- NOTE -->
       <div class="form-group" style="margin-top:4px;">
         <label class="form-label">Note</label>
         <textarea class="form-control" id="clienteNote" rows="2"></textarea>
@@ -122,7 +103,7 @@
   </div>
 </div>
 
-<!-- MODAL CONFERMA TOGGLE -->
+<!-- MODAL TOGGLE -->
 <div class="modal" id="modalToggle">
   <div class="modal-box modal-box-sm">
     <div class="modal-header">
@@ -149,57 +130,67 @@ Layout.init('clienti');
 
 var tuttiClienti = [];
 var clienteEditId = null;
-var referentiMap = {}; // { ID_cliente: ['Ref1','Ref2'] }
+var referentiMap = {};
+var clientiConSerr = new Set();
+var clientiConPorte = new Set();
+
+// Legge tipoRilievo dall'URL
+var TIPO_RILIEVO = new URLSearchParams(window.location.search).get('tipoRilievo') || '';
 
 async function init() {
-  var results = await Promise.all([
-    API.getClienti(),
-    API.getRilieviTutti('SERR'),
-    API.getRilieviTutti('PORTE')
-  ]);
-  var resC = results[0], resS = results[1], resP = results[2];
+  // Aggiorna UI in base al filtro attivo
+  if (TIPO_RILIEVO === 'SERR') {
+    document.getElementById('pageTitle').textContent = 'Clienti — Serramenti';
+    document.getElementById('pageSubtitle').textContent = 'Solo clienti con rilievi serramenti';
+    document.getElementById('filtroAttivoBadge').style.display = '';
+    document.getElementById('filtroAttivoLabel').textContent = '&#129695; Filtro: Serramenti';
+    // Nasconde il bottone Nuovo cliente quando si filtra per tipo
+    document.getElementById('headerActions').style.display = 'none';
+  } else if (TIPO_RILIEVO === 'PORTE') {
+    document.getElementById('pageTitle').textContent = 'Clienti — Porte Interne';
+    document.getElementById('pageSubtitle').textContent = 'Solo clienti con rilievi porte interne';
+    document.getElementById('filtroAttivoBadge').style.display = '';
+    document.getElementById('filtroAttivoLabel').textContent = '&#128682; Filtro: Porte Interne';
+    document.getElementById('headerActions').style.display = 'none';
+  }
+
+  var resC = await API.getClienti();
   if (!resC.success) { Utils.showError(resC.error); return; }
   tuttiClienti = resC.data;
 
-  // Costruisci mappa referenti per cliente
-  referentiMap = {};
-  var allRilievi = [];
-  if (resS.success) allRilievi = allRilievi.concat(resS.data);
-  if (resP.success) allRilievi = allRilievi.concat(resP.data);
-  allRilievi.forEach(function(r) {
-    if (!r.referente || !r.id_cantiere) return;
-    // Trovo il cliente tramite cantiere
-    // I dati rilievo hanno id_cantiere, ma non ID_cliente direttamente
-    // uso un workaround: dopo il render mappo via api separata
-  });
-
-  // Carica referenti via query diretta rilievi + cantieri
-  caricaReferenti();
   renderClienti(tuttiClienti);
   applyFilters();
+  caricaReferenti();
 }
 
 async function caricaReferenti() {
-  // Query: rilievi con join cantieri per avere ID_cliente
   var SU = APP_CONFIG.SUPABASE_URL, SK = APP_CONFIG.SUPABASE_ANON_KEY;
   var tok = (typeof Auth !== 'undefined' && Auth.getToken) ? Auth.getToken() : SK;
-  var url = SU + '/rest/v1/rilievi?stato=neq.archiviato&select=referente,cantieri(id_cliente)';
+  var url = SU + '/rest/v1/rilievi?stato=neq.archiviato&select=tipo,referente,cantieri(id_cliente)';
   try {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, false); // sincrono solo per semplicita
+    xhr.open('GET', url, false);
     xhr.setRequestHeader('apikey', SK);
     xhr.setRequestHeader('Authorization', 'Bearer ' + (tok || SK));
     xhr.send();
     if (xhr.status >= 200 && xhr.status < 300) {
       var rows = JSON.parse(xhr.responseText);
       referentiMap = {};
+      clientiConSerr  = new Set();
+      clientiConPorte = new Set();
       rows.forEach(function(r) {
-        if (!r.referente || !r.cantieri) return;
-        var idC = r.cantieri.id_cliente || r.cantieri.ID_cliente;
+        if (!r.cantieri) return;
+        var idC = String(r.cantieri.id_cliente || r.cantieri.ID_cliente || '');
         if (!idC) return;
-        idC = String(idC);
-        if (!referentiMap[idC]) referentiMap[idC] = [];
-        if (referentiMap[idC].indexOf(r.referente) < 0) referentiMap[idC].push(r.referente);
+        // Referenti
+        if (r.referente) {
+          if (!referentiMap[idC]) referentiMap[idC] = [];
+          if (referentiMap[idC].indexOf(r.referente) < 0) referentiMap[idC].push(r.referente);
+        }
+        // Tipo rilievo
+        var tipo = (r.tipo || '').toUpperCase();
+        if (tipo === 'SERR')  clientiConSerr.add(idC);
+        if (tipo === 'PORTE') clientiConPorte.add(idC);
       });
       // Aggiorna select referenti
       var allRef = [];
@@ -212,35 +203,46 @@ async function caricaReferenti() {
         sel.innerHTML = '<option value="">— Tutti —</option>' +
           allRef.map(function(r) { return '<option value="' + r + '">' + r + '</option>'; }).join('');
       }
-      // Ri-renderizza con referenti
       applyFilters();
     }
   } catch(e) { console.warn('caricaReferenti:', e); }
 }
 
-function filterClienti(q) { applyFilters(); }
-
 function applyFilters() {
-  var q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+  var q   = (document.getElementById('searchInput').value || '').trim().toLowerCase();
   var ref = (document.getElementById('filterReferente').value || '').trim();
   var lista = tuttiClienti.filter(function(c) {
+    var idC = String(c.ID_cliente);
     var matchQ = !q || (c.nome||'').toLowerCase().includes(q) || (c.email||'').toLowerCase().includes(q) || (c.comune||'').toLowerCase().includes(q);
-    var matchRef = !ref || (referentiMap[String(c.ID_cliente)] || []).indexOf(ref) >= 0;
-    return matchQ && matchRef;
+    var matchRef = !ref || (referentiMap[idC] || []).indexOf(ref) >= 0;
+    var matchTipo = true;
+    if (TIPO_RILIEVO === 'SERR')  matchTipo = clientiConSerr.has(idC);
+    if (TIPO_RILIEVO === 'PORTE') matchTipo = clientiConPorte.has(idC);
+    return matchQ && matchRef && matchTipo;
   });
   renderClienti(lista);
 }
 
 function renderClienti(lista) {
   var container = document.getElementById('clientiList');
-  if (!lista.length) { Utils.showEmptyState(container,'Nessun cliente trovato.','&#128101;'); return; }
-  var sorted = Utils.sortByName(lista,'nome');
+  if (!lista.length) {
+    var msg = TIPO_RILIEVO
+      ? 'Nessun cliente con rilievi ' + (TIPO_RILIEVO === 'SERR' ? 'serramenti' : 'porte interne') + '.'
+      : 'Nessun cliente trovato.';
+    Utils.showEmptyState(container, msg, '&#128101;');
+    return;
+  }
+  var sorted = Utils.sortByName(lista, 'nome');
   container.innerHTML = sorted.map(function(c) {
     var attivo = c.stato === 'attivo';
+    var idC = String(c.ID_cliente);
     var addrStr = [c.tipo_via, c.indirizzo].filter(Boolean).join(' ').trim();
     var locStr  = [c.comune, c.provincia ? '('+c.provincia+')' : ''].filter(Boolean).join(' ').trim();
     var addrLine = [addrStr, locStr, c.cap].filter(Boolean).join(' \u2014 ');
     var contatti = [c.telefono ? '&#128222; '+c.telefono : '', c.email ? '&#9993;&#65039; '+c.email : ''].filter(Boolean).join('&nbsp;&nbsp;');
+    var tipoChips = '';
+    if (clientiConSerr.has(idC))  tipoChips += '<span style="font-size:.72rem;background:#eef2ff;color:#4f46e5;border-radius:6px;padding:1px 7px;margin-right:4px;">&#129695; SERR</span>';
+    if (clientiConPorte.has(idC)) tipoChips += '<span style="font-size:.72rem;background:#fff3e0;color:#E65100;border-radius:6px;padding:1px 7px;">&#128682; PORTE</span>';
     return '<div class="card" style="margin-bottom:8px;padding:0;overflow:hidden;">' +
       '<div style="display:flex;align-items:stretch;">' +
         '<div style="width:52px;background:'+(attivo?'var(--c-primary)':'var(--c-text-sec)')+';display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:1.2rem;flex-shrink:0;">' +
@@ -250,15 +252,16 @@ function renderClienti(lista) {
           '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
             '<strong>'+c.nome+'</strong>' +
             '<span class="badge '+(attivo?'badge-attivo':'badge-obsoleto')+'">'+(attivo?'Attivo':'Non attivo')+'</span>' +
+            tipoChips +
           '</div>' +
           '<div style="font-size:.79rem;color:var(--c-text-sec);margin-top:2px;">' + (contatti||'Nessun contatto') + '</div>' +
-          (referentiMap[String(c.ID_cliente)] ? '<div style="font-size:.76rem;color:var(--c-primary);margin-top:1px;">&#128100; ' + referentiMap[String(c.ID_cliente)].join(' &middot; ') + '</div>' : '') +
+          (referentiMap[idC] ? '<div style="font-size:.76rem;color:var(--c-primary);margin-top:1px;">&#128100; ' + referentiMap[idC].join(' &middot; ') + '</div>' : '') +
           (addrLine ? '<div style="font-size:.76rem;color:var(--c-text-sec);">&#128205; '+addrLine+'</div>' : '') +
         '</div>' +
         '<div style="padding:0 10px;display:flex;align-items:center;gap:4px;">' +
-          '<button class="btn btn-sm btn-outline" title="Cantieri" onclick="Utils.navigate(\'cantiere.html\',{idCliente:\''+c.ID_cliente+'\'})">&#127959;</button>' +
-          '<button class="btn-icon" title="Modifica" onclick="openModalModifica(\''+c.ID_cliente+'\')">&#9999;&#65039;</button>' +
-          (Auth.isAdmin() ? '<button class="btn-icon" title="'+(attivo?'Disattiva':'Riattiva')+'" onclick="confermaToggle(\''+c.ID_cliente+'\',\''+c.nome.replace(/'/g,"\\'")+'\','+attivo+')">'+(attivo?'&#128308;':'&#128994;')+'</button>' : '') +
+          '<button class="btn btn-sm btn-outline" onclick="Utils.navigate(\'cantiere.html\',{idCliente:\''+c.ID_cliente+'\'})">&#127959;</button>' +
+          '<button class="btn-icon" onclick="openModalModifica(\''+c.ID_cliente+'\')">&#9999;&#65039;</button>' +
+          (Auth.isAdmin() ? '<button class="btn-icon" onclick="confermaToggle(\''+c.ID_cliente+'\',\''+c.nome.replace(/'/g,"\\'")+'\','+attivo+')">'+(attivo?'&#128308;':'&#128994;')+'</button>' : '') +
         '</div>' +
       '</div></div>';
   }).join('');
@@ -267,8 +270,7 @@ function renderClienti(lista) {
 function openModalNuovoCliente() {
   clienteEditId = null;
   document.getElementById('modalClienteTitle').textContent = 'Nuovo cliente';
-  ['clienteNome','clienteTel','clienteEmail','clienteNote',
-   'clienteIndirizzo','clienteComuneInput','clienteProv','clienteCap'].forEach(function(id) {
+  ['clienteNome','clienteTel','clienteEmail','clienteNote','clienteIndirizzo','clienteComuneInput','clienteProv','clienteCap'].forEach(function(id) {
     var el = document.getElementById(id); if(el) el.value = '';
   });
   document.getElementById('clienteTipoVia').value = '';
@@ -298,15 +300,14 @@ async function salvaCliente() {
   var nome = document.getElementById('clienteNome').value.trim();
   if (!nome) { Utils.showWarning('Nome obbligatorio.'); return; }
   var data = {
-    nome:      nome,
-    telefono:  document.getElementById('clienteTel').value.trim(),
-    email:     document.getElementById('clienteEmail').value.trim(),
-    note:      document.getElementById('clienteNote').value.trim(),
-    tipo_via:  document.getElementById('clienteTipoVia').value,
+    nome: nome, telefono: document.getElementById('clienteTel').value.trim(),
+    email: document.getElementById('clienteEmail').value.trim(),
+    note: document.getElementById('clienteNote').value.trim(),
+    tipo_via: document.getElementById('clienteTipoVia').value,
     indirizzo: document.getElementById('clienteIndirizzo').value.trim(),
-    comune:    document.getElementById('clienteComuneInput').value.trim(),
+    comune: document.getElementById('clienteComuneInput').value.trim(),
     provincia: document.getElementById('clienteProv').value.trim().toUpperCase(),
-    cap:       document.getElementById('clienteCap').value.trim()
+    cap: document.getElementById('clienteCap').value.trim()
   };
   var btn = document.getElementById('btnSalvaCliente');
   btn.disabled = true; btn.textContent = 'Salvataggio...';
@@ -319,15 +320,14 @@ async function salvaCliente() {
   } else Utils.showError(res.error);
 }
 
-// Autocomplete comune
 var cercaComuneCliente = Utils.debounce(async function(q) {
   var box = document.getElementById('clienteComuneResults');
   if (q.length < 2) { box.classList.remove('open'); return; }
   var res = await API.getComuni(q);
   if (!res.success || !res.data.length) { box.classList.remove('open'); return; }
   box.innerHTML = res.data.map(function(c) {
-    return '<div class="search-result-item" onclick=\'selComuneCliente('+JSON.stringify(c)+')\' >' +
-      '<div class="search-result-main">'+c.comune+'</div>' +
+    return '<div class="search-result-item" onclick=\'selComuneCliente('+JSON.stringify(c)+')\'>'+
+      '<div class="search-result-main">'+c.comune+'</div>'+
       '<div class="search-result-sub">'+c.provincia+' \u2014 CAP '+c.CAP+'</div></div>';
   }).join('');
   box.classList.add('open');
@@ -336,8 +336,7 @@ var cercaComuneCliente = Utils.debounce(async function(q) {
 function selComuneCliente(c) {
   document.getElementById('clienteComuneInput').value = c.comune;
   document.getElementById('clienteProv').value        = c.provincia;
-  var capEl = document.getElementById('clienteCap');
-  if (!capEl.value) capEl.value = c.CAP;
+  var capEl = document.getElementById('clienteCap'); if (!capEl.value) capEl.value = c.CAP;
   document.getElementById('clienteComuneResults').classList.remove('open');
 }
 
@@ -361,6 +360,5 @@ function confermaToggle(id, nome, attivo) {
 
 init();
 </script>
-
 </body>
 </html>

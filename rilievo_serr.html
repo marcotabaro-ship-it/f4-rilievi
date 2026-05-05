@@ -802,7 +802,7 @@ function calcolaRealtime(p) {
     // nAlH=2 per F e FF: ha aletta sia su lato alto che basso
     // nAlH=1 per I, PF, VF, S: solo lato alto (basso ha soglia/guida)
     var nAlH2m = (p.tipo_serramento==='F' || p.tipo_serramento==='FF') ? 1 : 0;
-    if (tf==='A') { Ltub=L+dS.nasc+dD.nasc+dS.aletta+dD.aletta; Htub=H+dA.nasc+dB.nasc+dA.aletta+nAlH2m*dB.aletta; }
+    if (tf==='A') { Ltub=L+dS.nasc+dD.nasc+dS.aletta+dD.aletta; Htub=H+dA.nasc+dA.aletta+nAlH2m*dB.aletta; }
     else if (tf==='D') { Ltub=L+dS.aletta+dD.aletta; Htub=H+dA.aletta+nAlH2m*dB.aletta; }
     else if (tf==='P') { Ltub=L-2*at+dS.aletta+dD.aletta; Htub=H-atv+dA.aletta+nAlH2m*dB.aletta; }
   } else {
@@ -1293,7 +1293,8 @@ function dRicalcola() {
       var inclBasso = (ts==='F' || ts==='FF');
       if (tf==='A') {
         Ltub = L + nS + nD + aS + aD;
-        Htub = H + nA + nB + aA + (inclBasso ? aB : 0);
+        // Nasc contribuisce SOLO dal lato alto (non dal basso) — verificato dalla formula Excel
+        Htub = H + nA + aA + (inclBasso ? aB : 0);
       } else if (tf==='D') {
         Ltub = L + aS + aD;
         Htub = H + aA + (inclBasso ? aB : 0);

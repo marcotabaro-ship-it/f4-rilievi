@@ -902,7 +902,7 @@ async function closeDrawer() {
   renderPosizioni();
 }
 
-function nuovaPosizione() {
+async function nuovaPosizione() {
   if(drawerDirty){if(!(await confirmCustom('Modifiche non salvate. Continuare?','Modifiche non salvate')))return;}
   drawerPosId=null; drawerDirty=false;
   resetDrawer();

@@ -1,14 +1,11 @@
 // ================================================================
 // FILE: js/layout.js
 // PROGETTO: F4 Rilievi - Gestione sidebar hamburger e topbar
-// VERSIONE: 2.1 (aggiunto link Guida in sidebar e topbar)
-// ================================================================
-// Include in ogni pagina DOPO auth.js e utils.js
+// VERSIONE: 2.2 (Guida in stessa scheda, history.back() funzionante)
 // ================================================================
 
 const Layout = {
 
-  // Pagina corrente (imposta prima di chiamare init)
   currentPage: '',
 
   init(pageName) {
@@ -38,7 +35,7 @@ const Layout = {
       </a>
       <div class="topbar-spacer"></div>
       <div class="topbar-user">
-        <a href="guida.html" target="_blank"
+        <a href="guida.html"
            style="color:rgba(255,255,255,.8);text-decoration:none;font-size:.82rem;font-weight:500;
                   padding:5px 10px;border:1px solid rgba(255,255,255,.2);border-radius:6px;
                   white-space:nowrap;margin-right:8px;transition:background .2s;"
@@ -56,7 +53,7 @@ const Layout = {
             <a href="clienti.html">&#128101; Clienti</a>
             ${Auth.isAdmin() ? '<a href="admin.html">&#9881;&#65039; Amministrazione</a>' : ''}
             <div class="dd-sep"></div>
-            <a href="guida.html" target="_blank">&#10067; Guida utilizzo</a>
+            <a href="guida.html">&#10067; Guida utilizzo</a>
             <div class="dd-sep"></div>
             <a href="#" class="dd-danger" onclick="Auth.logout()">&#128682; Esci</a>
           </div>
@@ -74,12 +71,12 @@ const Layout = {
     sidebar.id = 'sidebar';
 
     const pages = [
-      { href: 'dashboard.html', icon: '&#127968;', label: 'Dashboard', id: 'dashboard' },
-      { href: 'clienti.html',   icon: '&#128101;', label: 'Clienti',   id: 'clienti' },
+      { href: 'dashboard.html', icon: '&#127968;', label: 'Dashboard',      id: 'dashboard' },
+      { href: 'clienti.html',   icon: '&#128101;', label: 'Clienti',         id: 'clienti'   },
       { sep: true },
       { section: 'RILIEVI' },
-      { href: 'clienti.html', icon: '&#129695;', label: 'Serramenti',    id: 'serramenti' },
-      { href: 'clienti.html', icon: '&#128682;', label: 'Porte Interne', id: 'porte' },
+      { href: 'clienti.html',   icon: '&#129695;', label: 'Serramenti',      id: 'serramenti' },
+      { href: 'clienti.html',   icon: '&#128682;', label: 'Porte Interne',   id: 'porte'      },
     ];
 
     if (isAdmin) {
@@ -87,15 +84,8 @@ const Layout = {
       pages.push({ href: 'admin.html', icon: '&#9881;&#65039;', label: 'Amministrazione', id: 'admin' });
     }
 
-    // Separatore e link Guida in fondo
     pages.push({ sep: true });
-    pages.push({
-      href: 'guida.html',
-      icon: '&#10067;',
-      label: 'Guida utilizzo',
-      id: 'guida',
-      target: '_blank'
-    });
+    pages.push({ href: 'guida.html', icon: '&#10067;', label: 'Guida utilizzo', id: 'guida' });
 
     let html = '<nav class="sidebar-nav">';
     pages.forEach(p => {
@@ -105,9 +95,8 @@ const Layout = {
         html += `<div class="sidebar-section-label">${p.section}</div>`;
       } else {
         const active = this.currentPage === p.id ? ' active' : '';
-        const target = p.target ? ` target="${p.target}"` : '';
         html += `
-          <a href="${p.href}"${target} class="${active}">
+          <a href="${p.href}" class="${active}">
             <span class="nav-icon">${p.icon}</span>
             <span class="nav-label">${p.label}</span>
           </a>`;
@@ -116,16 +105,12 @@ const Layout = {
     html += '</nav>';
     sidebar.innerHTML = html;
 
-    // Inserisci dopo topbar
     const topbar = document.getElementById('topbar');
     topbar.insertAdjacentElement('afterend', sidebar);
   },
 
   _wrapContent() {
-    // Aggiungi classe app-layout al body
     document.body.classList.add('has-layout');
-
-    // Il main-content deve avere padding-left giusto
     const main = document.querySelector('.main-content');
     if (main && !main.closest('.app-layout')) {
       const wrapper = document.createElement('div');
@@ -137,19 +122,16 @@ const Layout = {
   },
 
   _bindEvents() {
-    // Toggle sidebar
-    const btn = document.getElementById('sidebarToggle');
+    const btn     = document.getElementById('sidebarToggle');
     const sidebar = document.getElementById('sidebar');
     const layout  = document.getElementById('appLayout');
 
     if (btn && sidebar) {
-      // Ripristina stato salvato
       const saved = localStorage.getItem('f4r_sidebar');
       if (saved === 'open') {
         sidebar.classList.add('open');
         if (layout) layout.classList.add('sidebar-open');
       }
-
       btn.addEventListener('click', () => {
         const isOpen = sidebar.classList.toggle('open');
         if (layout) layout.classList.toggle('sidebar-open', isOpen);
@@ -157,7 +139,6 @@ const Layout = {
       });
     }
 
-    // User menu
     const userBtn  = document.getElementById('userMenuBtn');
     const userMenu = document.getElementById('userMenu');
     if (userBtn && userMenu) {

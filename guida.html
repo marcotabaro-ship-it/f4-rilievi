@@ -9,8 +9,6 @@
   <style>
     :root { --g-indigo:#4f46e5; --g-orange:#E65100; --g-green:#16a34a; --g-amber:#d97706; --g-red:#dc2626; }
     body { background:#f5f6fa; font-size:13px; }
-
-    /* TOOLBAR */
     #toolbar { background:#1a1a2e; color:#fff; padding:10px 20px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:200; box-shadow:0 2px 8px rgba(0,0,0,.35); }
     #toolbar h1 { font-size:15px; margin:0; flex:1; font-weight:700; }
     .btn-tb { border:none; border-radius:6px; padding:6px 14px; font-size:12px; font-weight:600; cursor:pointer; color:#fff; }
@@ -18,8 +16,6 @@
     .btn-tb-print { background:var(--g-indigo); }
     #ruoloSel { background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25); color:#fff; border-radius:6px; padding:5px 10px; font-size:12px; cursor:pointer; }
     #ruoloSel option { background:#1a1a2e; color:#fff; }
-
-    /* LAYOUT */
     #layout { display:flex; max-width:1200px; margin:0 auto; gap:0; }
     #sidenav { width:220px; flex-shrink:0; position:sticky; top:52px; height:calc(100vh - 52px); overflow-y:auto; padding:20px 0; border-right:1px solid #e5e7eb; background:#fff; }
     #sidenav a { display:block; padding:7px 20px; font-size:.82rem; color:var(--c-text-sec); text-decoration:none; border-left:3px solid transparent; transition:all .15s; }
@@ -27,29 +23,20 @@
     #sidenav a.active { color:var(--g-indigo); border-left-color:var(--g-indigo); background:#eef2ff; font-weight:600; }
     #sidenav .nav-sez { font-size:.70rem; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:.6px; padding:12px 20px 4px; }
     #content { flex:1; padding:28px 32px 80px; min-width:0; }
-
-    /* SEZIONI */
     .sez { margin-bottom:48px; scroll-margin-top:64px; }
     .sez-title { font-size:1.15rem; font-weight:700; color:#1a1a2e; margin:0 0 6px; display:flex; align-items:center; gap:10px; }
     .sez-sub { font-size:.82rem; color:var(--c-text-sec); margin:0 0 20px; }
     .sez-divider { border:none; border-top:2px solid #e5e7eb; margin:0 0 20px; }
-
-    /* RUOLO BADGES */
     .badge-ruolo { display:inline-block; font-size:.68rem; font-weight:700; padding:2px 7px; border-radius:10px; text-transform:uppercase; letter-spacing:.3px; }
     .br-admin   { background:#ede9fe; color:#5b21b6; }
     .br-agente  { background:#dbeafe; color:#1e40af; }
     .br-tecnico { background:#dcfce7; color:#15803d; }
     .br-titolare{ background:#fef3c7; color:#b45309; }
     .br-tutti   { background:#f3f4f6; color:#374151; }
-
-    /* PROCEDURA STEPS */
     .steps { counter-reset:step; list-style:none; padding:0; margin:0 0 16px; }
     .steps li { counter-increment:step; display:flex; gap:14px; margin-bottom:14px; }
     .steps li::before { content:counter(step); min-width:28px; height:28px; background:var(--g-indigo); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.78rem; font-weight:700; flex-shrink:0; margin-top:1px; }
     .steps li p { margin:0; line-height:1.6; }
-    .steps li strong { color:#1a1a2e; }
-
-    /* CAMPO RIFERIMENTO */
     .campo-grid { display:grid; grid-template-columns:180px 1fr; gap:0; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; margin-bottom:16px; }
     .campo-grid .c-hdr { background:#4f46e5; color:#fff; font-size:.76rem; font-weight:700; padding:6px 12px; }
     .campo-grid .c-row { display:contents; }
@@ -58,24 +45,15 @@
     .campo-grid .c-nome { padding:7px 12px; font-size:.80rem; font-weight:600; color:#1a1a2e; border-bottom:1px solid #f0f0f8; border-right:1px solid #e5e7eb; }
     .campo-grid .c-desc { padding:7px 12px; font-size:.80rem; color:#6b7280; border-bottom:1px solid #f0f0f8; }
     .c-obblig { color:var(--g-red); font-size:.70rem; margin-left:3px; }
-
-    /* NOTE / TIPS */
     .tip { background:#eef2ff; border-left:4px solid var(--g-indigo); padding:10px 14px; border-radius:0 6px 6px 0; font-size:.82rem; color:#3730a3; margin:12px 0; }
     .warn { background:#fffbeb; border-left:4px solid var(--g-amber); padding:10px 14px; border-radius:0 6px 6px 0; font-size:.82rem; color:#78350f; margin:12px 0; }
-    .ruolo-tag { background:#f3f4f6; border:1px solid #e5e7eb; border-radius:6px; padding:10px 14px; font-size:.82rem; margin:12px 0; }
-    .ruolo-tag strong { display:block; margin-bottom:6px; color:#1a1a2e; }
-
-    /* TABELLA RUOLI */
     table.ruoli { width:100%; border-collapse:collapse; font-size:.80rem; margin-bottom:16px; }
     table.ruoli th { background:#1a1a2e; color:#fff; padding:8px 12px; text-align:left; font-size:.75rem; }
     table.ruoli td { padding:7px 12px; border-bottom:1px solid #f0f0f8; vertical-align:middle; }
     table.ruoli tr:nth-child(even) td { background:#f8f9fa; }
     .check { color:var(--g-green); font-weight:700; }
     .cross { color:#d1d5db; }
-
-    /* SECTION HIDDEN */
     .sez.hidden { display:none; }
-
     @media print {
       @page { size:A4 portrait; margin:12mm; }
       body { background:#fff; }
@@ -98,7 +76,12 @@
     <option value="titolare">Titolare</option>
     <option value="admin">Administrator</option>
   </select>
-  <button class="btn-tb btn-tb-back" onclick="history.length > 1 ? history.back() : window.location.href='dashboard.html'">&#8592; Indietro</button>
+  <button class="btn-tb btn-tb-back" onclick="
+    var back = new URLSearchParams(window.location.search).get('back');
+    if (back) { window.location.href = back; }
+    else if (history.length > 1) { history.back(); }
+    else { window.location.href = 'dashboard.html'; }
+  ">&#8592; Indietro</button>
   <button class="btn-tb btn-tb-print" onclick="window.print()">&#128438; Stampa PDF</button>
 </div>
 
@@ -119,9 +102,6 @@
 
   <div id="content">
 
-    <!-- ============================================================ -->
-    <!-- 0. INTRODUZIONE -->
-    <!-- ============================================================ -->
     <div class="sez" id="sez-intro" data-ruoli="tutti">
       <h2 class="sez-title">&#128218; Introduzione a F4 Rilievi</h2>
       <p class="sez-sub">Cos e l app, a cosa serve, come e organizzata.</p>
@@ -130,9 +110,7 @@
         <strong>F4 Rilievi</strong> e l app di Gruppo F4 per la gestione dei rilievi preliminari di serramenti e porte interne.
         Permette di rilevare le misure dei fori, scegliere i prodotti Internorm, calcolare le tubolarita e stimare le ore di posa.
       </p>
-      <p style="line-height:1.8;margin-bottom:16px;">
-        L app e organizzata in tre aree principali:
-      </p>
+      <p style="line-height:1.8;margin-bottom:16px;">L app e organizzata in tre aree principali:</p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
         <div style="background:#eef2ff;border-radius:8px;padding:14px;text-align:center;">
           <div style="font-size:24px;margin-bottom:6px;">&#128100;</div>
@@ -153,21 +131,12 @@
       <div class="tip">&#128161; Usa il selettore <strong>"Visualizza come"</strong> in alto per vedere solo le sezioni rilevanti per il tuo ruolo.</div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- 1. RUOLI E PERMESSI -->
-    <!-- ============================================================ -->
     <div class="sez" id="sez-ruoli" data-ruoli="tutti">
       <h2 class="sez-title">&#128101; Ruoli e permessi</h2>
       <p class="sez-sub">Cosa puo fare ogni ruolo nell app.</p>
       <hr class="sez-divider">
       <table class="ruoli">
-        <thead><tr>
-          <th>Funzione</th>
-          <th>Agente</th>
-          <th>Uff. Tecnico</th>
-          <th>Titolare</th>
-          <th>Admin</th>
-        </tr></thead>
+        <thead><tr><th>Funzione</th><th>Agente</th><th>Uff. Tecnico</th><th>Titolare</th><th>Admin</th></tr></thead>
         <tbody>
           <tr><td>Vedere clienti e cantieri</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
           <tr><td>Creare / modificare clienti e cantieri</td><td class="check">&#10003;</td><td class="cross">—</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
@@ -180,24 +149,19 @@
           <tr><td>Aggiungere/disattivare prodotti DB</td><td class="cross">—</td><td class="cross">—</td><td class="cross">—</td><td class="check">&#10003;</td></tr>
         </tbody>
       </table>
-      <div class="warn">&#9888; Le funzioni di Amministrazione sono visibili e accessibili <strong>solo agli Administrator</strong>. Gli altri ruoli non vedono il menu relativo.</div>
+      <div class="warn">&#9888; Le funzioni di Amministrazione sono visibili e accessibili <strong>solo agli Administrator</strong>.</div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- 2. CLIENTI E CANTIERI -->
-    <!-- ============================================================ -->
     <div class="sez" id="sez-clienti" data-ruoli="agente,titolare,admin">
       <h2 class="sez-title">&#128100; Clienti e cantieri <span class="badge-ruolo br-agente">Agente</span> <span class="badge-ruolo br-titolare">Titolare</span> <span class="badge-ruolo br-admin">Admin</span></h2>
       <p class="sez-sub">Come creare un cliente, aggiungere un cantiere e associare i referenti.</p>
       <hr class="sez-divider">
-
       <strong style="font-size:.88rem;display:block;margin-bottom:10px;">Procedura — Creare un nuovo cliente</strong>
       <ol class="steps">
         <li><p>Vai su <strong>Clienti</strong> dal menu laterale. Clicca <strong>+ Nuovo cliente</strong>.</p></li>
         <li><p>Compila nome, telefono, email e indirizzo. Il campo <strong>Nome</strong> e obbligatorio.</p></li>
         <li><p>Clicca <strong>Salva</strong>. Il cliente appare nell elenco e puoi aprirlo per aggiungere cantieri.</p></li>
       </ol>
-
       <strong style="font-size:.88rem;display:block;margin:16px 0 10px;">Procedura — Aggiungere un cantiere</strong>
       <ol class="steps">
         <li><p>Apri il cliente desiderato dall elenco.</p></li>
@@ -205,7 +169,6 @@
         <li><p>Inserisci nome cantiere, indirizzo e referente. Salva.</p></li>
         <li><p>Dal cantiere puoi creare un nuovo rilievo serramenti o porte con i bottoni <strong>+ Rilievo Serramenti</strong> e <strong>+ Rilievo Porte</strong>.</p></li>
       </ol>
-
       <strong style="font-size:.88rem;display:block;margin:16px 0 10px;">Campi del cliente</strong>
       <div class="campo-grid">
         <div class="c-hdr">Campo</div><div class="c-hdr">Descrizione</div>
@@ -217,245 +180,135 @@
       </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- 3. RILIEVO SERRAMENTI -->
-    <!-- ============================================================ -->
     <div class="sez" id="sez-serr" data-ruoli="agente,tecnico,admin">
       <h2 class="sez-title">&#129695; Rilievo Serramenti <span class="badge-ruolo br-agente">Agente</span> <span class="badge-ruolo br-tecnico">Uff. Tecnico</span> <span class="badge-ruolo br-admin">Admin</span></h2>
       <p class="sez-sub">Come creare e compilare un rilievo serramenti dall inizio alla fine.</p>
       <hr class="sez-divider">
-
       <strong style="font-size:.88rem;display:block;margin-bottom:10px;">Procedura completa</strong>
       <ol class="steps">
         <li><p><strong>Crea il rilievo</strong> — Dal cantiere clicca <strong>+ Rilievo Serramenti</strong>. Il sistema assegna automaticamente un codice progressivo.</p></li>
-        <li><p><strong>Compila la testata</strong> — Inserisci data rilievo, referente in cantiere, tipo di intervento (nuova installazione / sostituzione), e spunta <strong>GRU</strong> se il cantiere prevede l uso del carroponti per il posizionamento ai piani superiori.</p></li>
-        <li><p><strong>Aggiungi le posizioni</strong> — Clicca <strong>+ Nuova posizione</strong>. Si apre il drawer laterale. Compila tutti i campi della posizione (vedi tabella campi sotto).</p></li>
-        <li><p><strong>Organizza in capitoli</strong> — Clicca <strong>+ Capitolo</strong> per raggruppare le posizioni per zona (es. Piano terra, Primo piano). Trascina i capitoli per riordinarli.</p></li>
-        <li><p><strong>Controlla la tubolarita</strong> — Ogni posizione mostra automaticamente L_tub e H_tub calcolati. Verifica che i valori siano corretti.</p></li>
-        <li><p><strong>Genera i report</strong> — Usa i bottoni in toolbar: <strong>Rilievo</strong> per il report misure, <strong>Accessori</strong> per il riepilogo accessori, <strong>Posa</strong> per le ore di installazione, <strong>Stampa</strong> per il documento completo.</p></li>
+        <li><p><strong>Compila la testata</strong> — Inserisci data rilievo, referente in cantiere, tipo di intervento, e spunta <strong>GRU</strong> se il cantiere prevede l uso del carroponti.</p></li>
+        <li><p><strong>Aggiungi le posizioni</strong> — Clicca <strong>+ Nuova posizione</strong>. Si apre il drawer laterale. Compila tutti i campi della posizione.</p></li>
+        <li><p><strong>Organizza in capitoli</strong> — Clicca <strong>+ Capitolo</strong> per raggruppare le posizioni per zona. Trascina i capitoli per riordinarli.</p></li>
+        <li><p><strong>Controlla la tubolarita</strong> — Ogni posizione mostra automaticamente L_tub e H_tub calcolati. Usa il bottone <strong>&#8505; formula</strong> per vedere i passaggi dettagliati.</p></li>
+        <li><p><strong>Genera i report</strong> — Usa i bottoni in toolbar: <strong>Rilievo</strong>, <strong>Accessori</strong>, <strong>Posa</strong>, <strong>Stampa</strong>.</p></li>
       </ol>
-
-      <div class="tip">&#128161; Il flag <strong>GRU</strong> cambia i tempi di posizionamento serramenti per i piani dal +1 in su, riducendo le ore grazie all uso del carroponti per i campi multipli.</div>
-      <div class="warn">&#9888; Se appare il banner <strong>"Tempi di posa aggiornati"</strong> significa che un Administrator ha modificato i parametri di posa. Clicca <strong>Aggiorna</strong> per ricalcolare con i valori correnti.</div>
-
+      <div class="tip">&#128161; Il flag <strong>GRU</strong> cambia i tempi di posizionamento serramenti per i piani dal +1 in su.</div>
+      <div class="warn">&#9888; Se appare il banner <strong>"Tempi di posa aggiornati"</strong> clicca <strong>Aggiorna</strong> per ricalcolare con i valori correnti.</div>
       <strong style="font-size:.88rem;display:block;margin:16px 0 10px;">Campi della posizione serramento</strong>
       <div class="campo-grid">
         <div class="c-hdr">Campo</div><div class="c-hdr">Descrizione</div>
-        <div class="c-row"><div class="c-nome">Descrizione <span class="c-obblig">*</span></div><div class="c-desc">Nome libero della posizione (es. "Finestra soggiorno")</div></div>
         <div class="c-row"><div class="c-nome">Tipo serramento <span class="c-obblig">*</span></div><div class="c-desc">I=Ingresso, F=Finestra, PF=Porta finestra, FF=Fisso, VF=Vetrata fissa, S=Scorrevole</div></div>
-        <div class="c-row"><div class="c-nome">Tipo foro <span class="c-obblig">*</span></div><div class="c-desc">A=Architettonico (misura netta), D=Dimensione telaio, P=Posa in luce. Determina la formula di tubolarita</div></div>
+        <div class="c-row"><div class="c-nome">Tipo foro <span class="c-obblig">*</span></div><div class="c-desc">A=Architettonico, D=Dimensione telaio, P=Posa in luce. Determina la formula di tubolarita</div></div>
         <div class="c-row"><div class="c-nome">L_foro / H_foro <span class="c-obblig">*</span></div><div class="c-desc">Larghezza e altezza del foro rilevato in millimetri</div></div>
         <div class="c-row"><div class="c-nome">N. campi <span class="c-obblig">*</span></div><div class="c-desc">Numero di ante/campi del serramento (1-5)</div></div>
-        <div class="c-row"><div class="c-nome">Piano <span class="c-obblig">*</span></div><div class="c-desc">Piano dell edificio da -1 (interrato) a +10. Usato per calcolare i tempi di posizionamento</div></div>
+        <div class="c-row"><div class="c-nome">Piano <span class="c-obblig">*</span></div><div class="c-desc">Piano dell edificio da -1 a +10. Usato per i tempi di posizionamento</div></div>
         <div class="c-row"><div class="c-nome">Materiale / Sistema</div><div class="c-desc">Combinazione Internorm (es. PVC — KF 310 HP)</div></div>
-        <div class="c-row"><div class="c-nome">Variante telaio</div><div class="c-desc">NR=Nascosto, CR=Classico nascosto, IR=con Aletta, ZR=con Aletta estesa. Determina i mm di Nasc e Aletta</div></div>
-        <div class="c-row"><div class="c-nome">Senso apertura</div><div class="c-desc">D=Destra, S=Sinistra, W=Bilico, F=Fisso</div></div>
-        <div class="c-row"><div class="c-nome">Vetro</div><div class="c-desc">D=Doppio, T=Triplo</div></div>
+        <div class="c-row"><div class="c-nome">Variante telaio</div><div class="c-desc">NR=Nascosto, CR=Classico nascosto, IR=con Aletta, ZR=con Aletta estesa</div></div>
         <div class="c-row"><div class="c-nome">Rimozione</div><div class="c-desc">Spunta se va rimosso il serramento esistente</div></div>
         <div class="c-row"><div class="c-nome">Controtelaio</div><div class="c-desc">L=Legno, T=Termoisolante</div></div>
         <div class="c-row"><div class="c-nome">Schermatura</div><div class="c-desc">Tipo di oscurante o schermatura solare</div></div>
-        <div class="c-row"><div class="c-nome">Cassonetto / Zanzariera</div><div class="c-desc">Tipo accessorio da installare</div></div>
-        <div class="c-row"><div class="c-nome">Coprifili</div><div class="c-desc">P=PVC, L=Legno, A=Alluminio</div></div>
-        <div class="c-row"><div class="c-nome">Dinoxill</div><div class="c-desc">DA=Davanzale, I3/I4=Imbotte 3cm/4cm</div></div>
-        <div class="c-row"><div class="c-nome">Quantita</div><div class="c-desc">Numero di serramenti identici in questa posizione</div></div>
         <div class="c-row"><div class="c-nome">Note</div><div class="c-desc">Osservazioni libere sulla posizione</div></div>
-      </div>
-
-      <strong style="font-size:.88rem;display:block;margin:16px 0 10px;">Come si calcola la tubolarita</strong>
-      <div style="background:#f8f9fa;border-radius:8px;padding:14px;font-size:.82rem;line-height:1.8;">
-        La tubolarita (L_tub, H_tub) e la dimensione nominale del serramento da ordinare a Internorm.<br>
-        Dipende dal <strong>tipo foro</strong> scelto e dalla <strong>variante telaio</strong> del prodotto selezionato:<br><br>
-        <strong>Tipo A (Architettonico):</strong> L_tub = L_foro &minus; (2 &times; Nasc) + (2 &times; Aletta)<br>
-        <strong>Tipo D (Dimensione telaio):</strong> L_tub = L_foro (gia dimensione telaio, nessun calcolo)<br>
-        <strong>Tipo P (Posa in luce):</strong> L_tub = L_foro + (2 &times; Vista) &minus; (2 &times; Nasc) + (2 &times; Aletta)<br><br>
-        Per la formula completa con tutti i valori vai su <a href="formule.html" target="_blank" style="color:var(--g-indigo);">&#128220; Formule di calcolo</a>.
       </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- 4. RILIEVO PORTE -->
-    <!-- ============================================================ -->
     <div class="sez" id="sez-porte" data-ruoli="agente,tecnico,admin">
       <h2 class="sez-title">&#128682; Rilievo Porte Interne <span class="badge-ruolo br-agente">Agente</span> <span class="badge-ruolo br-tecnico">Uff. Tecnico</span> <span class="badge-ruolo br-admin">Admin</span></h2>
       <p class="sez-sub">Come creare e compilare un rilievo porte interne.</p>
       <hr class="sez-divider">
-
       <strong style="font-size:.88rem;display:block;margin-bottom:10px;">Procedura completa</strong>
       <ol class="steps">
         <li><p><strong>Crea il rilievo</strong> — Dal cantiere clicca <strong>+ Rilievo Porte</strong>.</p></li>
-        <li><p><strong>Compila la testata</strong> — Data, referente, tipo intervento. Le porte non hanno il flag GRU (non pertinente).</p></li>
-        <li><p><strong>Aggiungi le posizioni</strong> — Clicca <strong>+ Nuova posizione</strong> per aprire il drawer. Ogni posizione corrisponde a una porta o gruppo di porte identiche.</p></li>
-        <li><p><strong>Organizza in capitoli</strong> — Raggruppa le porte per stanza o zona (es. "Corridoio", "Camere").</p></li>
+        <li><p><strong>Compila la testata</strong> — Data, referente, tipo intervento.</p></li>
+        <li><p><strong>Aggiungi le posizioni</strong> — Clicca <strong>+ Nuova posizione</strong> per aprire il drawer.</p></li>
+        <li><p><strong>Organizza in capitoli</strong> — Raggruppa le porte per stanza o zona.</p></li>
         <li><p><strong>Genera i report</strong> — <strong>Rilievo</strong> per il report misure, <strong>Posa</strong> per le ore, <strong>Stampa</strong> per il documento completo.</p></li>
       </ol>
-
       <strong style="font-size:.88rem;display:block;margin:16px 0 10px;">Campi della posizione porta</strong>
       <div class="campo-grid">
         <div class="c-hdr">Campo</div><div class="c-hdr">Descrizione</div>
-        <div class="c-row"><div class="c-nome">Descrizione <span class="c-obblig">*</span></div><div class="c-desc">Nome della posizione (es. "Porta camera principale")</div></div>
         <div class="c-row"><div class="c-nome">Tipo porta <span class="c-obblig">*</span></div><div class="c-desc">INT=Interna standard, BLI=Blindata, REI=Antincendio</div></div>
         <div class="c-row"><div class="c-nome">Sistema <span class="c-obblig">*</span></div><div class="c-desc">ST=Standard, DO=Doppia, TP=Telaio passaggio, FC=Filo muro con CTL, F_=Filo muro senza CTL, SI=Scorrevole interna, SE=Scorrevole esterna, LI=A libro, PI=Pivot</div></div>
         <div class="c-row"><div class="c-nome">Tipo foro</div><div class="c-desc">N=Normale, P=Porta a filo</div></div>
         <div class="c-row"><div class="c-nome">L_foro / H_foro <span class="c-obblig">*</span></div><div class="c-desc">Larghezza e altezza del foro in millimetri</div></div>
         <div class="c-row"><div class="c-nome">Piano <span class="c-obblig">*</span></div><div class="c-desc">Piano dell edificio — usato per calcolare il posizionamento</div></div>
-        <div class="c-row"><div class="c-nome">Sopraluce</div><div class="c-desc">Spunta se la porta ha un sopraluce fisso sopra. Aggiunge 30 min alle ore di posa</div></div>
-        <div class="c-row"><div class="c-nome">Allargamento telaio</div><div class="c-desc">Spunta se il telaio murario va allargato prima dell installazione</div></div>
+        <div class="c-row"><div class="c-nome">Sopraluce</div><div class="c-desc">Spunta se la porta ha un sopraluce fisso sopra</div></div>
+        <div class="c-row"><div class="c-nome">Allargamento telaio</div><div class="c-desc">Spunta se il telaio murario va allargato</div></div>
         <div class="c-row"><div class="c-nome">Rimozione</div><div class="c-desc">Spunta se la porta esistente va rimossa</div></div>
-        <div class="c-row"><div class="c-nome">Fornitore / Prodotto</div><div class="c-desc">Seleziona il prodotto dal DB porte</div></div>
-        <div class="c-row"><div class="c-nome">Quantita</div><div class="c-desc">Numero di porte identiche in questa posizione</div></div>
         <div class="c-row"><div class="c-nome">Note</div><div class="c-desc">Osservazioni libere</div></div>
       </div>
-
-      <div class="tip">&#128161; Per le porte di tipo <strong>FC (Filo muro con CTL)</strong> e <strong>F_ (Filo muro senza CTL)</strong> le ore di posa sono diverse: il CTL richiede installazione separata con ore aggiuntive.</div>
+      <div class="tip">&#128161; Per le porte di tipo <strong>FC</strong> e <strong>F_</strong> le ore di posa sono diverse: il CTL richiede installazione separata.</div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- 5. REPORT E STAMPA -->
-    <!-- ============================================================ -->
     <div class="sez" id="sez-report" data-ruoli="tutti">
       <h2 class="sez-title">&#128196; Report e stampa <span class="badge-ruolo br-tutti">Tutti</span></h2>
       <p class="sez-sub">Come leggere e usare i report generati dall app.</p>
       <hr class="sez-divider">
-
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
         <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px;">
           <div style="font-weight:700;margin-bottom:6px;">&#128196; Report Rilievo</div>
-          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">
-            Elenco di tutte le posizioni con misure, tubolarita calcolata, accessori e note.
-            Utile per la fase di offerta e per inviare le misure a Internorm.
-          </div>
+          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">Elenco posizioni con misure, tubolarita calcolata, accessori e note.</div>
         </div>
         <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px;">
           <div style="font-weight:700;margin-bottom:6px;">&#128202; Report Accessori</div>
-          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">
-            Riepilogo quantitativo di tutti gli accessori (zanzariere, schermature, coprifili, dinoxill ecc.) raggruppati per tipo.
-          </div>
+          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">Riepilogo quantitativo di tutti gli accessori raggruppati per tipo.</div>
         </div>
         <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px;">
           <div style="font-weight:700;margin-bottom:6px;">&#9201;&#65039; Report Posa</div>
-          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">
-            Stima delle ore di lavoro per tutte le voci (trasporto, posizionamento, installazione, accessori, collaudo).
-            I valori cambiano se il rilievo ha il flag GRU attivo.
-          </div>
+          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">Stima delle ore di lavoro per tutte le voci. I valori cambiano se il rilievo ha il flag GRU attivo.</div>
         </div>
         <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px;">
           <div style="font-weight:700;margin-bottom:6px;">&#128438; Stampa combinata</div>
-          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">
-            Documento unico con tutti i report selezionati. Ottimizzato per stampa A4 o esportazione PDF.
-            Seleziona quali sezioni includere prima di stampare.
-          </div>
+          <div style="font-size:.80rem;color:#6b7280;line-height:1.7;">Documento unico con tutti i report selezionati, ottimizzato per stampa A4.</div>
         </div>
       </div>
-
-      <strong style="font-size:.88rem;display:block;margin-bottom:10px;">Report Posa — differenza GRU attivo / disattivo</strong>
-      <div style="background:#f8f9fa;border-radius:8px;padding:14px;font-size:.82rem;line-height:1.8;margin-bottom:12px;">
-        Quando il flag <strong>GRU</strong> e attivo sul rilievo, i tempi di <strong>posizionamento serramenti</strong> ai piani <strong>+1 e superiori</strong>
-        vengono ridotti per i serramenti con piu campi (2, 3, 4, 5 campi).<br>
-        Il vantaggio e tanto maggiore quanto piu alto e il piano e quanto piu campi ha il serramento.<br>
-        Al piano -1 e 0 non c e differenza perche la GRU non e applicabile.
-      </div>
-      <div class="tip">&#128161; Per vedere i valori esatti di ciascuna voce vai su <a href="formule.html" target="_blank" style="color:var(--g-indigo);">&#128220; Formule di calcolo</a>.</div>
+      <div class="tip">&#128161; Per vedere i valori esatti di ciascuna voce vai su <strong>Formule di calcolo</strong> dalla toolbar del rilievo.</div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- 6. FORMULE -->
-    <!-- ============================================================ -->
     <div class="sez" id="sez-formule" data-ruoli="tutti">
       <h2 class="sez-title">&#128200; Formule di calcolo <span class="badge-ruolo br-tutti">Tutti</span></h2>
       <p class="sez-sub">Dove trovare le formule e come interpretarle.</p>
       <hr class="sez-divider">
-      <p style="line-height:1.8;margin-bottom:16px;">
-        La pagina <strong>Formule di calcolo</strong> mostra in tempo reale tutti i parametri usati dall app,
-        caricati direttamente dal database. I valori si aggiornano automaticamente ogni volta che
-        un Administrator crea una nuova revisione dei parametri.
-      </p>
+      <p style="line-height:1.8;margin-bottom:16px;">La pagina <strong>Formule di calcolo</strong> mostra in tempo reale tutti i parametri usati dall app, caricati direttamente dal database.</p>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;">
-        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;">
-          <strong style="font-size:.85rem;">Sezione A — Tubolarita</strong>
-          <p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Formula L_tub e H_tub per tipo foro A, D, P</p>
-        </div>
-        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;">
-          <strong style="font-size:.85rem;">Sezione B — Posa Serramenti</strong>
-          <p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Lookup ore posizionamento per piano e campi, con e senza GRU</p>
-        </div>
-        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;">
-          <strong style="font-size:.85rem;">Sezione C — Installazione per tipo</strong>
-          <p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Ore installazione per tipo serramento e numero di campi</p>
-        </div>
-        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;">
-          <strong style="font-size:.85rem;">Sezione D — Posa Porte</strong>
-          <p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Ore per sistema porta, lookup posizionamento per piano</p>
-        </div>
+        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;"><strong style="font-size:.85rem;">Sezione A — Tubolarita</strong><p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Formula L_tub e H_tub per tipo foro A, D, P</p></div>
+        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;"><strong style="font-size:.85rem;">Sezione B — Posa Serramenti</strong><p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Lookup ore posizionamento per piano e campi, con e senza GRU</p></div>
+        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;"><strong style="font-size:.85rem;">Sezione C — Installazione per tipo</strong><p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Ore installazione per tipo serramento e numero di campi</p></div>
+        <div style="background:#eef2ff;border-radius:8px;padding:12px 16px;"><strong style="font-size:.85rem;">Sezione D — Posa Porte</strong><p style="font-size:.78rem;color:#6b7280;margin:4px 0 0;">Ore per sistema porta, lookup posizionamento per piano</p></div>
       </div>
-      <a href="formule.html" target="_blank" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;">&#128220; Apri Formule di calcolo</a>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- 7. AMMINISTRAZIONE -->
-    <!-- ============================================================ -->
     <div class="sez" id="sez-admin" data-ruoli="admin">
       <h2 class="sez-title">&#9881;&#65039; Amministrazione <span class="badge-ruolo br-admin">Admin</span></h2>
       <p class="sez-sub">Gestione utenti, parametri, prodotti e revisioni. Sezione visibile solo agli Administrator.</p>
       <hr class="sez-divider">
-
       <div style="display:grid;grid-template-columns:1fr;gap:14px;">
-
         <div style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
           <div style="background:#1a1a2e;color:#fff;padding:8px 14px;font-size:.82rem;font-weight:700;">&#128101; Tab Utenti</div>
-          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">
-            Crea nuovi utenti con email, password e ruolo. Modifica i dati o la password di utenti esistenti.
-            Usa <strong>Disattiva</strong> (bottone rosso) per revocare l accesso senza eliminare l account.
-            Il bottone <strong>Invia link</strong> apre una email precompilata con le istruzioni di accesso.
-          </div>
+          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">Crea nuovi utenti, modifica dati o password, disattiva senza eliminare. Il bottone <strong>Invia link</strong> apre una email precompilata con le istruzioni di accesso.</div>
         </div>
-
         <div style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
           <div style="background:#1a1a2e;color:#fff;padding:8px 14px;font-size:.82rem;font-weight:700;">&#128203; Tab Lookup</div>
-          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">
-            Gestisce le tabelle di opzioni selezionabili nei form (tipi serramento, sensi apertura, sistemi porte ecc.).
-            Puoi aggiungere nuove voci o disattivare quelle obsolete. Le voci disattivate non appaiono nei form ma i rilievi esistenti le conservano.
-          </div>
+          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">Gestisce le tabelle di opzioni selezionabili nei form. Puoi aggiungere nuove voci o disattivare quelle obsolete.</div>
         </div>
-
         <div style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
           <div style="background:#1a1a2e;color:#fff;padding:8px 14px;font-size:.82rem;font-weight:700;">&#9881;&#65039; Tab Dati Tecnici</div>
-          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">
-            Parametri di tubolarita (mm di telaio nascosto, aletta, vista) e regole lati (coprifili, dinoxill per tipo serramento).
-            Modifica i valori direttamente nelle celle — appaiono con bordo giallo fino al salvataggio.
-            Clicca <strong>Salva e crea revisione</strong> per applicare e archiviare le modifiche nello storico.
-          </div>
+          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">Parametri di tubolarita e regole lati. Modifica in bozza, poi <strong>Salva e crea revisione</strong>.</div>
         </div>
-
         <div style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
           <div style="background:#1a1a2e;color:#fff;padding:8px 14px;font-size:.82rem;font-weight:700;">&#9201;&#65039; Tab Dati Posa</div>
-          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">
-            Ore di posa per tutte le voci (serramenti e porte), inclusi i valori con GRU per le righe di posizionamento.
-            Stessa logica dei Dati Tecnici: modifica in bozza, poi <strong>Salva e crea revisione</strong>.
-            Il tab ha due sotto-sezioni: <strong>Serramenti</strong> e <strong>Porte</strong>.
-          </div>
+          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">Ore di posa per tutte le voci, inclusi valori con GRU. Stessa logica dei Dati Tecnici.</div>
         </div>
-
         <div style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
           <div style="background:#1a1a2e;color:#fff;padding:8px 14px;font-size:.82rem;font-weight:700;">&#128220; Tab Revisioni</div>
-          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">
-            Storico datato di tutte le revisioni dei parametri. La revisione corrente e evidenziata in verde.
-            Da qui puoi anche aprire la pagina <strong>Formule di calcolo</strong> per vedere i parametri attuali.
-          </div>
+          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">Storico datato di tutte le revisioni dei parametri. La revisione corrente e evidenziata in verde.</div>
         </div>
-
         <div style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
           <div style="background:#1a1a2e;color:#fff;padding:8px 14px;font-size:.82rem;font-weight:700;">&#128451;&#65039; Tab DB Prodotti</div>
-          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">
-            Catalogo serramenti e porte caricati nel sistema. Usa <strong>+ Nuovo articolo</strong> per aggiungere prodotti
-            quando Internorm rilascia nuove varianti. Il bottone <strong>Disattiva</strong> rende un prodotto non selezionabile
-            nei nuovi rilievi ma conserva i dati dei rilievi esistenti.
-            Il filtro in alto permette di vedere tutti i prodotti, solo attivi o solo disattivi.
-          </div>
+          <div style="padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;">Catalogo serramenti e porte. Aggiungi nuovi prodotti o disattiva quelli obsoleti.</div>
         </div>
-
       </div>
-
-      <div class="warn" style="margin-top:16px;">&#9888; Le modifiche a Dati Tecnici e Dati Posa attivano automaticamente il banner "Tempi di posa aggiornati" sui rilievi esistenti aperti dagli utenti. Questi potranno aggiornare i calcoli aprendo il report posa.</div>
+      <div class="warn" style="margin-top:16px;">&#9888; Le modifiche a Dati Tecnici e Dati Posa attivano automaticamente il banner "Tempi di posa aggiornati" sui rilievi esistenti.</div>
     </div>
 
   </div>
@@ -467,7 +320,6 @@
 var _u = Auth.requireLogin();
 if (!_u) throw new Error('not logged');
 
-// Filtro ruolo
 var RUOLO_MAP = {
   agente:   ['agente','tutti'],
   tecnico:  ['tecnico','tutti'],
@@ -481,7 +333,6 @@ function filtraRuolo(ruolo) {
     var mostra = ruolo === 'tutti' || (RUOLO_MAP[ruolo] && RUOLO_MAP[ruolo].some(function(r){return ruoli.indexOf(r)>-1;}));
     s.classList.toggle('hidden', !mostra);
   });
-  // Aggiorna nav
   document.querySelectorAll('#sidenav a').forEach(function(a) {
     var target = document.querySelector(a.getAttribute('href'));
     if (target) a.style.opacity = target.classList.contains('hidden') ? '.3' : '1';
@@ -495,7 +346,6 @@ function setActive(el) {
   }, 50);
 }
 
-// Evidenzia sezione corrente allo scroll
 var observer = new IntersectionObserver(function(entries) {
   entries.forEach(function(e) {
     if (e.isIntersecting) {
@@ -509,14 +359,12 @@ var observer = new IntersectionObserver(function(entries) {
 
 document.querySelectorAll('.sez').forEach(function(s){ observer.observe(s); });
 
-// Applica ruolo utente come default
 var ruoloUtente = _u.ruolo || 'tutti';
 var mapRuolo = { administrator:'admin', agente:'agente', ufficio_preventivi:'tecnico', responsabile_commerciale:'titolare', titolare:'titolare' };
 var ruoloDefault = mapRuolo[ruoloUtente] || 'tutti';
 document.getElementById('ruoloSel').value = ruoloDefault;
 filtraRuolo(ruoloDefault);
 
-// Ancora da URL
 var hash = window.location.hash;
 if (hash) {
   var target = document.querySelector(hash);

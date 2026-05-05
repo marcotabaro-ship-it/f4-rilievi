@@ -561,7 +561,7 @@ function renderPosizioni(posizioni, stratigrafie, capitoli) {
     h += '<td class="c">'   + esc(v(p.schermatura)) + '</td>';
     h += '<td class="c">'   + esc(v(p.zanzariera)) + '</td>';
     h += '<td class="c">'   + esc(v(p.controtelaio)) + '</td>';
-    h += '<td class="c grp-sep">' + esc(v(p.dinoxill)) + (p.dinoxill_lati?'<br><span style="font-size:7px">'+esc(v(p.dinoxill_lati))+'L</span>':'') + '</td>';
+    h += '<td class="c grp-sep">' + esc(v(p.dinoxill)) + (p.dinoxill && p.dinoxill_lati?'<br><span style="font-size:7px">'+esc(v(p.dinoxill_lati))+'L</span>':'') + '</td>';
     h += '<td class="c">'   + chk(p.angolari_pvc) + '</td>';
     h += '<td class="c">'   + chk(p.rimozione==='SI'||p.rimozione===true) + '</td>';
     h += '<td class="c">'   + chk(p.rimozione_accessori) + '</td>';

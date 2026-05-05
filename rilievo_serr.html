@@ -85,13 +85,11 @@
     }
     .field-label .req { color:var(--c-red); }
     .field-label .fi { cursor:pointer; color:var(--c-info); font-size:.78rem; background:none; border:none; padding:0; }
-    /* Tooltip custom in-app */
     .tt-wrap { position:relative; display:inline-block; }
     .tt-box { display:none; position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:#1a1a2e; color:#fff; font-size:.76rem; border-radius:6px; padding:6px 10px; white-space:nowrap; z-index:9999; box-shadow:0 2px 8px rgba(0,0,0,.35); pointer-events:none; }
     .tt-box.tt-left { left:0; transform:none; }
     .tt-box::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:#1a1a2e; }
     .tt-wrap:hover .tt-box { display:block; }
-    /* Bottone Salva cima drawer */
     .drawer-save-top { background:#4f46e5; color:#fff; border:none; border-radius:6px; padding:5px 14px; font-size:.82rem; font-weight:700; cursor:pointer; }
     .drawer-save-top:hover { background:#3730a3; }
     .form-control.field-invalid { border-color:var(--c-error)!important; background:#FFF5F5; }
@@ -109,13 +107,12 @@
     .calc-strip {
       background:#E8F5E9; border:1px solid #A5D6A7; border-radius:var(--radius);
       padding:8px 12px; font-size:.8rem; margin-bottom:12px;
-      display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;
+      display:grid; grid-template-columns:1fr 1fr; gap:6px;
     }
     .calc-item { display:flex; flex-direction:column; }
     .calc-lbl { color:var(--c-text-sec); font-size:.72rem; }
     .calc-val { font-weight:700; color:var(--c-success); }
     .calc-val.tub { color:#1565C0; }
-    .calc-val.ale { color:#E65100; }
     .legenda-overlay { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.3); }
     .legenda-overlay.open { display:block; }
     .legenda-drawer {
@@ -127,7 +124,6 @@
     .leg-title { font-size:.95rem; font-weight:700; color:var(--c-primary); margin-bottom:12px; border-bottom:2px solid var(--c-red); padding-bottom:6px; }
     .leg-item { font-size:.82rem; margin-bottom:7px; display:flex; gap:8px; }
     .leg-code { font-family:monospace; font-weight:700; color:var(--c-red); min-width:44px; flex-shrink:0; }
-    /* ── CAPITOLI ── */
     .tr-cap-inizio td {
       background: #1a1a2e; color: #a5b4fc; font-weight: 700; font-size: .8rem;
       letter-spacing: .8px; padding: 7px 10px; border-top: 3px solid #4f46e5;
@@ -151,39 +147,39 @@
     .btn-cap-edit:hover { color: #fff; }
     .btn-cap-del { background: none; border: none; color: #f87171; cursor: pointer; font-size: .8rem; padding: 0 4px; }
     .btn-cap-del:hover { color: #fca5a5; }
-
-    /* ── FORMULA CONTESTUALE ── */
-.formula-panel {
-  display: none; background: #1a1a2e; color: #e2e8f0;
-  border-radius: 8px; padding: 12px 14px; margin-top: 8px;
-  font-family: monospace; font-size: .78rem; line-height: 2;
-}
-.formula-panel.open { display: block; }
-.formula-panel .f-title {
-  font-size: .72rem; font-weight: 700; color: #a5b4fc;
-  text-transform: uppercase; letter-spacing: .5px;
-  margin-bottom: 8px; padding-bottom: 5px;
-  border-bottom: 1px solid rgba(255,255,255,.1);
-}
-.formula-panel .f-dim { color: #6ee7b7; font-weight: 700; margin-top: 6px; display: block; }
-.formula-panel .f-sym { color: #94a3b8; }
-.formula-panel .f-sub { color: #fcd34d; font-weight: 700; }
-.formula-panel .f-res { color: #34d399; font-weight: 700; font-size: .84rem; }
-.formula-panel .f-note { color: #fb923c; font-size: .72rem; font-style: italic; }
-.formula-panel .f-sep { border-top: 1px solid rgba(255,255,255,.08); margin: 8px 0; }
-.formula-btn {
-  background: none; border: 1px solid rgba(255,255,255,.2);
-  color: rgba(255,255,255,.7); border-radius: 4px;
-  padding: 1px 8px; font-size: .76rem; cursor: pointer;
-  margin-left: 6px; transition: all .15s; vertical-align: middle;
-}
-.formula-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
-.formula-btn.active { background: #4f46e5; border-color: #4f46e5; color: #fff; }
     .nc-section-title {
       font-size:.78rem; font-weight:700; color:var(--c-primary);
       text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px;
       padding-top:14px; margin-top:14px; border-top:1px solid var(--c-border);
     }
+    /* ── FORMULA CONTESTUALE ── */
+    .formula-panel {
+      display:none; background:#1a1a2e; color:#e2e8f0;
+      border-radius:8px; padding:12px 14px; margin-top:8px;
+      font-family:monospace; font-size:.78rem; line-height:2;
+    }
+    .formula-panel.open { display:block; }
+    .formula-panel .f-title {
+      font-size:.72rem; font-weight:700; color:#a5b4fc;
+      text-transform:uppercase; letter-spacing:.5px;
+      margin-bottom:8px; padding-bottom:5px;
+      border-bottom:1px solid rgba(255,255,255,.1);
+    }
+    .formula-panel .f-dim { color:#6ee7b7; font-weight:700; margin-top:6px; display:block; }
+    .formula-panel .f-sym { color:#94a3b8; }
+    .formula-panel .f-sub { color:#fcd34d; font-weight:700; }
+    .formula-panel .f-res { color:#34d399; font-weight:700; font-size:.84rem; }
+    .formula-panel .f-note { color:#fb923c; font-size:.72rem; font-style:italic; }
+    .formula-panel .f-sep { border-top:1px solid rgba(255,255,255,.08); margin:8px 0; }
+    .formula-btn {
+      background:none; border:1px solid rgba(100,116,139,.4);
+      color:#64748b; border-radius:4px;
+      padding:1px 8px; font-size:.72rem; cursor:pointer;
+      margin-left:6px; transition:all .15s; vertical-align:middle;
+      font-family:inherit;
+    }
+    .formula-btn:hover { background:#e0f2fe; border-color:#0284c7; color:#0284c7; }
+    .formula-btn.active { background:#1e40af; border-color:#1e40af; color:#fff; }
   </style>
 </head>
 <body>
@@ -266,23 +262,22 @@
         </div>
         <div class="form-group"><label class="form-label">Note rilievo</label><textarea class="form-control" id="tNote" rows="2" placeholder="Note tecniche generali del rilievo..."></textarea></div>
         <div class="form-group"><label class="form-label">&#128221; Note generali (visibili nel report)</label><textarea class="form-control" id="tNoteGenerali" rows="3" placeholder="Note generali sul cantiere, condizioni particolari, istruzioni per l'installatore..."></textarea></div>
-
         <div class="nc-section-title">&#127912; Note Commerciali (colori accessori / maniglia)</div>
         <div class="form-row form-row-2">
           <div class="form-group"><label class="form-label">Colore avvolgibile</label><input class="form-control" type="text" id="tNcAvvol" placeholder="es. Bianco"></div>
           <div class="form-group"><label class="form-label">Colore scuretto</label><input class="form-control" type="text" id="tNcScuretto" placeholder="es. Grigio"></div>
         </div>
         <div class="form-row form-row-2">
-          <div class="form-group"><label class="form-label">Colore tenda</label><input class="form-control" type="text" id="tNcTenda" placeholder=""></div>
-          <div class="form-group"><label class="form-label">Colore frangisole</label><input class="form-control" type="text" id="tNcFrang" placeholder=""></div>
+          <div class="form-group"><label class="form-label">Colore tenda</label><input class="form-control" type="text" id="tNcTenda"></div>
+          <div class="form-group"><label class="form-label">Colore frangisole</label><input class="form-control" type="text" id="tNcFrang"></div>
         </div>
         <div class="form-row form-row-2">
-          <div class="form-group"><label class="form-label">Colore zanzariera</label><input class="form-control" type="text" id="tNcZanz" placeholder=""></div>
-          <div class="form-group"><label class="form-label">Colore coprifili int.</label><input class="form-control" type="text" id="tNcCoprInt" placeholder=""></div>
+          <div class="form-group"><label class="form-label">Colore zanzariera</label><input class="form-control" type="text" id="tNcZanz"></div>
+          <div class="form-group"><label class="form-label">Colore coprifili int.</label><input class="form-control" type="text" id="tNcCoprInt"></div>
         </div>
         <div class="form-row form-row-2">
-          <div class="form-group"><label class="form-label">Colore coprifili est.</label><input class="form-control" type="text" id="tNcCoprEst" placeholder=""></div>
-          <div class="form-group"><label class="form-label">Colore Dinox</label><input class="form-control" type="text" id="tNcDinox" placeholder=""></div>
+          <div class="form-group"><label class="form-label">Colore coprifili est.</label><input class="form-control" type="text" id="tNcCoprEst"></div>
+          <div class="form-group"><label class="form-label">Colore Dinox</label><input class="form-control" type="text" id="tNcDinox"></div>
         </div>
         <div class="form-row form-row-2">
           <div class="form-group"><label class="form-label">Maniglia — marca</label><input class="form-control" type="text" id="tNcManMarca" placeholder="es. Hoppe"></div>
@@ -299,10 +294,23 @@
         <button class="drawer-close" onclick="closeDrawer()">&#10005;</button>
       </div>
       <div class="drawer-body" id="drawerBody">
+
+        <!-- CALC STRIP con bottone formula -->
         <div class="calc-strip" id="calcStrip" style="grid-template-columns:1fr 1fr;">
-          <div class="calc-item"><span class="calc-lbl">L inserita x H inserita</span><span class="calc-val" id="cLarch">—</span></div>
-          <div class="calc-item"><span class="calc-lbl">L ordine x H ordine</span><span class="calc-val tub" id="cLtub">—</span></div>
+          <div class="calc-item">
+            <span class="calc-lbl">L inserita &times; H inserita</span>
+            <span class="calc-val" id="cLarch">—</span>
+          </div>
+          <div class="calc-item">
+            <span class="calc-lbl">L ordine &times; H ordine</span>
+            <span style="display:flex;align-items:center;gap:4px;">
+              <span class="calc-val tub" id="cLtub">—</span>
+              <button class="formula-btn" id="formulaBtn" onclick="toggleFormula()" title="Mostra formula dettagliata">&#8505; formula</button>
+            </span>
+          </div>
         </div>
+        <div class="formula-panel" id="formulaPanel"></div>
+
         <div class="dsec-title">&#128203; Dati generali</div>
         <div class="field-wrap">
           <div class="field-label">N&#176; posizione <span style="font-size:.72rem;color:var(--c-text-sec);">(alfanumerico, max 7 caratteri)</span></div>
@@ -483,7 +491,7 @@
           <div class="field-label">Dinoxill <button class="fi" onclick="openLegenda('dinoxill')">&#8505;&#65039;</button></div>
           <select class="form-control" id="dDinoxill" onchange="dOnDinoxillChange()"></select>
         </div>
-      </div>
+      </div><!-- /drawer-body -->
       <div class="drawer-footer">
         <button class="btn btn-outline btn-sm" onclick="closeDrawer()">Chiudi</button>
         <button class="btn btn-secondary btn-sm" onclick="copiaDaDrawer()">&#128203; Copia posizione</button>
@@ -594,7 +602,7 @@
 <script>
 const currentUser = Auth.requireLogin();
 if (!currentUser) throw new Error('not logged');
-// Confirm dialog custom (sostituisce confirm() nativo)
+
 function confirmCustom(msg, title) {
   return new Promise(function(resolve) {
     document.getElementById('modalConfirmTitle').textContent = title || 'Conferma';
@@ -614,37 +622,6 @@ function confirmCustom(msg, title) {
 
 Layout.init('clienti');
 
-// Aggiunge link Guida al sidebar e all'area avatar
-setTimeout(function() {
-  // Inserisci nel sidebar (nav laterale)
-  var nav = document.querySelector('.app-nav') || document.querySelector('[class*="sidebar"]') || document.querySelector('nav');
-  if (nav) {
-    var sep = document.createElement('div');
-    sep.style.cssText = 'border-top:1px solid rgba(255,255,255,.1);margin:8px 0;';
-    var lnk = document.createElement('a');
-    lnk.href = 'guida.html#sez-serr';
-    lnk.target = '_blank';
-    lnk.innerHTML = '&#10067; Guida utilizzo';
-    lnk.style.cssText = 'display:flex;align-items:center;gap:8px;padding:10px 20px;color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem;font-weight:500;transition:all .2s;';
-    lnk.onmouseover = function(){ this.style.color='#fff';this.style.background='rgba(255,255,255,.08)'; };
-    lnk.onmouseout  = function(){ this.style.color='rgba(255,255,255,.7)';this.style.background=''; };
-    nav.appendChild(sep);
-    nav.appendChild(lnk);
-  }
-  // Inserisci accanto all'avatar nella topbar
-  var userBtn = document.querySelector('.user-menu') || document.querySelector('[class*="avatar"]') || document.querySelector('[class*="user-btn"]');
-  if (userBtn && userBtn.parentNode) {
-    var guidaLink = document.createElement('a');
-    guidaLink.href = 'guida.html#sez-serr';
-    guidaLink.target = '_blank';
-    guidaLink.innerHTML = '&#10067; Guida';
-    guidaLink.style.cssText = 'color:rgba(255,255,255,.8);text-decoration:none;font-size:.82rem;font-weight:500;padding:5px 10px;border:1px solid rgba(255,255,255,.2);border-radius:6px;white-space:nowrap;';
-    guidaLink.onmouseover = function(){ this.style.background='rgba(255,255,255,.1)'; };
-    guidaLink.onmouseout  = function(){ this.style.background=''; };
-    userBtn.parentNode.insertBefore(guidaLink, userBtn);
-  }
-}, 300);
-
 const idRilievo = Utils.getParam('idRilievo');
 if (!idRilievo) window.location.href = 'clienti.html';
 
@@ -663,7 +640,6 @@ async function init() {
     lookups = d.lookups || {};
     datiComuni = {};
     var dcArr = d.datiComuni || [];
-    var datiComuniArr = Array.isArray(dcArr) ? dcArr : [];
     if (Array.isArray(dcArr)) dcArr.forEach(function(x){ if(x) datiComuni[parseInt(x.ID)||parseInt(x.id)]=parseFloat(x.valore_mm||x.valore)||0; });
     else datiComuni = dcArr;
     regoleLati = {};
@@ -737,7 +713,8 @@ async function salvaTestata() {
   };
   var data={referente:document.getElementById('tReferente').value,intervento:document.getElementById('tIntervento').value,
     data_rilievo:document.getElementById('tDataRilievo').value,data_posa:document.getElementById('tDataPosa').value,
-    gru:document.getElementById('tGru').checked?'SI':'NO',note:document.getElementById('tNote').value.trim(),note_generali:document.getElementById('tNoteGenerali').value.trim(),
+    gru:document.getElementById('tGru').checked?'SI':'NO',note:document.getElementById('tNote').value.trim(),
+    note_generali:document.getElementById('tNoteGenerali').value.trim(),
     allarme:document.getElementById('tAllarme').checked,note_commerciali:nc};
   var res=await API.updateRilievo(idRilievo,data);
   if(res.success){Utils.showSuccess('Salvato.');rilievo=Object.assign({},rilievo,data);renderTestata();}
@@ -769,8 +746,6 @@ function renderPosizioni() {
   if(!posizioniReali.length&&!capitoli.length){
     Utils.showEmptyState(c,'Nessuna posizione. Clicca "+ Nuova posizione".','&#128295;');return;
   }
-
-  // Costruisci lista righe ordinata (posizioni + capitoli inizio/fine)
   var righe=[];
   posizioni.forEach(function(p){
     righe.push({tipo:'pos',ordine:p.ordine!==null&&p.ordine!==undefined?p.ordine:p.numero_pos,data:p});
@@ -788,18 +763,15 @@ function renderPosizioni() {
     '<th>Accessori</th><th style="text-align:right;">Azioni</th>'+
     '</tr></thead><tbody id="posTableBody">';
 
-  // Per i subtotali: accumulo posizioni per capitolo corrente
   var capCorrente=null, posCap=[];
 
   function flushSubtot(){
     if(!capCorrente||!posCap.length)return'';
-    var nP=posCap.length;
-    var nCtlL=0,nCtlT=0,nAvv=0,nScur=0,nZanz=0,nCass=0,nCoprI=0,nCoprE=0;
+    var nP=posCap.length,nCtlL=0,nCtlT=0,nAvv=0,nScur=0,nZanz=0,nCass=0,nCoprI=0,nCoprE=0;
     posCap.forEach(function(p){
       if(p.controtelaio==='L')nCtlL++;else if(p.controtelaio==='T')nCtlT++;
       var sc=(p.schermatura||'').toUpperCase();
-      if(sc==='A'||sc==='AM'||sc==='AE'||sc==='AR')nAvv++;
-      else if(sc==='S')nScur++;
+      if(sc==='A'||sc==='AM'||sc==='AE'||sc==='AR')nAvv++;else if(sc==='S')nScur++;
       if(p.zanzariera)nZanz++;if(p.cassonetto)nCass++;
       if(p.coprifilo_int_mat)nCoprI++;if(p.coprifilo_est_mat)nCoprE++;
     });
@@ -883,7 +855,6 @@ function calcolaRealtime(p) {
   if(!H||!L||!p.tipo_foro) return {Htub:0,Ltub:0};
   var at  = parseFloat(datiComuni[6])  || 10;
   var atv = parseFloat(datiComuni[16]) || 10;
-  // L'aletta esiste sempre sia in alto che in basso — e' una caratteristica del profilo, non del tipo serramento
   var tf = p.tipo_foro, Ltub=0, Htub=0;
   if (p.telaio_misto) {
     function getLD(varSigla) {
@@ -891,8 +862,6 @@ function calcolaRealtime(p) {
       return { nasc: r?(parseFloat(r.telaio_nascosto_mm)||0):0, aletta: r?(parseFloat(r.aletta_mm)||0):0 };
     }
     var dA=getLD(p.variante_alto), dB=getLD(p.variante_basso), dS=getLD(p.variante_sx), dD=getLD(p.variante_dx);
-    // nAlH=2 per F e FF: ha aletta sia su lato alto che basso
-    // nAlH=1 per I, PF, VF, S: solo lato alto (basso ha soglia/guida)
     var nAlH2m = (p.tipo_serramento==='F' || p.tipo_serramento==='FF') ? 1 : 0;
     if (tf==='A') { Ltub=L+dS.nasc+dD.nasc+dS.aletta+dD.aletta; Htub=H+dA.nasc+dA.aletta+nAlH2m*dB.aletta; }
     else if (tf==='D') { Ltub=L+dS.aletta+dD.aletta; Htub=H+dA.aletta+nAlH2m*dB.aletta; }
@@ -925,6 +894,9 @@ async function openDrawer(id) {
 async function closeDrawer() {
   if(drawerDirty) { if(!(await confirmCustom('Modifiche non salvate. Chiudere?','Modifiche non salvate'))) return; }
   drawerPosId=null; drawerDirty=false;
+  // Chiudi formula panel se aperto
+  var fp=document.getElementById('formulaPanel'); if(fp) fp.classList.remove('open');
+  var fb=document.getElementById('formulaBtn');   if(fb) fb.classList.remove('active');
   document.getElementById('rilievoDrawer').classList.remove('open');
   renderPosizioni();
 }
@@ -934,6 +906,9 @@ async function nuovaPosizione() {
   drawerPosId=null; drawerDirty=false;
   resetDrawer();
   document.getElementById('drawerTitle').textContent='Nuova posizione';
+  // Reset formula panel
+  var fp=document.getElementById('formulaPanel'); if(fp){fp.classList.remove('open');fp.innerHTML='';}
+  var fb=document.getElementById('formulaBtn');   if(fb) fb.classList.remove('active');
   document.getElementById('rilievoDrawer').classList.add('open');
 }
 
@@ -993,10 +968,11 @@ function resetDrawer() {
   document.getElementById('dCopriEstDim').disabled=true;
   document.getElementById('grpOscurante').style.display='none';
   document.getElementById('grpDinoxill').style.display='';
-  // dinoxill_lati derivato da select (I3=3, I4=4) — nessun radio button
   document.querySelectorAll('.field-invalid').forEach(function(el){el.classList.remove('field-invalid');});
   document.getElementById('cLarch').textContent='—';
   document.getElementById('cLtub').textContent='—';
+  var fp=document.getElementById('formulaPanel'); if(fp){fp.classList.remove('open');fp.innerHTML='';}
+  var fb=document.getElementById('formulaBtn');   if(fb) fb.classList.remove('active');
   dOnNCampiChange();
   populateStratigrafiaSelectDrawer();
 }
@@ -1027,7 +1003,6 @@ function fillDrawer(p) {
   dOnStileChange(true);
   document.getElementById('dVarianteTelaio').value=p.variante_telaio||'';
   dOnVarianteChange(true);
-  // Telaio misto
   var misto = p.telaio_misto === true || p.telaio_misto === 'true';
   document.getElementById('dTelaioMisto').checked = misto;
   document.getElementById('dTelaioMistoWrap').style.display = misto ? '' : 'none';
@@ -1058,7 +1033,6 @@ function fillDrawer(p) {
   document.getElementById('dZanzariera').value=p.zanzariera||'';
   document.getElementById('dDinoxill').value=p.dinoxill||'';
   dOnDinoxillChange(true);
-  // dinoxill_lati implicito in dDinoxill (I3/I4)
   if(p.oscurante_tipo){dOnOscuranteChange(true);document.getElementById('dOscuranteMecc').value=p.oscurante_meccanismo||'';}
   document.getElementById('dStratigrafia').value=p.ID_stratigrafia_override||'';
   dRicalcola();
@@ -1091,31 +1065,17 @@ function dOnNCampiChange() {
 
 function getSensoAperturaValue() {
   var n=parseInt(document.getElementById('dNCampi').value)||1;
-  if(n<=2){
-    var el=document.getElementById('dSensoApertura');
-    return el?el.value:'';
-  } else {
-    var vals=[];
-    for(var i=1;i<=n;i++){
-      var el=document.getElementById('dSensoApertura_'+i);
-      vals.push(el?el.value:'');
-    }
-    return vals.join(',');
-  }
+  if(n<=2){var el=document.getElementById('dSensoApertura');return el?el.value:'';}
+  var vals=[];
+  for(var i=1;i<=n;i++){var el=document.getElementById('dSensoApertura_'+i);vals.push(el?el.value:'');}
+  return vals.join(',');
 }
 
 function setSensoAperturaValue(val) {
   var n=parseInt(document.getElementById('dNCampi').value)||1;
-  if(n<=2){
-    var el=document.getElementById('dSensoApertura');
-    if(el) el.value=val||'';
-  } else {
-    var parts=(val||'').split(',');
-    for(var i=1;i<=n;i++){
-      var el=document.getElementById('dSensoApertura_'+i);
-      if(el) el.value=parts[i-1]||'';
-    }
-  }
+  if(n<=2){var el=document.getElementById('dSensoApertura');if(el) el.value=val||'';return;}
+  var parts=(val||'').split(',');
+  for(var i=1;i<=n;i++){var el=document.getElementById('dSensoApertura_'+i);if(el) el.value=parts[i-1]||'';}
 }
 
 function dOnTipoSerrChange(silent) {
@@ -1133,12 +1093,9 @@ function dOnMaterialeChange(silent) {
     var el=document.getElementById(id);el.innerHTML='<option value="">—</option>';el.disabled=true;
   });
   document.getElementById('dCodiceSerr').value='';
-  document.getElementById('dNVetri').innerHTML='<option value="">—</option>';
-  document.getElementById('dNVetri').disabled=true;
-  document.getElementById('dColoreInt').innerHTML='<option value="">—</option>';
-  document.getElementById('dColoreInt').disabled=true;
-  document.getElementById('dColoreEst').innerHTML='<option value="">—</option>';
-  document.getElementById('dColoreEst').disabled=true;
+  document.getElementById('dNVetri').innerHTML='<option value="">—</option>';document.getElementById('dNVetri').disabled=true;
+  document.getElementById('dColoreInt').innerHTML='<option value="">—</option>';document.getElementById('dColoreInt').disabled=true;
+  document.getElementById('dColoreEst').innerHTML='<option value="">—</option>';document.getElementById('dColoreEst').disabled=true;
   if(!silent) drawerDirty=true;
   if(!mat) return;
   var sistSeen={};
@@ -1161,8 +1118,7 @@ function dOnSistemaChange(silent) {
     var el=document.getElementById(id);el.innerHTML='<option value="">—</option>';el.disabled=true;
   });
   document.getElementById('dCodiceSerr').value='';
-  document.getElementById('dNVetri').innerHTML='<option value="">—</option>';
-  document.getElementById('dNVetri').disabled=true;
+  document.getElementById('dNVetri').innerHTML='<option value="">—</option>';document.getElementById('dNVetri').disabled=true;
   if(!silent) drawerDirty=true;
   if(!sis) return;
   var stileSeen={};
@@ -1180,8 +1136,7 @@ function dOnStileChange(silent) {
   document.getElementById('dVarianteTelaio').innerHTML='<option value="">—</option>';
   document.getElementById('dVarianteTelaio').disabled=true;
   document.getElementById('dCodiceSerr').value='';
-  document.getElementById('dNVetri').innerHTML='<option value="">—</option>';
-  document.getElementById('dNVetri').disabled=true;
+  document.getElementById('dNVetri').innerHTML='<option value="">—</option>';document.getElementById('dNVetri').disabled=true;
   if(!silent) drawerDirty=true;
   if(!sti) return;
   var varSeen={};
@@ -1189,13 +1144,10 @@ function dOnStileChange(silent) {
   Utils.fillSelect('dVarianteTelaio',Object.keys(varSeen).sort().map(function(v){return{value:v,label:v};}),'— Variante —');
   document.getElementById('dVarianteTelaio').disabled=false;
   if(!silent) document.getElementById('dVarianteTelaio').classList.add('field-invalid');
-  // Sincronizza i 4 select misto con le stesse opzioni
   if (document.getElementById('dTelaioMisto').checked) {
     var html = document.getElementById('dVarianteTelaio').innerHTML;
     ['dVarAlto','dVarBasso','dVarSx','dVarDx'].forEach(function(id){
-      var sel = document.getElementById(id);
-      sel.innerHTML = html;
-      sel.disabled = false;
+      var sel=document.getElementById(id); sel.innerHTML=html; sel.disabled=false;
     });
   }
 }
@@ -1210,16 +1162,11 @@ function dOnVarianteChange(silent) {
   var prevNv=nv.value;
   nv.innerHTML='<option value="">—</option>';
   if(vetriPerSis.length===1){
-    var opt=document.createElement('option');
-    opt.value=vetriPerSis[0].n_vetri;
-    opt.textContent=vetriPerSis[0].n_vetri==='T'?'Triplo':'Doppio';
-    opt.selected=true; nv.appendChild(opt); nv.disabled=true;
+    var opt=document.createElement('option');opt.value=vetriPerSis[0].n_vetri;
+    opt.textContent=vetriPerSis[0].n_vetri==='T'?'Triplo':'Doppio';opt.selected=true;
+    nv.appendChild(opt);nv.disabled=true;
   } else if(vetriPerSis.length>1){
-    vetriPerSis.forEach(function(v){
-      var opt=document.createElement('option');
-      opt.value=v.n_vetri; opt.textContent=v.n_vetri==='T'?'Triplo':'Doppio';
-      if(v.n_vetri===prevNv)opt.selected=true; nv.appendChild(opt);
-    });
+    vetriPerSis.forEach(function(v){var opt=document.createElement('option');opt.value=v.n_vetri;opt.textContent=v.n_vetri==='T'?'Triplo':'Doppio';if(v.n_vetri===prevNv)opt.selected=true;nv.appendChild(opt);});
     nv.disabled=false;
   } else {
     ['D','T'].forEach(function(v){var opt=document.createElement('option');opt.value=v;opt.textContent=v==='T'?'Triplo':'Doppio';if(v===prevNv)opt.selected=true;nv.appendChild(opt);});
@@ -1242,8 +1189,7 @@ function dOnColoreIntChange(silent) {
   var recMat=dbSerr.find(function(d){return d&&d.materiale===mat;});
   var matSigla=recMat?String(recMat.materiale_sigla||'').replace(/-/g,'').trim():'';
   var colori=(lookups.LK_COLORI||[]).filter(function(c){return c&&c.materiale===matSigla&&c.colore_interno===colI;});
-  var colEstSeen={};
-  colori.forEach(function(c){colEstSeen[c.colore_esterno]=1;});
+  var colEstSeen={};colori.forEach(function(c){colEstSeen[c.colore_esterno]=1;});
   Utils.fillSelect('dColoreEst',Object.keys(colEstSeen).sort().map(function(c){return{value:c,label:c};}),'—');
   document.getElementById('dColoreEst').disabled=colori.length===0;
 }
@@ -1278,128 +1224,274 @@ function dOnOscuranteChange(silent) {
   Utils.fillSelect('dOscuranteMecc',meccs,'—'); document.getElementById('dOscuranteMecc').disabled=false;
 }
 function dOnControtelaioChange(silent) { if(!silent) drawerDirty=true; dRicalcola(); }
-function dOnDinoxillChange(silent) {
-  if(!silent) drawerDirty=true;
-  var val=document.getElementById('dDinoxill').value;
-  var tipo=document.getElementById('dTipoSerr').value;
-  var regola=regoleLati[tipo]||{};
-  // grpDinoxillLati rimosso — lati impliciti in I3/I4
-}
+function dOnDinoxillChange(silent) { if(!silent) drawerDirty=true; }
 function dSave() { drawerDirty=true; }
 
-// Helper: trova record DB serramento per una specifica variante (stesso mat/sis/stile)
 function dGetRecVar(variante) {
   if (!variante) return null;
-  var mat = document.getElementById('dMateriale').value;
-  var sis = document.getElementById('dSistema').value;
-  var sti = document.getElementById('dStileDesign').value;
-  return dbSerr.find(function(d){ return d && d.materiale===mat && d.descrizione===sis && d.stile_design===sti && d.variante_telaio===variante; }) || null;
+  var mat=document.getElementById('dMateriale').value;
+  var sis=document.getElementById('dSistema').value;
+  var sti=document.getElementById('dStileDesign').value;
+  return dbSerr.find(function(d){ return d&&d.materiale===mat&&d.descrizione===sis&&d.stile_design===sti&&d.variante_telaio===variante; })||null;
 }
 
-// Gestione toggle telaio misto
 function dOnTelaioMistoChange() {
-  drawerDirty = true;
-  var misto = document.getElementById('dTelaioMisto').checked;
-  document.getElementById('dTelaioMistoWrap').style.display = misto ? '' : 'none';
-  if (misto) {
-    // Popola i 4 select con le stesse opzioni di dVarianteTelaio
-    var varCurr = document.getElementById('dVarianteTelaio').value;
-    ['dVarAlto','dVarBasso','dVarSx','dVarDx'].forEach(function(id) {
-      var sel = document.getElementById(id);
-      sel.innerHTML = document.getElementById('dVarianteTelaio').innerHTML;
-      sel.disabled = document.getElementById('dVarianteTelaio').disabled;
-      sel.value = varCurr; // precompila con la variante attuale
+  drawerDirty=true;
+  var misto=document.getElementById('dTelaioMisto').checked;
+  document.getElementById('dTelaioMistoWrap').style.display=misto?'':'none';
+  if(misto){
+    var varCurr=document.getElementById('dVarianteTelaio').value;
+    ['dVarAlto','dVarBasso','dVarSx','dVarDx'].forEach(function(id){
+      var sel=document.getElementById(id);
+      sel.innerHTML=document.getElementById('dVarianteTelaio').innerHTML;
+      sel.disabled=document.getElementById('dVarianteTelaio').disabled;
+      sel.value=varCurr;
     });
   }
   dRicalcola();
 }
-
-function dOnTelaioMistoLato() { drawerDirty = true; dRicalcola(); }
+function dOnTelaioMistoLato() { drawerDirty=true; dRicalcola(); }
 
 function dRicalcola() {
   var H=parseFloat(document.getElementById('dHmm').value)||0;
   var L=parseFloat(document.getElementById('dLmm').value)||0;
   var tf=document.getElementById('dTipoForo').value;
   var ts=document.getElementById('dTipoSerr').value;
-  var ctl=document.getElementById('dControtelaio').value;
   var misto=document.getElementById('dTelaioMisto').checked;
-
-  // Costanti da dati_comuni_serr Supabase (IDs da foglio Excel)
-  // id=5: ARIA1 orizzontale (10mm), id=6: ARIA2 orizzontale (10mm)
-  // id=10: CTL spessore orizz (20mm), id=11: CTL spessore vert (20mm)
-  // id=15: ARIA51 verticale (10mm), id=16: ARIA52 verticale (10mm)
-  var ao  = parseFloat(datiComuni[5])  || 10;  // ARIA1 orizz
-  var at  = parseFloat(datiComuni[6])  || 10;  // ARIA2 orizz (tipo P L_tub)
-  var so  = parseFloat(datiComuni[10]) || 20;  // CTL spessore orizz
-  var sv  = parseFloat(datiComuni[11]) || 20;  // CTL spessore vert
-  var av  = parseFloat(datiComuni[15]) || 10;  // ARIA51 vert
-  var atv = parseFloat(datiComuni[16]) || 10;  // ARIA52 vert (tipo P H_tub)
-
-  var hasCtl = ctl==='L' || ctl==='T';
-  var ridO = hasCtl ? (ao+so+at) : ao;
-  var ridV = hasCtl ? (av+sv+atv) : av;
-
-
-  // L'aletta esiste sempre sia in alto che in basso — caratteristica del profilo, non del tipo serramento
-  var Htel=0, Ltel=0, Harch=0, Larch=0, Htub=0, Ltub=0;
+  var at  = parseFloat(datiComuni[6])  || 10;
+  var atv = parseFloat(datiComuni[16]) || 10;
+  var hasCtl = (document.getElementById('dControtelaio').value==='L'||document.getElementById('dControtelaio').value==='T');
+  var Harch=0,Larch=0,Htub=0,Ltub=0;
 
   if (H && L && tf) {
-    // nAlH=2: F e FF (frame completo top+bottom — confermato da formula Excel)
-    // nAlH=1: I, PF, VF, S (soglia/guida in basso)
-    var nAlH2 = (ts==='F' || ts==='FF') ? 2 : 1;
+    var nAlH2 = (ts==='F'||ts==='FF') ? 2 : 1;
     if (!misto) {
-      // --- Telaio uniforme (tutti i lati uguale) ---
-      var rec = dGetRec();
-      var nasc   = rec ? (parseFloat(rec.telaio_nascosto_mm)||0) : 0;
-      var aletta = rec ? (parseFloat(rec.aletta_mm)||0) : 0;
-      if (tf==='A') {
-        Harch=H; Larch=L; Htel=H-2*ridV; Ltel=L-2*ridO;
-        Ltub = L + 2*nasc + 2*aletta;
-        Htub = H + nasc + nAlH2*aletta;
-      } else if (tf==='D') {
-        Htel=H; Ltel=L; Harch=H+2*ridV; Larch=L+2*ridO;
-        Ltub = L + 2*aletta;
-        Htub = H + nAlH2*aletta;
-      } else if (tf==='P') {
-        Htel=H; Ltel=L; Harch=H+2*ridV; Larch=L+2*ridO;
-        Ltub = L - 2*at + 2*aletta;
-        Htub = H - atv + nAlH2*aletta;
-      }
+      var rec=dGetRec();
+      var nasc=rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
+      var aletta=rec?(parseFloat(rec.aletta_mm)||0):0;
+      if(tf==='A'){Larch=L;Harch=H;Ltub=L+2*nasc+2*aletta;Htub=H+nasc+nAlH2*aletta;}
+      else if(tf==='D'){Larch=L;Harch=H;Ltub=L+2*aletta;Htub=H+nAlH2*aletta;}
+      else if(tf==='P'){Larch=L;Harch=H;Ltub=L-2*at+2*aletta;Htub=H-atv+nAlH2*aletta;}
     } else {
-      // --- Telaio misto (variante per lato) ---
-      var recA = dGetRecVar(document.getElementById('dVarAlto').value);
-      var recB = dGetRecVar(document.getElementById('dVarBasso').value);
-      var recS = dGetRecVar(document.getElementById('dVarSx').value);
-      var recD = dGetRecVar(document.getElementById('dVarDx').value);
-      var nA = recA ? (parseFloat(recA.telaio_nascosto_mm)||0) : 0;
-      var nB = recB ? (parseFloat(recB.telaio_nascosto_mm)||0) : 0;
-      var nS = recS ? (parseFloat(recS.telaio_nascosto_mm)||0) : 0;
-      var nD = recD ? (parseFloat(recD.telaio_nascosto_mm)||0) : 0;
-      var aA = recA ? (parseFloat(recA.aletta_mm)||0) : 0;
-      var aB = recB ? (parseFloat(recB.aletta_mm)||0) : 0;
-      var aS = recS ? (parseFloat(recS.aletta_mm)||0) : 0;
-      var aD = recD ? (parseFloat(recD.aletta_mm)||0) : 0;
-      // inclBasso: solo F e FF hanno aletta anche sul lato basso
-      var inclBasso = (ts==='F' || ts==='FF');
-      if (tf==='A') {
-        Ltub = L + nS + nD + aS + aD;
-        // Nasc contribuisce SOLO dal lato alto (non dal basso) — verificato dalla formula Excel
-        Htub = H + nA + aA + (inclBasso ? aB : 0);
-      } else if (tf==='D') {
-        Ltub = L + aS + aD;
-        Htub = H + aA + (inclBasso ? aB : 0);
-      } else if (tf==='P') {
-        Ltub = L - 2*at + aS + aD;
-        Htub = H - atv + aA + (inclBasso ? aB : 0);
-      }
+      var recA=dGetRecVar(document.getElementById('dVarAlto').value);
+      var recB=dGetRecVar(document.getElementById('dVarBasso').value);
+      var recS=dGetRecVar(document.getElementById('dVarSx').value);
+      var recD=dGetRecVar(document.getElementById('dVarDx').value);
+      var nA=recA?(parseFloat(recA.telaio_nascosto_mm)||0):0;
+      var nB=recB?(parseFloat(recB.telaio_nascosto_mm)||0):0;
+      var nS=recS?(parseFloat(recS.telaio_nascosto_mm)||0):0;
+      var nD=recD?(parseFloat(recD.telaio_nascosto_mm)||0):0;
+      var aA=recA?(parseFloat(recA.aletta_mm)||0):0;
+      var aB=recB?(parseFloat(recB.aletta_mm)||0):0;
+      var aS=recS?(parseFloat(recS.aletta_mm)||0):0;
+      var aD=recD?(parseFloat(recD.aletta_mm)||0):0;
+      var inclBasso=(ts==='F'||ts==='FF');
+      Larch=L; Harch=H;
+      if(tf==='A'){Ltub=L+nS+nD+aS+aD;Htub=H+nA+aA+(inclBasso?aB:0);}
+      else if(tf==='D'){Ltub=L+aS+aD;Htub=H+aA+(inclBasso?aB:0);}
+      else if(tf==='P'){Ltub=L-2*at+aS+aD;Htub=H-atv+aA+(inclBasso?aB:0);}
     }
   }
 
-  var fmtLH = function(l,h){ return l&&h ? Math.round(l)+' x '+Math.round(h)+' mm' : '—'; };
-  document.getElementById('cLarch').textContent = fmtLH(Larch,Harch);
-  document.getElementById('cLtub').textContent  = fmtLH(Ltub,Htub);
+  var fmtLH=function(l,h){return l&&h?Math.round(l)+' x '+Math.round(h)+' mm':'—';};
+  document.getElementById('cLarch').textContent=fmtLH(Larch,Harch);
+  document.getElementById('cLtub').textContent =fmtLH(Ltub,Htub);
+
+  // Aggiorna pannello formula se già aperto
+  var fp=document.getElementById('formulaPanel');
+  if(fp&&fp.classList.contains('open')) fp.innerHTML=buildFormulaHTML();
 }
 
+// ================================================================
+// FORMULA CONTESTUALE
+// ================================================================
+function toggleFormula() {
+  var panel=document.getElementById('formulaPanel');
+  var btn  =document.getElementById('formulaBtn');
+  if(!panel||!btn) return;
+  var isOpen=panel.classList.toggle('open');
+  btn.classList.toggle('active',isOpen);
+  if(isOpen) panel.innerHTML=buildFormulaHTML();
+}
+
+function buildFormulaHTML() {
+  var H    =parseFloat(document.getElementById('dHmm').value)||0;
+  var L    =parseFloat(document.getElementById('dLmm').value)||0;
+  var tf   =document.getElementById('dTipoForo').value;
+  var ts   =document.getElementById('dTipoSerr').value;
+  var misto=document.getElementById('dTelaioMisto').checked;
+
+  if(!H||!L||!tf) {
+    return '<span class="f-note">Completa L foro, H foro e Tipo foro per vedere la formula.</span>';
+  }
+
+  var at =parseFloat(datiComuni[6]) ||10;
+  var atv=parseFloat(datiComuni[16])||10;
+  var nAlH=(ts==='F'||ts==='FF')?2:1;
+  var nAlHDesc=(ts==='F'||ts==='FF')
+    ?'F/FF &rarr; 2 alette in H (alto + basso)'
+    :(ts||'?')+' &rarr; 1 aletta in H (solo alto)';
+  var tfLabel={'A':'Architettonico','D':'Dimensione telaio','P':'Posa in luce'};
+
+  var html='<div class="f-title">Tipo foro '+tf+' &mdash; '+(tfLabel[tf]||tf)+'</div>';
+
+  if(!misto) {
+    var rec=dGetRec();
+    var nasc  =rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
+    var aletta=rec?(parseFloat(rec.aletta_mm)||0):0;
+
+    if(!rec) {
+      return html+'<span class="f-note">Seleziona materiale, sistema, stile e variante per vedere i valori reali.</span>';
+    }
+
+    html+='<span class="f-dim">Parametri dal DB Serramento</span>';
+    html+='<span class="f-sym">Nasc (telaio nascosto) = </span><span class="f-sub">'+nasc+' mm</span><br>';
+    html+='<span class="f-sym">Aletta &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= </span><span class="f-sub">'+aletta+' mm</span><br>';
+    html+='<span class="f-sym">nAlH &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= </span><span class="f-sub">'+nAlH+'</span> <span class="f-note">('+nAlHDesc+')</span><br>';
+
+    if(tf==='A') {
+      var Ltub=L+2*nasc+2*aletta, Htub=H+nasc+nAlH*aletta;
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">L ordine (tubolarit&agrave;)</span>';
+      html+='<span class="f-sym">L_tub = L + 2&times;Nasc + 2&times;Aletta</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+L+' + 2&times;'+nasc+' + 2&times;'+aletta+'</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+L+' + '+(2*nasc)+' + '+(2*aletta)+'</span><br>';
+      html+='<span class="f-res">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+Math.round(Ltub)+' mm</span><br>';
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">H ordine (tubolarit&agrave;)</span>';
+      html+='<span class="f-sym">H_tub = H + Nasc + '+nAlH+'&times;Aletta</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+H+' + '+nasc+' + '+nAlH+'&times;'+aletta+'</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+H+' + '+nasc+' + '+(nAlH*aletta)+'</span><br>';
+      html+='<span class="f-res">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+Math.round(Htub)+' mm</span>';
+
+    } else if(tf==='D') {
+      var Ltub=L+2*aletta, Htub=H+nAlH*aletta;
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">L ordine (tubolarit&agrave;)</span>';
+      html+='<span class="f-sym">L_tub = L + 2&times;Aletta</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+L+' + 2&times;'+aletta+'</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+L+' + '+(2*aletta)+'</span><br>';
+      html+='<span class="f-res">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+Math.round(Ltub)+' mm</span><br>';
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">H ordine (tubolarit&agrave;)</span>';
+      html+='<span class="f-sym">H_tub = H + '+nAlH+'&times;Aletta</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+H+' + '+nAlH+'&times;'+aletta+'</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+H+' + '+(nAlH*aletta)+'</span><br>';
+      html+='<span class="f-res">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+Math.round(Htub)+' mm</span>';
+
+    } else if(tf==='P') {
+      var Ltub=L-2*at+2*aletta, Htub=H-atv+nAlH*aletta;
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">Costanti Dati Comuni (da Supabase)</span>';
+      html+='<span class="f-sym">ARIA2orizz (id=6) &nbsp;= </span><span class="f-sub">'+at+' mm</span><br>';
+      html+='<span class="f-sym">ARIA52vert (id=16) = </span><span class="f-sub">'+atv+' mm</span><br>';
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">L ordine (tubolarit&agrave;)</span>';
+      html+='<span class="f-sym">L_tub = L &minus; 2&times;ARIA2orizz + 2&times;Aletta</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+L+' &minus; 2&times;'+at+' + 2&times;'+aletta+'</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+L+' &minus; '+(2*at)+' + '+(2*aletta)+'</span><br>';
+      html+='<span class="f-res">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+Math.round(Ltub)+' mm</span><br>';
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">H ordine (tubolarit&agrave;)</span>';
+      html+='<span class="f-sym">H_tub = H &minus; ARIA52vert + '+nAlH+'&times;Aletta</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+H+' &minus; '+atv+' + '+nAlH+'&times;'+aletta+'</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+H+' &minus; '+atv+' + '+(nAlH*aletta)+'</span><br>';
+      html+='<span class="f-res">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+Math.round(Htub)+' mm</span>';
+    }
+
+  } else {
+    // ── TELAIO MISTO ──
+    function _getMR(selId) {
+      var sig=document.getElementById(selId)?document.getElementById(selId).value:'';
+      if(!sig) return{sig:sig,nasc:0,aletta:0};
+      var mat=document.getElementById('dMateriale').value;
+      var sis=document.getElementById('dSistema').value;
+      var sti=document.getElementById('dStileDesign').value;
+      var r=dbSerr.find(function(d){return d&&d.materiale===mat&&d.descrizione===sis&&d.stile_design===sti&&d.variante_telaio===sig;});
+      return{sig:sig,nasc:r?(parseFloat(r.telaio_nascosto_mm)||0):0,aletta:r?(parseFloat(r.aletta_mm)||0):0};
+    }
+    var rA=_getMR('dVarAlto'),rB=_getMR('dVarBasso'),rS=_getMR('dVarSx'),rD=_getMR('dVarDx');
+    var inclBasso=(ts==='F'||ts==='FF');
+
+    html+='<span class="f-note">&#127922; Telaio misto &mdash; variante diversa per ogni lato</span><br>';
+    html+='<div class="f-sep"></div>';
+    html+='<span class="f-dim">Parametri per lato dal DB Serramento</span>';
+    html+='<span class="f-sym">&uarr; Alto &nbsp;('+（rA.sig||'—')+'): Nasc=</span><span class="f-sub">'+rA.nasc+'</span><span class="f-sym"> Aletta=</span><span class="f-sub">'+rA.aletta+'</span><br>';
+    html+='<span class="f-sym">&darr; Basso ('+(rB.sig||'—')+'): Nasc=</span><span class="f-sub">'+rB.nasc+'</span><span class="f-sym"> Aletta=</span><span class="f-sub">'+rB.aletta+'</span><br>';
+    html+='<span class="f-sym">&larr; Sx &nbsp;&nbsp;('+(rS.sig||'—')+'): Nasc=</span><span class="f-sub">'+rS.nasc+'</span><span class="f-sym"> Aletta=</span><span class="f-sub">'+rS.aletta+'</span><br>';
+    html+='<span class="f-sym">&rarr; Dx &nbsp;&nbsp;('+(rD.sig||'—')+'): Nasc=</span><span class="f-sub">'+rD.nasc+'</span><span class="f-sym"> Aletta=</span><span class="f-sub">'+rD.aletta+'</span><br>';
+    html+='<span class="f-sym">nAlH = </span><span class="f-sub">'+nAlH+'</span> <span class="f-note">('+nAlHDesc+')</span><br>';
+    html+='<span class="f-note">&#9888; Nasc contribuisce solo dal lato alto in H &mdash; mai dal basso (regola Excel Internorm)</span><br>';
+
+    if(tf==='A') {
+      var Ltub=L+rS.nasc+rD.nasc+rS.aletta+rD.aletta;
+      var Htub=H+rA.nasc+rA.aletta+(inclBasso?rB.aletta:0);
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">L ordine (tubolarit&agrave;)</span>';
+      html+='<span class="f-sym">L_tub = L + Nasc_Sx + Nasc_Dx + Aletta_Sx + Aletta_Dx</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+L+' + '+rS.nasc+' + '+rD.nasc+' + '+rS.aletta+' + '+rD.aletta+'</span><br>';
+      html+='<span class="f-res">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+Math.round(Ltub)+' mm</span><br>';
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">H ordine (tubolarit&agrave;)</span>';
+      if(inclBasso){
+        html+='<span class="f-sym">H_tub = H + Nasc_Alto + Aletta_Alto + Aletta_Basso <span class="f-note">(F/FF)</span></span><br>';
+        html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+H+' + '+rA.nasc+' + '+rA.aletta+' + '+rB.aletta+'</span><br>';
+      } else {
+        html+='<span class="f-sym">H_tub = H + Nasc_Alto + Aletta_Alto <span class="f-note">('+ts+')</span></span><br>';
+        html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+H+' + '+rA.nasc+' + '+rA.aletta+'</span><br>';
+      }
+      html+='<span class="f-res">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+Math.round(Htub)+' mm</span>';
+
+    } else if(tf==='D') {
+      var Ltub=L+rS.aletta+rD.aletta;
+      var Htub=H+rA.aletta+(inclBasso?rB.aletta:0);
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">L ordine (tubolarit&agrave;)</span>';
+      html+='<span class="f-sym">L_tub = L + Aletta_Sx + Aletta_Dx</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+L+' + '+rS.aletta+' + '+rD.aletta+'</span><br>';
+      html+='<span class="f-res">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+Math.round(Ltub)+' mm</span><br>';
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">H ordine (tubolarit&agrave;)</span>';
+      if(inclBasso){
+        html+='<span class="f-sym">H_tub = H + Aletta_Alto + Aletta_Basso <span class="f-note">(F/FF)</span></span><br>';
+        html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+H+' + '+rA.aletta+' + '+rB.aletta+'</span><br>';
+      } else {
+        html+='<span class="f-sym">H_tub = H + Aletta_Alto <span class="f-note">('+ts+')</span></span><br>';
+        html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+H+' + '+rA.aletta+'</span><br>';
+      }
+      html+='<span class="f-res">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+Math.round(Htub)+' mm</span>';
+
+    } else if(tf==='P') {
+      var Ltub=L-2*at+rS.aletta+rD.aletta;
+      var Htub=H-atv+rA.aletta+(inclBasso?rB.aletta:0);
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">Costanti Dati Comuni (da Supabase)</span>';
+      html+='<span class="f-sym">ARIA2orizz (id=6) &nbsp;= </span><span class="f-sub">'+at+' mm</span><br>';
+      html+='<span class="f-sym">ARIA52vert (id=16) = </span><span class="f-sub">'+atv+' mm</span><br>';
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">L ordine (tubolarit&agrave;)</span>';
+      html+='<span class="f-sym">L_tub = L &minus; 2&times;ARIA2orizz + Aletta_Sx + Aletta_Dx</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+L+' &minus; 2&times;'+at+' + '+rS.aletta+' + '+rD.aletta+'</span><br>';
+      html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+L+' &minus; '+(2*at)+' + '+(rS.aletta+rD.aletta)+'</span><br>';
+      html+='<span class="f-res">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+Math.round(Ltub)+' mm</span><br>';
+      html+='<div class="f-sep"></div>';
+      html+='<span class="f-dim">H ordine (tubolarit&agrave;)</span>';
+      if(inclBasso){
+        html+='<span class="f-sym">H_tub = H &minus; ARIA52vert + Aletta_Alto + Aletta_Basso <span class="f-note">(F/FF)</span></span><br>';
+        html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+H+' &minus; '+atv+' + '+rA.aletta+' + '+rB.aletta+'</span><br>';
+      } else {
+        html+='<span class="f-sym">H_tub = H &minus; ARIA52vert + Aletta_Alto <span class="f-note">('+ts+')</span></span><br>';
+        html+='<span class="f-sym">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+H+' &minus; '+atv+' + '+rA.aletta+'</span><br>';
+      }
+      html+='<span class="f-res">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= '+Math.round(Htub)+' mm</span>';
+    }
+  }
+  return html;
+}
+
+// ================================================================
+// SALVA DRAWER
+// ================================================================
 async function salvaDrawer() {
   var data=raccogliDrawer(); if(!data)return;
   var btn=document.getElementById('btnDrawerSalva'); btn.disabled=true; btn.textContent='Salvataggio...';
@@ -1418,25 +1510,20 @@ async function salvaDrawer() {
 }
 
 function raccogliDrawer() {
-  var misto = document.getElementById('dTelaioMisto').checked;
-  var req = {dPiano:'Piano',dTipoSerr:'Tipo serramento',dNCampi:'N campi',
-             dTipoForo:'Tipo foro',dHmm:'H foro',dLmm:'L foro',
-             dMateriale:'Materiale',dSistema:'Sistema',dStileDesign:'Stile design'};
-  if (!misto) req.dVarianteTelaio = 'Variante telaio';
-  var ok = true;
-  for (var id in req) {
-    var el = document.getElementById(id);
-    if (!el||!el.value) { el&&el.classList.add('field-invalid'); ok=false; }
-    else { el.classList.remove('field-invalid'); }
-  }
-  if (misto) {
+  var misto=document.getElementById('dTelaioMisto').checked;
+  var req={dPiano:'Piano',dTipoSerr:'Tipo serramento',dNCampi:'N campi',
+           dTipoForo:'Tipo foro',dHmm:'H foro',dLmm:'L foro',
+           dMateriale:'Materiale',dSistema:'Sistema',dStileDesign:'Stile design'};
+  if(!misto) req.dVarianteTelaio='Variante telaio';
+  var ok=true;
+  for(var id in req){var el=document.getElementById(id);if(!el||!el.value){el&&el.classList.add('field-invalid');ok=false;}else{el.classList.remove('field-invalid');}}
+  if(misto){
     ['dVarAlto','dVarBasso','dVarSx','dVarDx'].forEach(function(id){
-      var el = document.getElementById(id);
-      if (!el||!el.value) { el&&el.classList.add('field-invalid'); ok=false; }
-      else el.classList.remove('field-invalid');
+      var el=document.getElementById(id);
+      if(!el||!el.value){el&&el.classList.add('field-invalid');ok=false;}else el.classList.remove('field-invalid');
     });
   }
-  if (!ok) { Utils.showWarning('Compila i campi evidenziati in rosso.'); return null; }
+  if(!ok){Utils.showWarning('Compila i campi evidenziati in rosso.');return null;}
   return {
     numero_pos_alfa:(document.getElementById('dNumAlfa').value||'').toUpperCase().trim()||null,
     piano:document.getElementById('dPiano').value,
@@ -1450,12 +1537,12 @@ function raccogliDrawer() {
     materiale:document.getElementById('dMateriale').value,
     sistema:document.getElementById('dSistema').value,
     stile_design:document.getElementById('dStileDesign').value,
-    variante_telaio:misto ? null : document.getElementById('dVarianteTelaio').value,
+    variante_telaio:misto?null:document.getElementById('dVarianteTelaio').value,
     telaio_misto:misto,
-    variante_alto: misto ? document.getElementById('dVarAlto').value  : null,
-    variante_basso:misto ? document.getElementById('dVarBasso').value : null,
-    variante_sx:   misto ? document.getElementById('dVarSx').value   : null,
-    variante_dx:   misto ? document.getElementById('dVarDx').value   : null,
+    variante_alto: misto?document.getElementById('dVarAlto').value:null,
+    variante_basso:misto?document.getElementById('dVarBasso').value:null,
+    variante_sx:   misto?document.getElementById('dVarSx').value:null,
+    variante_dx:   misto?document.getElementById('dVarDx').value:null,
     codice_serramento:document.getElementById('dCodiceSerr').value,
     n_vetri:document.getElementById('dNVetri').value,
     colore_int:document.getElementById('dColoreInt').value,
@@ -1471,7 +1558,7 @@ function raccogliDrawer() {
     controtelaio:document.getElementById('dControtelaio').value,
     zanzariera:document.getElementById('dZanzariera').value,
     dinoxill:document.getElementById('dDinoxill').value||null,
-    dinoxill_lati:(function(){ var d=document.getElementById('dDinoxill').value; return d==='I3'?'3':d==='I4'?'4':null; })(),
+    dinoxill_lati:(function(){var d=document.getElementById('dDinoxill').value;return d==='I3'?'3':d==='I4'?'4':null;})(),
     rimozione:document.getElementById('dRimozione').checked?'SI':'NO',
     rimozione_accessori:document.getElementById('dRimozioneAcc').checked,
     taglio_marmo:document.getElementById('dTaglioMarmo').checked,
@@ -1599,10 +1686,8 @@ async function eseguiClona(){
 
 var LEGENDE={
   generale:{titolo:'Legenda generale',voci:[
-    ['N','Numero posizione'],
-    ['Tipo','I=Ingresso, F=Finestra, PF=Porta Finestra, FF=Fin.Fissa, VF=Vetrata, S=Scorrevole'],
-    ['L / H','Larghezza e altezza foro'],
-    ['(L) / (H)','Dimensione tubolare nel muro'],
+    ['N','Numero posizione'],['Tipo','I=Ingresso, F=Finestra, PF=Porta Finestra, FF=Fin.Fissa, VF=Vetrata, S=Scorrevole'],
+    ['L / H','Larghezza e altezza foro'],['(L) / (H)','Dimensione tubolare nel muro'],
     ['Foro','A=Architettonico, D=Dim.telaio, P=Posa in luce'],
     ['CTL','Controtelaio in legno'],['TC','Termocassa'],
     ['Cass','Cassonetto'],['Zanz','Zanzariera'],['CopI/E','Coprifilo interno/esterno']
@@ -1630,147 +1715,85 @@ function closeLegenda(){document.getElementById('legendaOverlay').classList.remo
 // ================================================================
 // DRAG & DROP
 // ================================================================
-var _dragSrc = null;
-
-function initDragDrop() {
-  // già gestito con attributi inline ondragstart/over/drop
+var _dragSrc=null;
+function initDragDrop(){}
+function onDragStart(e){
+  _dragSrc=e.currentTarget; e.dataTransfer.effectAllowed='move';
+  e.dataTransfer.setData('text/plain',_dragSrc.dataset.id);
+  setTimeout(function(){_dragSrc.style.opacity='0.4';},0);
 }
-
-function onDragStart(e) {
-  _dragSrc = e.currentTarget;
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', _dragSrc.dataset.id);
-  setTimeout(function(){ _dragSrc.style.opacity='0.4'; }, 0);
-}
-
-function onDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  e.currentTarget.classList.add('tr-drag-over');
-}
-
-function onDragLeave(e) {
-  e.currentTarget.classList.remove('tr-drag-over');
-}
-
-async function onDrop(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  var target = e.currentTarget;
-  target.classList.remove('tr-drag-over');
-  if (!_dragSrc || _dragSrc === target) { _dragSrc=null; return; }
-  _dragSrc.style.opacity = '';
-
-  // Leggi tutte le righe dalla tabella DOM nell'ordine corrente
-  var tbody = document.getElementById('posTableBody');
-  if (!tbody) { _dragSrc=null; return; }
-  var allRows = Array.from(tbody.querySelectorAll('tr[data-tipo]'));
-
-  // Sposta riga sorgente prima della riga target
-  var srcIdx  = allRows.indexOf(_dragSrc);
-  var tgtIdx  = allRows.indexOf(target);
-  if (srcIdx < 0 || tgtIdx < 0) { _dragSrc=null; return; }
-
-  // Valida: non permettere cap_fine prima del proprio cap_inizio
-  var srcTipo = _dragSrc.dataset.tipo;
-  var srcId   = _dragSrc.dataset.id;
-  if (srcTipo === 'cap_inizio') {
-    // Non permettere di spostare inizio dopo la propria fine
-    var fineIdx = allRows.findIndex(function(r){ return r.dataset.tipo==='cap_fine'&&r.dataset.id===srcId; });
-    if (tgtIdx > fineIdx) { Utils.showWarning('Non puoi spostare l\'inizio capitolo dopo la propria riga di fine.'); _dragSrc=null; return; }
+function onDragOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';e.currentTarget.classList.add('tr-drag-over');}
+function onDragLeave(e){e.currentTarget.classList.remove('tr-drag-over');}
+async function onDrop(e){
+  e.preventDefault(); e.stopPropagation();
+  var target=e.currentTarget; target.classList.remove('tr-drag-over');
+  if(!_dragSrc||_dragSrc===target){_dragSrc=null;return;}
+  _dragSrc.style.opacity='';
+  var tbody=document.getElementById('posTableBody');
+  if(!tbody){_dragSrc=null;return;}
+  var allRows=Array.from(tbody.querySelectorAll('tr[data-tipo]'));
+  var srcIdx=allRows.indexOf(_dragSrc), tgtIdx=allRows.indexOf(target);
+  if(srcIdx<0||tgtIdx<0){_dragSrc=null;return;}
+  var srcTipo=_dragSrc.dataset.tipo, srcId=_dragSrc.dataset.id;
+  if(srcTipo==='cap_inizio'){
+    var fineIdx=allRows.findIndex(function(r){return r.dataset.tipo==='cap_fine'&&r.dataset.id===srcId;});
+    if(tgtIdx>fineIdx){Utils.showWarning('Non puoi spostare l\'inizio capitolo dopo la propria fine.');_dragSrc=null;return;}
   }
-  if (srcTipo === 'cap_fine') {
-    var inizioIdx = allRows.findIndex(function(r){ return r.dataset.tipo==='cap_inizio'&&r.dataset.id===srcId; });
-    if (tgtIdx <= inizioIdx) { Utils.showWarning('Non puoi spostare la fine capitolo prima della propria riga di inizio.'); _dragSrc=null; return; }
+  if(srcTipo==='cap_fine'){
+    var inizioIdx=allRows.findIndex(function(r){return r.dataset.tipo==='cap_inizio'&&r.dataset.id===srcId;});
+    if(tgtIdx<=inizioIdx){Utils.showWarning('Non puoi spostare la fine capitolo prima dell\'inizio.');_dragSrc=null;return;}
   }
-
-  // Riordina DOM
-  tbody.insertBefore(_dragSrc, srcIdx < tgtIdx ? target.nextSibling : target);
-  _dragSrc = null;
-
-  // Rinumerizza ordini da DOM e salva
+  tbody.insertBefore(_dragSrc,srcIdx<tgtIdx?target.nextSibling:target);
+  _dragSrc=null;
   await salvaOrdiniDaDom();
 }
-
-async function salvaOrdiniDaDom() {
-  var tbody = document.getElementById('posTableBody');
-  if (!tbody) return;
-  var allRows = Array.from(tbody.querySelectorAll('tr[data-tipo]'));
-
-  // Assegna ordini incrementali
-  var ordine = 1;
-  var righePos = [], righeCapitoli = [];
-
-  allRows.forEach(function(row) {
-    row.dataset.ordine = ordine;
-    var tipo = row.dataset.tipo;
-    var id   = row.dataset.id;
-    if (tipo === 'pos') {
-      righePos.push({ id: id, ordine: ordine });
-    } else if (tipo === 'cap_inizio') {
-      var cap = capitoli.find(function(c){ return c.id===id; });
-      if (cap) cap.ordine_inizio = ordine;
-    } else if (tipo === 'cap_fine') {
-      var cap = capitoli.find(function(c){ return c.id===id; });
-      if (cap) cap.ordine_fine = ordine;
-    }
+async function salvaOrdiniDaDom(){
+  var tbody=document.getElementById('posTableBody'); if(!tbody)return;
+  var allRows=Array.from(tbody.querySelectorAll('tr[data-tipo]'));
+  var ordine=1, righePos=[];
+  allRows.forEach(function(row){
+    row.dataset.ordine=ordine;
+    var tipo=row.dataset.tipo, id=row.dataset.id;
+    if(tipo==='pos'){righePos.push({id:id,ordine:ordine});}
+    else if(tipo==='cap_inizio'){var cap=capitoli.find(function(c){return c.id===id;});if(cap)cap.ordine_inizio=ordine;}
+    else if(tipo==='cap_fine'){var cap=capitoli.find(function(c){return c.id===id;});if(cap)cap.ordine_fine=ordine;}
     ordine++;
   });
-
-  // Salva su Supabase
-  var res = await API.aggiornaOrdiniSerr(idRilievo, righePos, capitoli);
-  if (!res.success) { Utils.showWarning('Errore salvataggio ordine: '+(res.error||'')); }
-
-  // Ricarica per aggiornare id_capitolo e subtotali
+  var res=await API.aggiornaOrdiniSerr(idRilievo,righePos,capitoli);
+  if(!res.success)Utils.showWarning('Errore salvataggio ordine: '+(res.error||''));
   await loadPosizioni();
 }
 
 // ================================================================
 // CAPITOLI
 // ================================================================
-async function nuovoCapitolo() {
-  var titolo = prompt('Titolo del capitolo:', 'Capitolo');
-  if (!titolo || !titolo.trim()) return;
-  titolo = titolo.trim();
-
-  // ordine_inizio = dopo ultima riga, ordine_fine = ordine_inizio + 1
-  var maxOrd = 0;
-  posizioni.forEach(function(p){ if ((p.ordine||p.numero_pos) > maxOrd) maxOrd = p.ordine||p.numero_pos; });
-  capitoli.forEach(function(c){ if (c.ordine_fine > maxOrd) maxOrd = c.ordine_fine; });
-  var oInizio = maxOrd + 1;
-  var oFine   = maxOrd + 2;
-
-  var res = await API.createCapitolo(idRilievo, titolo, oInizio, oFine);
-  if (res.success) {
-    Utils.showSuccess('Capitolo "'+titolo+'" creato. Trascina le posizioni al suo interno.');
-    await loadPosizioni();
-  } else {
-    Utils.showError(res.error);
-  }
-}
-
-async function rinominaCapitolo(id, titoloCorrente) {
-  var nuovoTitolo = prompt('Nuovo titolo:', titoloCorrente);
-  if (!nuovoTitolo || !nuovoTitolo.trim() || nuovoTitolo.trim() === titoloCorrente) return;
-  var res = await API.updateCapitoloTitolo(id, nuovoTitolo.trim());
-  if (res.success) { await loadPosizioni(); }
+async function nuovoCapitolo(){
+  var titolo=prompt('Titolo del capitolo:','Capitolo');
+  if(!titolo||!titolo.trim())return;
+  titolo=titolo.trim();
+  var maxOrd=0;
+  posizioni.forEach(function(p){if((p.ordine||p.numero_pos)>maxOrd)maxOrd=p.ordine||p.numero_pos;});
+  capitoli.forEach(function(c){if(c.ordine_fine>maxOrd)maxOrd=c.ordine_fine;});
+  var res=await API.createCapitolo(idRilievo,titolo,maxOrd+1,maxOrd+2);
+  if(res.success){Utils.showSuccess('Capitolo "'+titolo+'" creato. Trascina le posizioni al suo interno.');await loadPosizioni();}
   else Utils.showError(res.error);
 }
-
-async function eliminaCapitolo(id) {
-  var cap = capitoli.find(function(c){ return c.id===id; });
-  var titolo = cap ? cap.titolo : 'questo capitolo';
-  if (!(await confirmCustom('Eliminare il capitolo "'+titolo+'"? Le posizioni resteranno nel rilievo senza capitolo.','Elimina capitolo'))) return;
-  var res = await API.deleteCapitolo(id);
-  if (res.success) {
-    Utils.showSuccess('Capitolo eliminato.');
-    await loadPosizioni();
-  } else Utils.showError(res.error);
+async function rinominaCapitolo(id,titoloCorrente){
+  var nuovoTitolo=prompt('Nuovo titolo:',titoloCorrente);
+  if(!nuovoTitolo||!nuovoTitolo.trim()||nuovoTitolo.trim()===titoloCorrente)return;
+  var res=await API.updateCapitoloTitolo(id,nuovoTitolo.trim());
+  if(res.success){await loadPosizioni();}else Utils.showError(res.error);
+}
+async function eliminaCapitolo(id){
+  var cap=capitoli.find(function(c){return c.id===id;});
+  var titolo=cap?cap.titolo:'questo capitolo';
+  if(!(await confirmCustom('Eliminare il capitolo "'+titolo+'"? Le posizioni resteranno nel rilievo senza capitolo.','Elimina capitolo')))return;
+  var res=await API.deleteCapitolo(id);
+  if(res.success){Utils.showSuccess('Capitolo eliminato.');await loadPosizioni();}
+  else Utils.showError(res.error);
 }
 
 init();
 </script>
-
-<!-- Guida accessibile da hamburger menu (Layout.init) e dall'avatar -->
 </body>
 </html>

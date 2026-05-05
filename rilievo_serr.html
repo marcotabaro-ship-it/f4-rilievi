@@ -85,6 +85,15 @@
     }
     .field-label .req { color:var(--c-red); }
     .field-label .fi { cursor:pointer; color:var(--c-info); font-size:.78rem; background:none; border:none; padding:0; }
+    /* Tooltip custom in-app */
+    .tt-wrap { position:relative; display:inline-block; }
+    .tt-box { display:none; position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:#1a1a2e; color:#fff; font-size:.76rem; border-radius:6px; padding:6px 10px; white-space:nowrap; z-index:9999; box-shadow:0 2px 8px rgba(0,0,0,.35); pointer-events:none; }
+    .tt-box.tt-left { left:0; transform:none; }
+    .tt-box::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:#1a1a2e; }
+    .tt-wrap:hover .tt-box { display:block; }
+    /* Bottone Salva cima drawer */
+    .drawer-save-top { background:#4f46e5; color:#fff; border:none; border-radius:6px; padding:5px 14px; font-size:.82rem; font-weight:700; cursor:pointer; }
+    .drawer-save-top:hover { background:#3730a3; }
     .form-control.field-invalid { border-color:var(--c-error)!important; background:#FFF5F5; }
     .form-row-2d { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .form-row-3d { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
@@ -259,6 +268,7 @@
     <div class="drawer-inner">
       <div class="drawer-header">
         <h3 id="drawerTitle">Posizione —</h3>
+        <button class="drawer-save-top" onclick="salvaPosizione()">&#128190; Salva</button>
         <button class="drawer-close" onclick="closeDrawer()">&#10005;</button>
       </div>
       <div class="drawer-body" id="drawerBody">
@@ -446,13 +456,6 @@
           <div class="field-label">Dinoxill <button class="fi" onclick="openLegenda('dinoxill')">&#8505;&#65039;</button></div>
           <select class="form-control" id="dDinoxill" onchange="dOnDinoxillChange()"></select>
         </div>
-        <div id="grpDinoxillLati" style="display:none;">
-          <div class="field-label">Imbotte — lati</div>
-          <div class="radio-group" style="margin-bottom:10px;">
-            <label class="radio-opt"><input type="radio" name="dDinoxillLati" value="3" checked onchange="dSave()"> 3 lati</label>
-            <label class="radio-opt"><input type="radio" name="dDinoxillLati" value="4" onchange="dSave()"> 4 lati</label>
-          </div>
-        </div>
       </div>
       <div class="drawer-footer">
         <button class="btn btn-outline btn-sm" onclick="closeDrawer()">Chiudi</button>
@@ -552,6 +555,37 @@
 const currentUser = Auth.requireLogin();
 if (!currentUser) throw new Error('not logged');
 Layout.init('clienti');
+
+// Aggiunge link Guida al sidebar e all'area avatar
+setTimeout(function() {
+  // Inserisci nel sidebar (nav laterale)
+  var nav = document.querySelector('.app-nav') || document.querySelector('[class*="sidebar"]') || document.querySelector('nav');
+  if (nav) {
+    var sep = document.createElement('div');
+    sep.style.cssText = 'border-top:1px solid rgba(255,255,255,.1);margin:8px 0;';
+    var lnk = document.createElement('a');
+    lnk.href = 'guida.html#sez-serr';
+    lnk.target = '_blank';
+    lnk.innerHTML = '&#10067; Guida utilizzo';
+    lnk.style.cssText = 'display:flex;align-items:center;gap:8px;padding:10px 20px;color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem;font-weight:500;transition:all .2s;';
+    lnk.onmouseover = function(){ this.style.color='#fff';this.style.background='rgba(255,255,255,.08)'; };
+    lnk.onmouseout  = function(){ this.style.color='rgba(255,255,255,.7)';this.style.background=''; };
+    nav.appendChild(sep);
+    nav.appendChild(lnk);
+  }
+  // Inserisci accanto all'avatar nella topbar
+  var userBtn = document.querySelector('.user-menu') || document.querySelector('[class*="avatar"]') || document.querySelector('[class*="user-btn"]');
+  if (userBtn && userBtn.parentNode) {
+    var guidaLink = document.createElement('a');
+    guidaLink.href = 'guida.html#sez-serr';
+    guidaLink.target = '_blank';
+    guidaLink.innerHTML = '&#10067; Guida';
+    guidaLink.style.cssText = 'color:rgba(255,255,255,.8);text-decoration:none;font-size:.82rem;font-weight:500;padding:5px 10px;border:1px solid rgba(255,255,255,.2);border-radius:6px;white-space:nowrap;';
+    guidaLink.onmouseover = function(){ this.style.background='rgba(255,255,255,.1)'; };
+    guidaLink.onmouseout  = function(){ this.style.background=''; };
+    userBtn.parentNode.insertBefore(guidaLink, userBtn);
+  }
+}, 300);
 
 const idRilievo = Utils.getParam('idRilievo');
 if (!idRilievo) window.location.href = 'clienti.html';
@@ -772,7 +806,7 @@ function renderPosizioni() {
         '<td class="dim-cell"><div class="dim-main">'+(p.L_mm||'—')+'</div>'+(dimCalc.Ltub?'<div class="dim-sub">('+Math.round(dimCalc.Ltub)+')</div>':'')+'</td>'+
         '<td class="dim-cell"><div class="dim-main">'+(p.H_mm||'—')+'</div>'+(dimCalc.Htub?'<div class="dim-sub">('+Math.round(dimCalc.Htub)+')</div>':'')+'</td>'+
         '<td style="font-size:.78rem;">'+(p.tipo_foro||'—')+'</td>'+
-        '<td style="font-size:.8rem;"><div style="font-weight:600;">'+(p.sistema||'—')+'</div><div style="color:var(--c-text-sec);font-size:.74rem;">'+(p.telaio_misto?'<span title="↑'+p.variante_alto+' ↓'+p.variante_basso+' ←'+p.variante_sx+' →'+p.variante_dx+'" style="color:#4f46e5;font-weight:700;">MIX</span>':p.variante_telaio||'—')+(p.stile_design?' / '+p.stile_design:'')+'</div></td>'+
+        '<td style="font-size:.8rem;"><div style="font-weight:600;">'+(p.sistema||'—')+'</div><div style="color:var(--c-text-sec);font-size:.74rem;">'+(p.telaio_misto?'<span style="color:#4f46e5;font-weight:700;font-size:.72rem;">Su('+esc(p.variante_alto||'?')+') Giu('+esc(p.variante_basso||'?')+') Sx('+esc(p.variante_sx||'?')+') Dx('+esc(p.variante_dx||'?')+')</span>':p.variante_telaio||'—')+(p.stile_design?' / '+p.stile_design:'')+'</div></td>'+
         '<td><div class="acc-chips">'+acc.map(function(a){return'<span class="acc-chip">'+a+'</span>';}).join('')+'</div></td>'+
         '<td class="td-actions" onclick="event.stopPropagation()">'+
           '<button class="btn-icon" title="Copia" onclick="openModalCopiaPos(\''+p.ID_pos+'\')">&#128203;</button>'+
@@ -901,8 +935,7 @@ function resetDrawer() {
   document.getElementById('dCopriEstDim').disabled=true;
   document.getElementById('grpOscurante').style.display='none';
   document.getElementById('grpDinoxill').style.display='';
-  document.getElementById('grpDinoxillLati').style.display='none';
-  document.querySelector('[name="dDinoxillLati"][value="3"]').checked=true;
+  // dinoxill_lati derivato da select (I3=3, I4=4) — nessun radio button
   document.querySelectorAll('.field-invalid').forEach(function(el){el.classList.remove('field-invalid');});
   document.getElementById('cLarch').textContent='—';
   document.getElementById('cLtub').textContent='—';
@@ -967,7 +1000,7 @@ function fillDrawer(p) {
   document.getElementById('dZanzariera').value=p.zanzariera||'';
   document.getElementById('dDinoxill').value=p.dinoxill||'';
   dOnDinoxillChange(true);
-  if(p.dinoxill_lati){var r=document.querySelector('[name="dDinoxillLati"][value="'+p.dinoxill_lati+'"]');if(r)r.checked=true;}
+  // dinoxill_lati implicito in dDinoxill (I3/I4)
   if(p.oscurante_tipo){dOnOscuranteChange(true);document.getElementById('dOscuranteMecc').value=p.oscurante_meccanismo||'';}
   document.getElementById('dStratigrafia').value=p.ID_stratigrafia_override||'';
   dRicalcola();
@@ -1032,7 +1065,7 @@ function dOnTipoSerrChange(silent) {
   var regola=regoleLati[tipo]||{};
   var hasDin=regola.dinoxill_disponibile==='SI'||regola.dinoxill_disponibile===true;
   document.getElementById('grpDinoxill').style.display=hasDin?'':'none';
-  if(!hasDin){document.getElementById('dDinoxill').value='';document.getElementById('grpDinoxillLati').style.display='none';}
+  if(!hasDin){document.getElementById('dDinoxill').value='';}
   if(!silent){drawerDirty=true;dRicalcola();}
 }
 function dOnTipoForoChange() { drawerDirty=true; dRicalcola(); }
@@ -1192,8 +1225,7 @@ function dOnDinoxillChange(silent) {
   var val=document.getElementById('dDinoxill').value;
   var tipo=document.getElementById('dTipoSerr').value;
   var regola=regoleLati[tipo]||{};
-  document.getElementById('grpDinoxillLati').style.display=
-    (val==='I3'||val==='I4')&&(regola.dinoxill_lati_scelta==='SI'||regola.dinoxill_lati_scelta===true)?'':'none';
+  // grpDinoxillLati rimosso — lati impliciti in I3/I4
 }
 function dSave() { drawerDirty=true; }
 
@@ -1380,8 +1412,8 @@ function raccogliDrawer() {
     cassonetto:document.getElementById('dCassonetto').value,
     controtelaio:document.getElementById('dControtelaio').value,
     zanzariera:document.getElementById('dZanzariera').value,
-    dinoxill:document.getElementById('dDinoxill').value,
-    dinoxill_lati:(document.querySelector('[name="dDinoxillLati"]:checked')||{value:'3'}).value,
+    dinoxill:document.getElementById('dDinoxill').value||null,
+    dinoxill_lati:(function(){ var d=document.getElementById('dDinoxill').value; return d==='I3'?'3':d==='I4'?'4':null; })(),
     rimozione:document.getElementById('dRimozione').checked?'SI':'NO',
     rimozione_accessori:document.getElementById('dRimozioneAcc').checked,
     taglio_marmo:document.getElementById('dTaglioMarmo').checked,
@@ -1681,9 +1713,6 @@ async function eliminaCapitolo(id) {
 init();
 </script>
 
-<!-- FAB Guida -->
-<div style="position:fixed;bottom:24px;right:24px;z-index:500;">
-  <button onclick="window.open('guida.html#sez-serr','_blank')" title="Apri guida" style="width:48px;height:48px;border-radius:50%;background:#4f46e5;color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 4px 12px rgba(79,70,229,.45);display:flex;align-items:center;justify-content:center;">&#10067;</button>
-</div>
+<!-- Guida accessibile da hamburger menu (Layout.init) e dall'avatar -->
 </body>
 </html>

@@ -48,10 +48,13 @@
         <button class="btn btn-secondary" onclick="Utils.navigate('clienti.html')">
           &#128269; Cerca cantiere
         </button>
-        <button class="btn btn-outline" onclick="window.open('formule.html','_blank')">
-          &#128220; Formule di calcolo
+        <button class="btn btn-outline" onclick="window.location.href='formule.html?tipo=SERR'">
+          &#128200; Formule Serramenti
         </button>
-        <button class="btn btn-outline" onclick="window.open('guida.html','_blank')">
+        <button class="btn btn-outline" onclick="window.location.href='formule.html?tipo=PORTE'">
+          &#128682; Formule Porte
+        </button>
+        <button class="btn btn-outline" onclick="window.location.href='guida.html?back='+encodeURIComponent(window.location.href)">
           &#10067; Guida utilizzo
         </button>
       </div>
@@ -71,47 +74,30 @@ if (currentUser) {
 }
 
 async function loadDashboard() {
-  // Carico clienti, rilievi serr e rilievi porte in parallelo
   var results = await Promise.all([
     API.getClienti(),
     API.getRilieviTutti('SERR'),
     API.getRilieviTutti('PORTE')
   ]);
-
-  var resClienti = results[0];
-  var resSerr    = results[1];
-  var resPorte   = results[2];
-
+  var resClienti = results[0], resSerr = results[1], resPorte = results[2];
   if (!resClienti.success) { Utils.showError(resClienti.error); return; }
-
   var clienti = resClienti.data.filter(function(c) { return c.stato === 'attivo'; });
   document.getElementById('kpiClienti').textContent = clienti.length;
-
-  // KPI rilievi
   var nSerr  = resSerr.success  ? resSerr.data.length  : 0;
   var nPorte = resPorte.success ? resPorte.data.length : 0;
   document.getElementById('kpiRilieviSerr').textContent  = nSerr;
   document.getElementById('kpiRilieviPorte').textContent = nPorte;
-
-  // Clienti recenti
   var container = document.getElementById('clientiRecenti');
-  if (!clienti.length) {
-    Utils.showEmptyState(container, 'Nessun cliente. Clicca "Nuovo cliente" per iniziare.', '&#128101;');
-    return;
-  }
-  var recent = Utils.sortByName(clienti, 'nome').slice(0, 6);
+  if (!clienti.length) { Utils.showEmptyState(container,'Nessun cliente.','&#128101;'); return; }
+  var recent = Utils.sortByName(clienti,'nome').slice(0,6);
   container.innerHTML = recent.map(function(c) {
-    return '<div class="pos-card" style="cursor:pointer;" onclick="Utils.navigate(\'cantiere.html\',{idCliente:\'' + c.ID_cliente + '\'})">' +
-      '<div class="pos-num" style="background:var(--c-red)">' + (c.nome||'?').charAt(0).toUpperCase() + '</div>' +
-      '<div class="pos-info">' +
-        '<div class="pos-title">' + c.nome + '</div>' +
-        '<div class="pos-subtitle">' + (c.telefono||'') + (c.telefono&&c.email?' &nbsp;':'') + (c.email||'') + '</div>' +
-      '</div>' +
-      '<span style="color:var(--c-text-sec)">&#8250;</span>' +
-    '</div>';
+    return '<div class="pos-card" style="cursor:pointer;" onclick="Utils.navigate(\'cantiere.html\',{idCliente:\''+c.ID_cliente+'\'})">' +
+      '<div class="pos-num" style="background:var(--c-red)">'+(c.nome||'?').charAt(0).toUpperCase()+'</div>' +
+      '<div class="pos-info"><div class="pos-title">'+c.nome+'</div>' +
+      '<div class="pos-subtitle">'+(c.telefono||'')+(c.telefono&&c.email?' &nbsp;':'')+(c.email||'')+'</div></div>' +
+      '<span style="color:var(--c-text-sec)">&#8250;</span></div>';
   }).join('');
 }
 </script>
-
 </body>
 </html>

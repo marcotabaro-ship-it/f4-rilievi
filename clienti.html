@@ -143,7 +143,7 @@ async function init() {
     document.getElementById('pageTitle').textContent = 'Clienti — Serramenti';
     document.getElementById('pageSubtitle').textContent = 'Solo clienti con rilievi serramenti';
     document.getElementById('filtroAttivoBadge').style.display = '';
-    document.getElementById('filtroAttivoLabel').textContent = '&#129695; Filtro: Serramenti';
+    document.getElementById('filtroAttivoLabel').innerHTML = '&#129695; Filtro: Serramenti';
     // Nasconde il bottone Nuovo cliente quando si filtra per tipo
     document.getElementById('headerActions').style.display = 'none';
   } else if (TIPO_RILIEVO === 'PORTE') {

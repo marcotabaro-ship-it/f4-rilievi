@@ -132,7 +132,7 @@ function buildPage(posaRows, revRows) {
   html += '</div><div>';
   html += '<div style="font-size:11px;font-weight:700;color:#4f46e5;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Legenda variabili</div>';
   html += '<dl class="tub-param"><dt>L_foro, H_foro</dt><dd>Misure inserite nel rilievo (mm)</dd><dt>Nasc</dt><dd>Telaio nascosto (mm) &mdash; dal DB Serramento</dd><dt>Aletta</dt><dd>Aletta (mm) &mdash; dal DB Serramento</dd><dt>ARIA2orizz</dt><dd>Aria tra CTL e telaio orizzontale (DB id=6)</dd><dt>ARIA52vert</dt><dd>Aria tra CTL e telaio verticale (DB id=16)</dd><dt>nAlH</dt><dd>2 per F, FF &mdash; 1 per I, PF, VF, S</dd></dl>';
-  html += '<div class="formula-box" style="border-color:#059669;background:#ecfdf5;"><div class="f-label" style="color:#059669;">Telaio misto per lato</div><code>L_tub = L_foro + Nasc_sx + Nasc_dx + Aletta_sx + Aletta_dx</code><code>H [F,FF] = H_foro + Nasc_a + Nasc_b + Aletta_alto + Aletta_basso</code><code>H [I,PF,VF,S] = H_foro + Nasc_a + Nasc_b + Aletta_alto</code></div>';
+  html += '<div class="formula-box" style="border-color:#059669;background:#ecfdf5;"><div class="f-label" style="color:#059669;">Telaio misto per lato</div><code>L_tub = L_foro + Nasc_sx + Nasc_dx + Aletta_sx + Aletta_dx</code><code>H [F,FF] = H_foro + Nasc_alto + Aletta_alto + Aletta_basso</code><code>H [I,PF,VF,S] = H_foro + Nasc_alto + Aletta_alto</code><code style="font-size:10px;color:#6b7280;margin-top:4px;">Nota: Nasc contribuisce solo dal lato alto in H (non dal basso)</code></div>';
   html += '</div></div></div></div>';
 
   // ================================================================

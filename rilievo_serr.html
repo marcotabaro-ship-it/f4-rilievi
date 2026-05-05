@@ -152,6 +152,33 @@
     .btn-cap-del { background: none; border: none; color: #f87171; cursor: pointer; font-size: .8rem; padding: 0 4px; }
     .btn-cap-del:hover { color: #fca5a5; }
 
+    /* ── FORMULA CONTESTUALE ── */
+.formula-panel {
+  display: none; background: #1a1a2e; color: #e2e8f0;
+  border-radius: 8px; padding: 12px 14px; margin-top: 8px;
+  font-family: monospace; font-size: .78rem; line-height: 2;
+}
+.formula-panel.open { display: block; }
+.formula-panel .f-title {
+  font-size: .72rem; font-weight: 700; color: #a5b4fc;
+  text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 8px; padding-bottom: 5px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.formula-panel .f-dim { color: #6ee7b7; font-weight: 700; margin-top: 6px; display: block; }
+.formula-panel .f-sym { color: #94a3b8; }
+.formula-panel .f-sub { color: #fcd34d; font-weight: 700; }
+.formula-panel .f-res { color: #34d399; font-weight: 700; font-size: .84rem; }
+.formula-panel .f-note { color: #fb923c; font-size: .72rem; font-style: italic; }
+.formula-panel .f-sep { border-top: 1px solid rgba(255,255,255,.08); margin: 8px 0; }
+.formula-btn {
+  background: none; border: 1px solid rgba(255,255,255,.2);
+  color: rgba(255,255,255,.7); border-radius: 4px;
+  padding: 1px 8px; font-size: .76rem; cursor: pointer;
+  margin-left: 6px; transition: all .15s; vertical-align: middle;
+}
+.formula-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+.formula-btn.active { background: #4f46e5; border-color: #4f46e5; color: #fff; }
     .nc-section-title {
       font-size:.78rem; font-weight:700; color:var(--c-primary);
       text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px;

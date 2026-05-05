@@ -806,7 +806,7 @@ function renderPosizioni() {
         '<td class="dim-cell"><div class="dim-main">'+(p.L_mm||'—')+'</div>'+(dimCalc.Ltub?'<div class="dim-sub">('+Math.round(dimCalc.Ltub)+')</div>':'')+'</td>'+
         '<td class="dim-cell"><div class="dim-main">'+(p.H_mm||'—')+'</div>'+(dimCalc.Htub?'<div class="dim-sub">('+Math.round(dimCalc.Htub)+')</div>':'')+'</td>'+
         '<td style="font-size:.78rem;">'+(p.tipo_foro||'—')+'</td>'+
-        '<td style="font-size:.8rem;"><div style="font-weight:600;">'+(p.sistema||'—')+'</div><div style="color:var(--c-text-sec);font-size:.74rem;">'+(p.telaio_misto?'<span style="color:#4f46e5;font-weight:700;font-size:.72rem;">Su('+esc(p.variante_alto||'?')+') Giu('+esc(p.variante_basso||'?')+') Sx('+esc(p.variante_sx||'?')+') Dx('+esc(p.variante_dx||'?')+')</span>':p.variante_telaio||'—')+(p.stile_design?' / '+p.stile_design:'')+'</div></td>'+
+        '<td style="font-size:.8rem;"><div style="font-weight:600;">'+(p.sistema||'—')+'</div><div style="color:var(--c-text-sec);font-size:.74rem;">'+(p.telaio_misto?'<span style="color:#4f46e5;font-weight:700;font-size:.72rem;">Su('+(p.variante_alto||'?')+') Giu('+(p.variante_basso||'?')+') Sx('+(p.variante_sx||'?')+') Dx('+(p.variante_dx||'?')+')</span>':p.variante_telaio||'—')+(p.stile_design?' / '+p.stile_design:'')+'</div></td>'+
         '<td><div class="acc-chips">'+acc.map(function(a){return'<span class="acc-chip">'+a+'</span>';}).join('')+'</div></td>'+
         '<td class="td-actions" onclick="event.stopPropagation()">'+
           '<button class="btn-icon" title="Copia" onclick="openModalCopiaPos(\''+p.ID_pos+'\')">&#128203;</button>'+

@@ -817,10 +817,10 @@ function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
       h+='<div style="background:#064e3b;color:#a7f3d0;font-weight:700;font-size:.82rem;padding:6px 12px;margin:14px 0 6px;border-radius:5px;">∑ Totali complessivi</div>';
     }
 
-    var voci=calcolaVoci(pos);
-    // Legge aggiustamenti manuali salvati da report_posa (localStorage)
+    // Legge aggiustamenti manuali — DEVE stare prima del blocco capitoli
     var adj={};
     try { adj=JSON.parse(localStorage.getItem('f4_posa_adj_'+idRilievo))||{}; } catch(e){}
+    var voci=calcolaVoci(pos);
     var lastArea='',tCalc=0,tFin=0,areaMap={};
     var tbH='';
     voci.forEach(function(vo){

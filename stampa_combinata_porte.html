@@ -118,7 +118,6 @@
   </style>
 </head>
 <body>
-<!-- MODAL -->
 <div id="modal-sel">
   <div class="sel-box">
     <div class="sel-logo"><div class="lb">[F4]</div><div class="lt">GRUPPO F4 &mdash; Porte Interne</div></div>
@@ -142,7 +141,6 @@
     </div>
   </div>
 </div>
-<!-- TOOLBAR -->
 <div id="toolbar" style="display:none">
   <h1 id="tb-titolo">Stampa combinata Porte</h1>
   <button class="btn-tb btn-tb-neutral" onclick="riaprModal()">&#9881;&#65039; Selezione</button>
@@ -167,11 +165,47 @@ function chk(val){return val===true||val==='SI'?'<span class="chk on"></span>':'
 function fmtH(x){if(!x&&x!==0)return'—';var r=Math.round(x*1000)/1000;return r.toFixed(3).replace(/0+$/,'').replace(/\.$/,'')||'0';}
 function numPos(p){return p.numero_pos_alfa||p.numero_pos;}
 
-var POS_CTL_PORTE={'-1':0.16667,'0':0.16667,'1':0.16667,'2':0.25,'3':0.33333,'4':0.5,'5':0.58333,'6':0.66667,'7':0.75,'8':0.83333,'9':0.91667,'10':1.0};
-var POS_PORTE={'-1':0.33333,'0':0.33333,'1':0.33333,'2':0.5,'3':0.5,'4':0.5,'5':0.66667,'6':0.66667,'7':0.66667,'8':0.83333,'9':0.83333,'10':0.83333};
-var ORE_INST_INT={'ST':1.5,'DO':2.0,'TP':1.33333,'FC':2.66667,'F_':2.33333,'SI':2.0,'SE':2.5,'LI':2.0,'PI':2.0};
+// ── TABELLE DINAMICHE DA SUPABASE ──
+var POS_CTL_PORTE={}, POS_PORTE={}, ORE_INST_INT={}, ORE_SOPRALUCE=0.5;
+var POS_CTL_PORTE_MIN=0.5, POS_PORTE_MIN=1.0, DP_PORTE={};
+var V2DP_PORTE={
+  'PROGETTAZIONE':'prog','GESTIONE ORDINI':'gord','INCONTRI IN CANTIERE':'incant',
+  'SCARICO E CARICO CTL':'scCtl','TRASPORTO CTL':'trCtl',
+  'SCARICO E CARICO PORTE':'scPorte','TRASPORTO PORTE':'trPorte',
+  'RIMOZIONE PORTE':'rimPorta','ASSEMBLAGGIO CTL':'assCtl','INSTALLAZIONE CTL':'instCtl',
+  'REGISTRAZIONE COLLAUDO':'regColl','PULIZIA CANTIERE':'puliz',
+  'SMALTIMENTO PORTE':'smalt','ALLARGAMENTO TELAIO':'allarg'
+};
+
+function buildTablesPorteFromPosa(rows){
+  POS_CTL_PORTE={}; POS_PORTE={}; ORE_INST_INT={}; DP_PORTE={};
+  rows.forEach(function(r){
+    var v2=r.voce;
+    if(v2==='POSIZIONAMENTO CTL PORTE'&&r.piano!==null){
+      POS_CTL_PORTE[String(r.piano)]=parseFloat(r.h_pos)||0.16667;
+      if(r.min_cantiere)POS_CTL_PORTE_MIN=parseFloat(r.min_cantiere);
+    }
+    if(v2==='POSIZIONAMENTO PORTE'&&r.piano!==null){
+      POS_PORTE[String(r.piano)]=parseFloat(r.h_pos)||0.33333;
+      if(r.min_cantiere)POS_PORTE_MIN=parseFloat(r.min_cantiere);
+    }
+    if(v2==='INST PORTE INT'&&r.sistema){
+      if(r.sistema==='SOPRALUCE')ORE_SOPRALUCE=parseFloat(r.h_pos)||0.5;
+      else ORE_INST_INT[r.sistema]=parseFloat(r.h_pos)||1.5;
+    }
+    if(v2==='INST BLINDATE'&&r.sistema==='BLI')DP_PORTE['instBLI']=[parseFloat(r.h_pos)||4,null];
+    if(v2==='INST REI'&&r.sistema==='REI')DP_PORTE['instREI']=[parseFloat(r.h_pos)||1.5,null];
+    var dpKey=V2DP_PORTE[v2];
+    if(dpKey&&r.piano===null&&r.n_campi===null&&!r.sistema)
+      DP_PORTE[dpKey]=[parseFloat(r.h_pos)||0,r.min_cantiere!==null?parseFloat(r.min_cantiere):null];
+  });
+  if(!DP_PORTE['instBLI'])DP_PORTE['instBLI']=[4.0,null];
+  if(!DP_PORTE['instREI'])DP_PORTE['instREI']=[1.5,null];
+}
 
 function pianoKey(p){var n=parseInt(p,10);if(isNaN(n))return'0';return String(Math.min(Math.max(n,-1),10));}
+function posCtlPortaH(piano){return POS_CTL_PORTE[pianoKey(piano)]||0.16667;}
+function posPortaH(piano){return POS_PORTE[pianoKey(piano)]||0.33333;}
 function cOre(n,dp){if(!dp||n<=0)return 0;var b=n*dp[0];return dp[1]?Math.max(b,dp[1]):b;}
 
 function calcolaVociPorte(pos){
@@ -179,18 +213,23 @@ function calcolaVociPorte(pos){
   var orePosCTL=0,orePosPorte=0,oreInstInt=0;
   pos.forEach(function(p){
     var hasCTL=p.fornitura_ctl_int==='SI'||p.fornitura_ctl_bli==='SI'||p.fornitura_ctl_rei==='SI'||p.install_ctl_int==='SI'||p.install_ctl_bli==='SI'||p.install_ctl_rei==='SI';
-    if(hasCTL){nCTL++;orePosCTL+=(POS_CTL_PORTE[pianoKey(p.piano)]||0.16667);}
+    if(hasCTL){nCTL++;orePosCTL+=posCtlPortaH(p.piano);}
     if(p.rimozione==='SI'||p.rimozione===true)nRim++;
     if(p.allargamento_telaio==='SI'||p.allargamento_telaio===true)nAll++;
     var tp=(p.tipo_porta||'').toUpperCase();
     if(tp==='BLINDATA'||tp==='BLI')nBLI++;
     else if(tp==='REI')nREI++;
-    else{var sis=(p.sistema||'ST').toUpperCase();var ore=ORE_INST_INT[sis]!==undefined?ORE_INST_INT[sis]:1.5;if(p.sopraluce==='SI'||p.sopraluce===true)ore+=0.5;oreInstInt+=ore;}
-    orePosPorte+=(POS_PORTE[pianoKey(p.piano)]||0.33333);
+    else{
+      var sis=(p.sistema||'ST').toUpperCase();
+      var ore=ORE_INST_INT[sis]!==undefined?ORE_INST_INT[sis]:1.5;
+      if(p.sopraluce==='SI'||p.sopraluce===true)ore+=ORE_SOPRALUCE;
+      oreInstInt+=ore;
+    }
+    orePosPorte+=posPortaH(p.piano);
   });
-  orePosCTL=nCTL>0?Math.max(orePosCTL,0.5):0;
-  orePosPorte=nT>0?Math.max(orePosPorte,1.0):0;
-  var DP={prog:[0,0],gord:[7/60,20/60],incant:[10/60,30/60],scCtl:[15/60,30/60],trCtl:[7/60,30/60],scPorte:[10/60,30/60],trPorte:[10/60,30/60],rimPorta:[1.0,2.0],assCtl:[0,0],instCtl:[1.0,1.0],regColl:[10/60,20/60],puliz:[10/60,30/60],smalt:[10/60,null],allarg:[40/60,null]};
+  orePosCTL=nCTL>0?Math.max(orePosCTL,POS_CTL_PORTE_MIN):0;
+  orePosPorte=nT>0?Math.max(orePosPorte,POS_PORTE_MIN):0;
+  var DP=DP_PORTE;
   var nPorteInt=nT-nBLI-nREI;
   var voci=[
     {id:'prog',    area:'UFFICIO TECNICO',     serv:'Progettazione',                             n:nT,        dp:DP.prog,    tipo:'indir'},
@@ -206,8 +245,8 @@ function calcolaVociPorte(pos){
     {id:'assCtl',  area:'ASSEMBLAGGIO CTL',    serv:'Assemblaggio controtelai',                  n:nCTL,      dp:DP.assCtl,  tipo:'dir'},
     {id:'instCtl', area:'INSTALLAZIONE CTL',   serv:'Installazione controtelai',                 n:nCTL,      dp:DP.instCtl, tipo:'dir'},
     {id:'instInt', area:'POSA',                serv:'Installazione porte interne (per sistema)', n:nPorteInt, dp:null,fixed:oreInstInt, tipo:'dir'},
-    {id:'instBLI', area:'POSA',                serv:'Installazione porte blindate',              n:nBLI,      dp:[4.0,null], tipo:'dir'},
-    {id:'instREI', area:'POSA',                serv:'Installazione porte REI',                   n:nREI,      dp:[1.5,null], tipo:'dir'},
+    {id:'instBLI', area:'POSA',                serv:'Installazione porte blindate',              n:nBLI,      dp:DP.instBLI, tipo:'dir'},
+    {id:'instREI', area:'POSA',                serv:'Installazione porte REI',                   n:nREI,      dp:DP.instREI, tipo:'dir'},
     {id:'regColl', area:'POSA',                serv:'Registrazione e collaudo',                  n:nT,        dp:DP.regColl, tipo:'dir'},
     {id:'puliz',   area:'POSA',                serv:'Pulizia cantiere',                          n:nT,        dp:DP.puliz,   tipo:'dir'},
     {id:'smalt',   area:'SMALTIMENTO',         serv:'Smaltimento porte esistenti',               n:nRim,      dp:DP.smalt,   tipo:'dir'},
@@ -238,8 +277,9 @@ function sfetch(path,cb,eb){
 }
 
 function loadAndRender(wR,wP){
-  var D={ril:null,pos:null,caps:null};var done=0,tot=3;
+  var D={ril:null,pos:null,caps:null,posa:null};var done=0,tot=4;
   function chkD(){done++;if(done<tot)return;
+    buildTablesPorteFromPosa(D.posa||[]);
     document.getElementById('stato-msg').style.display='none';
     var html=renderAll(D.ril,D.pos||[],D.caps||[],wR,wP);
     var out=document.getElementById('out');
@@ -254,6 +294,8 @@ function loadAndRender(wR,wP){
     function(r){D.pos=r||[];chkD();},function(){D.pos=[];chkD();});
   sfetch('capitoli_rilievo?id_rilievo=eq.'+idRilievo+'&stato=eq.attivo&select=*&order=ordine_inizio.asc',
     function(r){D.caps=r||[];chkD();},function(){D.caps=[];chkD();});
+  sfetch('dati_comuni_posa?tipo=eq.PORTE&stato=eq.attivo&select=*&order=codice.asc,piano.asc',
+    function(r){D.posa=r||[];chkD();},function(){D.posa=[];chkD();});
 }
 
 function renderAll(ril,pos,caps,wR,wP){
@@ -364,7 +406,7 @@ function renderAll(ril,pos,caps,wR,wP){
   if(wP){
     var h=mkHdr('Report Posa Porte');
 
-    // Aggiustamenti manuali da localStorage — DEVE stare prima del blocco capitoli
+    // Aggiustamenti da localStorage — PRIMA del blocco capitoli
     var adj={};
     try{adj=JSON.parse(localStorage.getItem('f4_posa_adj_'+idRilievo))||{};}catch(e){}
 
@@ -423,7 +465,7 @@ function renderAll(ril,pos,caps,wR,wP){
       h+='<div class="tot-globale-hdr">\u2211 Totali complessivi</div>';
     }
 
-    // Tabella globale con aggiustamenti
+    // Tabella globale
     var voci=calcolaVociPorte(pos);
     var totCalc=0,totFin=0,areaMap={};
     var tbH='',lastArea='';

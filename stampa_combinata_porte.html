@@ -166,8 +166,8 @@ function fmtH(x){if(!x&&x!==0)return'—';var r=Math.round(x*1000)/1000;return r
 function numPos(p){return p.numero_pos_alfa||p.numero_pos;}
 
 // ── TABELLE DINAMICHE DA SUPABASE ──
-var POS_CTL_PORTE={}, POS_PORTE={}, ORE_INST_INT={}, ORE_SOPRALUCE=0.5;
-var POS_CTL_PORTE_MIN=0.5, POS_PORTE_MIN=1.0, DP_PORTE={};
+var POS_CTL_PORTE={},POS_PORTE={},ORE_INST_INT={},ORE_SOPRALUCE=0.5;
+var POS_CTL_PORTE_MIN=0.5,POS_PORTE_MIN=1.0,DP_PORTE={};
 var V2DP_PORTE={
   'PROGETTAZIONE':'prog','GESTIONE ORDINI':'gord','INCONTRI IN CANTIERE':'incant',
   'SCARICO E CARICO CTL':'scCtl','TRASPORTO CTL':'trCtl',
@@ -178,7 +178,7 @@ var V2DP_PORTE={
 };
 
 function buildTablesPorteFromPosa(rows){
-  POS_CTL_PORTE={}; POS_PORTE={}; ORE_INST_INT={}; DP_PORTE={};
+  POS_CTL_PORTE={};POS_PORTE={};ORE_INST_INT={};DP_PORTE={};
   rows.forEach(function(r){
     var v2=r.voce;
     if(v2==='POSIZIONAMENTO CTL PORTE'&&r.piano!==null){
@@ -256,6 +256,11 @@ function calcolaVociPorte(pos){
   return voci;
 }
 
+// ── LOCALSTORAGE ADJ ──
+function loadAdj(){try{return JSON.parse(localStorage.getItem('f4_posa_adj_'+idRilievo))||{};}catch(e){return{};}}
+function loadAdjCap(capId){try{return JSON.parse(localStorage.getItem('f4_posa_adj_cap_'+idRilievo+'_'+capId))||{};}catch(e){return{};}}
+function loadMode(){return localStorage.getItem('f4_posa_mode_porte_'+idRilievo)||'tot';}
+
 function updOpt(chk,id){document.getElementById(id).classList.toggle('checked',chk.checked);}
 function riaprModal(){document.getElementById('modal-sel').style.display='flex';document.getElementById('toolbar').style.display='none';document.getElementById('out').style.display='none';}
 function avvia(){
@@ -332,6 +337,18 @@ function renderAll(ril,pos,caps,wR,wP){
     return righe;
   }
 
+  function groupByCap(pcArr,capsArr){
+    var righe=buildRighe(pcArr,capsArr);
+    var gruppi=[],capCorr=null,posCorr=[],posiFuori=[];
+    righe.forEach(function(r){
+      if(r.tipo==='cap_inizio'){capCorr=r.data;posCorr=[];}
+      else if(r.tipo==='cap_fine'){if(capCorr)gruppi.push({cap:capCorr,pos:posCorr.slice()});capCorr=null;posCorr=[];}
+      else{if(capCorr)posCorr.push(r.data);else posiFuori.push(r.data);}
+    });
+    if(posiFuori.length)gruppi.push({cap:{titolo:'Senza capitolo',id:'__fuori__'},pos:posiFuori});
+    return gruppi;
+  }
+
   var sections=[];
 
   // ── SEZIONE RILIEVO ──
@@ -349,14 +366,13 @@ function renderAll(ril,pos,caps,wR,wP){
 
     function rowPos(p){
       var piano=(p.piano!==undefined&&p.piano!==null)?('P'+(parseInt(p.piano)>=0?'+':'')+p.piano):'—';
-      var numDisp=p.numero_pos_alfa||p.numero_pos;
       var flags=[];
       if(p.allargamento_telaio==='SI'||p.allargamento_telaio===true)flags.push('<b style="color:#E65100">ALL</b>');
       var hasCTL=p.fornitura_ctl_int==='SI'||p.install_ctl_int==='SI'||p.fornitura_ctl_bli==='SI'||p.install_ctl_bli==='SI'||p.fornitura_ctl_rei==='SI'||p.install_ctl_rei==='SI';
       if(hasCTL)flags.push('<b>CTL</b>');
       if(p.rimozione==='SI'||p.rimozione===true)flags.push('<b>RIM</b>');
       var hr='<tr>';
-      hr+='<td class="num">'+esc(v(numDisp))+'</td>';
+      hr+='<td class="num">'+esc(v(numPos(p)))+'</td>';
       hr+='<td class="c">'+piano+'</td>';
       hr+='<td style="white-space:normal;min-width:50px">'+esc(v(p.ambiente))+'</td>';
       hr+='<td class="c"><span class="badge-tipo-p">'+esc(v(p.tipo_porta))+'</span></td>';
@@ -406,9 +422,8 @@ function renderAll(ril,pos,caps,wR,wP){
   if(wP){
     var h=mkHdr('Report Posa Porte');
 
-    // Aggiustamenti da localStorage — PRIMA del blocco capitoli
-    var adj={};
-    try{adj=JSON.parse(localStorage.getItem('f4_posa_adj_'+idRilievo))||{};}catch(e){}
+    var POSA_MODE=loadMode();
+    var adj=loadAdj();
 
     // tipo grid
     var ct={INT:0,BLI:0,REI:0};
@@ -417,50 +432,83 @@ function renderAll(ril,pos,caps,wR,wP){
     [{s:'INT',l:'Interne'},{s:'BLI',l:'Blindate'},{s:'REI',l:'REI'}].forEach(function(t){var n=ct[t.s]||0;h+='<span class="tipo-chip-c'+(n===0?' zero':'')+'"><span class="sig">'+t.s+'</span><span class="cnt">'+n+'</span></span>';});
     h+='</div>';
 
-    // Capitoli
-    var righe=buildRighe(pos,caps);
-    var gruppi=[],capCorr=null,posCorr=[],posiFuori=[];
-    righe.forEach(function(r){
-      if(r.tipo==='cap_inizio'){capCorr=r.data;posCorr=[];}
-      else if(r.tipo==='cap_fine'){if(capCorr)gruppi.push({cap:capCorr,pos:posCorr.slice()});capCorr=null;posCorr=[];}
-      else{if(capCorr)posCorr.push(r.data);else posiFuori.push(r.data);}
-    });
-    if(posiFuori.length)gruppi.push({cap:{titolo:'Senza capitolo'},pos:posiFuori});
-
     if(caps&&caps.length){
+      var gruppi=groupByCap(pos,caps);
+
+      // Precalcola oreCalc totale per voce (usato in modalità TOT per ripartizione proporzionale)
+      var totalVoceCalc={};
+      gruppi.forEach(function(g){
+        var vG=calcolaVociPorte(g.pos);
+        vG.forEach(function(vo){totalVoceCalc[vo.id]=(totalVoceCalc[vo.id]||0)+vo.oreCalc;});
+      });
+
       gruppi.forEach(function(g){
         if(!g.pos.length)return;
         var vG=calcolaVociPorte(g.pos);
+        var capId=g.cap.id||'__fuori__';
+        var adjCap=loadAdjCap(capId);
         var tG=0,oDG=0,oIG=0;
-        vG.forEach(function(v2){
-          var minus=parseFloat((adj[v2.id]||{}).minus)||0,plus=parseFloat((adj[v2.id]||{}).plus)||0;
-          var f=Math.max(0,Math.round((v2.oreCalc-minus+plus)*1000)/1000);
-          tG+=f;if(v2.tipo==='dir')oDG+=f;else oIG+=f;
+
+        vG.forEach(function(vo){
+          var fin;
+          if(POSA_MODE==='cap'){
+            var m=parseFloat((adjCap[vo.id]||{}).minus)||0,pl=parseFloat((adjCap[vo.id]||{}).plus)||0;
+            fin=Math.max(0,Math.round((vo.oreCalc-m+pl)*1000)/1000);
+          } else {
+            var totV=totalVoceCalc[vo.id]||0;
+            var prop=totV>0?vo.oreCalc/totV:0;
+            var mProp=((adj[vo.id]||{}).minus||0)*prop;
+            var plProp=((adj[vo.id]||{}).plus||0)*prop;
+            fin=Math.max(0,Math.round((vo.oreCalc-mProp+plProp)*1000)/1000);
+          }
+          tG+=fin;if(vo.tipo==='dir')oDG+=fin;else oIG+=fin;
         });
-        var giorni=tG>0?Math.ceil(tG/16*10)/10:0;
+        tG=Math.round(tG*1000)/1000;
+
         h+='<div class="cap-posa-hdr">\u2550\u2550 '+esc(g.cap.titolo)+' \u2550\u2550 <span style="font-size:.78rem;opacity:.8;">('+g.pos.length+' pos.)</span></div>';
         var tbH='',lA='';
-        vG.forEach(function(v2){
-          var minus=parseFloat((adj[v2.id]||{}).minus)||0,plus=parseFloat((adj[v2.id]||{}).plus)||0;
-          var f=Math.max(0,Math.round((v2.oreCalc-minus+plus)*1000)/1000);
-          if(v2.n===0&&f===0)return;
-          if(v2.area!==lA){tbH+='<tr class="tr-sez"><td colspan="5">'+v2.area+'</td></tr>';lA=v2.area;}
-          var hasAdj=(minus>0||plus>0);
-          tbH+='<tr class="tr-voce"><td>'+v2.area+'</td><td>'+v2.serv+'</td>'+
-            '<td class="c">'+(v2.n>0?v2.n:'—')+'</td>'+
-            '<td class="c">'+(v2.dp?fmtH(v2.dp[0]):'—')+'</td>'+
-            '<td class="ore-f">'+fmtH(f)+(hasAdj?'<span style="font-size:8px;color:#b45309;margin-left:3px;">'+(plus>0?'+'+fmtH(plus):'')+(minus>0?'-'+fmtH(minus):'')+'</span>':'')+'</td></tr>';
+        vG.forEach(function(vo){
+          var fin;
+          if(POSA_MODE==='cap'){
+            var m=parseFloat((adjCap[vo.id]||{}).minus)||0,pl=parseFloat((adjCap[vo.id]||{}).plus)||0;
+            fin=Math.max(0,Math.round((vo.oreCalc-m+pl)*1000)/1000);
+            var hasAdj=(m>0||pl>0);
+            if(vo.n===0&&fin===0)return;
+            if(vo.area!==lA){tbH+='<tr class="tr-sez"><td colspan="5">'+vo.area+'</td></tr>';lA=vo.area;}
+            tbH+='<tr class="tr-voce"><td>'+vo.area+'</td><td>'+vo.serv+'</td>'+
+              '<td class="c">'+(vo.n>0?vo.n:'—')+'</td>'+
+              '<td class="c">'+(vo.dp?fmtH(vo.dp[0]):'—')+'</td>'+
+              '<td class="ore-f">'+fmtH(fin)+(hasAdj?'<span style="font-size:8px;color:#b45309;margin-left:3px;">'+(pl>0?'+'+fmtH(pl):'')+(m>0?'-'+fmtH(m):'')+'</span>':'')+'</td></tr>';
+          } else {
+            var totV=totalVoceCalc[vo.id]||0;
+            var prop=totV>0?vo.oreCalc/totV:0;
+            var mProp=Math.round(((adj[vo.id]||{}).minus||0)*prop*1000)/1000;
+            var plProp=Math.round(((adj[vo.id]||{}).plus||0)*prop*1000)/1000;
+            fin=Math.max(0,Math.round((vo.oreCalc-mProp+plProp)*1000)/1000);
+            var hasProp=(mProp>0||plProp>0);
+            if(vo.n===0&&fin===0)return;
+            if(vo.area!==lA){tbH+='<tr class="tr-sez"><td colspan="5">'+vo.area+'</td></tr>';lA=vo.area;}
+            tbH+='<tr class="tr-voce"><td>'+vo.area+'</td><td>'+vo.serv+'</td>'+
+              '<td class="c">'+(vo.n>0?vo.n:'—')+'</td>'+
+              '<td class="c">'+(vo.dp?fmtH(vo.dp[0]):'—')+'</td>'+
+              '<td class="ore-f">'+fmtH(fin)+(hasProp?'<span style="font-size:8px;color:#b45309;margin-left:3px;">\u2248</span>':'')+'</td></tr>';
+          }
         });
+
         h+='<div class="tbl-outer"><table class="t-posa"><thead><tr>'+
           '<th style="width:22%">Area</th><th style="width:40%">Servizio</th>'+
           '<th class="c">N</th><th class="c">h/pos</th><th class="c">Ore</th>'+
           '</tr></thead><tbody>'+tbH+
           '</tbody><tfoot><tr class="tr-tot"><td colspan="4">TOTALE '+esc(g.cap.titolo)+'</td><td class="ore-f">'+fmtH(tG)+'</td></tr></tfoot></table></div>';
-        h+='<div class="cap-posa-subtot"><span class="cps-lbl">'+esc(g.cap.titolo)+'</span>'+
+        var giorni=tG>0?Math.ceil(tG/16*10)/10:0;
+        h+='<div class="cap-posa-subtot">'+
+          '<span class="cps-lbl">'+esc(g.cap.titolo)+'</span>'+
           '<span class="cps-v">Dir: '+fmtH(oDG)+'</span>'+
           '<span class="cps-v">Ind: '+fmtH(oIG)+'</span>'+
           '<span class="cps-v">Tot: '+fmtH(tG)+'</span>'+
-          '<span class="cps-v">Giorni: '+giorni+'</span></div>';
+          '<span class="cps-v">Giorni: '+giorni+'</span>'+
+          (POSA_MODE==='cap'?'<span class="cps-v" style="background:#fef3c7;color:#92400e;">adj capitolo</span>':'<span class="cps-v" style="background:#d1fae5;color:#065f46;">ripart. prop.</span>')+
+          '</div>';
       });
       h+='<div class="tot-globale-hdr">\u2211 Totali complessivi</div>';
     }
@@ -469,22 +517,46 @@ function renderAll(ril,pos,caps,wR,wP){
     var voci=calcolaVociPorte(pos);
     var totCalc=0,totFin=0,areaMap={};
     var tbH='',lastArea='';
-    voci.forEach(function(v2){
-      if(v2.area!==lastArea){tbH+='<tr class="tr-sez"><td colspan="6">'+v2.area+'</td></tr>';lastArea=v2.area;}
-      var minus=parseFloat((adj[v2.id]||{}).minus)||0,plus=parseFloat((adj[v2.id]||{}).plus)||0;
-      var fin=Math.max(0,Math.round((v2.oreCalc-minus+plus)*1000)/1000);
-      totCalc+=v2.oreCalc;totFin+=fin;
-      if(!areaMap[v2.area])areaMap[v2.area]={fin:0,tipo:v2.tipo};
-      areaMap[v2.area].fin+=fin;
-      var isZero=v2.n===0&&v2.oreCalc===0&&fin===0;
-      var hasAdj=(minus>0||plus>0);
+
+    // In modalità CAP: il globale somma i risultati dei capitoli voce per voce
+    var globaleFin={};
+    if(POSA_MODE==='cap'&&caps&&caps.length){
+      var gruppiG=groupByCap(pos,caps);
+      gruppiG.forEach(function(g){
+        if(!g.pos.length)return;
+        var capId=g.cap.id||'__fuori__';
+        var adjCap=loadAdjCap(capId);
+        var vG=calcolaVociPorte(g.pos);
+        vG.forEach(function(vo){
+          var m=parseFloat((adjCap[vo.id]||{}).minus)||0,pl=parseFloat((adjCap[vo.id]||{}).plus)||0;
+          var fin=Math.max(0,Math.round((vo.oreCalc-m+pl)*1000)/1000);
+          globaleFin[vo.id]=(globaleFin[vo.id]||0)+fin;
+        });
+      });
+    }
+
+    voci.forEach(function(vo){
+      if(vo.area!==lastArea){tbH+='<tr class="tr-sez"><td colspan="6">'+vo.area+'</td></tr>';lastArea=vo.area;}
+      var fin;
+      if(POSA_MODE==='cap'&&caps&&caps.length){
+        fin=Math.round((globaleFin[vo.id]||0)*1000)/1000;
+      } else {
+        var minus=parseFloat((adj[vo.id]||{}).minus)||0,plus=parseFloat((adj[vo.id]||{}).plus)||0;
+        fin=Math.max(0,Math.round((vo.oreCalc-minus+plus)*1000)/1000);
+      }
+      totCalc+=vo.oreCalc;totFin+=fin;
+      if(!areaMap[vo.area])areaMap[vo.area]={fin:0,tipo:vo.tipo};
+      areaMap[vo.area].fin+=fin;
+      var isZero=vo.n===0&&vo.oreCalc===0&&fin===0;
+      var hasAdj=POSA_MODE==='tot'&&((parseFloat((adj[vo.id]||{}).minus)||0)>0||(parseFloat((adj[vo.id]||{}).plus)||0)>0);
       tbH+='<tr class="tr-voce'+(isZero?' zero-row':'')+'">'+
-        '<td>'+v2.area+'</td><td>'+v2.serv+'</td>'+
-        '<td class="c">'+(v2.n>0?v2.n:'—')+'</td>'+
-        '<td class="c">'+(v2.dp?fmtH(v2.dp[0]):'—')+'</td>'+
-        '<td class="c">'+(v2.dp&&v2.dp[1]?fmtH(v2.dp[1]):'—')+'</td>'+
-        '<td class="ore-f">'+fmtH(fin)+(hasAdj?'<span style="font-size:8px;color:#b45309;margin-left:3px;">'+(plus>0?'+'+fmtH(plus):'')+(minus>0?'-'+fmtH(minus):'')+'</span>':'')+'</td></tr>';
+        '<td>'+vo.area+'</td><td>'+vo.serv+'</td>'+
+        '<td class="c">'+(vo.n>0?vo.n:'—')+'</td>'+
+        '<td class="c">'+(vo.dp?fmtH(vo.dp[0]):'—')+'</td>'+
+        '<td class="c">'+((vo.dp&&vo.dp[1])?fmtH(vo.dp[1]):'—')+'</td>'+
+        '<td class="ore-f">'+fmtH(fin)+(hasAdj?'<span style="font-size:8px;color:#b45309;margin-left:3px;">adj</span>':'')+'</td></tr>';
     });
+
     h+='<div class="tbl-outer"><table class="t-posa"><thead><tr>'+
       '<th style="width:22%">Area</th><th style="width:38%">Servizio</th>'+
       '<th class="c">N</th><th class="c">h/pos</th><th class="c">Min</th><th class="c">Ore fin.</th>'+

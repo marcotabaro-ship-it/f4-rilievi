@@ -1,105 +1,11 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>F4 Rilievi Preliminari — Login</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css">
-  <style>
-    body { background: var(--c-primary); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 16px; }
-    .login-box { background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); width: 100%; max-width: 400px; padding: 40px 36px; }
-    .login-logo { text-align: center; margin-bottom: 32px; }
-    .login-logo img { height: 60px; }
-    .login-logo h1 { font-size: 1.15rem; color: var(--c-primary); margin-top: 12px; font-weight: 600; }
-    .login-logo p { font-size: .82rem; color: var(--c-text-sec); margin-top: 4px; }
-    .login-form { }
-    .login-error { display: none; }
-    .login-footer { text-align: center; margin-top: 24px; font-size: .78rem; color: var(--c-text-sec); }
-  </style>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="refresh" content="0;url=login.html"/>
+  <title>F4 Rilievi</title>
 </head>
 <body>
-  <div class="login-box">
-    <div class="login-logo">
-      <img src="img/Logo_F4.jpg" alt="Gruppo F4" onerror="this.style.display='none'">
-      <h1>F4 Rilievi Preliminari</h1>
-      <p>Accedi con le tue credenziali</p>
-    </div>
-
-    <div id="loginError" class="alert alert-error login-error" role="alert">
-      <span>⚠</span> <span id="loginErrorMsg"></span>
-    </div>
-
-    <div class="login-form">
-      <div class="form-group">
-        <label class="form-label" for="email">E-mail</label>
-        <input class="form-control" type="email" id="email" name="email"
-               placeholder="nome@gruppof4.it" autocomplete="email" autofocus>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="password">Password</label>
-        <input class="form-control" type="password" id="password" name="password"
-               placeholder="••••••••" autocomplete="current-password">
-      </div>
-      <button class="btn btn-primary btn-full btn-lg" id="loginBtn" onclick="doLogin()">
-        Accedi
-      </button>
-    </div>
-
-    <div class="login-footer">
-      <span>Gruppo F4 &mdash; Rilievi Preliminari v1.0</span>
-    </div>
-  </div>
-
-  <script src="js/config.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/api.js"></script>
-  <script>
-    // Se già loggato, vai alla dashboard
-    const token = localStorage.getItem(APP_CONFIG.TOKEN_KEY);
-    if (token) window.location.href = 'dashboard.html';
-
-    // Enter key → login
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Enter') doLogin();
-    });
-
-    async function doLogin() {
-      const email    = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const btn      = document.getElementById('loginBtn');
-      const errBox   = document.getElementById('loginError');
-      const errMsg   = document.getElementById('loginErrorMsg');
-
-      if (!email || !password) {
-        showError('Inserisci email e password.'); return;
-      }
-
-      btn.disabled  = true;
-      btn.textContent = 'Accesso in corso…';
-      errBox.style.display = 'none';
-
-      const res = await API.login(email, password);
-
-      btn.disabled  = false;
-      btn.textContent = 'Accedi';
-
-      if (res.success) {
-        localStorage.setItem(APP_CONFIG.TOKEN_KEY, res.token);
-        localStorage.setItem(APP_CONFIG.USER_KEY,  JSON.stringify(res.user));
-        window.location.href = 'dashboard.html';
-      } else {
-        showError(res.error || 'Errore di accesso. Riprova.');
-      }
-    }
-
-    function showError(msg) {
-      const errBox = document.getElementById('loginError');
-      const errMsg = document.getElementById('loginErrorMsg');
-      errMsg.textContent = msg;
-      errBox.style.display = 'flex';
-    }
-  </script>
+  <script>window.location.href='login.html';</script>
 </body>
 </html>

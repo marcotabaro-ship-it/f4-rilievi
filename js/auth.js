@@ -162,13 +162,18 @@ var Auth = (function () {
     return u && (u.ruolo === 'administrator' || u.ruolo === 'admin');
   }
 
+  function isAdmin() {
+    var u = getSession();
+    return u && (u.ruolo === 'administrator' || u.ruolo === 'admin');
+  }
+
   return {
     requireLogin:        requireLogin,
-    isAdmin:             isAdmin,
     getUser:             getUser,
     getToken:            getToken,
     logout:              logout,
     login:               login,
+    isAdmin:             isAdmin,
     getReparti:          getReparti,
     getUtentiByReparto:  getUtentiByReparto,
     getAllUtenti:        getAllUtenti,

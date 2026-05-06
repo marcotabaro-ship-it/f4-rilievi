@@ -1,156 +1,171 @@
-// ================================================================
-// FILE: js/auth.js
-// PROGETTO: F4 Rilievi — Frontend GitHub Pages
-// VERSIONE: 2.0 (Supabase Auth)
-// ================================================================
-// Gestione sessione utente con Supabase Auth.
-// Interfaccia IDENTICA alla v1 per compatibilita con i file HTML.
-// Includi in ogni pagina DOPO config.js e api.js.
-// ================================================================
+// auth.js — F4 Rilievi — autenticazione custom (no Supabase Auth)
+var Auth = (function () {
+  var SESSION_KEY = 'f4_rilievi_session';
+  var SUPA_URL = null;
+  var SUPA_KEY = null;
 
-const Auth = {
-
-  // ================================================================
-  // TOKEN / SESSIONE
-  // ================================================================
-
-  getToken() {
-    return localStorage.getItem(APP_CONFIG.TOKEN_KEY);
-  },
-
-  getRefreshToken() {
-    return localStorage.getItem(APP_CONFIG.REFRESH_KEY);
-  },
-
-  // Salva sessione dopo login (chiamato da API.login)
-  saveSession(accessToken, refreshToken, user) {
-    localStorage.setItem(APP_CONFIG.TOKEN_KEY,   accessToken);
-    localStorage.setItem(APP_CONFIG.REFRESH_KEY, refreshToken);
-    localStorage.setItem(APP_CONFIG.USER_KEY,    JSON.stringify(user));
-  },
-
-  // Restituisce il profilo utente dalla cache localStorage
-  getUser() {
-    const raw = localStorage.getItem(APP_CONFIG.USER_KEY);
-    if (!raw) return null;
-    try { return JSON.parse(raw); } catch(e) { return null; }
-  },
-
-  // ================================================================
-  // REFRESH TOKEN
-  // Chiamato da api.js quando riceve 401 Unauthorized.
-  // ================================================================
-  async _refreshToken() {
-    const refreshToken = this.getRefreshToken();
-    if (!refreshToken) return false;
-    try {
-      const res = await fetch(
-        APP_CONFIG.SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token',
-        {
-          method:  'POST',
-          headers: {
-            'apikey':       APP_CONFIG.SUPABASE_ANON_KEY,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ refresh_token: refreshToken })
-        }
-      );
-      if (!res.ok) return false;
-      const data = await res.json();
-      if (!data.access_token) return false;
-      localStorage.setItem(APP_CONFIG.TOKEN_KEY,   data.access_token);
-      localStorage.setItem(APP_CONFIG.REFRESH_KEY, data.refresh_token || refreshToken);
-      return true;
-    } catch(e) {
-      return false;
+  function _initConfig() {
+    if (!SUPA_URL && typeof APP_CONFIG !== 'undefined') {
+      SUPA_URL = APP_CONFIG.SUPABASE_URL;
+      SUPA_KEY = APP_CONFIG.SUPABASE_ANON_KEY;
     }
-  },
-
-  // ================================================================
-  // GUARD — da chiamare in cima ad ogni pagina protetta.
-  // Sincrono: controlla localStorage.
-  // ================================================================
-  requireLogin() {
-    const token = this.getToken();
-    const user  = this.getUser();
-    if (!token || !user) {
-      window.location.href = 'index.html';
-      return null;
-    }
-    return user;
-  },
-
-  // ================================================================
-  // LOGOUT
-  // ================================================================
-  async logout() {
-    const token = this.getToken();
-    // Revoca il token su Supabase (best-effort, non blocca se fallisce)
-    if (token) {
-      fetch(APP_CONFIG.SUPABASE_URL + '/auth/v1/logout', {
-        method:  'POST',
-        headers: {
-          'apikey':        APP_CONFIG.SUPABASE_ANON_KEY,
-          'Authorization': 'Bearer ' + token,
-          'Content-Type':  'application/json'
-        }
-      }).catch(() => {});
-    }
-    localStorage.removeItem(APP_CONFIG.TOKEN_KEY);
-    localStorage.removeItem(APP_CONFIG.REFRESH_KEY);
-    localStorage.removeItem(APP_CONFIG.USER_KEY);
-    window.location.href = 'index.html';
-  },
-
-  // ================================================================
-  // RUOLI / PERMESSI
-  // ================================================================
-
-  hasRole(ruolo) {
-    const user = this.getUser();
-    return user && user.ruolo === ruolo;
-  },
-
-  isAdmin() {
-    return this.hasRole('administrator');
-  },
-
-  canViewAll() {
-    const user = this.getUser();
-    return user && APP_CONFIG.RUOLI_ACCESSO_TOTALE.includes(user.ruolo);
-  },
-
-  canModificaOre() {
-    const user = this.getUser();
-    return user && APP_CONFIG.RUOLI_MODIFICA_ORE.includes(user.ruolo);
-  },
-
-  canCreaRilievo() {
-    const user = this.getUser();
-    return user && APP_CONFIG.RUOLI_CREA_RILIEVO.includes(user.ruolo);
-  },
-
-  // ================================================================
-  // UI — Popola elementi HTML con i dati utente
-  // ================================================================
-  populateUserUI() {
-    const user = this.getUser();
-    if (!user) return;
-
-    document.querySelectorAll('[data-user-nome]').forEach(el => {
-      el.textContent = user.nome || user.email || '';
-    });
-    document.querySelectorAll('[data-user-ruolo]').forEach(el => {
-      el.textContent = user.reparto || user.ruolo || '';
-    });
-    document.querySelectorAll('[data-user-sigla]').forEach(el => {
-      el.textContent = user.sigla || '?';
-    });
-    document.querySelectorAll('[data-admin-only]').forEach(el => {
-      el.style.display = this.isAdmin() ? '' : 'none';
-    });
-    document.querySelectorAll('[data-view-all-only]').forEach(el => {
-      el.style.display = this.canViewAll() ? '' : 'none';
-    });
   }
-};
+
+  function _fetch(path, cb, eb) {
+    _initConfig();
+    var x = new XMLHttpRequest();
+    x.open('GET', SUPA_URL + '/rest/v1/' + path, true);
+    x.setRequestHeader('apikey', SUPA_KEY);
+    x.setRequestHeader('Authorization', 'Bearer ' + SUPA_KEY);
+    x.onload = function () {
+      if (x.status >= 200 && x.status < 300) {
+        try { cb(JSON.parse(x.responseText)); } catch (e) { eb(e); }
+      } else { eb('HTTP ' + x.status); }
+    };
+    x.onerror = function () { eb('Rete'); };
+    x.send();
+  }
+
+  function _fetchPost(path, data, method, cb, eb) {
+    _initConfig();
+    var x = new XMLHttpRequest();
+    x.open(method || 'POST', SUPA_URL + '/rest/v1/' + path, true);
+    x.setRequestHeader('apikey', SUPA_KEY);
+    x.setRequestHeader('Authorization', 'Bearer ' + SUPA_KEY);
+    x.setRequestHeader('Content-Type', 'application/json');
+    x.setRequestHeader('Prefer', 'return=representation');
+    x.onload = function () {
+      if (x.status >= 200 && x.status < 300) {
+        try { cb(JSON.parse(x.responseText)); } catch (e) { cb([]); }
+      } else { eb('HTTP ' + x.status + ' — ' + x.responseText); }
+    };
+    x.onerror = function () { eb('Rete'); };
+    x.send(JSON.stringify(data));
+  }
+
+  function saveSession(u) {
+    try { localStorage.setItem(SESSION_KEY, JSON.stringify(u)); } catch (e) {}
+  }
+
+  function getSession() {
+    try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch (e) { return null; }
+  }
+
+  function clearSession() {
+    try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+  }
+
+  // ── API PUBBLICA ──
+
+  function requireLogin() {
+    var u = getSession();
+    if (!u) { window.location.href = 'login.html'; return null; }
+    return u;
+  }
+
+  function getUser() {
+    return getSession();
+  }
+
+  function getToken() {
+    // Compatibilità con codice esistente che chiama Auth.getToken()
+    // Restituisce la anon key perché non c'è più un token utente Supabase
+    _initConfig();
+    return SUPA_KEY;
+  }
+
+  function logout() {
+    clearSession();
+    window.location.href = 'login.html';
+  }
+
+  function login(email, password, cb) {
+    // email qui è già l'email dell'utente selezionato
+    _fetch(
+      'utenti?email=eq.' + encodeURIComponent(email) + '&stato=eq.attivo&select=*&limit=1',
+      function (rows) {
+        if (!rows.length) { cb(false, 'Utente non trovato o disattivo.'); return; }
+        var u = rows[0];
+        if (u.password !== password) { cb(false, 'Password errata.'); return; }
+        var session = {
+          id: u.id,
+          nome: u.nome,
+          email: u.email,
+          ruolo: u.ruolo,
+          sigla: u.sigla,
+          reparto: u.reparto,
+          stato: u.stato
+        };
+        saveSession(session);
+        cb(true, session);
+      },
+      function (e) { cb(false, 'Errore di rete: ' + e); }
+    );
+  }
+
+  function getReparti(cb) {
+    _fetch(
+      'utenti?stato=eq.attivo&select=reparto&order=reparto.asc',
+      function (rows) {
+        var reparti = [];
+        rows.forEach(function (r) {
+          if (r.reparto && reparti.indexOf(r.reparto) === -1) reparti.push(r.reparto);
+        });
+        reparti.sort();
+        cb(reparti);
+      },
+      function () { cb([]); }
+    );
+  }
+
+  function getUtentiByReparto(reparto, cb) {
+    _fetch(
+      'utenti?reparto=eq.' + encodeURIComponent(reparto) + '&stato=eq.attivo&select=id,nome,email,sigla&order=nome.asc',
+      function (rows) { cb(rows); },
+      function () { cb([]); }
+    );
+  }
+
+  // ── API ADMIN ──
+
+  function getAllUtenti(cb) {
+    _fetch(
+      'utenti?select=*&order=nome.asc',
+      function (rows) { cb(rows); },
+      function () { cb([]); }
+    );
+  }
+
+  function createUtente(data, cb, eb) {
+    _fetchPost('utenti', data, 'POST', cb, eb);
+  }
+
+  function updateUtente(id, data, cb, eb) {
+    _initConfig();
+    var x = new XMLHttpRequest();
+    x.open('PATCH', SUPA_URL + '/rest/v1/utenti?id=eq.' + id, true);
+    x.setRequestHeader('apikey', SUPA_KEY);
+    x.setRequestHeader('Authorization', 'Bearer ' + SUPA_KEY);
+    x.setRequestHeader('Content-Type', 'application/json');
+    x.setRequestHeader('Prefer', 'return=representation');
+    x.onload = function () {
+      if (x.status >= 200 && x.status < 300) { try { cb(JSON.parse(x.responseText)); } catch (e) { cb([]); } }
+      else { eb('HTTP ' + x.status + ' — ' + x.responseText); }
+    };
+    x.onerror = function () { eb('Rete'); };
+    x.send(JSON.stringify(data));
+  }
+
+  return {
+    requireLogin:        requireLogin,
+    getUser:             getUser,
+    getToken:            getToken,
+    logout:              logout,
+    login:               login,
+    getReparti:          getReparti,
+    getUtentiByReparto:  getUtentiByReparto,
+    getAllUtenti:        getAllUtenti,
+    createUtente:        createUtente,
+    updateUtente:        updateUtente
+  };
+})();

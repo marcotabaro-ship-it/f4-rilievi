@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Accesso — F4 Rilievi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:#f0f2f8;font-family:'Roboto',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+    .card{background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.13);width:100%;max-width:420px;overflow:hidden;}
+    .card-header{background:#1a1a2e;padding:32px 36px 24px;text-align:center;}
+    .logo-box{display:inline-flex;align-items:center;justify-content:center;border:3px solid #e53e3e;padding:6px 14px;margin-bottom:10px;}
+    .logo-box span{font-size:26px;font-weight:900;color:#fff;letter-spacing:-1px;}
+    .logo-sub{font-size:11px;color:#a5b4fc;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;}
+    .card-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;}
+    .card-version{display:inline-block;background:rgba(255,255,255,.15);color:#a5b4fc;font-size:11px;font-weight:700;padding:2px 10px;border-radius:10px;}
+    .card-body{padding:32px 36px;}
+    .step-indicator{display:flex;align-items:center;gap:0;margin-bottom:28px;}
+    .step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;transition:all .2s;}
+    .step-dot.active{background:#4f46e5;color:#fff;}
+    .step-dot.done{background:#16a34a;color:#fff;}
+    .step-dot.pending{background:#e5e7eb;color:#9ca3af;}
+    .step-line{flex:1;height:2px;transition:background .2s;}
+    .step-line.done{background:#16a34a;}
+    .step-line.pending{background:#e5e7eb;}
+    .step-label{font-size:11px;color:#6b7280;margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+    .step-title{font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:20px;}
+    .field{margin-bottom:16px;}
+    .field label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;}
+    .field select,.field input{width:100%;border:2px solid #e5e7eb;border-radius:8px;padding:11px 14px;font-size:14px;font-family:'Roboto',sans-serif;color:#1a1a2e;outline:none;transition:border-color .15s;background:#fff;}
+    .field select:focus,.field input:focus{border-color:#4f46e5;}
+    .field select:disabled,.field input:disabled{background:#f9fafb;color:#9ca3af;}
+    .utenti-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
+    .utente-btn{border:2px solid #e5e7eb;border-radius:10px;padding:12px 10px;background:#fff;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:4px;}
+    .utente-btn:hover{border-color:#4f46e5;background:#f5f3ff;}
+    .utente-btn.selected{border-color:#4f46e5;background:#eef2ff;}
+    .utente-btn .u-sigla{width:36px;height:36px;border-radius:50%;background:#4f46e5;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+    .utente-btn .u-nome{font-size:12px;font-weight:600;color:#1a1a2e;line-height:1.3;}
+    .pw-wrap{position:relative;}
+    .pw-wrap input{padding-right:44px;}
+    .pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#9ca3af;font-size:16px;padding:4px;}
+    .pw-toggle:hover{color:#4f46e5;}
+    .btn-primary{width:100%;background:#4f46e5;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Roboto',sans-serif;transition:background .15s;margin-top:4px;}
+    .btn-primary:hover{background:#4338ca;}
+    .btn-primary:disabled{background:#a5b4fc;cursor:not-allowed;}
+    .btn-back{background:none;border:none;color:#6b7280;font-size:13px;cursor:pointer;font-family:'Roboto',sans-serif;display:flex;align-items:center;gap:6px;margin-bottom:16px;padding:0;transition:color .15s;}
+    .btn-back:hover{color:#4f46e5;}
+    .err-msg{background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;font-size:13px;color:#dc2626;margin-bottom:16px;display:none;}
+    .loading{text-align:center;padding:24px;color:#6b7280;font-size:13px;}
+    .loading-spin{display:inline-block;width:20px;height:20px;border:2px solid #e5e7eb;border-top-color:#4f46e5;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .selected-info{background:#f5f3ff;border:1px solid #c7d2fe;border-radius:8px;padding:10px 14px;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+    .selected-info .si-avatar{width:36px;height:36px;border-radius:50%;background:#4f46e5;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .selected-info .si-nome{font-size:14px;font-weight:700;color:#1a1a2e;}
+    .selected-info .si-rep{font-size:12px;color:#6b7280;}
+    .card-footer{padding:16px 36px;background:#f9fafb;border-top:1px solid #f0f0f6;text-align:center;font-size:11px;color:#9ca3af;}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="card-header">
+    <div class="logo-box"><span>[F4]</span></div>
+    <div class="logo-sub">Gruppo F4</div>
+    <div class="card-title">F4 Rilievi</div>
+    <div style="margin-top:6px"><span class="card-version">Accesso Riservato</span></div>
+  </div>
+  <div class="card-body">
+
+    <!-- STEP INDICATOR -->
+    <div class="step-indicator">
+      <div class="step-dot active" id="sd1">1</div>
+      <div class="step-line pending" id="sl1"></div>
+      <div class="step-dot pending" id="sd2">2</div>
+      <div class="step-line pending" id="sl2"></div>
+      <div class="step-dot pending" id="sd3">3</div>
+    </div>
+
+    <!-- ERRORE -->
+    <div class="err-msg" id="err-msg"></div>
+
+    <!-- STEP 1 — REPARTO -->
+    <div id="step1">
+      <div class="step-label">Step 1 di 3</div>
+      <div class="step-title">Scegli il reparto</div>
+      <div id="reparti-loading" class="loading"><span class="loading-spin"></span>Caricamento reparti&hellip;</div>
+      <div id="reparti-list" style="display:none">
+        <div class="field">
+          <label>Reparto operativo</label>
+          <select id="sel-reparto" onchange="onRepartoChange()">
+            <option value="">Scegli Reparto Operativo&hellip;</option>
+          </select>
+        </div>
+        <button class="btn-primary" id="btn-step1" onclick="goStep2()" disabled>Continua &rarr;</button>
+      </div>
+    </div>
+
+    <!-- STEP 2 — UTENTE -->
+    <div id="step2" style="display:none">
+      <button class="btn-back" onclick="goStep1()">&#8592; Cambia reparto</button>
+      <div class="step-label">Step 2 di 3</div>
+      <div class="step-title">Scegli il tuo nome</div>
+      <div id="utenti-loading" class="loading" style="display:none"><span class="loading-spin"></span>Caricamento utenti&hellip;</div>
+      <div id="utenti-grid" class="utenti-grid"></div>
+      <div id="utenti-empty" style="display:none;font-size:13px;color:#9ca3af;text-align:center;padding:16px 0;">Nessun utente attivo in questo reparto.</div>
+    </div>
+
+    <!-- STEP 3 — PASSWORD -->
+    <div id="step3" style="display:none">
+      <button class="btn-back" onclick="goStep2()">&#8592; Cambia utente</button>
+      <div class="step-label">Step 3 di 3</div>
+      <div class="step-title">Inserisci la password</div>
+      <div class="selected-info" id="selected-info">
+        <div class="si-avatar" id="si-avatar">TM</div>
+        <div><div class="si-nome" id="si-nome">Nome Utente</div><div class="si-rep" id="si-rep">Reparto</div></div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="inp-password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"/>
+          <button class="pw-toggle" onclick="togglePw()" tabindex="-1" title="Mostra/Nascondi">&#128065;</button>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-login" onclick="doLogin()">Accedi</button>
+    </div>
+
+  </div>
+  <div class="card-footer">F4 Rilievi &mdash; Gruppo F4 &copy; 2026</div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  var _reparto = '', _utente = null;
+
+  // Redirect se già loggato
+  if (Auth.getUser()) window.location.href = 'dashboard.html';
+
+  // Carica reparti
+  Auth.getReparti(function(reparti){
+    document.getElementById('reparti-loading').style.display = 'none';
+    document.getElementById('reparti-list').style.display = '';
+    var sel = document.getElementById('sel-reparto');
+    reparti.forEach(function(r){
+      var o = document.createElement('option');
+      o.value = r; o.textContent = r;
+      sel.appendChild(o);
+    });
+  });
+
+  function onRepartoChange(){
+    var v = document.getElementById('sel-reparto').value;
+    document.getElementById('btn-step1').disabled = !v;
+  }
+
+  function setStepIndicator(step){
+    var dots = [document.getElementById('sd1'),document.getElementById('sd2'),document.getElementById('sd3')];
+    var lines = [document.getElementById('sl1'),document.getElementById('sl2')];
+    for(var i=0;i<3;i++){
+      dots[i].className = 'step-dot ' + (i+1 < step ? 'done' : i+1 === step ? 'active' : 'pending');
+      if(i<2) lines[i].className = 'step-line ' + (i+1 < step ? 'done' : 'pending');
+    }
+  }
+
+  function showErr(msg){
+    var el = document.getElementById('err-msg');
+    el.textContent = msg; el.style.display = '';
+  }
+  function hideErr(){document.getElementById('err-msg').style.display = 'none';}
+
+  function goStep1(){
+    hideErr();
+    _reparto = ''; _utente = null;
+    document.getElementById('step1').style.display = '';
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step3').style.display = 'none';
+    setStepIndicator(1);
+  }
+
+  function goStep2(){
+    hideErr();
+    _reparto = document.getElementById('sel-reparto').value;
+    if(!_reparto) return;
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step2').style.display = '';
+    document.getElementById('step3').style.display = 'none';
+    setStepIndicator(2);
+    loadUtenti();
+  }
+
+  function loadUtenti(){
+    var grid = document.getElementById('utenti-grid');
+    var empty = document.getElementById('utenti-empty');
+    var loading = document.getElementById('utenti-loading');
+    grid.innerHTML = ''; grid.style.display = 'none';
+    empty.style.display = 'none';
+    loading.style.display = '';
+    Auth.getUtentiByReparto(_reparto, function(utenti){
+      loading.style.display = 'none';
+      if(!utenti.length){ empty.style.display = ''; return; }
+      grid.style.display = 'grid';
+      utenti.forEach(function(u){
+        var sigla = u.sigla || u.nome.split(' ').map(function(p){return p[0];}).join('').substring(0,2).toUpperCase();
+        var btn = document.createElement('button');
+        btn.className = 'utente-btn';
+        btn.innerHTML = '<div class="u-sigla">'+sigla+'</div><div class="u-nome">'+u.nome+'</div>';
+        btn.onclick = function(){
+          document.querySelectorAll('.utente-btn').forEach(function(b){b.classList.remove('selected');});
+          btn.classList.add('selected');
+          setTimeout(function(){ goStep3(u, sigla); }, 180);
+        };
+        grid.appendChild(btn);
+      });
+    });
+  }
+
+  function goStep3(utente, sigla){
+    hideErr();
+    _utente = utente;
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step3').style.display = '';
+    setStepIndicator(3);
+    document.getElementById('si-avatar').textContent = sigla;
+    document.getElementById('si-nome').textContent = utente.nome;
+    document.getElementById('si-rep').textContent = _reparto;
+    document.getElementById('inp-password').value = '';
+    setTimeout(function(){ document.getElementById('inp-password').focus(); }, 100);
+  }
+
+  function togglePw(){
+    var inp = document.getElementById('inp-password');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+  }
+
+  function doLogin(){
+    hideErr();
+    if(!_utente){ showErr('Nessun utente selezionato.'); return; }
+    var pw = document.getElementById('inp-password').value;
+    if(!pw){ showErr('Inserisci la password.'); return; }
+    var btn = document.getElementById('btn-login');
+    btn.disabled = true; btn.textContent = 'Accesso in corso\u2026';
+    Auth.login(_utente.email, pw, function(ok, data){
+      btn.disabled = false; btn.textContent = 'Accedi';
+      if(ok){ window.location.href = 'dashboard.html'; }
+      else { showErr(data || 'Credenziali non valide.'); }
+    });
+  }
+</script>
+</body>
+</html>

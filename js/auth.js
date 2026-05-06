@@ -177,8 +177,18 @@ var Auth = (function () {
     x.send(JSON.stringify(data));
   }
 
+  function populateUserUI() {
+    var u = getSession();
+    if (!u) return;
+    var el = document.getElementById('userDisplayName');
+    if (el) el.textContent = u.nome || u.email || 'Utente';
+    var av = document.getElementById('userAvatar');
+    if (av) av.textContent = u.sigla || (u.nome ? u.nome.substring(0,2).toUpperCase() : 'U');
+  }
+
   return {
     requireLogin:       requireLogin,
+    populateUserUI:     populateUserUI,
     getUser:            getUser,
     getToken:           getToken,
     isAdmin:            isAdmin,

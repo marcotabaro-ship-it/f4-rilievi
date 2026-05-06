@@ -1,4 +1,3 @@
-// auth.js — F4 Rilievi — autenticazione custom (no Supabase Auth)
 var Auth = (function () {
   var SESSION_KEY = 'f4_rilievi_session';
   var SUPA_URL = null;
@@ -37,7 +36,7 @@ var Auth = (function () {
     x.onload = function () {
       if (x.status >= 200 && x.status < 300) {
         try { cb(JSON.parse(x.responseText)); } catch (e) { cb([]); }
-      } else { eb('HTTP ' + x.status + ' — ' + x.responseText); }
+      } else { eb('HTTP ' + x.status + ' - ' + x.responseText); }
     };
     x.onerror = function () { eb('Rete'); };
     x.send(JSON.stringify(data));
@@ -55,8 +54,6 @@ var Auth = (function () {
     try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
   }
 
-  // ── API PUBBLICA ──
-
   function requireLogin() {
     var u = getSession();
     if (!u) { window.location.href = 'login.html'; return null; }
@@ -68,10 +65,13 @@ var Auth = (function () {
   }
 
   function getToken() {
-    // Compatibilità con codice esistente che chiama Auth.getToken()
-    // Restituisce la anon key perché non c'è più un token utente Supabase
     _initConfig();
     return SUPA_KEY;
+  }
+
+  function isAdmin() {
+    var u = getSession();
+    return u && (u.ruolo === 'administrator' || u.ruolo === 'admin');
   }
 
   function logout() {
@@ -80,9 +80,31 @@ var Auth = (function () {
   }
 
   function login(email, password, cb) {
-    // email qui è già l'email dell'utente selezionato
     _fetch(
       'utenti?email=eq.' + encodeURIComponent(email) + '&stato=eq.attivo&select=*&limit=1',
+      function (rows) {
+        if (!rows.length) { cb(false, 'Utente non trovato o disattivo.'); return; }
+        var u = rows[0];
+        if (u.password !== password) { cb(false, 'Password errata.'); return; }
+        var session = {
+          id: u.id,
+          nome: u.nome,
+          email: u.email,
+          ruolo: u.ruolo,
+          sigla: u.sigla,
+          reparto: u.reparto,
+          stato: u.stato
+        };
+        saveSession(session);
+        cb(true, session);
+      },
+      function (e) { cb(false, 'Errore di rete: ' + e); }
+    );
+  }
+
+  function loginByNome(nome, reparto, password, cb) {
+    _fetch(
+      'utenti?nome=eq.' + encodeURIComponent(nome) + '&reparto=eq.' + encodeURIComponent(reparto) + '&stato=eq.attivo&select=*&limit=1',
       function (rows) {
         if (!rows.length) { cb(false, 'Utente non trovato o disattivo.'); return; }
         var u = rows[0];
@@ -126,8 +148,6 @@ var Auth = (function () {
     );
   }
 
-  // ── API ADMIN ──
-
   function getAllUtenti(cb) {
     _fetch(
       'utenti?select=*&order=nome.asc',
@@ -149,35 +169,26 @@ var Auth = (function () {
     x.setRequestHeader('Content-Type', 'application/json');
     x.setRequestHeader('Prefer', 'return=representation');
     x.onload = function () {
-      if (x.status >= 200 && x.status < 300) { try { cb(JSON.parse(x.responseText)); } catch (e) { cb([]); } }
-      else { eb('HTTP ' + x.status + ' — ' + x.responseText); }
+      if (x.status >= 200 && x.status < 300) {
+        try { cb(JSON.parse(x.responseText)); } catch (e) { cb([]); }
+      } else { eb('HTTP ' + x.status + ' - ' + x.responseText); }
     };
     x.onerror = function () { eb('Rete'); };
     x.send(JSON.stringify(data));
   }
 
   return {
-    function isAdmin() {
-    var u = getSession();
-    return u && (u.ruolo === 'administrator' || u.ruolo === 'admin');
-  }
-
-  function isAdmin() {
-    var u = getSession();
-    return u && (u.ruolo === 'administrator' || u.ruolo === 'admin');
-  }
-
-  return {
-    requireLogin:        requireLogin,
-    getUser:             getUser,
-    getToken:            getToken,
-    logout:              logout,
-    login:               login,
-    isAdmin:             isAdmin,
-    getReparti:          getReparti,
-    getUtentiByReparto:  getUtentiByReparto,
+    requireLogin:       requireLogin,
+    getUser:            getUser,
+    getToken:           getToken,
+    isAdmin:            isAdmin,
+    logout:             logout,
+    login:              login,
+    loginByNome:        loginByNome,
+    getReparti:         getReparti,
+    getUtentiByReparto: getUtentiByReparto,
     getAllUtenti:        getAllUtenti,
-    createUtente:        createUtente,
-    updateUtente:        updateUtente
+    createUtente:       createUtente,
+    updateUtente:       updateUtente
   };
 })();

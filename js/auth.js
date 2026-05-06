@@ -157,7 +157,14 @@ var Auth = (function () {
   }
 
   return {
+    function isAdmin() {
+    var u = getSession();
+    return u && (u.ruolo === 'administrator' || u.ruolo === 'admin');
+  }
+
+  return {
     requireLogin:        requireLogin,
+    isAdmin:             isAdmin,
     getUser:             getUser,
     getToken:            getToken,
     logout:              logout,

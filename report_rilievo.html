@@ -396,6 +396,7 @@ function chk(val) { return val ? '<span class="chk on"></span>' : '<span class="
 function calcDim(p, dc, dbSerr) {
   var H = parseFloat(p.h_mm||p.H_mm)||0, L = parseFloat(p.l_mm||p.L_mm)||0;
   var tf = (p.tipo_foro||'').toUpperCase(), ts = (p.tipo_serramento||'').toUpperCase();
+  if (p.solo_accessori) return {Ltub:Math.round(L), Htub:Math.round(H)};
   if (!H||!L||!tf) return {Ltub:0,Htub:0};
   var af = dc[2]||20;
   var inclBasso = (ts==='F'||ts==='FF');
@@ -509,7 +510,7 @@ function renderPosizioni(posizioni, stratigrafie, capitoli) {
     var stId = p.id_stratigrafia_override || p.ID_stratigrafia_override || '';
     var stNome = stId ? (stMap[stId] || '') : '';
     var h = '<tr>';
-    h += '<td class="num">'  + esc(v(numDisp)) + '</td>';
+    h += '<td class="num">'  + esc(v(numDisp)) + (p.solo_accessori?'<br><span style="font-size:8px;background:#fee2e2;color:#b91c1c;padding:0 3px;border-radius:3px;font-weight:700;">ACC</span>':'') + '</td>';
     h += '<td class="c">'   + piano + '</td>';
     h += '<td style="white-space:normal;min-width:60px">' + esc(v(p.ambiente)) + '</td>';
     h += '<td class="tipo">' + esc(v(p.tipo_serramento)) + '</td>';

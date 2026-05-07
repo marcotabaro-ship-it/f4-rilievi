@@ -828,6 +828,7 @@ function fillDrawer(p) {
     document.getElementById('dSistema').value=p.sistema||''; dOnSistemaChange(true);
     document.getElementById('dStileDesign').value=p.stile_design||''; dOnStileChange(true);
     document.getElementById('dVarianteTelaio').value=p.variante_telaio||''; dOnVarianteChange(true);
+    document.getElementById('dNVetri').value=p.n_vetri||'';
     var misto=p.telaio_misto===true||p.telaio_misto==='true';
     document.getElementById('dTelaioMisto').checked=misto;
     document.getElementById('dTelaioMistoWrap').style.display=misto?'':'none';

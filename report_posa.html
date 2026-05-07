@@ -213,7 +213,6 @@ function getPianoKey(piano){var p=parseInt(piano,10);if(isNaN(p))return'0';if(p<
 function posSerrH(piano,nCampi,useGru){var key=getPianoKey(piano),p=parseInt(piano,10);var tbl=(useGru&&p>=1)?POS_SERR_GRU:POS_SERR;var lookup=tbl[key]||POS_SERR[key];if(!lookup)return 0.5;var idx=Math.min(Math.max((parseInt(nCampi,10)||1)-1,0),4);return lookup[idx]||0.5;}
 function posCtlH(piano){return POS_CTL[getPianoKey(piano)]||0.5;}
 
-// FIX solo_accessori: esclude le posizioni solo_accessori dai conteggi tipo serramento e posizionamento
 function calcolaVoci(posizioni,useGru){
   var nTot=posizioni.length,nCL=0,nCT=0,nRim=0,nRA=0,nMar=0,nAng=0,nI=0,nF=0,nPF=0,nFF=0,nVF=0,nS=0,nAv=0,nSc=0,nTe=0,nFr=0,nCas=0,nZan=0,nCI=0,nCE=0,nSS=0,nSA=0,nDA=0,nIM=0,oPCtl=0,oPSerr=0;
   posizioni.forEach(function(p){
@@ -221,9 +220,7 @@ function calcolaVoci(posizioni,useGru){
     if(p.rimozione==='SI'||p.rimozione===true){nRim++;nSS++;}
     if(p.rimozione_accessori===true){nRA++;nSA++;}
     if(p.taglio_marmo===true)nMar++;if(p.angolari_pvc===true)nAng++;
-    // solo_accessori: non conta come tipo serramento e non contribuisce a posizionamento serramento
-    var ts=(p.tipo_serramento||'').toUpperCase();
-    if(!p.solo_accessori){if(ts==='I')nI++;else if(ts==='F')nF++;else if(ts==='PF')nPF++;else if(ts==='FF')nFF++;else if(ts==='VF')nVF++;else if(ts==='S')nS++;}
+    var ts=(p.tipo_serramento||'').toUpperCase();if(!p.solo_accessori){if(ts==='I')nI++;else if(ts==='F')nF++;else if(ts==='PF')nPF++;else if(ts==='FF')nFF++;else if(ts==='VF')nVF++;else if(ts==='S')nS++;}
     var sc=(p.schermatura||'').toUpperCase();if(sc==='A'||sc==='AM'||sc==='AE'||sc==='AR')nAv++;else if(sc==='S')nSc++;else if(sc==='TZ'||sc==='TM')nTe++;else if(sc==='CA'||sc==='CT')nFr++;
     if(p.cassonetto)nCas++;if(p.zanzariera)nZan++;if(p.coprifilo_int_mat)nCI++;if(p.coprifilo_est_mat)nCE++;
     var din=(p.dinoxill||'').toUpperCase();if(din==='DA')nDA++;else if(din==='I3'||din==='I4')nIM++;
@@ -277,9 +274,6 @@ function calcolaVoci(posizioni,useGru){
   return voci;
 }
 
-// ================================================================
-// LOCALSTORAGE
-// ================================================================
 function loadAdj(){try{return JSON.parse(localStorage.getItem(ADJ_LS_KEY))||{};}catch(e){return{};}}
 function saveAdj(adj){try{localStorage.setItem(ADJ_LS_KEY,JSON.stringify(adj));}catch(e){}}
 function loadAdjCap(capId){try{return JSON.parse(localStorage.getItem('f4_posa_adj_cap_'+ID_RILIEVO+'_'+capId))||{};}catch(e){return{};}}
@@ -339,10 +333,12 @@ function refreshRender() {
 function renderAll(voci, adj) {
   var tbody=document.getElementById('tbody-posa'),tfoot=document.getElementById('tfoot-posa');
   var html='',lastArea='',totCalc=0,totFin=0,areaMap={};
+
   var totalVoceCalc={};
   if(POSA_MODE==='tot'&&GRUPPI_POSA.length){
     GRUPPI_POSA.forEach(function(g){g.voci.forEach(function(v){totalVoceCalc[v.id]=(totalVoceCalc[v.id]||0)+v.oreCalc;});});
   }
+
   voci.forEach(function(v) {
     if(v.area!==lastArea){html+='<tr class="tr-sez"><td colspan="9">'+v.area+'</td></tr>';lastArea=v.area;}
     var minus=0,plus=0,oreFin;
@@ -379,8 +375,10 @@ function renderAll(voci, adj) {
     }
     html+='<td class="ore-fin">'+fmtH(oreFin)+'</td></tr>';
   });
+
   tbody.innerHTML=html;
   tfoot.innerHTML='<tr class="tr-tot"><td colspan="5">TOTALE</td><td class="c">'+fmtH(totCalc)+'</td><td class="c"></td><td class="c"></td><td class="ore-fin">'+fmtH(totFin)+'</td></tr>';
+
   var oreProgFin=0;
   voci.forEach(function(v){
     if(v.id==='prog'){
@@ -432,23 +430,36 @@ function renderCapitoliPosa(tuttePos, caps, adj) {
 function renderCapitoliPosaFromGruppi() {
   var container=document.getElementById('cap-posa-container');
   if(!container||!GRUPPI_POSA.length){if(container)container.innerHTML='';return;}
+
   var totalVoceCalc={};
   GRUPPI_POSA.forEach(function(g){g.voci.forEach(function(v){totalVoceCalc[v.id]=(totalVoceCalc[v.id]||0)+v.oreCalc;});});
   var adjGlobal=loadAdj();
+
   var html='<div class="totali-globali-posa">&#128293; Dettaglio per capitolo'+(POSA_MODE==='cap'?' &mdash; <span style="font-size:.8rem;opacity:.8;">aggiustamenti per capitolo attivi</span>':' &mdash; <span style="font-size:.8rem;opacity:.8;">ripartizione proporzionale</span>')+'</div>';
+
   GRUPPI_POSA.forEach(function(g) {
     if(!g.pos.length)return;
     var capId=g.cap.id||'__fuori__';
     var adjCap=loadAdjCap(capId);
     var tG=0,oDG=0,oIG=0;
+
     g.voci.forEach(function(v){
       var fin;
-      if(POSA_MODE==='cap'){var m=parseFloat((adjCap[v.id]||{}).minus)||0,pl=parseFloat((adjCap[v.id]||{}).plus)||0;fin=Math.max(0,Math.round((v.oreCalc-m+pl)*1000)/1000);}
-      else{var totV=totalVoceCalc[v.id]||0;var prop=totV>0?v.oreCalc/totV:0;var mProp=((adjGlobal[v.id]||{}).minus||0)*prop,plProp=((adjGlobal[v.id]||{}).plus||0)*prop;fin=Math.max(0,Math.round((v.oreCalc-mProp+plProp)*1000)/1000);}
+      if(POSA_MODE==='cap'){
+        var m=parseFloat((adjCap[v.id]||{}).minus)||0,pl=parseFloat((adjCap[v.id]||{}).plus)||0;
+        fin=Math.max(0,Math.round((v.oreCalc-m+pl)*1000)/1000);
+      } else {
+        var totV=totalVoceCalc[v.id]||0;
+        var prop=totV>0?v.oreCalc/totV:0;
+        var mProp=((adjGlobal[v.id]||{}).minus||0)*prop,plProp=((adjGlobal[v.id]||{}).plus||0)*prop;
+        fin=Math.max(0,Math.round((v.oreCalc-mProp+plProp)*1000)/1000);
+      }
       tG+=fin;if(v.tipo==='dir')oDG+=fin;else oIG+=fin;
     });
     tG=Math.round(tG*1000)/1000;
+
     html+='<div class="cap-posa-hdr"><span class="cpn">'+g.pos.length+' pos.</span>\u2550\u2550 '+g.cap.titolo+' \u2550\u2550</div>';
+
     var nCols=9;
     html+='<div class="table-wrap"><table class="t-posa" style="font-size:11px;"><thead><tr>'+
       '<th style="width:22%">Area</th><th style="width:34%">Servizio</th>'+
@@ -457,6 +468,7 @@ function renderCapitoliPosaFromGruppi() {
       (POSA_MODE==='cap'?'<th class="c adj-minus">&minus; Ore</th><th class="c adj-plus">+ Ore</th>':'<th class="c adj-prop" style="color:#9ca3af">&minus; prop.</th><th class="c adj-prop" style="color:#9ca3af">+ prop.</th>')+
       '<th class="c">Ore fin.</th>'+
     '</tr></thead><tbody>';
+
     var lastArea='';
     g.voci.forEach(function(v){
       if(v.n===0&&v.oreCalc===0)return;

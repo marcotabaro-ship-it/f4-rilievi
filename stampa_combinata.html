@@ -252,7 +252,6 @@ var C={sfrido:50,pvcB:6000,legB:3500,aluB:6000,angLato:50,angB:6000,cassIngr:200
 function numPos(p){return p.numero_pos_alfa||p.numero_pos;}
 function parseQ(raw){try{var a=typeof raw==='string'?JSON.parse(raw):raw;if(Array.isArray(a))return a.filter(function(q){return q&&q.lettera;});if(typeof a==='object')return Object.keys(a).map(function(k){return{lettera:k,mm:a[k]};});}catch(e){}return[];}
 
-// FIX: gestione telaio misto (usa variante_alto/basso/sx/dx) + fallback variante null
 function calcTub(p,db){
   var H=parseFloat(p.H_mm||p.h_mm)||0,L=parseFloat(p.L_mm||p.l_mm)||0;
   var tf=(p.tipo_foro||'').toUpperCase(),ts=(p.tipo_serramento||'').toUpperCase();
@@ -290,7 +289,8 @@ function svCop(ts,Lt,Ht,dim){var s=C.sfrido;return(ts==='F'||ts==='FF')?2*(Lt+2*
 function supSch(ts,cod,Lt,Ht,na,al){var c=C.sch[cod];if(!c)return 0;var nH=(ts==='F'||ts==='FF')?2:1;var La=Lt-2*al-2*na,Ha=Ht-nH*al-nH*na;return Math.max((La+c.sx+c.dx)*(Ha+c.h)/1e6,c.min);}
 function supZan(ts,cod,Lt,Ht,na,al){var c=C.zan[cod];if(!c)return 0;var nH=(ts==='F'||ts==='FF')?2:1;var La=Lt-2*al-2*na,Ha=Ht-nH*al-nH*na;var s=Math.max((La+c.sx+c.dx)*(Ha+c.h)/1e6,c.min);if(ts==='S'&&cod==='V')s/=2;return s;}
 function matM(ts,Lt,Ht){var s=C.sfrido;return((ts==='F'||ts==='FF')?2*(Lt+2*s)+2*(Ht+2*s):1*(Lt+2*s)+2*(Ht+2*s))/1000;}
-  var DP={}, POS_SERR={}, POS_SERR_GRU={}, POS_CTL={};
+
+var DP={}, POS_SERR={}, POS_SERR_GRU={}, POS_CTL={};
 var POS_SERR_MIN=2.0, POS_CTL_MIN=1.0;
 var V2DP={'PROGETTAZIONE':'prog','GESTIONE ORDINI':'gord','INCONTRI IN CANTIERE':'incant','SCARICO E CARICO CTL':'scCtl','TRASPORTO CTL':'trCtl','SCARICO E CARICO SERR':'scSerr','TRASPORTO SERR':'trSerr','RIMOZIONE SERRAMENTI':'rimSerr','RIMOZIONE ACCESSORI':'rimAcc','SMALTIMENTO SERR':'smSerr','SMALTIMENTO ACC':'smAcc','ASSEMBLAGGIO CTL':'assCtl','ASSEMBLAGGIO TERMOCASSE':'assTerm','ASSEMBLAGGIO DINOX DA':'assDinDA','ASSEMBLAGGIO DINOX IM':'assDinIM','INSTALL ANGOLARI PVC':'angPvc','INSTALLAZIONE CTL':'instCtl','INSTALLAZIONE TERMOCASSE':'instTerm','INSTALL DINOX DA':'instDinDA','INSTALL DINOX IM':'instDinIM','TAGLIO PIANI MARMO':'marmo','REGISTRAZIONE COLLAUDO':'regColl','PULIZIA CANTIERE':'pulizia'};
 var INST_V2DP={'INST INGRESSI':'instI','INST FINESTRE':'instF','INST PORTE FINESTRE':'instPF','INST FINESTRE FISSE':'instFF','INST VETRATE FISSE':'instVF','INST SCORREVOLI':'instS'};
@@ -321,6 +321,7 @@ function pianoKey(p){var n=parseInt(p,10);if(isNaN(n))return'0';return String(Ma
 function posSerrH(piano,nc){var key=pianoKey(piano);var lookup=POS_SERR[key];if(!lookup)return 0.5;return lookup[Math.min(Math.max((parseInt(nc)||1)-1,0),4)]||0.5;}
 function posCtlH(piano){return POS_CTL[pianoKey(piano)]||0.5;}
 
+// FIX solo_accessori: esclude le posizioni solo_accessori dai conteggi tipo serramento e posizionamento
 function calcolaVoci(pos){
   var nT=pos.length,nCL=0,nCT=0,nRim=0,nRA=0,nMar=0,nAng=0,nI=0,nF=0,nPF=0,nFF=0,nVF=0,nS=0;
   var nAv=0,nSc=0,nTe=0,nFr=0,nCas=0,nZan=0,nCI=0,nCE=0,nSS=0,nSA=0,nDA=0,nIM=0;
@@ -331,8 +332,9 @@ function calcolaVoci(pos){
     if(p.rimozione==='SI'||p.rimozione===true){nRim++;nSS++;}
     if(p.rimozione_accessori===true){nRA++;nSA++;}
     if(p.taglio_marmo===true)nMar++;if(p.angolari_pvc===true)nAng++;
+    // solo_accessori: non conta come tipo serramento, non contribuisce a posizionamento serramento
     var ts=(p.tipo_serramento||'').toUpperCase();
-    if(ts==='I')nI++;else if(ts==='F')nF++;else if(ts==='PF')nPF++;else if(ts==='FF')nFF++;else if(ts==='VF')nVF++;else if(ts==='S')nS++;
+    if(!p.solo_accessori){if(ts==='I')nI++;else if(ts==='F')nF++;else if(ts==='PF')nPF++;else if(ts==='FF')nFF++;else if(ts==='VF')nVF++;else if(ts==='S')nS++;}
     var sc=(p.schermatura||'').toUpperCase();
     if(sc==='A'||sc==='AM'||sc==='AE'||sc==='AR')nAv++;else if(sc==='S')nSc++;else if(sc==='TZ'||sc==='TM')nTe++;else if(sc==='CA'||sc==='CT')nFr++;
     if(p.cassonetto)nCas++;if(p.zanzariera)nZan++;
@@ -340,7 +342,7 @@ function calcolaVoci(pos){
     var din=(p.dinoxill||'').toUpperCase();
     if(din==='DA')nDA++;else if(din==='I3'||din==='I4')nIM++;
     if(ctl==='L'||ctl==='T')oPCtl+=posCtlH(p.piano);
-    oPSerr+=posSerrH(p.piano,p.n_campi||1);
+    if(!p.solo_accessori)oPSerr+=posSerrH(p.piano,p.n_campi||1);
   });
   var nCtl=nCL+nCT;
   oPCtl=nCtl>0?Math.max(oPCtl,POS_CTL_MIN):0;
@@ -441,6 +443,7 @@ function loadAndRender(wR,wA,wP){
   sfetch('dati_comuni_posa?tipo=eq.SERR&stato=eq.attivo&select=*&order=codice.asc,piano.asc,n_campi.asc',
     function(r){D.posa=r||[];chk();},function(){D.posa=[];chk();});
 }
+
   function renderAll(ril,pos,strat,db,caps,wR,wA,wP){
   var cp=ril.cantieri||{},cli=cp.clienti||{};
   var codice=ril.codice_completo||idRilievo;
@@ -489,15 +492,20 @@ function loadAndRender(wR,wA,wP){
     return gruppi;
   }
 
+  // FIX solo_accessori: bypass calcTub + azzera materiali posa
   var posCalc=pos.map(function(p){
-    var tub=calcTub(p,db);var ts=(p.tipo_serramento||'').toUpperCase();
+    var ts=(p.tipo_serramento||'').toUpperCase();
+    var tub;
+    if(p.solo_accessori){var _L=parseFloat(p.L_mm||p.l_mm)||0,_H=parseFloat(p.H_mm||p.h_mm)||0;tub=(_L&&_H)?{Lt:_L,Ht:_H,na:0,al:0}:null;}
+    else{tub=calcTub(p,db);}
     var _ss=0,_sz=0,_bci=0,_bce=0,_sch=0,_mp=0,_bg=0,_mu=0,_bv=0,_vi=0,_cassM=0;
     if(tub){var Lt=tub.Lt,Ht=tub.Ht,na=tub.na,al=tub.al;
       if(p.schermatura)_ss=supSch(ts,p.schermatura,Lt,Ht,na,al);
       if(p.zanzariera) _sz=supZan(ts,p.zanzariera,Lt,Ht,na,al);
       if(p.coprifilo_int_mat){var sv=svCop(ts,Lt,Ht,parseFloat(p.coprifilo_int_dim)||0);_bci=cUp(sv/lBarra(p.coprifilo_int_mat));}
       if(p.coprifilo_est_mat){var sv2=svCop(ts,Lt,Ht,parseFloat(p.coprifilo_est_dim)||0);_bce=cUp(sv2/lBarra(p.coprifilo_est_mat));}
-      _sch=matM(ts,Lt,Ht);_bg=_sch;_mu=_sch;_bv=_sch;_mp=1;_vi=1;_cassM=(Lt+C.cassIngr+C.cassIngr)/1000;
+      if(!p.solo_accessori){_sch=matM(ts,Lt,Ht);_bg=_sch;_mu=_sch;_bv=_sch;_mp=1;_vi=1;}
+      _cassM=(Lt+C.cassIngr+C.cassIngr)/1000;
     }
     return Object.assign({},p,{_t:tub,_ts:ts,_ss:_ss,_sz:_sz,_bci:_bci,_bce:_bce,_sch:_sch,_mp:_mp,_bg:_bg,_mu:_mu,_bv:_bv,_vi:_vi,_cassM:_cassM});
   });
@@ -548,12 +556,12 @@ function loadAndRender(wR,wA,wP){
     var capCorrR=null,posCapR=[];
     righeRil.forEach(function(r){
       if(r.tipo==='cap_inizio'){capCorrR=r.data;posCapR=[];h+='<tr style="background:#1a1a2e"><td colspan="30" style="color:#a5b4fc;font-weight:700;font-size:9px;padding:4px 8px;letter-spacing:1px;">\u2550\u2550 '+esc(r.data.titolo)+' \u2550\u2550</td></tr>';return;}
-      if(r.tipo==='cap_fine'){var nP=posCapR.length;h+='<tr style="background:#eef2ff"><td colspan="30" style="color:#3730a3;font-size:8px;font-weight:600;padding:3px 8px;">Subtotale \u2014 '+esc(capCorrR?capCorrR.titolo:'')+': <b>'+nP+'</b> pos.</td></tr>';h+='<tr style="background:#f5f5ff"><td colspan="30" style="color:#9ca3af;font-size:7.5px;padding:2px 8px;">\u2500\u2500 Fine: '+esc(r.data.titolo)+' \u2500\u2500</td></tr>';capCorrR=null;posCapR=[];return;}
+      if(r.tipo==='cap_fine'){var nP=posCapR.length;h+='<tr style="background:#eef2ff"><td colspan="30" style="color:#3730a3;font-size:8px;font-weight:600;padding:3px 8px;">Subtotale \u2014 '+esc(capCorrR?capCorrR.titolo:'')+': <b>'+nP+'</b> pos.</td></tr>';h+='<tr style="background:#f5f5ff"><td colspan="30" style="color:#9ca3af;font-size:7.5px;padding:2px 8px;">\u2500\u2500\u2500 Fine: '+esc(r.data.titolo)+' \u2500\u2500\u2500</td></tr>';capCorrR=null;posCapR=[];return;}
       var p=r.data;if(capCorrR)posCapR.push(p);
       var piano=(p.piano!==undefined&&p.piano!==null)?('P'+(parseInt(p.piano)>=0?'+':'')+p.piano):'—';
       var Lt=p._t?Math.round(p._t.Lt):null,Ht=p._t?Math.round(p._t.Ht):null;
       h+='<tr>';
-      h+='<td class="num">'+esc(String(numPos(p)))+'</td><td class="c">'+piano+'</td><td style="white-space:normal;min-width:50px">'+esc(v(p.ambiente))+'</td><td class="tipo-cell">'+esc(v(p.tipo_serramento))+'</td>';
+      h+='<td class="num">'+esc(String(numPos(p)))+(p.solo_accessori?'<br><span style="font-size:7px;background:#fee2e2;color:#b91c1c;padding:0 3px;border-radius:2px;font-weight:700;">ACC</span>':'')+'</td><td class="c">'+piano+'</td><td style="white-space:normal;min-width:50px">'+esc(v(p.ambiente))+'</td><td class="tipo-cell">'+esc(v(p.tipo_serramento))+'</td>';
       h+='<td class="c gsep">'+esc(v(p.n_campi))+'</td><td class="c">'+esc(v(p.materiale))+'</td><td style="min-width:40px">'+esc(v(p.sistema))+'</td><td class="c">'+esc(v(p.stile_design))+(p.variante_telaio?'/'+esc(v(p.variante_telaio)):'')+'</td>';
       h+='<td class="c gsep">'+esc(v(p.tipo_foro))+'</td>';
       h+='<td class="dim-c"><div class="dm">'+v(p.L_mm||p.l_mm||'—')+'</div>'+(Lt?'<div class="dc">('+Lt+')</div>':'')+'</td>';
@@ -644,7 +652,7 @@ function loadAndRender(wR,wA,wP){
     return '<div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;margin:4px 0 14px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">'+
       '<span style="font-weight:700;color:#3730a3;font-size:.78rem;">Subtotale '+esc(titolo)+'</span>'+
       cs(nCI,'CopI')+cs(nCE,'CopE')+cs(nAvv,'Avv')+cs(nScur,'Scur')+cs(nCtlL,'CTL-L')+cs(nCtlT,'TC')+
-      '<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 7px;font-size:9px;font-weight:600;">Posa: '+n2(tLin)+' m</span></div>';
+      '<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 7px;font-size:9px;font-weight:600;">Posa: '+n2(tLin)+' m lin.</span></div>';
   }
 
   // ── SEZIONE POSA ──

@@ -1118,7 +1118,44 @@ function buildFormulaHTML(){
     else if(tf==='D'){var Ltub=L+2*aletta,Htub=H+nAlH*aletta;html+='<div class="f-sep"></div><span class="f-res">L_tub = '+Math.round(Ltub)+' mm &nbsp; H_tub = '+Math.round(Htub)+' mm</span>';}
     else if(tf==='P'){var Ltub=L-2*at+2*aletta,Htub=H-atv+nAlH*aletta;html+='<div class="f-sep"></div><span class="f-note">ARIA2orizz='+at+' ARIA52vert='+atv+'</span><br><span class="f-res">L_tub = '+Math.round(Ltub)+' mm &nbsp; H_tub = '+Math.round(Htub)+' mm</span>';}
   } else {
-    html+='<span class="f-note">Telaio misto &mdash; calcolo per lato.</span>';
+    // Telaio misto — mostra parametri per lato + risultato
+    var recFA=dGetRecVar(document.getElementById('dVarAlto').value);
+    var recFB=dGetRecVar(document.getElementById('dVarBasso').value);
+    var recFS=dGetRecVar(document.getElementById('dVarSx').value);
+    var recFD=dGetRecVar(document.getElementById('dVarDx').value);
+    var vA=document.getElementById('dVarAlto').value||'?';
+    var vB=document.getElementById('dVarBasso').value||'?';
+    var vS=document.getElementById('dVarSx').value||'?';
+    var vD=document.getElementById('dVarDx').value||'?';
+    html+='<div class="f-title">Tipo foro '+tf+' &mdash; '+(tfLabel[tf]||tf)+' &mdash; Telaio misto per lato</div>';
+    var fR=function(r,lbl,sigla){
+      if(!r)return'<span style="color:#f87171;">'+lbl+' ('+sigla+'): record non trovato</span><br>';
+      return'<span class="f-sym">'+lbl+' ('+sigla+'): </span>'+
+        '<span class="f-sub">Nasc='+( parseFloat(r.telaio_nascosto_mm)||0)+'</span>'+
+        '<span class="f-sym"> Aletta=</span><span class="f-sub">'+(parseFloat(r.aletta_mm)||0)+'</span>'+
+        (tf==='P'?'<span class="f-sym"> Vista=</span><span class="f-sub">'+(parseFloat(r.telaio_vista_mm)||0)+'</span>':'')+'<br>';
+    };
+    html+=fR(recFA,'\u2191 Alto',vA)+fR(recFB,'\u2193 Basso',vB)+fR(recFS,'\u2190 Sx',vS)+fR(recFD,'\u2192 Dx',vD);
+    if(recFA&&recFS&&recFD){
+      var nA=parseFloat((recFA||{}).telaio_nascosto_mm)||0,nS=parseFloat((recFS||{}).telaio_nascosto_mm)||0,nD=parseFloat((recFD||{}).telaio_nascosto_mm)||0;
+      var aA=parseFloat((recFA||{}).aletta_mm)||0,aB=parseFloat((recFB||{}).aletta_mm)||0,aS=parseFloat((recFS||{}).aletta_mm)||0,aD=parseFloat((recFD||{}).aletta_mm)||0;
+      var tvA=parseFloat((recFA||{}).telaio_vista_mm)||0,tvS=parseFloat((recFS||{}).telaio_vista_mm)||0,tvD=parseFloat((recFD||{}).telaio_vista_mm)||0;
+      var inclBasso=(ts==='F'||ts==='FF');
+      var Ltub=0,Htub=0;
+      if(tf==='A'){Ltub=L+nS+nD+aS+aD;Htub=H+nA+aA+(inclBasso?aB:0);
+        html+='<div class="f-sep"></div>'+
+          '<span class="f-sym">L_tub = L+nS+nD+aS+aD = '+L+'+'+nS+'+'+nD+'+'+aS+'+'+aD+' = </span><span class="f-res">'+Math.round(Ltub)+' mm</span><br>'+
+          '<span class="f-sym">H_tub = H+nA+aA'+(inclBasso?'+aB':'')+" = "+H+'+'+nA+'+'+aA+(inclBasso?'+'+aB:'')+' = </span><span class="f-res">'+Math.round(Htub)+' mm</span>';
+      }else if(tf==='D'){Ltub=L+aS+aD;Htub=H+aA+(inclBasso?aB:0);
+        html+='<div class="f-sep"></div>'+
+          '<span class="f-sym">L_tub = L+aS+aD = '+L+'+'+aS+'+'+aD+' = </span><span class="f-res">'+Math.round(Ltub)+' mm</span><br>'+
+          '<span class="f-sym">H_tub = H+aA'+(inclBasso?'+aB':'')+" = "+H+'+'+aA+(inclBasso?'+'+aB:'')+' = </span><span class="f-res">'+Math.round(Htub)+' mm</span>';
+      }else if(tf==='P'){Ltub=L-tvS-tvD+aS+aD;Htub=H-tvA+aA+(inclBasso?aB:0);
+        html+='<div class="f-sep"></div>'+
+          '<span class="f-sym">L_tub = L-tvS-tvD+aS+aD = '+L+'-'+tvS+'-'+tvD+'+'+aS+'+'+aD+' = </span><span class="f-res">'+Math.round(Ltub)+' mm</span><br>'+
+          '<span class="f-sym">H_tub = H-tvA+aA'+(inclBasso?'+aB':'')+" = "+H+'-'+tvA+'+'+aA+(inclBasso?'+'+aB:'')+' = </span><span class="f-res">'+Math.round(Htub)+' mm</span>';
+      }
+    } else { html+='<span class="f-note">Seleziona le varianti telaio per tutti e 4 i lati per vedere il calcolo.</span>'; }
   }
   return html;
 }

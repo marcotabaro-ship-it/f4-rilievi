@@ -582,6 +582,69 @@ function loadAndRender(wR,wA,wP){
   if(wA){
     var h='';
     h+=mkHdr('Report Accessori');
+    // --- Riepilogo posizioni (identico a report_acc) ---
+    h+='<div class="sez-title">&#128203; Riepilogo posizioni ('+posCalc.length+')</div>';
+    h+='<div class="tbl-outer"><table class="t-c"><thead>'+
+      '<tr class="th-group">'+
+        '<th colspan="4">IDENTIFICAZIONE</th>'+
+        '<th colspan="4" class="gsep">SERRAMENTO</th>'+
+        '<th colspan="3" class="gsep">GEOMETRIA</th>'+
+        '<th colspan="2" class="gsep">VETRO/OSC</th>'+
+        '<th colspan="4" class="gsep">COPRIFILI</th>'+
+        '<th colspan="4" class="gsep">ACCESSORI</th>'+
+        '<th colspan="4" class="gsep">RIM./FLAG</th>'+
+        '<th class="gsep">SENSI</th>'+
+      '</tr>'+
+      '<tr class="th-m">'+
+        '<th>N&deg;</th><th>Piano</th><th>Ambiente</th><th>Tipo</th>'+
+        '<th class="gsep">N.C.</th><th>MAT</th><th>Sistema</th><th>STL/TEL</th>'+
+        '<th class="gsep">FORO</th><th>L (mm)</th><th>H (mm)</th>'+
+        '<th class="gsep">VETRO</th><th>OSC</th>'+
+        '<th class="gsep">COPR.I</th><th>dim</th><th>COPR.E</th><th>dim</th>'+
+        '<th class="gsep">CASS</th><th>SCHERM</th><th>ZANZ</th><th>CTL</th>'+
+        '<th class="gsep">DIN</th><th>ANG</th><th>RIM.S</th><th>RIM.A</th>'+
+        '<th class="gsep">TAGLIO</th><th>SENSI</th>'+
+      '</tr></thead><tbody>';
+    posCalc.forEach(function(p){
+      var piano=(p.piano!==undefined&&p.piano!==null)?('P'+(parseInt(p.piano)>=0?'+':'')+p.piano):'—';
+      var Lt=p._t?Math.round(p._t.Lt):null,Ht=p._t?Math.round(p._t.Ht):null;
+      var varStr=p.telaio_misto?('<span style="color:#4f46e5;font-size:8px;font-weight:700;">Su('+esc(v(p.variante_alto))+') Giu('+esc(v(p.variante_basso))+') Sx('+esc(v(p.variante_sx))+') Dx('+esc(v(p.variante_dx))+')</span>'):esc(v(p.variante_telaio));
+      var sistStr=p.solo_accessori?'<span style="color:#92400e;font-size:8px;">—</span>':(esc(v(p.sistema))+(p.stile_design?'<br><span style="font-size:8px;color:#6b7280;">'+esc(v(p.stile_design))+'</span>':''));
+      h+='<tr>'+
+        '<td class="num">'+esc(String(numPos(p)))+(p.solo_accessori?'<br><span style="font-size:7px;background:#fef3c7;color:#92400e;border-radius:3px;padding:0 3px;font-weight:700;">ACC</span>':'')+
+        '</td>'+
+        '<td class="c">'+piano+'</td>'+
+        '<td style="white-space:normal;min-width:40px">'+esc(v(p.ambiente))+'</td>'+
+        '<td class="tipo-cell">'+esc(v(p.tipo_serramento)||'ACC')+'</td>'+
+        '<td class="c gsep">'+esc(v(p.n_campi))+'</td>'+
+        '<td class="c">'+esc(v(p.materiale))+'</td>'+
+        '<td style="min-width:35px;font-size:9px;">'+sistStr+'</td>'+
+        '<td class="c" style="font-size:9px;">'+varStr+'</td>'+
+        '<td class="c gsep">'+esc(v(p.tipo_foro))+'</td>'+
+        '<td class="dim-c"><div class="dm">'+(p.L_mm||p.l_mm||'—')+'</div>'+(Lt?'<div class="dc">('+Lt+')</div>':'')+
+        '</td>'+
+        '<td class="dim-c"><div class="dm">'+(p.H_mm||p.h_mm||'—')+'</div>'+(Ht?'<div class="dc">('+Ht+')</div>':'')+
+        '</td>'+
+        '<td class="c gsep">'+esc(v(p.n_vetri))+'</td>'+
+        '<td class="c">'+esc(v(p.oscurante_tipo))+'</td>'+
+        '<td class="c gsep">'+esc(v(p.coprifilo_int_mat))+'</td>'+
+        '<td class="c">'+esc(v(p.coprifilo_int_dim))+'</td>'+
+        '<td class="c">'+esc(v(p.coprifilo_est_mat))+'</td>'+
+        '<td class="c">'+esc(v(p.coprifilo_est_dim))+'</td>'+
+        '<td class="c gsep">'+esc(v(p.cassonetto))+'</td>'+
+        '<td class="c">'+esc(v(p.schermatura))+'</td>'+
+        '<td class="c">'+esc(v(p.zanzariera))+'</td>'+
+        '<td class="c">'+esc(v(p.controtelaio))+'</td>'+
+        '<td class="c gsep">'+esc(v(p.dinoxill))+'</td>'+
+        '<td class="c">'+(p.angolari_pvc?'<span class="chk on"></span>':'<span class="chk"></span>')+'</td>'+
+        '<td class="c">'+(p.rimozione==='SI'||p.rimozione===true?'<span class="chk on"></span>':'<span class="chk"></span>')+'</td>'+
+        '<td class="c">'+(p.rimozione_accessori===true?'<span class="chk on"></span>':'<span class="chk"></span>')+'</td>'+
+        '<td class="c gsep">'+(p.taglio_marmo===true?'<span class="chk on"></span>':'<span class="chk"></span>')+'</td>'+
+        '<td style="font-size:9px;">'+esc(v(p.senso_apertura))+'</td>'+
+        '</tr>';
+    });
+    h+='</tbody></table></div>';
+    // --- fine riepilogo ---
     function mkG(tit,img,tot,subs){
       var g='<div class="acc-g"><div class="acc-gh">';
       if(img)g+='<img class="acc-gimg" src="'+esc(img)+'" alt="" onerror="this.style.display=\'none\'">';

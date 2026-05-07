@@ -1,7 +1,7 @@
 // ================================================================
 // FILE: js/api.js — PARTE 1/2
 // PROGETTO: F4 Rilievi — Frontend GitHub Pages
-// VERSIONE: 2.2 (aggiunto solo_accessori)
+// VERSIONE: 2.1 (aggiunta allarme + note_commerciali)
 // ================================================================
 
 const _sb = {
@@ -544,7 +544,6 @@ const API = {
     catch(e) { return this._err(e); }
   },
   async getRilievi(idCantiere) { return this.getRilieviCantiere(idCantiere); },
-
   // ================================================================
   // CAPITOLI
   // ================================================================
@@ -577,13 +576,17 @@ const API = {
   },
 
   async updateCapitoloTitolo(id, titolo) {
-    try { await _sb.patch('capitoli_rilievo', { id: 'eq.' + id }, { titolo: titolo }); return this._ok(null); }
-    catch(e) { return this._err(e); }
+    try {
+      await _sb.patch('capitoli_rilievo', { id: 'eq.' + id }, { titolo: titolo });
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
   },
 
   async updateCapitoloOrdini(id, ordineInizio, ordineFine) {
-    try { await _sb.patch('capitoli_rilievo', { id: 'eq.' + id }, { ordine_inizio: ordineInizio, ordine_fine: ordineFine }); return this._ok(null); }
-    catch(e) { return this._err(e); }
+    try {
+      await _sb.patch('capitoli_rilievo', { id: 'eq.' + id }, { ordine_inizio: ordineInizio, ordine_fine: ordineFine });
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
   },
 
   async deleteCapitolo(id) {
@@ -692,15 +695,27 @@ const API = {
   },
 
   async checkVersionePosa(idRilievo) {
-    var res = await this.checkVersionePosaRilievo(idRilievo);
-    if (res.success) res.aggiornamentoDisponibile = res.data && res.data.aggiornamento;
-    return res;
+    try {
+      const rilRows = await _sb.get('rilievi', { id: 'eq.' + idRilievo, select: 'versione_posa,tipo' });
+      if (!rilRows || !rilRows.length) throw new Error('Rilievo non trovato.');
+      const ril = rilRows[0];
+      const tablePosa = ril.tipo === 'SERR' ? 'dati_posa_serr' : 'dati_posa_porte';
+      const posRows = await _sb.get(tablePosa, { stato: 'eq.attivo', order: 'versione.desc', limit: '1', select: 'versione' });
+      const curVer = posRows && posRows[0] ? parseInt(posRows[0].versione) : 1;
+      return { success: true, aggiornamentoDisponibile: parseInt(ril.versione_posa) < curVer, versioneAttuale: curVer };
+    } catch(e) { return this._err(e); }
   },
 
   async aggiornaVersionePosa(idRilievo) {
-    var revRes = await this.getNumRevisioneCorrente();
-    var numRev = revRes.success ? revRes.data : 1;
-    return this.salvaVersionePosaRilievo(idRilievo, numRev);
+    try {
+      const rilRows = await _sb.get('rilievi', { id: 'eq.' + idRilievo, select: 'tipo' });
+      if (!rilRows || !rilRows.length) throw new Error('Rilievo non trovato.');
+      const tablePosa = rilRows[0].tipo === 'SERR' ? 'dati_posa_serr' : 'dati_posa_porte';
+      const posRows = await _sb.get(tablePosa, { stato: 'eq.attivo', order: 'versione.desc', limit: '1', select: 'versione' });
+      const curVer = posRows && posRows[0] ? parseInt(posRows[0].versione) : 1;
+      await _sb.patch('rilievi', { id: 'eq.' + idRilievo }, { versione_posa: curVer });
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
   }
 };
 
@@ -858,47 +873,79 @@ Object.assign(API, {
   },
 
   async getDbSerramento() {
-    try { var rows = await _sb.get('db_serramento', { stato: 'eq.attivo', order: 'codice.asc', select: '*' }); return this._ok(rows || []); }
-    catch(e) { return this._err(e); }
+    try {
+      var rows = await _sb.get('db_serramento', { stato: 'eq.attivo', order: 'codice.asc', select: '*' });
+      return this._ok(rows || []);
+    } catch(e) { return this._err(e); }
   },
 
   async getDbPorte() {
-    try { var rows = await _sb.get('db_porte', { stato: 'eq.attivo', order: 'fornitore.asc,codice.asc', select: '*' }); return this._ok(rows || []); }
-    catch(e) { return this._err(e); }
+    try {
+      var rows = await _sb.get('db_porte', { stato: 'eq.attivo', order: 'fornitore.asc,codice.asc', select: '*' });
+      return this._ok(rows || []);
+    } catch(e) { return this._err(e); }
   },
 
   async adminGetDbSerramento() {
-    try { var rows = await _sb.get('db_serramento', { order: 'codice.asc', select: '*' }); return this._ok(rows || []); }
-    catch(e) { return this._err(e); }
+    try {
+      var rows = await _sb.get('db_serramento', { order: 'codice.asc', select: '*' });
+      return this._ok(rows || []);
+    } catch(e) { return this._err(e); }
   },
+
   async adminAddDbSerramento(data) {
-    try { var rows = await _sb.post('db_serramento', Object.assign({}, data, { stato: 'attivo' })); return this._ok(rows[0] || null); }
-    catch(e) { return this._err(e); }
+    try {
+      var rows = await _sb.post('db_serramento', Object.assign({}, data, { stato: 'attivo' }));
+      return this._ok(rows[0] || null);
+    } catch(e) { return this._err(e); }
   },
+
   async adminUpdateDbSerramento(id, data) {
-    try { await _sb.patch('db_serramento', { id: 'eq.' + id }, data); return this._ok(null); }
-    catch(e) { return this._err(e); }
+    try {
+      await _sb.patch('db_serramento', { id: 'eq.' + id }, data);
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
   },
+
   async adminToggleDbSerramento(id) {
-    try { var rows = await _sb.get('db_serramento', { id: 'eq.' + id, select: 'stato' }); if (!rows || !rows.length) throw new Error('Record non trovato.'); var nuovoStato = rows[0].stato === 'attivo' ? 'disattivo' : 'attivo'; await _sb.patch('db_serramento', { id: 'eq.' + id }, { stato: nuovoStato }); return this._ok({ stato: nuovoStato }); }
-    catch(e) { return this._err(e); }
+    try {
+      var rows = await _sb.get('db_serramento', { id: 'eq.' + id, select: 'stato' });
+      if (!rows || !rows.length) throw new Error('Record non trovato.');
+      var nuovoStato = rows[0].stato === 'attivo' ? 'disattivo' : 'attivo';
+      await _sb.patch('db_serramento', { id: 'eq.' + id }, { stato: nuovoStato });
+      return this._ok({ stato: nuovoStato });
+    } catch(e) { return this._err(e); }
   },
 
   async adminGetDbPorte() {
-    try { var rows = await _sb.get('db_porte', { order: 'fornitore.asc,codice.asc', select: '*' }); return this._ok(rows || []); }
-    catch(e) { return this._err(e); }
+    try {
+      var rows = await _sb.get('db_porte', { order: 'fornitore.asc,codice.asc', select: '*' });
+      return this._ok(rows || []);
+    } catch(e) { return this._err(e); }
   },
+
   async adminAddDbPorte(data) {
-    try { var rows = await _sb.post('db_porte', Object.assign({}, data, { stato: 'attivo' })); return this._ok(rows[0] || null); }
-    catch(e) { return this._err(e); }
+    try {
+      var rows = await _sb.post('db_porte', Object.assign({}, data, { stato: 'attivo' }));
+      return this._ok(rows[0] || null);
+    } catch(e) { return this._err(e); }
   },
+
   async adminUpdateDbPorte(id, data) {
-    try { await _sb.patch('db_porte', { id: 'eq.' + id }, data); return this._ok(null); }
-    catch(e) { return this._err(e); }
+    try {
+      await _sb.patch('db_porte', { id: 'eq.' + id }, data);
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
   },
+
   async adminToggleDbPorte(id) {
-    try { var rows = await _sb.get('db_porte', { id: 'eq.' + id, select: 'stato' }); if (!rows || !rows.length) throw new Error('Record non trovato.'); var nuovoStato = rows[0].stato === 'attivo' ? 'disattivo' : 'attivo'; await _sb.patch('db_porte', { id: 'eq.' + id }, { stato: nuovoStato }); return this._ok({ stato: nuovoStato }); }
-    catch(e) { return this._err(e); }
+    try {
+      var rows = await _sb.get('db_porte', { id: 'eq.' + id, select: 'stato' });
+      if (!rows || !rows.length) throw new Error('Record non trovato.');
+      var nuovoStato = rows[0].stato === 'attivo' ? 'disattivo' : 'attivo';
+      await _sb.patch('db_porte', { id: 'eq.' + id }, { stato: nuovoStato });
+      return this._ok({ stato: nuovoStato });
+    } catch(e) { return this._err(e); }
   },
 
   async getInitData(idRilievo) {
@@ -936,7 +983,6 @@ Object.assign(API, {
     try { const rows = await _sb.get('utenti', { order: 'nome.asc', select: '*' }); return this._ok(rows || []); }
     catch(e) { return this._err(e); }
   },
-
   async getDatiComuniPosa(tipo) {
     try {
       var params = { stato: 'eq.attivo', order: 'codice.asc,piano.asc,n_campi.asc,sistema.asc', select: '*' };
@@ -945,24 +991,40 @@ Object.assign(API, {
       return this._ok(rows || []);
     } catch(e) { return this._err(e); }
   },
-  async adminGetPosa(tipo) { return this.getDatiComuniPosa(tipo); },
+
+  async adminGetPosa(tipo) {
+    return this.getDatiComuniPosa(tipo);
+  },
+
   async adminUpdatePosa(id, data) {
-    try { var patch = Object.assign({}, data, { updated_at: new Date().toISOString() }); await _sb.patch('dati_comuni_posa', { id: 'eq.' + id }, patch); return this._ok(null); }
-    catch(e) { return this._err(e); }
+    try {
+      var patch = Object.assign({}, data, { updated_at: new Date().toISOString() });
+      await _sb.patch('dati_comuni_posa', { id: 'eq.' + id }, patch);
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
   },
 
   async getRevisioni() {
-    try { var rows = await _sb.get('revisioni_parametri', { stato: 'eq.attivo', order: 'numero_revisione.desc', select: 'id,numero_revisione,tipo,data_revisione,autore_nome,note,created_at' }); return this._ok(rows || []); }
-    catch(e) { return this._err(e); }
+    try {
+      var rows = await _sb.get('revisioni_parametri', { stato: 'eq.attivo', order: 'numero_revisione.desc', select: 'id,numero_revisione,tipo,data_revisione,autore_nome,note,created_at' });
+      return this._ok(rows || []);
+    } catch(e) { return this._err(e); }
   },
+
   async getRevisioneDettaglio(id) {
-    try { var rows = await _sb.get('revisioni_parametri', { id: 'eq.' + id, select: '*' }); return rows && rows.length ? this._ok(rows[0]) : this._err({ message: 'Revisione non trovata.' }); }
-    catch(e) { return this._err(e); }
+    try {
+      var rows = await _sb.get('revisioni_parametri', { id: 'eq.' + id, select: '*' });
+      return rows && rows.length ? this._ok(rows[0]) : this._err({ message: 'Revisione non trovata.' });
+    } catch(e) { return this._err(e); }
   },
+
   async getNumRevisioneCorrente() {
-    try { var rows = await _sb.get('revisioni_parametri', { stato: 'eq.attivo', order: 'numero_revisione.desc', limit: '1', select: 'numero_revisione' }); return this._ok(rows && rows.length ? rows[0].numero_revisione : 0); }
-    catch(e) { return this._err(e); }
+    try {
+      var rows = await _sb.get('revisioni_parametri', { stato: 'eq.attivo', order: 'numero_revisione.desc', limit: '1', select: 'numero_revisione' });
+      return this._ok(rows && rows.length ? rows[0].numero_revisione : 0);
+    } catch(e) { return this._err(e); }
   },
+
   async adminGetDatiComuniSerr() {
     try { var rows = await _sb.get('dati_comuni_serr', { stato: 'eq.attivo', order: 'id.asc', select: '*' }); return this._ok(rows||[]); } catch(e) { return this._err(e); }
   },
@@ -982,7 +1044,12 @@ Object.assign(API, {
       var snapLati = await _sb.get('regole_lati', { order: 'sigla.asc', select: '*' });
       var revRows = await _sb.get('revisioni_parametri', { stato: 'eq.attivo', order: 'numero_revisione.desc', limit: '1', select: 'numero_revisione' });
       var numRev = revRows && revRows.length ? revRows[0].numero_revisione + 1 : 1;
-      var revData = { numero_revisione: numRev, tipo: 'TECNICO', autore_id: user ? user.id : null, autore_nome: user ? user.nome : 'Sistema', note: (note||'').trim()||null, snapshot_tecnico: { dati_comuni_serr: snapSerr||[], regole_lati: snapLati||[] } };
+      var revData = {
+        numero_revisione: numRev, tipo: 'TECNICO',
+        autore_id: user ? user.id : null, autore_nome: user ? user.nome : 'Sistema',
+        note: (note||'').trim()||null,
+        snapshot_tecnico: { dati_comuni_serr: snapSerr||[], regole_lati: snapLati||[] }
+      };
       var inserted = await _sb.post('revisioni_parametri', revData);
       return this._ok({ numero_revisione: numRev, id: inserted[0] ? inserted[0].id : null });
     } catch(e) { return this._err(e); }
@@ -1002,11 +1069,32 @@ Object.assign(API, {
       var allRows = await _sb.get('dati_comuni_posa', { stato: 'eq.attivo', order: 'tipo.asc,codice.asc,piano.asc,n_campi.asc,sistema.asc', select: '*' });
       var revRows = await _sb.get('revisioni_parametri', { stato: 'eq.attivo', order: 'numero_revisione.desc', limit: '1', select: 'numero_revisione' });
       var numRev = revRows && revRows.length ? revRows[0].numero_revisione + 1 : 1;
-      var revData = { numero_revisione: numRev, tipo: 'COMPLETO', autore_id: user ? user.id : null, autore_nome: user ? user.nome : 'Sistema', note: (note || '').trim() || null, snapshot_posa: allRows || [] };
+      var revData = {
+        numero_revisione: numRev,
+        tipo: 'COMPLETO',
+        autore_id: user ? user.id : null,
+        autore_nome: user ? user.nome : 'Sistema',
+        note: (note || '').trim() || null,
+        snapshot_posa: allRows || []
+      };
       var inserted = await _sb.post('revisioni_parametri', revData);
       return this._ok({ numero_revisione: numRev, id: inserted[0] ? inserted[0].id : null });
     } catch(e) { return this._err(e); }
   },
+
+  async checkVersionePosa(idRilievo) {
+    var res = await this.checkVersionePosaRilievo(idRilievo);
+    if (res.success) res.aggiornamentoDisponibile = res.data && res.data.aggiornamento;
+    return res;
+  },
+
+  async aggiornaVersionePosa(idRilievo) {
+    var revRes = await this.getNumRevisioneCorrente();
+    var numRev = revRes.success ? revRes.data : 1;
+    return this.salvaVersionePosaRilievo(idRilievo, numRev);
+  },
+
+  async adminNuovaVersionePosa(tipo, n) { return this._ok(null); },
 
   async checkVersionePosaRilievo(idRilievo) {
     try {
@@ -1019,10 +1107,11 @@ Object.assign(API, {
   },
 
   async salvaVersionePosaRilievo(idRilievo, numRev) {
-    try { await _sb.patch('rilievi', { id: 'eq.' + idRilievo }, { versione_posa_num: numRev }); return this._ok(null); }
-    catch(e) { return this._err(e); }
+    try {
+      await _sb.patch('rilievi', { id: 'eq.' + idRilievo }, { versione_posa_num: numRev });
+      return this._ok(null);
+    } catch(e) { return this._err(e); }
   },
-
   async adminGetDatiComuni() {
     try { const rows = await _sb.get('dati_comuni_serr', { order: 'id.asc', select: '*' }); return this._ok(rows || []); }
     catch(e) { return this._err(e); }
@@ -1038,7 +1127,5 @@ Object.assign(API, {
   async adminUpdateRegoleLati(sigla, data) {
     try { const user = Auth.getUser(); await _sb.patch('regole_lati', { sigla: 'eq.' + sigla }, Object.assign({}, data, { updated_by: user ? user.id : null })); return this._ok(null); }
     catch(e) { return this._err(e); }
-  },
-
-  async adminNuovaVersionePosa(tipo, n) { return this._ok(null); }
+  }
 });

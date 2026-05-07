@@ -321,7 +321,6 @@ function pianoKey(p){var n=parseInt(p,10);if(isNaN(n))return'0';return String(Ma
 function posSerrH(piano,nc){var key=pianoKey(piano);var lookup=POS_SERR[key];if(!lookup)return 0.5;return lookup[Math.min(Math.max((parseInt(nc)||1)-1,0),4)]||0.5;}
 function posCtlH(piano){return POS_CTL[pianoKey(piano)]||0.5;}
 
-// FIX solo_accessori: esclude le posizioni solo_accessori dai conteggi tipo serramento e posizionamento
 function calcolaVoci(pos){
   var nT=pos.length,nCL=0,nCT=0,nRim=0,nRA=0,nMar=0,nAng=0,nI=0,nF=0,nPF=0,nFF=0,nVF=0,nS=0;
   var nAv=0,nSc=0,nTe=0,nFr=0,nCas=0,nZan=0,nCI=0,nCE=0,nSS=0,nSA=0,nDA=0,nIM=0;
@@ -332,7 +331,6 @@ function calcolaVoci(pos){
     if(p.rimozione==='SI'||p.rimozione===true){nRim++;nSS++;}
     if(p.rimozione_accessori===true){nRA++;nSA++;}
     if(p.taglio_marmo===true)nMar++;if(p.angolari_pvc===true)nAng++;
-    // solo_accessori: non conta come tipo serramento, non contribuisce a posizionamento serramento
     var ts=(p.tipo_serramento||'').toUpperCase();
     if(!p.solo_accessori){if(ts==='I')nI++;else if(ts==='F')nF++;else if(ts==='PF')nPF++;else if(ts==='FF')nFF++;else if(ts==='VF')nVF++;else if(ts==='S')nS++;}
     var sc=(p.schermatura||'').toUpperCase();
@@ -492,12 +490,11 @@ function loadAndRender(wR,wA,wP){
     return gruppi;
   }
 
-  // FIX solo_accessori: bypass calcTub + azzera materiali posa
   var posCalc=pos.map(function(p){
-    var ts=(p.tipo_serramento||'').toUpperCase();
     var tub;
     if(p.solo_accessori){var _L=parseFloat(p.L_mm||p.l_mm)||0,_H=parseFloat(p.H_mm||p.h_mm)||0;tub=(_L&&_H)?{Lt:_L,Ht:_H,na:0,al:0}:null;}
     else{tub=calcTub(p,db);}
+    var ts=(p.tipo_serramento||'').toUpperCase();
     var _ss=0,_sz=0,_bci=0,_bce=0,_sch=0,_mp=0,_bg=0,_mu=0,_bv=0,_vi=0,_cassM=0;
     if(tub){var Lt=tub.Lt,Ht=tub.Ht,na=tub.na,al=tub.al;
       if(p.schermatura)_ss=supSch(ts,p.schermatura,Lt,Ht,na,al);
@@ -556,12 +553,12 @@ function loadAndRender(wR,wA,wP){
     var capCorrR=null,posCapR=[];
     righeRil.forEach(function(r){
       if(r.tipo==='cap_inizio'){capCorrR=r.data;posCapR=[];h+='<tr style="background:#1a1a2e"><td colspan="30" style="color:#a5b4fc;font-weight:700;font-size:9px;padding:4px 8px;letter-spacing:1px;">\u2550\u2550 '+esc(r.data.titolo)+' \u2550\u2550</td></tr>';return;}
-      if(r.tipo==='cap_fine'){var nP=posCapR.length;h+='<tr style="background:#eef2ff"><td colspan="30" style="color:#3730a3;font-size:8px;font-weight:600;padding:3px 8px;">Subtotale \u2014 '+esc(capCorrR?capCorrR.titolo:'')+': <b>'+nP+'</b> pos.</td></tr>';h+='<tr style="background:#f5f5ff"><td colspan="30" style="color:#9ca3af;font-size:7.5px;padding:2px 8px;">\u2500\u2500\u2500 Fine: '+esc(r.data.titolo)+' \u2500\u2500\u2500</td></tr>';capCorrR=null;posCapR=[];return;}
+      if(r.tipo==='cap_fine'){var nP=posCapR.length;h+='<tr style="background:#eef2ff"><td colspan="30" style="color:#3730a3;font-size:8px;font-weight:600;padding:3px 8px;">Subtotale \u2014 '+esc(capCorrR?capCorrR.titolo:'')+': <b>'+nP+'</b> pos.</td></tr>';h+='<tr style="background:#f5f5ff"><td colspan="30" style="color:#9ca3af;font-size:7.5px;padding:2px 8px;">\u2500\u2500 Fine: '+esc(r.data.titolo)+' \u2500\u2500</td></tr>';capCorrR=null;posCapR=[];return;}
       var p=r.data;if(capCorrR)posCapR.push(p);
       var piano=(p.piano!==undefined&&p.piano!==null)?('P'+(parseInt(p.piano)>=0?'+':'')+p.piano):'—';
       var Lt=p._t?Math.round(p._t.Lt):null,Ht=p._t?Math.round(p._t.Ht):null;
       h+='<tr>';
-      h+='<td class="num">'+esc(String(numPos(p)))+(p.solo_accessori?'<br><span style="font-size:7px;background:#fee2e2;color:#b91c1c;padding:0 3px;border-radius:2px;font-weight:700;">ACC</span>':'')+'</td><td class="c">'+piano+'</td><td style="white-space:normal;min-width:50px">'+esc(v(p.ambiente))+'</td><td class="tipo-cell">'+esc(v(p.tipo_serramento))+'</td>';
+      h+='<td class="num">'+esc(String(numPos(p)))+(p.solo_accessori?'<br><span style="font-size:7px;background:#fef3c7;color:#92400e;border-radius:3px;padding:0 3px;font-weight:700;">ACC</span>':'')+'</td><td class="c">'+piano+'</td><td style="white-space:normal;min-width:50px">'+esc(v(p.ambiente))+'</td><td class="tipo-cell">'+esc(v(p.tipo_serramento)||'ACC')+'</td>';
       h+='<td class="c gsep">'+esc(v(p.n_campi))+'</td><td class="c">'+esc(v(p.materiale))+'</td><td style="min-width:40px">'+esc(v(p.sistema))+'</td><td class="c">'+esc(v(p.stile_design))+(p.variante_telaio?'/'+esc(v(p.variante_telaio)):'')+'</td>';
       h+='<td class="c gsep">'+esc(v(p.tipo_foro))+'</td>';
       h+='<td class="dim-c"><div class="dm">'+v(p.L_mm||p.l_mm||'—')+'</div>'+(Lt?'<div class="dc">('+Lt+')</div>':'')+'</td>';
@@ -652,7 +649,7 @@ function loadAndRender(wR,wA,wP){
     return '<div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;margin:4px 0 14px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">'+
       '<span style="font-weight:700;color:#3730a3;font-size:.78rem;">Subtotale '+esc(titolo)+'</span>'+
       cs(nCI,'CopI')+cs(nCE,'CopE')+cs(nAvv,'Avv')+cs(nScur,'Scur')+cs(nCtlL,'CTL-L')+cs(nCtlT,'TC')+
-      '<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 7px;font-size:9px;font-weight:600;">Posa: '+n2(tLin)+' m lin.</span></div>';
+      '<span style="background:#c7d2fe;color:#1e1b4b;border-radius:8px;padding:1px 7px;font-size:9px;font-weight:600;">Posa: '+n2(tLin)+' m</span></div>';
   }
 
   // ── SEZIONE POSA ──

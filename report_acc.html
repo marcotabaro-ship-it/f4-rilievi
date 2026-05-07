@@ -202,18 +202,37 @@ var C = {
 function numPos(p){ return p.numero_pos_alfa||p.numero_pos; }
 function parseQ(raw){ try{var a=typeof raw==='string'?JSON.parse(raw):raw;if(Array.isArray(a))return a.filter(function(q){return q&&q.lettera;});if(typeof a==='object')return Object.keys(a).map(function(k){return{lettera:k,mm:a[k]};});}catch(e){}return[]; }
 
+// FIX: gestione telaio misto (usa variante_alto/basso/sx/dx) + fallback variante null
 function calcTub(p,db){
   var H=parseFloat(p.H_mm||p.h_mm)||0,L=parseFloat(p.L_mm||p.l_mm)||0;
   var tf=(p.tipo_foro||'').toUpperCase(),ts=(p.tipo_serramento||'').toUpperCase();
   if(!H||!L||!tf) return null;
-  var r=null;
-  for(var i=0;i<db.length;i++){var d=db[i];if(d&&d.materiale===p.materiale&&(d.descrizione===p.sistema||d.sistema===p.sistema)&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio){r=d;break;}}
-  var na=r?(parseFloat(r.telaio_nascosto_mm)||0):0,al=r?(parseFloat(r.aletta_mm)||0):0,tv=r?(parseFloat(r.telaio_vista_mm)||0):0;
-  var nH=(ts==='F'||ts==='FF')?2:1;
-  var Lt=0,Ht=0;
-  if(tf==='A'){Lt=L+2*na+2*al;Ht=H+na+nH*al;}
-  else if(tf==='D'){Lt=L+2*al;Ht=H+nH*al;}
-  else if(tf==='P'){Lt=L-2*tv+2*al;Ht=H-tv+nH*al;}
+  var Lt=0,Ht=0,na=0,al=0;
+  var inclBasso=(ts==='F'||ts==='FF');
+  var nH=inclBasso?2:1;
+  if(p.telaio_misto===true||p.telaio_misto==='true'){
+    function getRm(sigla){if(!sigla)return null;for(var i=0;i<db.length;i++){var d=db[i];if(d&&d.materiale===p.materiale&&(d.descrizione===p.sistema||d.sistema===p.sistema)&&d.stile_design===p.stile_design&&d.variante_telaio===sigla)return d;}return null;}
+    var rA=getRm(p.variante_alto),rB=getRm(p.variante_basso),rS=getRm(p.variante_sx),rD=getRm(p.variante_dx);
+    var nA=rA?(parseFloat(rA.telaio_nascosto_mm)||0):0;
+    var aA=rA?(parseFloat(rA.aletta_mm)||0):0,aB=rB?(parseFloat(rB.aletta_mm)||0):0;
+    var nS=rS?(parseFloat(rS.telaio_nascosto_mm)||0):0,aS=rS?(parseFloat(rS.aletta_mm)||0):0;
+    var nD=rD?(parseFloat(rD.telaio_nascosto_mm)||0):0,aD=rD?(parseFloat(rD.aletta_mm)||0):0;
+    var tvA=rA?(parseFloat(rA.telaio_vista_mm)||0):0;
+    var tvS=rS?(parseFloat(rS.telaio_vista_mm)||0):0,tvD=rD?(parseFloat(rD.telaio_vista_mm)||0):0;
+    if(tf==='A'){Lt=L+nS+nD+aS+aD;Ht=H+nA+aA+(inclBasso?aB:0);}
+    else if(tf==='D'){Lt=L+aS+aD;Ht=H+aA+(inclBasso?aB:0);}
+    else if(tf==='P'){Lt=L-tvS-tvD+aS+aD;Ht=H-tvA+aA+(inclBasso?aB:0);}
+    na=(nA+nS+nD)/3;al=(aA+aB+aS+aD)/4;
+  } else {
+    var r=null;
+    for(var i=0;i<db.length;i++){var d=db[i];if(d&&d.materiale===p.materiale&&(d.descrizione===p.sistema||d.sistema===p.sistema)&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio){r=d;break;}}
+    if(!r){for(var i=0;i<db.length;i++){var d=db[i];if(d&&d.materiale===p.materiale&&(d.descrizione===p.sistema||d.sistema===p.sistema)&&d.stile_design===p.stile_design){r=d;break;}}}
+    na=r?(parseFloat(r.telaio_nascosto_mm)||0):0;al=r?(parseFloat(r.aletta_mm)||0):0;
+    var tv=r?(parseFloat(r.telaio_vista_mm)||0):0;
+    if(tf==='A'){Lt=L+2*na+2*al;Ht=H+na+nH*al;}
+    else if(tf==='D'){Lt=L+2*al;Ht=H+nH*al;}
+    else if(tf==='P'){Lt=L-2*tv+2*al;Ht=H-tv+nH*al;}
+  }
   return {Lt:Lt,Ht:Ht,na:na,al:al};
 }
 

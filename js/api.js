@@ -815,7 +815,7 @@ Object.assign(API, {
     } catch(e) { return this._err(e); }
   },
   async updatePosizioneSerr(id, data) {
-    try { const patch = _in.posSerr(data); delete patch.id_rilievo; delete patch.numero_pos; await _sb.patch('posizioni_serr', { id: 'eq.' + id }, patch); return this._ok(null); }
+    try { const patch = _in.posSerr(data); delete patch.id_rilievo; delete patch.numero_pos; delete patch.ordine; delete patch.id_capitolo; await _sb.patch('posizioni_serr', { id: 'eq.' + id }, patch); return this._ok(null); }
     catch(e) { return this._err(e); }
   },
   async deletePosizioneSerr(id) {

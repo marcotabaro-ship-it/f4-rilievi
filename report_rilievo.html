@@ -249,27 +249,39 @@ function esc(s) { if (!s && s !== 0) return ''; return String(s).replace(/&/g,'&
 function v(x) { return (!x && x !== 0) ? '' : String(x); }
 function chk(val) { return val ? '<span class="chk on"></span>' : '<span class="chk"></span>'; }
 
-// ---- Calcolo tubolare — PATCH solo_accessori ----
+// ---- Calcolo tubolare — con solo_accessori e telaio_misto ----
 function calcDim(p, dc, dbSerr) {
   var H = parseFloat(p.h_mm||p.H_mm)||0, L = parseFloat(p.l_mm||p.L_mm)||0;
   var tf = (p.tipo_foro||'').toUpperCase(), ts = (p.tipo_serramento||'').toUpperCase();
-  var ctl = (p.controtelaio||'').toUpperCase();
   if(p.solo_accessori){return{Ltub:Math.round(L),Htub:Math.round(H)};}
   if (!H||!L||!tf) return {Ltub:0,Htub:0};
-  var rec = null;
-  for (var i=0; i<dbSerr.length; i++) {
-    var d = dbSerr[i];
-    if (d && d.materiale===p.materiale && (d.descrizione===p.sistema||d.sistema===p.sistema) && d.stile_design===p.stile_design && d.variante_telaio===p.variante_telaio) { rec=d; break; }
-  }
-  var nasc = rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
-  var alet = rec?(parseFloat(rec.aletta_mm)||0):0;
-  var tv = rec?(parseFloat(rec.telaio_vista_mm)||0):0;
-  var nAlH = (ts==='F'||ts==='FF')?2:1;
   var Ltub=0, Htub=0;
-  if (tf==='A'){Ltub=L+2*nasc+2*alet; Htub=H+nasc+nAlH*alet;}
-  else if (tf==='D'){Ltub=L+2*alet; Htub=H+nAlH*alet;}
-  else if (tf==='P'){Ltub=L-2*tv+2*alet; Htub=H-tv+nAlH*alet;}
-  return {Ltub:Math.round(Ltub), Htub:Math.round(Htub)};
+  var inclBasso=(ts==='F'||ts==='FF');
+  var nAlH=inclBasso?2:1;
+  if(p.telaio_misto===true||p.telaio_misto==='true'){
+    function getRM(sigla){if(!sigla)return null;for(var i=0;i<dbSerr.length;i++){var d=dbSerr[i];if(d&&d.materiale===p.materiale&&(d.descrizione===p.sistema||d.sistema===p.sistema)&&d.stile_design===p.stile_design&&d.variante_telaio===sigla)return d;}return null;}
+    var rA=getRM(p.variante_alto),rB=getRM(p.variante_basso),rS=getRM(p.variante_sx),rD=getRM(p.variante_dx);
+    var nA=rA?(parseFloat(rA.telaio_nascosto_mm)||0):0;
+    var nS=rS?(parseFloat(rS.telaio_nascosto_mm)||0):0,nD=rD?(parseFloat(rD.telaio_nascosto_mm)||0):0;
+    var aA=rA?(parseFloat(rA.aletta_mm)||0):0,aB=rB?(parseFloat(rB.aletta_mm)||0):0;
+    var aS=rS?(parseFloat(rS.aletta_mm)||0):0,aD=rD?(parseFloat(rD.aletta_mm)||0):0;
+    var tvA=rA?(parseFloat(rA.telaio_vista_mm)||0):0;
+    var tvS=rS?(parseFloat(rS.telaio_vista_mm)||0):0,tvD=rD?(parseFloat(rD.telaio_vista_mm)||0):0;
+    if(tf==='A'){Ltub=L+nS+nD+aS+aD;Htub=H+nA+aA+(inclBasso?aB:0);}
+    else if(tf==='D'){Ltub=L+aS+aD;Htub=H+aA+(inclBasso?aB:0);}
+    else if(tf==='P'){Ltub=L-tvS-tvD+aS+aD;Htub=H-tvA+aA+(inclBasso?aB:0);}
+    return{Ltub:Math.round(Ltub),Htub:Math.round(Htub)};
+  }
+  var rec=null;
+  for(var i=0;i<dbSerr.length;i++){var d=dbSerr[i];if(d&&d.materiale===p.materiale&&(d.descrizione===p.sistema||d.sistema===p.sistema)&&d.stile_design===p.stile_design&&d.variante_telaio===p.variante_telaio){rec=d;break;}}
+  if(!rec){for(var i=0;i<dbSerr.length;i++){var d=dbSerr[i];if(d&&d.materiale===p.materiale&&(d.descrizione===p.sistema||d.sistema===p.sistema)&&d.stile_design===p.stile_design){rec=d;break;}}}
+  var nasc=rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
+  var alet=rec?(parseFloat(rec.aletta_mm)||0):0;
+  var tv=rec?(parseFloat(rec.telaio_vista_mm)||0):0;
+  if(tf==='A'){Ltub=L+2*nasc+2*alet;Htub=H+nasc+nAlH*alet;}
+  else if(tf==='D'){Ltub=L+2*alet;Htub=H+nAlH*alet;}
+  else if(tf==='P'){Ltub=L-2*tv+2*alet;Htub=H-tv+nAlH*alet;}
+  return{Ltub:Math.round(Ltub),Htub:Math.round(Htub)};
 }
 
 function parseQuoteJson(raw) {

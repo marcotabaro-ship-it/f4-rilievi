@@ -303,8 +303,10 @@ async function init(){
   if(!pos.length){ document.getElementById('stato-msg').style.display=''; document.getElementById('rep-content').style.display='none'; return; }
 
   var pc=pos.map(function(p){
-    var tub=calcTub(p,db);
     var ts=(p.tipo_serramento||'').toUpperCase();
+    var tub;
+    if(p.solo_accessori){var _L=parseFloat(p.L_mm||p.l_mm)||0,_H=parseFloat(p.H_mm||p.h_mm)||0;tub=(_L&&_H)?{Lt:_L,Ht:_H,na:0,al:0}:null;}
+    else{tub=calcTub(p,db);}
     var _ss=0,_sz=0,_bci=0,_bce=0,_sch=0,_mp=0,_bg=0,_mu=0,_bv=0,_vi=0,_cassM=0;
     if(tub){
       var Lt=tub.Lt,Ht=tub.Ht,na=tub.na,al=tub.al;
@@ -312,7 +314,7 @@ async function init(){
       if(p.zanzariera) _sz=supZan(ts,p.zanzariera,Lt,Ht,na,al);
       if(p.coprifilo_int_mat){var sv=svCop(ts,Lt,Ht,parseFloat(p.coprifilo_int_dim)||0);_bci=cUp(sv/lBarra(p.coprifilo_int_mat));}
       if(p.coprifilo_est_mat){var sv=svCop(ts,Lt,Ht,parseFloat(p.coprifilo_est_dim)||0);_bce=cUp(sv/lBarra(p.coprifilo_est_mat));}
-      _sch=matM(ts,Lt,Ht);_bg=_sch;_mu=_sch;_bv=_sch;_mp=1;_vi=1;
+      if(!p.solo_accessori){_sch=matM(ts,Lt,Ht);_bg=_sch;_mu=_sch;_bv=_sch;_mp=1;_vi=1;}
       _cassM=(Lt+C.cassIngr+C.cassIngr)/1000;
     }
     return Object.assign({},p,{_t:tub,_ts:ts,_ss:_ss,_sz:_sz,_bci:_bci,_bce:_bce,_sch:_sch,_mp:_mp,_bg:_bg,_mu:_mu,_bv:_bv,_vi:_vi,_cassM:_cassM});

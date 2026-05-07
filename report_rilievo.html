@@ -19,8 +19,6 @@
     #wrap { max-width: 1100px; margin: 20px auto; padding: 0 14px 48px; }
     #stato-msg { text-align: center; padding: 64px; color: #6b7280; font-size: 15px; }
     #stato-msg.errore { color: #dc2626; }
-
-    /* ---- HEADER ---- */
     .scheda-header {
       background: #fff; border: 2px solid #1a1a2e; border-radius: 8px;
       margin-bottom: 10px; overflow: hidden; page-break-inside: avoid;
@@ -41,8 +39,6 @@
     .sh-badge.blue  { background: #ede9fe; color: #4f46e5; }
     .sh-badge.red   { background: #fee2e2; color: #dc2626; }
     .sh-badge.green { background: #d1fae5; color: #065f46; }
-
-    /* ---- NOTE COMMERCIALI COMPATTE ---- */
     .nc-compact {
       padding: 6px 14px; font-size: 10px; background: #fafafe;
       border-top: 1px solid #e5e7eb; display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: center;
@@ -50,8 +46,6 @@
     .nc-compact-title { font-weight: 700; color: #4f46e5; text-transform: uppercase; letter-spacing: .4px; margin-right: 4px; white-space: nowrap; }
     .nc-item-compact { white-space: nowrap; }
     .nc-item-compact span { font-weight: 600; color: #1a1a2e; }
-
-    /* ---- LEGENDA ---- */
     .legenda-block {
       background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
       padding: 8px 14px; margin-bottom: 10px; page-break-inside: avoid;
@@ -61,8 +55,6 @@
     .leg-section h4 { font-size: 9px; font-weight: 700; color: #4f46e5; margin: 0 0 3px; text-transform: uppercase; }
     .leg-row { font-size: 9px; line-height: 1.4; }
     .leg-row b { color: #e53e3e; margin-right: 2px; font-family: monospace; }
-
-    /* ---- STRATIGRAFIE ---- */
     .strat-section { margin-bottom: 10px; page-break-inside: avoid; }
     .strat-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #1a1a2e; margin-bottom: 6px; }
     .strat-grid { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -78,9 +70,6 @@
     .strat-quote-tbl td:first-child { color: #6b7280; }
     .strat-quote-tbl td:last-child { font-weight: 600; }
     .def-badge { font-size: 8px; background: #d1fae5; color: #065f46; padding: 1px 4px; border-radius: 5px; margin-left: 4px; }
-
-    /* ---- TABELLA ---- */
-    /* ── CAPITOLI REPORT ── */
     .tr-cap-hdr td {
       background: #1a1a2e; color: #a5b4fc;
       font-weight: 700; font-size: 9px; letter-spacing: 1px;
@@ -125,21 +114,15 @@
     .chk.on { background: #e53e3e; border-color: #e53e3e; }
     td.grp-sep { border-left: 2px solid #d1d5db; }
     .strat-ref { font-size: 9px; color: #6b7280; font-style: italic; }
-
-    /* ---- PRINT ---- */
     @media print {
       @page { size: A4 landscape; margin: 7mm 7mm 7mm 7mm; }
       body { background: #fff; }
       #toolbar { display: none !important; }
       #wrap { margin: 0; padding: 0; max-width: none; }
-
-      /* Non spezzare mai header, legenda, stratigrafie */
       .scheda-header { page-break-inside: avoid !important; page-break-after: avoid; border-radius: 0; margin-bottom: 4px; }
       .legenda-block  { page-break-inside: avoid !important; border-radius: 0; padding: 5px 8px; margin-bottom: 4px; }
       .strat-section  { page-break-inside: avoid !important; margin-bottom: 4px; }
       .strat-card     { page-break-inside: avoid !important; padding: 5px; min-width: 110px; max-width: 160px; }
-
-      /* Tabella: non spezzare mai una singola riga */
       .table-outer { overflow: visible; border-radius: 0; border: 1px solid #ccc; page-break-inside: auto; }
       table.t-ril  { font-size: 7px; white-space: normal; }
       table.t-ril thead { display: table-header-group; }
@@ -150,7 +133,6 @@
       .dim-main        { font-size: 7px; }
       .dim-calc        { font-size: 6px; }
       .chk             { width: 8px; height: 8px; border-width: 1px; }
-
       .sh-logo .logo-box { font-size: 13px; }
       .sh-field  { font-size: 9px; margin-bottom: 2px; }
       .sh-field label { font-size: 9px; }
@@ -162,29 +144,11 @@
       .strat-card img { max-height: 60px; }
       .strat-quote-tbl { font-size: 7px; }
       .btn-tb { display: none !important; }
-      /* ── CAPITOLI REPORT ── */
-    .tr-cap-hdr td {
-      background: #1a1a2e; color: #a5b4fc;
-      font-weight: 700; font-size: 9px; letter-spacing: 1px;
-      text-transform: uppercase; padding: 5px 8px;
-      border-top: 3px solid #4f46e5; page-break-after: avoid;
-    }
-    .tr-cap-subtot td {
-      background: #eef2ff; color: #3730a3;
-      font-size: 8px; font-weight: 600; padding: 3px 8px;
-      border-bottom: 2px solid #c7d2fe; page-break-before: avoid;
-    }
-    .tr-cap-end td {
-      background: #f5f5ff; color: #9ca3af;
-      font-size: 7.5px; padding: 2px 8px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .tr-no-cap td {
-      background: #f9fafb; color: #6b7280;
-      font-size: 8px; font-weight: 600; padding: 3px 8px;
-      border-top: 2px solid #e5e7eb;
-    }
-    .sez-title { font-size: 8px; margin: 5px 0 3px; }
+      .tr-cap-hdr td { background: #1a1a2e; color: #a5b4fc; font-weight: 700; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; padding: 5px 8px; border-top: 3px solid #4f46e5; page-break-after: avoid; }
+      .tr-cap-subtot td { background: #eef2ff; color: #3730a3; font-size: 8px; font-weight: 600; padding: 3px 8px; border-bottom: 2px solid #c7d2fe; page-break-before: avoid; }
+      .tr-cap-end td { background: #f5f5ff; color: #9ca3af; font-size: 7.5px; padding: 2px 8px; border-bottom: 1px solid #e5e7eb; }
+      .tr-no-cap td { background: #f9fafb; color: #6b7280; font-size: 8px; font-weight: 600; padding: 3px 8px; border-top: 2px solid #e5e7eb; }
+      .sez-title { font-size: 8px; margin: 5px 0 3px; }
     }
   </style>
 </head>
@@ -428,35 +392,46 @@ function esc(s) {
 function v(x) { return (!x && x !== 0) ? '' : String(x); }
 function chk(val) { return val ? '<span class="chk on"></span>' : '<span class="chk"></span>'; }
 
-// ---- Calcolo tubolare ----
+// FIX: gestione telaio misto (usa variante_alto/basso/sx/dx) + fallback variante null
 function calcDim(p, dc, dbSerr) {
   var H = parseFloat(p.h_mm||p.H_mm)||0, L = parseFloat(p.l_mm||p.L_mm)||0;
   var tf = (p.tipo_foro||'').toUpperCase(), ts = (p.tipo_serramento||'').toUpperCase();
-  var ctl = (p.controtelaio||'').toUpperCase();
   if (!H||!L||!tf) return {Ltub:0,Htub:0};
-  var rec = null;
-  for (var i=0; i<dbSerr.length; i++) {
-    var d = dbSerr[i];
-    if (d && d.materiale===p.materiale && (d.descrizione===p.sistema||d.sistema===p.sistema) && d.stile_design===p.stile_design && d.variante_telaio===p.variante_telaio) { rec=d; break; }
-  }
-  var nasc = rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
-  var alet = rec?(parseFloat(rec.aletta_mm)||0):0;
-  var af = dc[2]||20, ao2=dc[5]||10, av2=dc[6]||10, spo=dc[6]||20, spv=dc[7]||20;
-  var hasCtl = ctl==='L'||ctl==='T';
-  var nAlH = (ts==='F'||ts==='FF')?2:1;
+  var af = dc[2]||20;
+  var inclBasso = (ts==='F'||ts==='FF');
+  var nAlH = inclBasso?2:1;
   var Ltub=0, Htub=0;
-  if (tf==='A'){Ltub=L+2*nasc+2*alet; Htub=H+nasc+nAlH*alet;}
-  else if (tf==='D'){Ltub=L+2*alet; Htub=H+nAlH*alet;}
-  else if (tf==='P'){Ltub=L-2*af+2*alet; Htub=H-af+nAlH*alet;}
+  if (p.telaio_misto===true||p.telaio_misto==='true') {
+    function getRm(sigla){if(!sigla)return null;for(var i=0;i<dbSerr.length;i++){var d=dbSerr[i];if(d&&d.materiale===p.materiale&&(d.descrizione===p.sistema||d.sistema===p.sistema)&&d.stile_design===p.stile_design&&d.variante_telaio===sigla)return d;}return null;}
+    var rA=getRm(p.variante_alto),rB=getRm(p.variante_basso),rS=getRm(p.variante_sx),rD=getRm(p.variante_dx);
+    var nA=rA?(parseFloat(rA.telaio_nascosto_mm)||0):0;
+    var aA=rA?(parseFloat(rA.aletta_mm)||0):0,aB=rB?(parseFloat(rB.aletta_mm)||0):0;
+    var nS=rS?(parseFloat(rS.telaio_nascosto_mm)||0):0,aS=rS?(parseFloat(rS.aletta_mm)||0):0;
+    var nD=rD?(parseFloat(rD.telaio_nascosto_mm)||0):0,aD=rD?(parseFloat(rD.aletta_mm)||0):0;
+    if(tf==='A'){Ltub=L+nS+nD+aS+aD; Htub=H+nA+aA+(inclBasso?aB:0);}
+    else if(tf==='D'){Ltub=L+aS+aD; Htub=H+aA+(inclBasso?aB:0);}
+    else if(tf==='P'){Ltub=L-2*af+aS+aD; Htub=H-af+aA+(inclBasso?aB:0);}
+  } else {
+    var rec = null;
+    for (var i=0; i<dbSerr.length; i++) {
+      var d = dbSerr[i];
+      if (d && d.materiale===p.materiale && (d.descrizione===p.sistema||d.sistema===p.sistema) && d.stile_design===p.stile_design && d.variante_telaio===p.variante_telaio) { rec=d; break; }
+    }
+    if (!rec){for(var i=0;i<dbSerr.length;i++){var d=dbSerr[i];if(d&&d.materiale===p.materiale&&(d.descrizione===p.sistema||d.sistema===p.sistema)&&d.stile_design===p.stile_design){rec=d;break;}}}
+    var nasc = rec?(parseFloat(rec.telaio_nascosto_mm)||0):0;
+    var alet = rec?(parseFloat(rec.aletta_mm)||0):0;
+    if (tf==='A'){Ltub=L+2*nasc+2*alet; Htub=H+nasc+nAlH*alet;}
+    else if (tf==='D'){Ltub=L+2*alet; Htub=H+nAlH*alet;}
+    else if (tf==='P'){Ltub=L-2*af+2*alet; Htub=H-af+nAlH*alet;}
+  }
   return {Ltub:Math.round(Ltub), Htub:Math.round(Htub)};
 }
 
-// ---- Parse quote_json ----
 function parseQuoteJson(raw) {
   if (!raw) return [];
   try {
     var arr = (typeof raw === 'string') ? JSON.parse(raw) : raw;
-    if (Array.isArray(arr)) return arr; // [{lettera, mm}]
+    if (Array.isArray(arr)) return arr;
     if (typeof arr === 'object') {
       return Object.keys(arr).map(function(k) { return {lettera: k, mm: arr[k]}; });
     }
@@ -464,7 +439,6 @@ function parseQuoteJson(raw) {
   return [];
 }
 
-// ---- Render stratigrafie ----
 function renderStratigrafie(strats) {
   if (!strats||!strats.length) return;
   var grid = document.getElementById('strat-grid');
@@ -492,7 +466,6 @@ function renderStratigrafie(strats) {
   grid.innerHTML = html;
 }
 
-// ---- Render note commerciali compatte ----
 function renderNC(nc) {
   var fields = [
     ['colore_avvol','Avvolgibile'],['colore_scuretto','Scuretto'],
@@ -509,14 +482,12 @@ function renderNC(nc) {
   el.style.display = '';
 }
 
-// ---- Render tabella ----
 function renderPosizioni(posizioni, stratigrafie, capitoli) {
   var tbody = document.getElementById('tbody-ril');
-  var NCOL = 30; // numero colonne totali della tabella
+  var NCOL = 30;
   var stMap = {};
   (stratigrafie||[]).forEach(function(s) { stMap[s.id||s.ID_stratigrafia] = s.nome; });
 
-  // Costruisci lista righe ordinata
   var righe = [];
   (posizioni||[]).forEach(function(p) {
     var ord = (p.ordine !== undefined && p.ordine !== null) ? p.ordine : p.numero_pos;
@@ -528,7 +499,6 @@ function renderPosizioni(posizioni, stratigrafie, capitoli) {
   });
   righe.sort(function(a,b){ return a.ordine - b.ordine; });
 
-  // Funzione riga posizione
   function rowPos(p) {
     var dim = calcDim(p, DC, DB_SERR);
     var lIns = v(p.l_mm||p.L_mm), hIns = v(p.h_mm||p.H_mm);
@@ -572,7 +542,6 @@ function renderPosizioni(posizioni, stratigrafie, capitoli) {
     return h;
   }
 
-  // Funzione subtotale capitolo
   function rowSubtot(titolo, posCap) {
     var nP=posCap.length, nCtlL=0, nCtlT=0, nAvv=0, nScur=0;
     var nZanz=0, nCass=0, nCoprI=0, nCoprE=0, nRim=0;
@@ -607,7 +576,6 @@ function renderPosizioni(posizioni, stratigrafie, capitoli) {
 
   righe.forEach(function(r) {
     if (r.tipo === 'cap_inizio') {
-      // Se c'erano posizioni fuori capitolo prima di questo, mostralo
       if (posizioniFuoriCap.length) {
         html += '<tr class="tr-no-cap"><td colspan="'+NCOL+'">Posizioni senza capitolo ('+posizioniFuoriCap.length+')</td></tr>';
         posizioniFuoriCap.forEach(function(p){ html += rowPos(p); });
@@ -625,13 +593,11 @@ function renderPosizioni(posizioni, stratigrafie, capitoli) {
       html += '<tr class="tr-cap-end"><td colspan="'+NCOL+'">\u2500\u2500\u2500 Fine: '+esc(r.data.titolo)+' \u2500\u2500\u2500</td></tr>';
       capCorrente = null; posCap = [];
     } else {
-      // posizione normale
       if (capCorrente) posCap.push(r.data);
       else posizioniFuoriCap.push(r.data);
     }
   });
 
-  // Posizioni rimaste fuori da qualsiasi capitolo
   if (posizioniFuoriCap.length) {
     if ((capitoli||[]).length > 0) {
       html += '<tr class="tr-no-cap"><td colspan="'+NCOL+'">Posizioni senza capitolo ('+posizioniFuoriCap.length+')</td></tr>';
@@ -642,8 +608,6 @@ function renderPosizioni(posizioni, stratigrafie, capitoli) {
   tbody.innerHTML = html || '<tr><td colspan="'+NCOL+'" style="text-align:center;padding:16px;color:#9ca3af">Nessuna posizione</td></tr>';
 }
 
-
-// ---- Caricamento parallelo ----
 function caricaDati(idRil) {
   var loaded = {ril:null, pos:null, strats:null, dc:null, db:null, caps:null};
   var errored = false;
@@ -662,7 +626,6 @@ function caricaDati(idRil) {
     });
     DB_SERR = loaded.db || [];
 
-    // header
     var nomeCliente = cli.nome || '';
     var nomeCant    = cant.nome_cantiere || '';
     document.getElementById('tb-titolo').textContent = 'Rilievo ' + codice;
@@ -676,7 +639,6 @@ function caricaDati(idRil) {
     document.getElementById('sh-int').textContent   = r.intervento   || '—';
     document.getElementById('sh-ref').textContent   = r.referente    || '—';
 
-    // indirizzo dal cantiere
     var viaStr = ((cant.tipo_via||'') + ' ' + (cant.indirizzo||'')).trim();
     document.getElementById('sh-ind').textContent    = viaStr || '—';
     var locParts = [cant.comune||'', cant.provincia ? '('+cant.provincia+')' : '', cant.cap||''];
@@ -687,7 +649,6 @@ function caricaDati(idRil) {
     if (r.gru === 'SI' || r.gru === true) document.getElementById('sh-gru').style.display = '';
     if (r.allarme === true) document.getElementById('sh-alarm').style.display = '';
 
-    // Note generali del rilievo
     if (r.note_generali) {
       var ngEl = document.getElementById('sh-note-generali');
       if (ngEl) { ngEl.style.display=''; ngEl.querySelector('.ng-text').textContent = r.note_generali; }

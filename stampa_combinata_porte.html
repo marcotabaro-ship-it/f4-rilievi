@@ -208,11 +208,17 @@ function posCtlPortaH(piano){return POS_CTL_PORTE[pianoKey(piano)]||0.16667;}
 function posPortaH(piano){return POS_PORTE[pianoKey(piano)]||0.33333;}
 function cOre(n,dp){if(!dp||n<=0)return 0;var b=n*dp[0];return dp[1]?Math.max(b,dp[1]):b;}
 
+// A2 FIX (Fase 6): isYes() accetta boolean true (Supabase) e legacy string 'SI' o 'true'.
+// Allineato a MOBILE_stampa_combinata_porte.html — Fase 2.
+function isYes(val){ return val===true || val==='SI' || val==='true'; }
+
 function calcolaVociPorte(pos){
   var nT=pos.length,nCTL=0,nRim=0,nAll=0,nBLI=0,nREI=0;
   var orePosCTL=0,orePosPorte=0,oreInstInt=0;
   pos.forEach(function(p){
-    var hasCTL=p.fornitura_ctl_int==='SI'||p.fornitura_ctl_bli==='SI'||p.fornitura_ctl_rei==='SI'||p.install_ctl_int==='SI'||p.install_ctl_bli==='SI'||p.install_ctl_rei==='SI';
+    // A2 FIX: tutti e 6 i campi CTL letti con isYes() — accetta boolean true da Supabase
+    var hasCTL=isYes(p.fornitura_ctl_int)||isYes(p.fornitura_ctl_bli)||isYes(p.fornitura_ctl_rei)||
+               isYes(p.install_ctl_int)  ||isYes(p.install_ctl_bli)  ||isYes(p.install_ctl_rei);
     if(hasCTL){nCTL++;orePosCTL+=posCtlPortaH(p.piano);}
     if(p.rimozione==='SI'||p.rimozione===true)nRim++;
     if(p.allargamento_telaio==='SI'||p.allargamento_telaio===true)nAll++;
@@ -368,7 +374,8 @@ function renderAll(ril,pos,caps,wR,wP){
       var piano=(p.piano!==undefined&&p.piano!==null)?('P'+(parseInt(p.piano)>=0?'+':'')+p.piano):'—';
       var flags=[];
       if(p.allargamento_telaio==='SI'||p.allargamento_telaio===true)flags.push('<b style="color:#E65100">ALL</b>');
-      var hasCTL=p.fornitura_ctl_int==='SI'||p.install_ctl_int==='SI'||p.fornitura_ctl_bli==='SI'||p.install_ctl_bli==='SI'||p.fornitura_ctl_rei==='SI'||p.install_ctl_rei==='SI';
+      var hasCTL=isYes(p.fornitura_ctl_int)||isYes(p.install_ctl_int)||isYes(p.fornitura_ctl_bli)||
+                 isYes(p.install_ctl_bli)  ||isYes(p.fornitura_ctl_rei)||isYes(p.install_ctl_rei);
       if(hasCTL)flags.push('<b>CTL</b>');
       if(p.rimozione==='SI'||p.rimozione===true)flags.push('<b>RIM</b>');
       var hr='<tr>';

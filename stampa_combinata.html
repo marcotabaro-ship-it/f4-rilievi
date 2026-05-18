@@ -292,6 +292,7 @@ function matM(ts,Lt,Ht){var s=C.sfrido;return((ts==='F'||ts==='FF')?2*(Lt+2*s)+2
 
 var DP={}, POS_SERR={}, POS_SERR_GRU={}, POS_CTL={};
 var POS_SERR_MIN=2.0, POS_CTL_MIN=1.0;
+var USE_GRU=false; // A3 FIX (Fase 6): true se il rilievo ha gru attiva — usato in posSerrH
 var V2DP={'PROGETTAZIONE':'prog','GESTIONE ORDINI':'gord','INCONTRI IN CANTIERE':'incant','SCARICO E CARICO CTL':'scCtl','TRASPORTO CTL':'trCtl','SCARICO E CARICO SERR':'scSerr','TRASPORTO SERR':'trSerr','RIMOZIONE SERRAMENTI':'rimSerr','RIMOZIONE ACCESSORI':'rimAcc','SMALTIMENTO SERR':'smSerr','SMALTIMENTO ACC':'smAcc','ASSEMBLAGGIO CTL':'assCtl','ASSEMBLAGGIO TERMOCASSE':'assTerm','ASSEMBLAGGIO DINOX DA':'assDinDA','ASSEMBLAGGIO DINOX IM':'assDinIM','INSTALL ANGOLARI PVC':'angPvc','INSTALLAZIONE CTL':'instCtl','INSTALLAZIONE TERMOCASSE':'instTerm','INSTALL DINOX DA':'instDinDA','INSTALL DINOX IM':'instDinIM','TAGLIO PIANI MARMO':'marmo','REGISTRAZIONE COLLAUDO':'regColl','PULIZIA CANTIERE':'pulizia'};
 var INST_V2DP={'INST INGRESSI':'instI','INST FINESTRE':'instF','INST PORTE FINESTRE':'instPF','INST FINESTRE FISSE':'instFF','INST VETRATE FISSE':'instVF','INST SCORREVOLI':'instS'};
 var COD2DP={740:'instAvv',750:'instScur',760:'instTende',765:'instFrang',770:'instCass',775:'instZanz',780:'coprInt',785:'coprEst'};
@@ -318,10 +319,11 @@ function buildTablesFromPosa(rows){
 
 function cOre(n,dp){if(!dp||n<=0)return 0;var b=n*dp[0];return dp[1]?Math.max(b,dp[1]):b;}
 function pianoKey(p){var n=parseInt(p,10);if(isNaN(n))return'0';return String(Math.min(Math.max(n,-1),10));}
-function posSerrH(piano,nc){var key=pianoKey(piano);var lookup=POS_SERR[key];if(!lookup)return 0.5;return lookup[Math.min(Math.max((parseInt(nc)||1)-1,0),4)]||0.5;}
+// A3 FIX: posSerrH usa POS_SERR_GRU per piani >= 1 quando useGru=true — allineato a WEB_report_posa.html e MOBILE_stampa_combinata.html
+function posSerrH(piano,nc,useGru){var key=pianoKey(piano),p=parseInt(piano,10);var tbl=(useGru&&p>=1)?POS_SERR_GRU:POS_SERR;var lookup=tbl[key]||POS_SERR[key];if(!lookup)return 0.5;return lookup[Math.min(Math.max((parseInt(nc)||1)-1,0),4)]||0.5;}
 function posCtlH(piano){return POS_CTL[pianoKey(piano)]||0.5;}
 
-function calcolaVoci(pos){
+function calcolaVoci(pos,useGru){ // A3 FIX: useGru propagato a posSerrH
   var nT=pos.length,nCL=0,nCT=0,nRim=0,nRA=0,nMar=0,nAng=0,nI=0,nF=0,nPF=0,nFF=0,nVF=0,nS=0;
   var nAv=0,nSc=0,nTe=0,nFr=0,nCas=0,nZan=0,nCI=0,nCE=0,nSS=0,nSA=0,nDA=0,nIM=0;
   var oPCtl=0,oPSerr=0;
@@ -340,7 +342,7 @@ function calcolaVoci(pos){
     var din=(p.dinoxill||'').toUpperCase();
     if(din==='DA')nDA++;else if(din==='I3'||din==='I4')nIM++;
     if(ctl==='L'||ctl==='T')oPCtl+=posCtlH(p.piano);
-    if(!p.solo_accessori)oPSerr+=posSerrH(p.piano,p.n_campi||1);
+    if(!p.solo_accessori)oPSerr+=posSerrH(p.piano,p.n_campi||1,useGru); // A3 FIX
   });
   var nCtl=nCL+nCT;
   oPCtl=nCtl>0?Math.max(oPCtl,POS_CTL_MIN):0;
@@ -447,6 +449,7 @@ function loadAndRender(wR,wA,wP){
   var codice=ril.codice_completo||idRilievo;
   var locStr=((cp.tipo_via||'')+' '+(cp.indirizzo||'')).trim();
   var comuneStr=[cp.comune,cp.provincia?'('+cp.provincia+')':'',cp.cap].filter(Boolean).join(' ');
+  USE_GRU=(ril.gru===true||ril.gru==='SI'); // A3 FIX: imposta flag gru per propagarlo a calcolaVoci
 
   function mkHdr(sezione){
     var nc=ril.note_commerciali||{};
@@ -729,10 +732,10 @@ function loadAndRender(wR,wA,wP){
     if(caps&&caps.length){
       var gruppiPosa=groupByCap(posCalc,caps);
       var totalVoceCalc={};
-      gruppiPosa.forEach(function(g){var vG=calcolaVoci(g.pos);vG.forEach(function(vo){totalVoceCalc[vo.id]=(totalVoceCalc[vo.id]||0)+vo.oreCalc;});});
+      gruppiPosa.forEach(function(g){var vG=calcolaVoci(g.pos,USE_GRU);vG.forEach(function(vo){totalVoceCalc[vo.id]=(totalVoceCalc[vo.id]||0)+vo.oreCalc;});});
       gruppiPosa.forEach(function(g){
         if(!g.pos.length)return;
-        var vG=calcolaVoci(g.pos);
+        var vG=calcolaVoci(g.pos,USE_GRU);
         var capId=g.cap.id||'__fuori__';
         var adjCap=loadAdjCap(capId);
         var tG=0,oDG=0,oIG=0;
@@ -759,7 +762,7 @@ function loadAndRender(wR,wA,wP){
       });
       h+='<div style="background:#064e3b;color:#a7f3d0;font-weight:700;font-size:.82rem;padding:6px 12px;margin:14px 0 6px;border-radius:5px;">\u2211 Totali complessivi</div>';
     }
-    var voci=calcolaVoci(pos);
+    var voci=calcolaVoci(pos,USE_GRU); // A3 FIX: passa USE_GRU
     var lastArea='',tCalc=0,tFin=0,areaMap={};
     var tbH='';
     var globaleFin={};
@@ -769,7 +772,7 @@ function loadAndRender(wR,wA,wP){
         if(!g.pos.length)return;
         var capId=g.cap.id||'__fuori__';
         var adjCap=loadAdjCap(capId);
-        var vG=calcolaVoci(g.pos);
+        var vG=calcolaVoci(g.pos,USE_GRU);
         vG.forEach(function(vo){var m=parseFloat((adjCap[vo.id]||{}).minus)||0,pl=parseFloat((adjCap[vo.id]||{}).plus)||0;var fin=Math.max(0,Math.round((vo.oreCalc-m+pl)*1000)/1000);globaleFin[vo.id]=(globaleFin[vo.id]||0)+fin;});
       });
     }

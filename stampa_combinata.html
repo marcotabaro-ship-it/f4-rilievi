@@ -579,7 +579,15 @@ function loadAndRender(wR,wA,wP){
       h+='<td class="c">'+(p.rimozione==='SI'||p.rimozione===true?'<span class="chk on"></span>':'<span class="chk"></span>')+'</td>';
       h+='<td class="c">'+(p.rimozione_accessori?'<span class="chk on"></span>':'<span class="chk"></span>')+'</td>';
       h+='<td class="c gsep">'+(p.taglio_marmo?'<span class="chk on"></span>':'<span class="chk"></span>')+'</td>';
-      h+='<td style="font-size:9px;white-space:normal;min-width:50px">'+esc(v(p.senso_apertura))+'</td>';
+      // B4 FIX (Fase 6): mostra nome stratigrafia override nella colonna SENSI/STRAT. — allineato a MOBILE_stampa_combinata.html (C117)
+      (function(){
+        var stratOvNm='';
+        if(p.id_stratigrafia_override){
+          var sOv=strat.find(function(s){return s.id===p.id_stratigrafia_override;});
+          if(sOv)stratOvNm=sOv.nome;
+        }
+        h+='<td style="font-size:9px;white-space:normal;min-width:50px">'+esc(v(p.senso_apertura))+(stratOvNm?'<br><span style="font-size:8px;background:#ede9fe;color:#4f46e5;padding:0 3px;border-radius:3px;font-weight:700;">'+esc(stratOvNm)+'</span>':'')+'</td>';
+      })();
       h+='</tr>';
     });
     h+='</tbody></table></div>';

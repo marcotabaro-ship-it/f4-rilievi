@@ -180,6 +180,8 @@ if (!idRilievo) window.location.href = 'clienti.html';
 
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function v(x)  { return (!x&&x!==0)?'':String(x); }
+// B3 FIX (Fase 6): isYes() accetta boolean true (Supabase) e legacy string 'SI' o 'true'
+function isYes(val){ return val===true || val==='SI' || val==='true'; }
 function n2(x) { return Math.round(x*100)/100; }
 function cUp(x){ return Math.ceil(x); }
 
@@ -310,7 +312,7 @@ async function init(){
       var qs=parseQ(s.quote_json).map(function(q){return q.lettera+': '+q.mm+' mm';}).join(' | ');
       html+='<div class="strat-card-acc">';
       if(img) html+='<img src="'+esc(img)+'" alt="" onerror="this.style.display=\'none\'">';
-      html+='<h4>'+esc(s.nome)+(s.is_default==='SI'?' <span style="font-size:8px;background:#d1fae5;color:#065f46;padding:0 3px;border-radius:4px;">def</span>':'')+'</h4>';
+      html+='<h4>'+esc(s.nome)+(isYes(s.is_default)?' <span style="font-size:8px;background:#d1fae5;color:#065f46;padding:0 3px;border-radius:4px;">def</span>':'')+'</h4>';
       if(qs) html+='<div class="sq">'+esc(qs)+'</div>';
       html+='</div>';
     });

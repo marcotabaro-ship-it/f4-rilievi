@@ -251,6 +251,8 @@ var C={sfrido:50,pvcB:6000,legB:3500,aluB:6000,angLato:50,angB:6000,cassIngr:200
 
 function numPos(p){return p.numero_pos_alfa||p.numero_pos;}
 function parseQ(raw){try{var a=typeof raw==='string'?JSON.parse(raw):raw;if(Array.isArray(a))return a.filter(function(q){return q&&q.lettera;});if(typeof a==='object')return Object.keys(a).map(function(k){return{lettera:k,mm:a[k]};});}catch(e){}return[];}
+// B2 FIX (Fase 6): isYes() accetta boolean true (Supabase) e legacy string 'SI' o 'true'
+function isYes(val){ return val===true || val==='SI' || val==='true'; }
 
 function calcTub(p,db){
   var H=parseFloat(p.H_mm||p.h_mm)||0,L=parseFloat(p.L_mm||p.l_mm)||0;
@@ -454,7 +456,8 @@ function loadAndRender(wR,wA,wP){
   function mkHdr(sezione){
     var nc=ril.note_commerciali||{};
     var ncParts=[];
-    [['colore_avvol','Avvol'],['colore_scuretto','Scuretto'],['colore_tenda','Tenda'],['colore_frang','Frang'],['colore_zanzariera','Zanz'],['colore_dinox','Dinox'],['maniglia_marca','Man.marca'],['maniglia_modello','Man.mod']].forEach(function(f){if(nc[f[0]])ncParts.push(f[1]+': '+nc[f[0]]);});
+    // B1 FIX (Fase 6): aggiunto colore_copri_int e colore_copri_est — allineato a MOBILE_stampa_combinata.html (C115)
+    [['colore_avvol','Avvol'],['colore_scuretto','Scuretto'],['colore_tenda','Tenda'],['colore_frang','Frang'],['colore_zanzariera','Zanz'],['colore_dinox','Dinox'],['colore_copri_int','Coprifilo int'],['colore_copri_est','Coprifilo est'],['maniglia_marca','Man.marca'],['maniglia_modello','Man.mod']].forEach(function(f){if(nc[f[0]])ncParts.push(f[1]+': '+nc[f[0]]);});
     var h='<div class="scheda-hdr"><div class="sh-top">';
     h+='<div class="sh-logo"><div class="lb2">[F4]</div>GRUPPO F4<div style="font-size:8px;opacity:.7;margin-top:2px">'+esc(sezione)+'</div></div>';
     h+='<div class="sh-c">';
@@ -533,6 +536,8 @@ function loadAndRender(wR,wA,wP){
         h+='<div class="strat-card-c">';
         if(img)h+='<img src="'+esc(img)+'" alt="" onerror="this.style.display=\'none\'">';
         h+='<h4>'+esc(s.nome)+'</h4>';
+        // B2 FIX: badge ★ Default se is_default è true — allineato a MOBILE_stampa_combinata.html (C116)
+        if(isYes(s.is_default))h+='<div style="display:inline-block;margin-bottom:2px;padding:1px 5px;background:#d1fae5;color:#065f46;border-radius:6px;font-size:8px;font-weight:700;">&#9733; Default</div>';
         if(qs)h+='<div class="sq">'+esc(qs)+'</div>';
         h+='</div>';
       });

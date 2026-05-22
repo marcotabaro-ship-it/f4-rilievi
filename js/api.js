@@ -214,6 +214,8 @@ const _map = {
       tipo_porta:           row.tipo_porta           || '',
       sistema:              row.sistema              || '',
       sopraluce:            row.sopraluce ? 'SI' : 'NO',
+      sopraluce_base_mm:    row.sopraluce_base_mm    || '',
+      sopraluce_altezza_mm: row.sopraluce_altezza_mm || '',
       tipo_foro:            row.tipo_foro            || '',
       H_mm:                 row.h_mm                 || '',
       L_mm:                 row.l_mm                 || '',
@@ -356,6 +358,12 @@ const _in = {
       tipo_porta:           data.tipo_porta            || null,
       sistema:              data.sistema               || null,
       sopraluce:            b(data.sopraluce),
+      // Fase 6C-R2 Step 2: dimensioni sopraluce. Stesso pattern di sp_muro_mm/allargamento_mm:
+      // falsy (null, '', 0) → null; valore truthy → parseInt. Il raccogliDati lato form
+      // azzera già i due campi a null quando sopraluce=false; questo è un livello di
+      // protezione aggiuntivo coerente con il resto del mapping.
+      sopraluce_base_mm:    data.sopraluce_base_mm    ? parseInt(data.sopraluce_base_mm)    : null,
+      sopraluce_altezza_mm: data.sopraluce_altezza_mm ? parseInt(data.sopraluce_altezza_mm) : null,
       tipo_foro:            data.tipo_foro             || null,
       h_mm:                 data.H_mm !== '' ? parseInt(data.H_mm) : null,
       l_mm:                 data.L_mm !== '' ? parseInt(data.L_mm) : null,

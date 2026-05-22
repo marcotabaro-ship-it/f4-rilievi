@@ -867,25 +867,42 @@ function fillModal(p) {
   document.getElementById('pInstCTLRei').checked   = isYes(p.install_ctl_rei);
   document.getElementById('pFornitore').value = p.fornitore || '';
   onFornitoreChange(true);
-  document.getElementById('pTipoPorta').value = p.tipo_porta || '';
+  // Fase 6C-R2 hot-fix Step 2 — Fallback tipo_porta sigla ↔ descrizione.
+  // Le option di pTipoPorta sono popolate da db_porte.tipo_porta dopo onFornitoreChange.
+  // Se p.tipo_porta non esiste nella select (es. record storico con 'INT' mentre db_porte
+  // espone 'INTERNA', o viceversa), cerca in dbPorte un record equivalente normalizzato e
+  // usa il SUO valore di d.tipo_porta come value della select. Questo evita che la select
+  // resti vuota e che la cascade Sistema parta da tipo='' → Sistema disabilitato.
+  var tipoSelect = document.getElementById('pTipoPorta');
+  tipoSelect.value = p.tipo_porta || '';
+  if (tipoSelect.value !== (p.tipo_porta || '')) {
+    // La option non è stata trovata: la select scarta value non corrispondenti.
+    var tipoNormP = normalizzaTipoPortaCtl(p.tipo_porta);
+    if (tipoNormP) {
+      var match = (dbPorte || []).find(function(d) {
+        return d.fornitore === p.fornitore
+            && normalizzaTipoPortaCtl(d.tipo_porta) === tipoNormP;
+      });
+      if (match) tipoSelect.value = match.tipo_porta;
+    }
+  }
   onTipoPortaChange(true);
-  // Fase 6C-R2 D-6C-06 FIX (revisione) — Fallback descrizione → sigla per record storici con
-  // sistema descrittivo. Allineato a MOBILE_pos-porte-edit.html > populateForm (M2 FIX Fase 6 C2),
-  // raffinato con filtro su tipo_porta per evitare collisioni quando la stessa descrizione esiste
-  // su tipi porta diversi.
+  // Fase 6C-R2 D-6C-06 FIX (revisione) + hot-fix Step 2 — Fallback descrizione → sigla per
+  // record storici con sistema descrittivo. Allineato a MOBILE_pos-porte-edit.html >
+  // populateForm (M2 FIX Fase 6 C2), raffinato con match normalizzato su tipo_porta per
+  // evitare collisioni quando la stessa descrizione esiste su tipi porta diversi.
   // Sistemi canonici porte: ST, DO, TP, FC, F_, SI, SE, LI, PI.
   // Logica:
-  //   1) ricerca primaria: d.fornitore == p.fornitore && d.tipo_porta == p.tipo_porta && d.sistema == saved
-  //   2) fallback secondario: d.fornitore == p.fornitore && d.sistema == saved
-  //      (usato solo se la primaria non trova nulla — es. tipo_porta mancante o cambiato)
-  //   3) se nessuna corrispondenza, usa il valore salvato così com'è (la dropdown resterà vuota
-  //      se la sigla non è canonica, segnale visibile all'operatore)
+  //   1) ricerca primaria: stesso fornitore + tipo_porta NORMALIZZATO equivalente + sistema == saved
+  //   2) fallback secondario: stesso fornitore + sistema == saved (senza tipo)
+  //   3) se nessuna corrispondenza, usa il valore salvato così com'è
   var sisCode = (function() {
     var saved = p.sistema;
     if (!saved) return '';
+    var tipoNormP = normalizzaTipoPortaCtl(p.tipo_porta);
     var rec = (dbPorte || []).find(function(d) {
       return d.fornitore === p.fornitore
-          && d.tipo_porta === p.tipo_porta
+          && normalizzaTipoPortaCtl(d.tipo_porta) === tipoNormP
           && d.sistema === saved;
     });
     if (!rec) {
@@ -916,7 +933,10 @@ function onFornitoreChange(silent) {
   document.getElementById('pTipoPorta').disabled = false;
   document.getElementById('pSistema').innerHTML = '<option value="">—</option>';
   document.getElementById('pSistema').disabled = true;
-  document.getElementById('grpSopraluce').style.display = 'none';
+  // Fase 6C-R2 hot-fix Step 2: RIMOSSA `grpSopraluce.style.display='none'` — il gruppo sopraluce
+  // è sempre visibile, non più dipendente da fornitore/tipo/sistema. Questa riga residua
+  // causava il bug "utente non vede il flag Con sopraluce" perché ogni cambio fornitore
+  // nascondeva il gruppo.
 }
 
 function onTipoPortaChange(silent) {
@@ -929,9 +949,32 @@ function onTipoPortaChange(silent) {
     aggiornaCTL();
     return;
   }
+  // Fase 6C-R2 hot-fix Step 2: cascade tipo→sistema robusto rispetto al formato tipo_porta.
+  // db_porte.tipo_porta può essere sigla ('INT'/'BLI'/'REI') o descrizione ('INTERNA'/'BLINDATA'/
+  // 'PORTA INTERNA'/...). Il filtro usa normalizzaTipoPortaCtl per equiparare entrambi i formati.
+  // Senza questo fix, una select con "INTERNA" filtrava solo record dbPorte con "INTERNA" esatto,
+  // ignorando record con "INT" → la dropdown Sistema restava vuota.
+  var tipoNorm = normalizzaTipoPortaCtl(tipo);
+  // Sigle canoniche ammesse per il fallback su d.sistema (record senza sistema_sigla).
+  var SIGLE_OK = ['ST','DO','TP','FC','F_','SI','SE','LI','PI'];
   var sistemi = [];
-  dbPorte.filter(function(d) { return d.fornitore === forn && d.tipo_porta === tipo; }).forEach(function(d) { if (sistemi.indexOf(d.sistema_sigla) < 0) sistemi.push(d.sistema_sigla); });
+  dbPorte.filter(function(d) {
+    return d.fornitore === forn
+        && normalizzaTipoPortaCtl(d.tipo_porta) === tipoNorm;
+  }).forEach(function(d) {
+    // Preferisce d.sistema_sigla; se assente accetta d.sistema solo se sigla canonica.
+    var sig = d.sistema_sigla || (SIGLE_OK.indexOf(d.sistema) >= 0 ? d.sistema : null);
+    if (sig && sistemi.indexOf(sig) < 0) sistemi.push(sig);
+  });
   var sistemiFiltrati = (lookups.LK_SISTEMA_PORTE||[]).filter(function(s) { return sistemi.indexOf(s.sigla) >= 0; });
+  if (sistemiFiltrati.length === 0) {
+    // Nessun sistema trovato per la combinazione fornitore+tipo (normalizzato).
+    // Lascia "— Sistema —" e disabilita la dropdown — segnale visibile all'operatore.
+    document.getElementById('pSistema').innerHTML = '<option value="">— Sistema —</option>';
+    document.getElementById('pSistema').disabled = true;
+    aggiornaCTL();
+    return;
+  }
   Utils.fillSelect('pSistema', sistemiFiltrati.map(function(s) { return { value: s.sigla, label: s.sigla + ' — ' + s.descrizione }; }), '— Sistema —');
   document.getElementById('pSistema').disabled = false;
   // Fase 6C-R2 D-6C-03 FIX: al cambio tipo_porta abilita/disabilita CTL coerenti e azzera gli altri.

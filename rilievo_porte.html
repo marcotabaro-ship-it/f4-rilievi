@@ -324,12 +324,25 @@
           <label class="form-label">Sistema <span class="req">*</span></label>
           <select class="form-control" id="pSistema" onchange="onSistemaChange()" disabled><option value="">—</option></select>
         </div>
-        <div class="form-group" id="grpSopraluce" style="display:none;">
+        <!-- Fase 6C-R2 Step 2: sopraluce SEMPRE disponibile per qualunque fornitore/tipo/sistema.
+             Rimosso style="display:none;": il gruppo non viene più nascosto da onSistemaChange.
+             Aggiunto onchange="onSopraluceChange()" per mostrare/nascondere i 2 input dimensionali. -->
+        <div class="form-group" id="grpSopraluce">
           <label class="form-label">&nbsp;</label>
           <div class="checkbox-group" style="margin-top:8px;">
-            <input type="checkbox" id="pSopraluce">
+            <input type="checkbox" id="pSopraluce" onchange="onSopraluceChange()">
             <label for="pSopraluce">Con sopraluce</label>
           </div>
+        </div>
+        <!-- Fase 6C-R2 Step 2: dimensioni sopraluce. Visibili solo quando pSopraluce.checked=true.
+             Gestione di visibilità in onSopraluceChange(); valore in raccogliDati(). -->
+        <div class="form-group" id="grpSopraluceBase" style="display:none;">
+          <label class="form-label">Base sopraluce (mm)</label>
+          <input class="form-control" type="number" id="pSopraluceBaseMm" min="0" step="1" placeholder="es. 800">
+        </div>
+        <div class="form-group" id="grpSopraluceAltezza" style="display:none;">
+          <label class="form-label">Altezza sopraluce (mm)</label>
+          <input class="form-control" type="number" id="pSopraluceAltezzaMm" min="0" step="1" placeholder="es. 400">
         </div>
       </div>
     </div>
@@ -744,6 +757,19 @@ function aggiornaCTL() {
   });
 }
 
+// Fase 6C-R2 Step 2 — Helper UI per dimensioni sopraluce.
+// Mostra/nasconde i 2 input Base/Altezza in base a pSopraluce.checked.
+// Chiamata da: resetModal, fillModal, onchange="onSopraluceChange()" sul checkbox pSopraluce.
+// NB: NON azzera i valori in UI quando il flag viene disattivato — i valori restano negli
+// input finché il modal è aperto (UX: se l'utente despunta per errore può rispuntare senza
+// perdere quanto digitato). L'azzeramento definitivo avviene in raccogliDati(): se
+// sopraluce=false i 2 campi vengono inviati come null al payload.
+function onSopraluceChange() {
+  var on = document.getElementById('pSopraluce').checked;
+  document.getElementById('grpSopraluceBase').style.display    = on ? '' : 'none';
+  document.getElementById('grpSopraluceAltezza').style.display = on ? '' : 'none';
+}
+
 function openDrawerPorta(id) {
   posizioneEditId = id;
   document.getElementById('dTitle').textContent = id ? 'Modifica posizione' : 'Nuova posizione';
@@ -774,10 +800,12 @@ function closeDrawerPorta() {
 }
 
 function resetModal() {
+  // Fase 6C-R2 Step 2: aggiunti pSopraluceBaseMm e pSopraluceAltezzaMm tra i campi reset.
   var campos = ['pNumAlfa','pPiano','pFornitore','pTipoPorta','pSistema','pTipoForo',
     'pHmm','pLmm','pSpMuro','pDecentrato','pCollezione','pModello','pVersione',
     'pEssenza','pVerso','pSerratura','pColoreSerr',
-    'pColoreCerniere','pAllargMm','pManiMarca','pManiModello','pManiColore','pNote','pAmbiente'];
+    'pColoreCerniere','pAllargMm','pManiMarca','pManiModello','pManiColore','pNote','pAmbiente',
+    'pSopraluceBaseMm','pSopraluceAltezzaMm'];
   campos.forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
   // Fase 6C-R2 D-6C-04 FIX: pVetri/pMostrine ora sono checkbox, vanno azzerate con .checked = false
   ['pSopraluce','pAllargamento','pFornCTLInt','pFornCTLBli','pFornCTLRei',
@@ -788,12 +816,15 @@ function resetModal() {
   document.getElementById('pTipoPorta').disabled = true;
   document.getElementById('pSistema').innerHTML = '<option value="">—</option>';
   document.getElementById('pSistema').disabled = true;
-  document.getElementById('grpSopraluce').style.display = 'none';
+  // Fase 6C-R2 Step 2: grpSopraluce è sempre visibile. Rimosso display:'none'.
+  // I 2 sotto-gruppi dimensionali si nascondono via onSopraluceChange() dato che pSopraluce=false.
   document.getElementById('grpDecentrato').style.display = 'none';
   document.getElementById('grpAllargMm').style.display = 'none';
   document.getElementById('dImgGuide').style.display = 'none';
   // Fase 6C-R2 D-6C-03 FIX: tipo_porta vuoto → tutti i CTL disabilitati e azzerati
   aggiornaCTL();
+  // Fase 6C-R2 Step 2: nasconde i 2 input dimensionali (pSopraluce è appena stato azzerato).
+  onSopraluceChange();
 }
 
 function fillModal(p) {
@@ -823,6 +854,9 @@ function fillModal(p) {
   document.getElementById('pMostrine').checked = isYes(p.mostrine);
   // D-6C-05 FIX: lettura sopraluce via isYes() per accettare boolean da Supabase.
   document.getElementById('pSopraluce').checked    = isYes(p.sopraluce);
+  // Fase 6C-R2 Step 2: dimensioni sopraluce. Valori letti da _map.posPorta come number o '' (se null).
+  document.getElementById('pSopraluceBaseMm').value    = p.sopraluce_base_mm    || '';
+  document.getElementById('pSopraluceAltezzaMm').value = p.sopraluce_altezza_mm || '';
   document.getElementById('pAllargamento').checked = isYes(p.allargamento_telaio);
   document.getElementById('pRimozione').checked    = isYes(p.rimozione);
   document.getElementById('pFornCTLInt').checked   = isYes(p.fornitura_ctl_int);
@@ -867,6 +901,8 @@ function fillModal(p) {
   // aggiornaCTL() disabilita/azzera i CTL non coerenti con tipo_porta.
   // Ordine obbligatorio: set checkbox prima, aggiornaCTL dopo (come mobile).
   aggiornaCTL();
+  // Fase 6C-R2 Step 2: mostra/nasconde i 2 input dimensionali in base a pSopraluce.checked.
+  onSopraluceChange();
   if (isYes(p.allargamento_telaio)) document.getElementById('grpAllargMm').style.display = '';
   if (p.tipo_foro) onTipoForoChange();
 }
@@ -905,38 +941,10 @@ function onTipoPortaChange(silent) {
 }
 
 function onSistemaChange(silent) {
-  var sis  = document.getElementById('pSistema').value;
-  var forn = document.getElementById('pFornitore').value;
-  var tipo = document.getElementById('pTipoPorta').value;
-  // Fase 6C-R2 hot-fix sopraluce — Lookup gerarchico con fallback:
-  //   1) cerca il record specifico in dbPorte filtrando per fornitore + tipo_porta + sistema_sigla.
-  //      Se il record esiste E contiene il campo sopraluce_disponibile valorizzato, usa quello
-  //      (granularità massima — sopraluce può dipendere dalla combinazione, es. solo INTERNA+ST).
-  //   2) altrimenti fallback su LK_SISTEMA_PORTE.sopraluce_disponibile (granularità per sola sigla).
-  //   3) in entrambi i casi isYes() accetta true / 'SI' / 'true'.
-  // NB: senza accesso allo schema Supabase non è certo che db_porte contenga
-  // sopraluce_disponibile. La logica è difensiva: usa quel campo solo se realmente presente
-  // sul record specifico, altrimenti applica automaticamente il fallback su LK_SISTEMA_PORTE.
-  var hasSopraluce = false;
-  var recDb = (dbPorte || []).find(function(d) {
-    return d.fornitore === forn && d.tipo_porta === tipo && d.sistema_sigla === sis;
-  });
-  if (recDb && Object.prototype.hasOwnProperty.call(recDb, 'sopraluce_disponibile')
-      && recDb.sopraluce_disponibile !== null
-      && recDb.sopraluce_disponibile !== undefined
-      && recDb.sopraluce_disponibile !== '') {
-    hasSopraluce = isYes(recDb.sopraluce_disponibile);
-  } else {
-    var recLk = (lookups.LK_SISTEMA_PORTE||[]).find(function(s) { return s.sigla === sis; });
-    hasSopraluce = !!(recLk && isYes(recLk.sopraluce_disponibile));
-  }
-  // Se il sistema non prevede sopraluce, nascondi il gruppo E azzera il checkbox per evitare
-  // di salvare sopraluce=true in modo invisibile sul payload (coerenza semantica simmetrica
-  // ad aggiornaCTL() per i CTL incoerenti con tipo_porta).
-  document.getElementById('grpSopraluce').style.display = hasSopraluce ? '' : 'none';
-  if (!hasSopraluce) {
-    document.getElementById('pSopraluce').checked = false;
-  }
+  var sis = document.getElementById('pSistema').value;
+  // Fase 6C-R2 Step 2: rimossa interamente la logica hasSopraluce/dbPorte/LK_SISTEMA_PORTE.
+  // Il flag "Con sopraluce" è ora sempre disponibile e indipendente da fornitore/tipo/sistema.
+  // onSistemaChange mantiene solo la visibilità di grpDecentrato per sistemi scorrevoli SI/SE.
   var isScorr = sis === 'SI' || sis === 'SE';
   document.getElementById('grpDecentrato').style.display = isScorr ? '' : 'none';
 }
@@ -990,6 +998,13 @@ function raccogliDati() {
   // ('INTERNA'/'BLINDATA'/'PORTA INTERNA'/...) presenti in db_porte.tipo_porta.
   // Il valore effettivo salvato in `tipo_porta` resta quello della select (vedi sotto).
   var tipoP = normalizzaTipoPortaCtl(document.getElementById('pTipoPorta').value);
+  // Fase 6C-R2 Step 2: dimensioni sopraluce.
+  // Regola: se sopraluce=false → entrambi null (semantica "non applicabile").
+  //         se sopraluce=true  → parseInt del valore input, o null se input vuoto/non valido.
+  // L'utente non specifica obbligatorietà — i 2 campi possono restare vuoti anche con sopraluce=true.
+  var sopraluceOn = document.getElementById('pSopraluce').checked;
+  var sBase = parseInt(document.getElementById('pSopraluceBaseMm').value, 10);
+  var sAlt  = parseInt(document.getElementById('pSopraluceAltezzaMm').value, 10);
   return {
     numero_pos_alfa:        alfaEl ? (alfaEl.value.toUpperCase().trim() || null) : null,
     piano:                  document.getElementById('pPiano').value,
@@ -997,7 +1012,9 @@ function raccogliDati() {
     fornitore:              document.getElementById('pFornitore').value,
     tipo_porta:             document.getElementById('pTipoPorta').value,
     sistema:                document.getElementById('pSistema').value,
-    sopraluce:              document.getElementById('pSopraluce').checked,
+    sopraluce:              sopraluceOn,
+    sopraluce_base_mm:      sopraluceOn && !isNaN(sBase) ? sBase : null,
+    sopraluce_altezza_mm:   sopraluceOn && !isNaN(sAlt)  ? sAlt  : null,
     tipo_foro:              document.getElementById('pTipoForo').value,
     H_mm:                   parseFloat(document.getElementById('pHmm').value)||0,
     L_mm:                   parseFloat(document.getElementById('pLmm').value)||0,

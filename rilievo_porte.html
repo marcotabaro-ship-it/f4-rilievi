@@ -343,9 +343,11 @@
         <div class="form-group"><label class="form-label">Versione</label><input class="form-control" type="text" id="pVersione" placeholder="Es. Standard, Premium"></div>
         <div class="form-group"><label class="form-label">Essenza / Finitura</label><input class="form-control" type="text" id="pEssenza" placeholder="Es. Rovere naturale"></div>
         <div class="form-group"><label class="form-label">Verso di apertura</label><input class="form-control" type="text" id="pVerso" placeholder="Es. DX, SX, a libro"></div>
-        <div class="form-group"><label class="form-label">Vetri</label><input class="form-control" type="text" id="pVetri" placeholder="Es. Senza, Con vetro satinato"></div>
+        <!-- Fase 6C-R2 D-6C-04 FIX: vetri come checkbox (DB boolean) — allineato a mobile fVetri -->
+        <div class="form-group"><label class="form-label">&nbsp;</label><div class="checkbox-group"><input type="checkbox" id="pVetri"><label for="pVetri">Presenza vetri</label></div></div>
         <div class="form-group"><label class="form-label">Tipo serratura</label><input class="form-control" type="text" id="pSerratura" placeholder="Es. Normale, Privacy"></div>
-        <div class="form-group"><label class="form-label">Mostrine</label><input class="form-control" type="text" id="pMostrine" placeholder="Es. Standard, Quadra"></div>
+        <!-- Fase 6C-R2 D-6C-04 FIX: mostrine come checkbox (DB boolean) — allineato a mobile fMostrine -->
+        <div class="form-group"><label class="form-label">&nbsp;</label><div class="checkbox-group"><input type="checkbox" id="pMostrine"><label for="pMostrine">Mostrine presenti</label></div></div>
         <div class="form-group"><label class="form-label">Colore serratura</label><input class="form-control" type="text" id="pColoreSerr" placeholder="Es. Cromo"></div>
         <div class="form-group"><label class="form-label">Colore cerniere</label><input class="form-control" type="text" id="pColoreCerniere" placeholder="Es. Oro"></div>
       </div>
@@ -369,18 +371,20 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
         <div>
           <div style="font-size:.75rem;font-weight:700;color:#E65100;margin-bottom:6px;">FORNITURA CTL</div>
+          <!-- Fase 6C-R2 D-6C-03 FIX: id wrapper per opacity dinamica via aggiornaCTL() — allineato a mobile rowFornCTLxxx -->
           <div class="ctl-checks">
-            <div class="checkbox-group"><input type="checkbox" id="pFornCTLInt"><label for="pFornCTLInt">Interna</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="pFornCTLBli"><label for="pFornCTLBli">Blindata</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="pFornCTLRei"><label for="pFornCTLRei">REI</label></div>
+            <div class="checkbox-group" id="rowPFornCTLInt"><input type="checkbox" id="pFornCTLInt"><label for="pFornCTLInt">Interna</label></div>
+            <div class="checkbox-group" id="rowPFornCTLBli"><input type="checkbox" id="pFornCTLBli"><label for="pFornCTLBli">Blindata</label></div>
+            <div class="checkbox-group" id="rowPFornCTLRei"><input type="checkbox" id="pFornCTLRei"><label for="pFornCTLRei">REI</label></div>
           </div>
         </div>
         <div>
           <div style="font-size:.75rem;font-weight:700;color:#E65100;margin-bottom:6px;">INSTALLAZIONE CTL</div>
+          <!-- Fase 6C-R2 D-6C-03 FIX: id wrapper per opacity dinamica via aggiornaCTL() — allineato a mobile rowInstCTLxxx -->
           <div class="ctl-checks">
-            <div class="checkbox-group"><input type="checkbox" id="pInstCTLInt"><label for="pInstCTLInt">Interna</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="pInstCTLBli"><label for="pInstCTLBli">Blindata</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="pInstCTLRei"><label for="pInstCTLRei">REI</label></div>
+            <div class="checkbox-group" id="rowPInstCTLInt"><input type="checkbox" id="pInstCTLInt"><label for="pInstCTLInt">Interna</label></div>
+            <div class="checkbox-group" id="rowPInstCTLBli"><input type="checkbox" id="pInstCTLBli"><label for="pInstCTLBli">Blindata</label></div>
+            <div class="checkbox-group" id="rowPInstCTLRei"><input type="checkbox" id="pInstCTLRei"><label for="pInstCTLRei">REI</label></div>
           </div>
         </div>
       </div>
@@ -677,6 +681,48 @@ function populateModalDropdowns() {
 
 function openModalPosizione(id) { openDrawerPorta(id); }
 
+// ────────────────────────────────────────────────────────────────────────
+// Fase 6C-R2 — Helper e logiche allineate alla mobile app
+// ────────────────────────────────────────────────────────────────────────
+
+// D-6C-05 FIX — accetta boolean true (Supabase) + legacy 'SI'/'true'.
+// Allineato a WEB_report_*_porte.html, WEB_stampa_combinata*.html (B2/A2/M-6C-1/M-6C-2 FIX).
+function isYes(val){ return val === true || val === 'SI' || val === 'true'; }
+
+// D-6C-03 FIX — Abilita solo i 2 CTL coerenti con tipo_porta, disabilita e azzera gli altri.
+// Allineato a MOBILE_pos-porte-edit.html > aggiornaCTL() (1B FIX Fase 1).
+// Chiamata da: fillModal (dopo onTipoPortaChange), onTipoPortaChange, resetModal.
+function aggiornaCTL() {
+  var tipoP = document.getElementById('pTipoPorta').value;
+  // Mappa tipo_porta → id checkbox abilitati
+  var mappa = {
+    'INT': ['pFornCTLInt', 'pInstCTLInt'],
+    'BLI': ['pFornCTLBli', 'pInstCTLBli'],
+    'REI': ['pFornCTLRei', 'pInstCTLRei']
+  };
+  // Id riga wrapper corrispondente a ogni checkbox
+  var rowMap = {
+    'pFornCTLInt': 'rowPFornCTLInt',
+    'pFornCTLBli': 'rowPFornCTLBli',
+    'pFornCTLRei': 'rowPFornCTLRei',
+    'pInstCTLInt': 'rowPInstCTLInt',
+    'pInstCTLBli': 'rowPInstCTLBli',
+    'pInstCTLRei': 'rowPInstCTLRei'
+  };
+  var tuttiCTL = ['pFornCTLInt','pFornCTLBli','pFornCTLRei',
+                  'pInstCTLInt','pInstCTLBli','pInstCTLRei'];
+  var attivi   = mappa[tipoP] || [];  // [] se tipo vuoto → tutto disabilitato
+  tuttiCTL.forEach(function(id) {
+    var el  = document.getElementById(id);
+    var row = document.getElementById(rowMap[id]);
+    if (!el) return;
+    var abilitato = attivi.indexOf(id) >= 0;
+    el.disabled = !abilitato;
+    if (!abilitato) el.checked = false;          // azzera i CTL non coerenti
+    if (row) row.style.opacity = abilitato ? '1' : '0.35';
+  });
+}
+
 function openDrawerPorta(id) {
   posizioneEditId = id;
   document.getElementById('dTitle').textContent = id ? 'Modifica posizione' : 'Nuova posizione';
@@ -709,11 +755,12 @@ function closeDrawerPorta() {
 function resetModal() {
   var campos = ['pNumAlfa','pPiano','pFornitore','pTipoPorta','pSistema','pTipoForo',
     'pHmm','pLmm','pSpMuro','pDecentrato','pCollezione','pModello','pVersione',
-    'pEssenza','pVerso','pVetri','pSerratura','pMostrine','pColoreSerr',
+    'pEssenza','pVerso','pSerratura','pColoreSerr',
     'pColoreCerniere','pAllargMm','pManiMarca','pManiModello','pManiColore','pNote','pAmbiente'];
   campos.forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
+  // Fase 6C-R2 D-6C-04 FIX: pVetri/pMostrine ora sono checkbox, vanno azzerate con .checked = false
   ['pSopraluce','pAllargamento','pFornCTLInt','pFornCTLBli','pFornCTLRei',
-   'pInstCTLInt','pInstCTLBli','pInstCTLRei','pRimozione'].forEach(function(id) {
+   'pInstCTLInt','pInstCTLBli','pInstCTLRei','pRimozione','pVetri','pMostrine'].forEach(function(id) {
     var el = document.getElementById(id); if (el) el.checked = false;
   });
   document.getElementById('pTipoPorta').innerHTML = '<option value="">—</option>';
@@ -724,6 +771,8 @@ function resetModal() {
   document.getElementById('grpDecentrato').style.display = 'none';
   document.getElementById('grpAllargMm').style.display = 'none';
   document.getElementById('dImgGuide').style.display = 'none';
+  // Fase 6C-R2 D-6C-03 FIX: tipo_porta vuoto → tutti i CTL disabilitati e azzerati
+  aggiornaCTL();
 }
 
 function fillModal(p) {
@@ -740,9 +789,7 @@ function fillModal(p) {
   document.getElementById('pVersione').value  = p.versione_porta || '';
   document.getElementById('pEssenza').value   = p.essenza || '';
   document.getElementById('pVerso').value     = p.verso_apertura || '';
-  document.getElementById('pVetri').value     = p.vetri || '';
   document.getElementById('pSerratura').value = p.tipo_serratura || '';
-  document.getElementById('pMostrine').value  = p.mostrine || '';
   document.getElementById('pColoreSerr').value = p.colore_serratura || '';
   document.getElementById('pColoreCerniere').value = p.colore_cerniere || '';
   document.getElementById('pAllargMm').value  = p.allargamento_mm || '';
@@ -750,22 +797,56 @@ function fillModal(p) {
   document.getElementById('pManiModello').value = p.maniglia_modello || '';
   document.getElementById('pManiColore').value = p.maniglia_colore_mat || '';
   document.getElementById('pNote').value      = p.note || '';
-  document.getElementById('pSopraluce').checked   = p.sopraluce === 'SI';
-  document.getElementById('pAllargamento').checked = p.allargamento_telaio === 'SI';
-  document.getElementById('pRimozione').checked   = p.rimozione === 'SI';
-  document.getElementById('pFornCTLInt').checked  = p.fornitura_ctl_int === 'SI';
-  document.getElementById('pFornCTLBli').checked  = p.fornitura_ctl_bli === 'SI';
-  document.getElementById('pFornCTLRei').checked  = p.fornitura_ctl_rei === 'SI';
-  document.getElementById('pInstCTLInt').checked  = p.install_ctl_int === 'SI';
-  document.getElementById('pInstCTLBli').checked  = p.install_ctl_bli === 'SI';
-  document.getElementById('pInstCTLRei').checked  = p.install_ctl_rei === 'SI';
+  // Fase 6C-R2 D-6C-04 FIX: vetri/mostrine ora checkbox; lettura via isYes() accetta bool / 'SI' / 'true'.
+  document.getElementById('pVetri').checked    = isYes(p.vetri);
+  document.getElementById('pMostrine').checked = isYes(p.mostrine);
+  // D-6C-05 FIX: lettura sopraluce via isYes() per accettare boolean da Supabase.
+  document.getElementById('pSopraluce').checked    = isYes(p.sopraluce);
+  document.getElementById('pAllargamento').checked = isYes(p.allargamento_telaio);
+  document.getElementById('pRimozione').checked    = isYes(p.rimozione);
+  document.getElementById('pFornCTLInt').checked   = isYes(p.fornitura_ctl_int);
+  document.getElementById('pFornCTLBli').checked   = isYes(p.fornitura_ctl_bli);
+  document.getElementById('pFornCTLRei').checked   = isYes(p.fornitura_ctl_rei);
+  document.getElementById('pInstCTLInt').checked   = isYes(p.install_ctl_int);
+  document.getElementById('pInstCTLBli').checked   = isYes(p.install_ctl_bli);
+  document.getElementById('pInstCTLRei').checked   = isYes(p.install_ctl_rei);
   document.getElementById('pFornitore').value = p.fornitore || '';
   onFornitoreChange(true);
   document.getElementById('pTipoPorta').value = p.tipo_porta || '';
   onTipoPortaChange(true);
-  document.getElementById('pSistema').value = p.sistema || '';
+  // Fase 6C-R2 D-6C-06 FIX (revisione) — Fallback descrizione → sigla per record storici con
+  // sistema descrittivo. Allineato a MOBILE_pos-porte-edit.html > populateForm (M2 FIX Fase 6 C2),
+  // raffinato con filtro su tipo_porta per evitare collisioni quando la stessa descrizione esiste
+  // su tipi porta diversi.
+  // Sistemi canonici porte: ST, DO, TP, FC, F_, SI, SE, LI, PI.
+  // Logica:
+  //   1) ricerca primaria: d.fornitore == p.fornitore && d.tipo_porta == p.tipo_porta && d.sistema == saved
+  //   2) fallback secondario: d.fornitore == p.fornitore && d.sistema == saved
+  //      (usato solo se la primaria non trova nulla — es. tipo_porta mancante o cambiato)
+  //   3) se nessuna corrispondenza, usa il valore salvato così com'è (la dropdown resterà vuota
+  //      se la sigla non è canonica, segnale visibile all'operatore)
+  var sisCode = (function() {
+    var saved = p.sistema;
+    if (!saved) return '';
+    var rec = (dbPorte || []).find(function(d) {
+      return d.fornitore === p.fornitore
+          && d.tipo_porta === p.tipo_porta
+          && d.sistema === saved;
+    });
+    if (!rec) {
+      rec = (dbPorte || []).find(function(d) {
+        return d.fornitore === p.fornitore && d.sistema === saved;
+      });
+    }
+    return rec ? (rec.sistema_sigla || saved) : saved;
+  })();
+  document.getElementById('pSistema').value = sisCode;
   onSistemaChange(true);
-  if (p.allargamento_telaio === 'SI') document.getElementById('grpAllargMm').style.display = '';
+  // Fase 6C-R2 D-6C-03 FIX: dopo aver caricato i CTL e impostato tipo_porta,
+  // aggiornaCTL() disabilita/azzera i CTL non coerenti con tipo_porta.
+  // Ordine obbligatorio: set checkbox prima, aggiornaCTL dopo (come mobile).
+  aggiornaCTL();
+  if (isYes(p.allargamento_telaio)) document.getElementById('grpAllargMm').style.display = '';
   if (p.tipo_foro) onTipoForoChange();
 }
 
@@ -784,18 +865,37 @@ function onFornitoreChange(silent) {
 function onTipoPortaChange(silent) {
   var forn = document.getElementById('pFornitore').value;
   var tipo = document.getElementById('pTipoPorta').value;
-  if (!tipo) { document.getElementById('pSistema').innerHTML = '<option value="">—</option>'; document.getElementById('pSistema').disabled = true; return; }
+  if (!tipo) {
+    document.getElementById('pSistema').innerHTML = '<option value="">—</option>';
+    document.getElementById('pSistema').disabled = true;
+    // Fase 6C-R2 D-6C-03 FIX: tipo_porta vuoto → tutti i CTL disabilitati e azzerati
+    aggiornaCTL();
+    return;
+  }
   var sistemi = [];
   dbPorte.filter(function(d) { return d.fornitore === forn && d.tipo_porta === tipo; }).forEach(function(d) { if (sistemi.indexOf(d.sistema_sigla) < 0) sistemi.push(d.sistema_sigla); });
   var sistemiFiltrati = (lookups.LK_SISTEMA_PORTE||[]).filter(function(s) { return sistemi.indexOf(s.sigla) >= 0; });
   Utils.fillSelect('pSistema', sistemiFiltrati.map(function(s) { return { value: s.sigla, label: s.sigla + ' — ' + s.descrizione }; }), '— Sistema —');
   document.getElementById('pSistema').disabled = false;
+  // Fase 6C-R2 D-6C-03 FIX: al cambio tipo_porta abilita/disabilita CTL coerenti e azzera gli altri.
+  // NB: durante fillModal silent=true e i CTL sono già stati impostati da Supabase; aggiornaCTL viene
+  // comunque chiamato esplicitamente alla fine di fillModal con l'ordine corretto.
+  aggiornaCTL();
 }
 
 function onSistemaChange(silent) {
   var sis = document.getElementById('pSistema').value;
   var rec = (lookups.LK_SISTEMA_PORTE||[]).find(function(s) { return s.sigla === sis; });
-  document.getElementById('grpSopraluce').style.display = rec && rec.sopraluce_disponibile === 'SI' ? '' : 'none';
+  // Fase 6C-R2 D-6C-05 FIX (revisione): sopraluce_disponibile può arrivare come boolean true
+  // da Supabase. isYes() accetta true / 'SI' / 'true'.
+  // Se il sistema non prevede sopraluce, il gruppo viene nascosto E il checkbox viene azzerato
+  // per evitare di salvare sopraluce=true in modo invisibile sul payload (coerenza semantica
+  // pari a quella di aggiornaCTL per i CTL incoerenti con tipo_porta).
+  var hasSopraluce = !!(rec && isYes(rec.sopraluce_disponibile));
+  document.getElementById('grpSopraluce').style.display = hasSopraluce ? '' : 'none';
+  if (!hasSopraluce) {
+    document.getElementById('pSopraluce').checked = false;
+  }
   var isScorr = sis === 'SI' || sis === 'SE';
   document.getElementById('grpDecentrato').style.display = isScorr ? '' : 'none';
 }
@@ -842,6 +942,10 @@ function raccogliDati() {
     }
   }
   var alfaEl = document.getElementById('pNumAlfa');
+  // Fase 6C-R2 D-6C-03 FIX — Protezione doppia (UI disabled + payload coerente):
+  // i CTL non coerenti con tipo_porta vengono forzati a false anche nel payload,
+  // a prescindere dallo stato del checkbox UI. Allineato a MOBILE_pos-porte-edit.html > raccogliDati.
+  var tipoP = document.getElementById('pTipoPorta').value;
   return {
     numero_pos_alfa:        alfaEl ? (alfaEl.value.toUpperCase().trim() || null) : null,
     piano:                  document.getElementById('pPiano').value,
@@ -860,19 +964,22 @@ function raccogliDati() {
     versione_porta:         document.getElementById('pVersione').value.trim(),
     essenza:                document.getElementById('pEssenza').value.trim(),
     verso_apertura:         document.getElementById('pVerso').value.trim(),
-    vetri:                  document.getElementById('pVetri').value.trim(),
+    // Fase 6C-R2 D-6C-04 FIX: vetri/mostrine ora boolean (DB). _in.posPorta in WEB_api.js > b()
+    // accetta sia bool sia 'SI', quindi il payload boolean è compatibile.
+    vetri:                  document.getElementById('pVetri').checked,
     tipo_serratura:         document.getElementById('pSerratura').value.trim(),
-    mostrine:               document.getElementById('pMostrine').value.trim(),
+    mostrine:               document.getElementById('pMostrine').checked,
     colore_serratura:       document.getElementById('pColoreSerr').value.trim(),
     colore_cerniere:        document.getElementById('pColoreCerniere').value.trim(),
     allargamento_telaio:    document.getElementById('pAllargamento').checked,
     allargamento_mm:        parseFloat(document.getElementById('pAllargMm').value)||0,
-    fornitura_ctl_int:      document.getElementById('pFornCTLInt').checked,
-    fornitura_ctl_bli:      document.getElementById('pFornCTLBli').checked,
-    fornitura_ctl_rei:      document.getElementById('pFornCTLRei').checked,
-    install_ctl_int:        document.getElementById('pInstCTLInt').checked,
-    install_ctl_bli:        document.getElementById('pInstCTLBli').checked,
-    install_ctl_rei:        document.getElementById('pInstCTLRei').checked,
+    // Fase 6C-R2 D-6C-03 FIX: CTL filtrati per tipo_porta — solo i 2 coerenti possono essere true.
+    fornitura_ctl_int:      tipoP === 'INT' ? document.getElementById('pFornCTLInt').checked : false,
+    fornitura_ctl_bli:      tipoP === 'BLI' ? document.getElementById('pFornCTLBli').checked : false,
+    fornitura_ctl_rei:      tipoP === 'REI' ? document.getElementById('pFornCTLRei').checked : false,
+    install_ctl_int:        tipoP === 'INT' ? document.getElementById('pInstCTLInt').checked  : false,
+    install_ctl_bli:        tipoP === 'BLI' ? document.getElementById('pInstCTLBli').checked  : false,
+    install_ctl_rei:        tipoP === 'REI' ? document.getElementById('pInstCTLRei').checked  : false,
     maniglia_marca:         document.getElementById('pManiMarca').value.trim(),
     maniglia_modello:       document.getElementById('pManiModello').value.trim(),
     maniglia_colore_mat:    document.getElementById('pManiColore').value.trim(),

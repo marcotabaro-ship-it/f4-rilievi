@@ -689,11 +689,32 @@ function openModalPosizione(id) { openDrawerPorta(id); }
 // Allineato a WEB_report_*_porte.html, WEB_stampa_combinata*.html (B2/A2/M-6C-1/M-6C-2 FIX).
 function isYes(val){ return val === true || val === 'SI' || val === 'true'; }
 
+// Fase 6C-R2 hot-fix — Normalizzazione tipo_porta per logica CTL.
+// I valori in db_porte.tipo_porta possono essere descrittivi ('INTERNA', 'BLINDATA', 'REI',
+// 'PORTA INTERNA', 'PORTA BLINDATA', 'PORTA REI') oppure sigle ('INT', 'BLI', 'REI').
+// Mobile usa esclusivamente sigle hardcoded (INT/BLI/REI).
+// Questa funzione mappa entrambi i formati alla sigla canonica usata per filtrare i CTL.
+// IMPORTANTE: la normalizzazione viene usata SOLO per decidere quali CTL abilitare e quali
+// salvare. Il valore effettivamente scritto nel campo tipo_porta resta quello della select
+// (immutato — nessuna alterazione dei dati salvati né delle option della dropdown).
+function normalizzaTipoPortaCtl(val) {
+  var s = (val == null ? '' : String(val)).toUpperCase().trim();
+  if (!s) return '';
+  // Rimuove eventuale prefisso "PORTA " (es. "PORTA INTERNA" → "INTERNA")
+  if (s.indexOf('PORTA ') === 0) s = s.substring(6).trim();
+  if (s === 'INT' || s === 'INTERNA')   return 'INT';
+  if (s === 'BLI' || s === 'BLINDATA')  return 'BLI';
+  if (s === 'REI')                      return 'REI';
+  return '';
+}
+
 // D-6C-03 FIX — Abilita solo i 2 CTL coerenti con tipo_porta, disabilita e azzera gli altri.
 // Allineato a MOBILE_pos-porte-edit.html > aggiornaCTL() (1B FIX Fase 1).
 // Chiamata da: fillModal (dopo onTipoPortaChange), onTipoPortaChange, resetModal.
 function aggiornaCTL() {
-  var tipoP = document.getElementById('pTipoPorta').value;
+  // Fase 6C-R2 hot-fix: normalizza il valore della select per gestire sia sigle (INT/BLI/REI)
+  // sia descrizioni ('INTERNA'/'BLINDATA'/'PORTA INTERNA'/...) presenti in db_porte.tipo_porta.
+  var tipoP = normalizzaTipoPortaCtl(document.getElementById('pTipoPorta').value);
   // Mappa tipo_porta → id checkbox abilitati
   var mappa = {
     'INT': ['pFornCTLInt', 'pInstCTLInt'],
@@ -884,14 +905,34 @@ function onTipoPortaChange(silent) {
 }
 
 function onSistemaChange(silent) {
-  var sis = document.getElementById('pSistema').value;
-  var rec = (lookups.LK_SISTEMA_PORTE||[]).find(function(s) { return s.sigla === sis; });
-  // Fase 6C-R2 D-6C-05 FIX (revisione): sopraluce_disponibile può arrivare come boolean true
-  // da Supabase. isYes() accetta true / 'SI' / 'true'.
-  // Se il sistema non prevede sopraluce, il gruppo viene nascosto E il checkbox viene azzerato
-  // per evitare di salvare sopraluce=true in modo invisibile sul payload (coerenza semantica
-  // pari a quella di aggiornaCTL per i CTL incoerenti con tipo_porta).
-  var hasSopraluce = !!(rec && isYes(rec.sopraluce_disponibile));
+  var sis  = document.getElementById('pSistema').value;
+  var forn = document.getElementById('pFornitore').value;
+  var tipo = document.getElementById('pTipoPorta').value;
+  // Fase 6C-R2 hot-fix sopraluce — Lookup gerarchico con fallback:
+  //   1) cerca il record specifico in dbPorte filtrando per fornitore + tipo_porta + sistema_sigla.
+  //      Se il record esiste E contiene il campo sopraluce_disponibile valorizzato, usa quello
+  //      (granularità massima — sopraluce può dipendere dalla combinazione, es. solo INTERNA+ST).
+  //   2) altrimenti fallback su LK_SISTEMA_PORTE.sopraluce_disponibile (granularità per sola sigla).
+  //   3) in entrambi i casi isYes() accetta true / 'SI' / 'true'.
+  // NB: senza accesso allo schema Supabase non è certo che db_porte contenga
+  // sopraluce_disponibile. La logica è difensiva: usa quel campo solo se realmente presente
+  // sul record specifico, altrimenti applica automaticamente il fallback su LK_SISTEMA_PORTE.
+  var hasSopraluce = false;
+  var recDb = (dbPorte || []).find(function(d) {
+    return d.fornitore === forn && d.tipo_porta === tipo && d.sistema_sigla === sis;
+  });
+  if (recDb && Object.prototype.hasOwnProperty.call(recDb, 'sopraluce_disponibile')
+      && recDb.sopraluce_disponibile !== null
+      && recDb.sopraluce_disponibile !== undefined
+      && recDb.sopraluce_disponibile !== '') {
+    hasSopraluce = isYes(recDb.sopraluce_disponibile);
+  } else {
+    var recLk = (lookups.LK_SISTEMA_PORTE||[]).find(function(s) { return s.sigla === sis; });
+    hasSopraluce = !!(recLk && isYes(recLk.sopraluce_disponibile));
+  }
+  // Se il sistema non prevede sopraluce, nascondi il gruppo E azzera il checkbox per evitare
+  // di salvare sopraluce=true in modo invisibile sul payload (coerenza semantica simmetrica
+  // ad aggiornaCTL() per i CTL incoerenti con tipo_porta).
   document.getElementById('grpSopraluce').style.display = hasSopraluce ? '' : 'none';
   if (!hasSopraluce) {
     document.getElementById('pSopraluce').checked = false;
@@ -945,7 +986,10 @@ function raccogliDati() {
   // Fase 6C-R2 D-6C-03 FIX — Protezione doppia (UI disabled + payload coerente):
   // i CTL non coerenti con tipo_porta vengono forzati a false anche nel payload,
   // a prescindere dallo stato del checkbox UI. Allineato a MOBILE_pos-porte-edit.html > raccogliDati.
-  var tipoP = document.getElementById('pTipoPorta').value;
+  // hot-fix: normalizzazione tipo_porta per gestire sia sigle (INT/BLI/REI) sia descrizioni
+  // ('INTERNA'/'BLINDATA'/'PORTA INTERNA'/...) presenti in db_porte.tipo_porta.
+  // Il valore effettivo salvato in `tipo_porta` resta quello della select (vedi sotto).
+  var tipoP = normalizzaTipoPortaCtl(document.getElementById('pTipoPorta').value);
   return {
     numero_pos_alfa:        alfaEl ? (alfaEl.value.toUpperCase().trim() || null) : null,
     piano:                  document.getElementById('pPiano').value,

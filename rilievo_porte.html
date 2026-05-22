@@ -816,6 +816,9 @@ function resetModal() {
   document.getElementById('pTipoPorta').disabled = true;
   document.getElementById('pSistema').innerHTML = '<option value="">—</option>';
   document.getElementById('pSistema').disabled = true;
+  // Fase 6C-R2 Correzione regola sistema BLI/REI: pulisci eventuale autoValue residuo
+  // (sarebbe stato impostato a 'N/D' dall'apertura precedente di una posizione BLI/REI).
+  delete document.getElementById('pSistema').dataset.autoValue;
   // Fase 6C-R2 Step 2: grpSopraluce è sempre visibile. Rimosso display:'none'.
   // I 2 sotto-gruppi dimensionali si nascondono via onSopraluceChange() dato che pSopraluce=false.
   document.getElementById('grpDecentrato').style.display = 'none';
@@ -887,32 +890,42 @@ function fillModal(p) {
     }
   }
   onTipoPortaChange(true);
-  // Fase 6C-R2 D-6C-06 FIX (revisione) + hot-fix Step 2 — Fallback descrizione → sigla per
-  // record storici con sistema descrittivo. Allineato a MOBILE_pos-porte-edit.html >
-  // populateForm (M2 FIX Fase 6 C2), raffinato con match normalizzato su tipo_porta per
-  // evitare collisioni quando la stessa descrizione esiste su tipi porta diversi.
-  // Sistemi canonici porte: ST, DO, TP, FC, F_, SI, SE, LI, PI.
-  // Logica:
-  //   1) ricerca primaria: stesso fornitore + tipo_porta NORMALIZZATO equivalente + sistema == saved
-  //   2) fallback secondario: stesso fornitore + sistema == saved (senza tipo)
-  //   3) se nessuna corrispondenza, usa il valore salvato così com'è
-  var sisCode = (function() {
-    var saved = p.sistema;
-    if (!saved) return '';
-    var tipoNormP = normalizzaTipoPortaCtl(p.tipo_porta);
-    var rec = (dbPorte || []).find(function(d) {
-      return d.fornitore === p.fornitore
-          && normalizzaTipoPortaCtl(d.tipo_porta) === tipoNormP
-          && d.sistema === saved;
-    });
-    if (!rec) {
-      rec = (dbPorte || []).find(function(d) {
-        return d.fornitore === p.fornitore && d.sistema === saved;
+  // Fase 6C-R2 Correzione regola sistema BLI/REI:
+  // Per BLI/REI onTipoPortaChange ha già impostato pSistema.dataset.autoValue='N/D' e disabilitato
+  // la select. Saltare il fallback descrizione→sigla che riguarda solo INTERNA.
+  // Per INTERNA: applicare il fallback storico esistente.
+  var tipoNormFill = normalizzaTipoPortaCtl(p.tipo_porta);
+  if (tipoNormFill === 'INT') {
+    // Fase 6C-R2 D-6C-06 FIX (revisione) + hot-fix Step 2 — Fallback descrizione → sigla per
+    // record storici con sistema descrittivo. Allineato a MOBILE_pos-porte-edit.html >
+    // populateForm (M2 FIX Fase 6 C2), raffinato con match normalizzato su tipo_porta per
+    // evitare collisioni quando la stessa descrizione esiste su tipi porta diversi.
+    // Sistemi canonici porte: ST, DO, TP, FC, F_, SI, SE, LI, PI.
+    // Logica:
+    //   1) ricerca primaria: stesso fornitore + tipo_porta NORMALIZZATO equivalente + sistema == saved
+    //   2) fallback secondario: stesso fornitore + sistema == saved (senza tipo)
+    //   3) se nessuna corrispondenza, usa il valore salvato così com'è
+    var sisCode = (function() {
+      var saved = p.sistema;
+      if (!saved) return '';
+      var tipoNormP = normalizzaTipoPortaCtl(p.tipo_porta);
+      var rec = (dbPorte || []).find(function(d) {
+        return d.fornitore === p.fornitore
+            && normalizzaTipoPortaCtl(d.tipo_porta) === tipoNormP
+            && d.sistema === saved;
       });
-    }
-    return rec ? (rec.sistema_sigla || saved) : saved;
-  })();
-  document.getElementById('pSistema').value = sisCode;
+      if (!rec) {
+        rec = (dbPorte || []).find(function(d) {
+          return d.fornitore === p.fornitore && d.sistema === saved;
+        });
+      }
+      return rec ? (rec.sistema_sigla || saved) : saved;
+    })();
+    document.getElementById('pSistema').value = sisCode;
+  }
+  // Per BLI/REI nessuna operazione su pSistema.value: select disabled con autoValue='N/D'.
+  // Anche posizioni BLI/REI storiche con sistema≠'N/D' in DB verranno normalizzate al primo
+  // salvataggio (sistema='N/D' nel payload via raccogliDati > sistemaEffettivo).
   onSistemaChange(true);
   // Fase 6C-R2 D-6C-03 FIX: dopo aver caricato i CTL e impostato tipo_porta,
   // aggiornaCTL() disabilita/azzera i CTL non coerenti con tipo_porta.
@@ -942,20 +955,47 @@ function onFornitoreChange(silent) {
 function onTipoPortaChange(silent) {
   var forn = document.getElementById('pFornitore').value;
   var tipo = document.getElementById('pTipoPorta').value;
+  var sistemaEl = document.getElementById('pSistema');
   if (!tipo) {
-    document.getElementById('pSistema').innerHTML = '<option value="">—</option>';
-    document.getElementById('pSistema').disabled = true;
+    sistemaEl.innerHTML = '<option value="">— Sistema —</option>';
+    sistemaEl.disabled = true;
+    // Fase 6C-R2 Correzione regola sistema BLI/REI: nessun autoValue se tipo vuoto.
+    delete sistemaEl.dataset.autoValue;
     // Fase 6C-R2 D-6C-03 FIX: tipo_porta vuoto → tutti i CTL disabilitati e azzerati
     aggiornaCTL();
+    // onSistemaChange dipende da grpDecentrato — chiamala anche qui per coerenza UI.
+    onSistemaChange(true);
     return;
   }
-  // Fase 6C-R2 hot-fix Step 2: cascade tipo→sistema robusto rispetto al formato tipo_porta.
-  // db_porte.tipo_porta può essere sigla ('INT'/'BLI'/'REI') o descrizione ('INTERNA'/'BLINDATA'/
-  // 'PORTA INTERNA'/...). Il filtro usa normalizzaTipoPortaCtl per equiparare entrambi i formati.
-  // Senza questo fix, una select con "INTERNA" filtrava solo record dbPorte con "INTERNA" esatto,
-  // ignorando record con "INT" → la dropdown Sistema restava vuota.
+  // Fase 6C-R2 Correzione regola sistema BLI/REI:
+  // - INTERNA  → Sistema selezionabile con sigle reali (ST/DO/TP/FC/F_/SI/SE/LI/PI).
+  // - BLINDATA → Sistema disabilitato con "— Sistema —"; valore tecnico interno 'N/D'
+  //              memorizzato in pSistema.dataset.autoValue e usato da raccogliDati.
+  // - REI      → stesso comportamento di BLINDATA.
+  // L'utente non vede mai "N/D" come option. Il valore viene salvato solo al raccogliDati.
   var tipoNorm = normalizzaTipoPortaCtl(tipo);
-  // Sigle canoniche ammesse per il fallback su d.sistema (record senza sistema_sigla).
+  if (tipoNorm === 'BLI' || tipoNorm === 'REI') {
+    sistemaEl.innerHTML = '<option value="">— Sistema —</option>';
+    sistemaEl.disabled = true;
+    sistemaEl.dataset.autoValue = 'N/D';
+    aggiornaCTL();
+    onSistemaChange(true);
+    return;
+  }
+  if (tipoNorm !== 'INT') {
+    // tipo riconosciuto ma non gestito (paranoia): comportamento conservativo
+    sistemaEl.innerHTML = '<option value="">— Sistema —</option>';
+    sistemaEl.disabled = true;
+    delete sistemaEl.dataset.autoValue;
+    aggiornaCTL();
+    onSistemaChange(true);
+    return;
+  }
+  // Ramo INTERNA: rimuovo eventuale valore automatico residuo e popolo dropdown reale.
+  delete sistemaEl.dataset.autoValue;
+  // Cascade tipo→sistema robusto rispetto al formato tipo_porta (sigla o descrizione).
+  // Senza normalizzazione, una select con "INTERNA" filtrava solo record dbPorte con "INTERNA"
+  // esatto, ignorando record con "INT" → dropdown Sistema vuota.
   var SIGLE_OK = ['ST','DO','TP','FC','F_','SI','SE','LI','PI'];
   var sistemi = [];
   dbPorte.filter(function(d) {
@@ -968,15 +1008,15 @@ function onTipoPortaChange(silent) {
   });
   var sistemiFiltrati = (lookups.LK_SISTEMA_PORTE||[]).filter(function(s) { return sistemi.indexOf(s.sigla) >= 0; });
   if (sistemiFiltrati.length === 0) {
-    // Nessun sistema trovato per la combinazione fornitore+tipo (normalizzato).
-    // Lascia "— Sistema —" e disabilita la dropdown — segnale visibile all'operatore.
-    document.getElementById('pSistema').innerHTML = '<option value="">— Sistema —</option>';
-    document.getElementById('pSistema').disabled = true;
+    // INTERNA senza match in dbPorte: segnale visibile all'operatore (anomalia dati).
+    sistemaEl.innerHTML = '<option value="">— Sistema —</option>';
+    sistemaEl.disabled = true;
     aggiornaCTL();
+    onSistemaChange(true);
     return;
   }
   Utils.fillSelect('pSistema', sistemiFiltrati.map(function(s) { return { value: s.sigla, label: s.sigla + ' — ' + s.descrizione }; }), '— Sistema —');
-  document.getElementById('pSistema').disabled = false;
+  sistemaEl.disabled = false;
   // Fase 6C-R2 D-6C-03 FIX: al cambio tipo_porta abilita/disabilita CTL coerenti e azzera gli altri.
   // NB: durante fillModal silent=true e i CTL sono già stati impostati da Supabase; aggiornaCTL viene
   // comunque chiamato esplicitamente alla fine di fillModal con l'ordine corretto.
@@ -984,7 +1024,12 @@ function onTipoPortaChange(silent) {
 }
 
 function onSistemaChange(silent) {
-  var sis = document.getElementById('pSistema').value;
+  // Fase 6C-R2 Correzione regola sistema BLI/REI:
+  // Il valore di lavoro è quello della select se presente, altrimenti l'autoValue
+  // impostato per BLI/REI ('N/D'). Per N/D nessun sistema scorrevole è applicabile,
+  // quindi grpDecentrato resta nascosto.
+  var sistemaEl = document.getElementById('pSistema');
+  var sis = sistemaEl.value || sistemaEl.dataset.autoValue || '';
   // Fase 6C-R2 Step 2: rimossa interamente la logica hasSopraluce/dbPorte/LK_SISTEMA_PORTE.
   // Il flag "Con sopraluce" è ora sempre disponibile e indipendente da fornitore/tipo/sistema.
   // onSistemaChange mantiene solo la visibilità di grpDecentrato per sistemi scorrevoli SI/SE.
@@ -1027,11 +1072,28 @@ async function salvaPosizioneEAggiungi() {
 }
 
 function raccogliDati() {
-  var req = { pPiano: 'Piano', pFornitore: 'Fornitore', pTipoPorta: 'Tipo porta', pSistema: 'Sistema', pTipoForo: 'Tipo foro', pHmm: 'H', pLmm: 'L' };
+  // Fase 6C-R2 Correzione regola sistema BLI/REI: Sistema è obbligatorio SOLO per tipo_porta INTERNA.
+  // Per BLI/REI il sistema è 'N/D' automatico (memorizzato in pSistema.dataset.autoValue),
+  // quindi non deve essere richiesto all'utente.
+  var sistemaEl = document.getElementById('pSistema');
+  var tipoP_pre = normalizzaTipoPortaCtl(document.getElementById('pTipoPorta').value);
+  var sistemaEffettivo = sistemaEl.value || sistemaEl.dataset.autoValue || '';
+  // Campi sempre obbligatori
+  var req = { pPiano: 'Piano', pFornitore: 'Fornitore', pTipoPorta: 'Tipo porta', pTipoForo: 'Tipo foro', pHmm: 'H', pLmm: 'L' };
   for (var id in req) {
     if (!document.getElementById(id) || !document.getElementById(id).value) {
       Utils.showWarning(req[id] + ' e obbligatorio.'); return null;
     }
+  }
+  // Sistema obbligatorio solo per INTERNA (per BLI/REI è auto-'N/D').
+  if (tipoP_pre === 'INT' && !sistemaEffettivo) {
+    Utils.showWarning('Sistema e obbligatorio.'); return null;
+  }
+  // Per BLI/REI, anche se l'utente non vede la select, sistemaEffettivo viene da autoValue='N/D'.
+  // Se per qualunque motivo l'autoValue manca su BLI/REI (es. apertura record storico anomalo),
+  // sistemaEffettivo resta vuoto → blocchiamo e segnaliamo per evitare salvataggi con sistema=null.
+  if ((tipoP_pre === 'BLI' || tipoP_pre === 'REI') && !sistemaEffettivo) {
+    Utils.showWarning('Sistema automatico non impostato per ' + (tipoP_pre==='BLI'?'BLINDATA':'REI') + '. Riapri la posizione.'); return null;
   }
   var alfaEl = document.getElementById('pNumAlfa');
   // Fase 6C-R2 D-6C-03 FIX — Protezione doppia (UI disabled + payload coerente):
@@ -1040,7 +1102,7 @@ function raccogliDati() {
   // hot-fix: normalizzazione tipo_porta per gestire sia sigle (INT/BLI/REI) sia descrizioni
   // ('INTERNA'/'BLINDATA'/'PORTA INTERNA'/...) presenti in db_porte.tipo_porta.
   // Il valore effettivo salvato in `tipo_porta` resta quello della select (vedi sotto).
-  var tipoP = normalizzaTipoPortaCtl(document.getElementById('pTipoPorta').value);
+  var tipoP = tipoP_pre;
   // Fase 6C-R2 Step 2: dimensioni sopraluce.
   // Regola: se sopraluce=false → entrambi null (semantica "non applicabile").
   //         se sopraluce=true  → parseInt del valore input, o null se input vuoto/non valido.
@@ -1054,7 +1116,9 @@ function raccogliDati() {
     ambiente:               document.getElementById('pAmbiente').value.trim(),
     fornitore:              document.getElementById('pFornitore').value,
     tipo_porta:             document.getElementById('pTipoPorta').value,
-    sistema:                document.getElementById('pSistema').value,
+    // Fase 6C-R2 Correzione regola sistema BLI/REI: sistemaEffettivo = select.value (INT)
+    // oppure dataset.autoValue='N/D' (BLI/REI).
+    sistema:                sistemaEffettivo,
     sopraluce:              sopraluceOn,
     sopraluce_base_mm:      sopraluceOn && !isNaN(sBase) ? sBase : null,
     sopraluce_altezza_mm:   sopraluceOn && !isNaN(sAlt)  ? sAlt  : null,

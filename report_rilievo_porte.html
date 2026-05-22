@@ -118,6 +118,11 @@ if (!idRilievo) window.location.href = 'clienti.html';
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function v(x){ return (!x&&x!==0)?'':String(x); }
 function chk(val){ return val===true||val==='SI'?'<span class="chk on"></span>':'<span class="chk"></span>'; }
+// M-6C-2 FIX (Fase 6C): isYes() accetta boolean true (Supabase) e legacy string 'SI'/'true'.
+// I CTL letti via fetch diretta select=* arrivano come boolean dal DB; il vecchio check
+// === 'SI' rendeva sempre vuoti i codici FI/FB/FR/II/IB/IR e azzerava i totali CTL.
+// Allineato a WEB_stampa_combinata_porte.html (A2 FIX) e MOBILE_report_rilievo_porte.html.
+function isYes(val){ return val===true || val==='SI' || val==='true'; }
 function numPos(p){ return p.numero_pos_alfa||p.numero_pos; }
 
 var SUPA_URL=APP_CONFIG.SUPABASE_URL, SUPA_KEY=APP_CONFIG.SUPABASE_ANON_KEY;
@@ -234,8 +239,10 @@ function render(ril,pos,caps){
   function rowPos(p){
     var piano=(p.piano!==undefined&&p.piano!==null)?('P'+(parseInt(p.piano)>=0?'+':'')+p.piano):'—';
     var numDisp=p.numero_pos_alfa||p.numero_pos;
-    var ctlForn=[p.fornitura_ctl_int==='SI'?'FI':'',p.fornitura_ctl_bli==='SI'?'FB':'',p.fornitura_ctl_rei==='SI'?'FR':''].filter(Boolean).join(' ');
-    var ctlInst=[p.install_ctl_int==='SI'?'II':'',p.install_ctl_bli==='SI'?'IB':'',p.install_ctl_rei==='SI'?'IR':''].filter(Boolean).join(' ');
+    // M-6C-2 FIX: codici fornitura CTL letti con isYes() — accetta boolean true da Supabase
+    var ctlForn=[isYes(p.fornitura_ctl_int)?'FI':'',isYes(p.fornitura_ctl_bli)?'FB':'',isYes(p.fornitura_ctl_rei)?'FR':''].filter(Boolean).join(' ');
+    // M-6C-2 FIX: codici installazione CTL letti con isYes() — accetta boolean true da Supabase
+    var ctlInst=[isYes(p.install_ctl_int)?'II':'',isYes(p.install_ctl_bli)?'IB':'',isYes(p.install_ctl_rei)?'IR':''].filter(Boolean).join(' ');
     var ctlStr=[ctlForn,ctlInst].filter(Boolean).join(' / ')||'—';
     var h='<tr>';
     h+='<td class="num">'+esc(v(numDisp))+'</td>';
@@ -265,8 +272,9 @@ function render(ril,pos,caps){
     posCap.forEach(function(p){
       if(p.rimozione==='SI'||p.rimozione===true)nRim++;
       if(p.allargamento_telaio==='SI'||p.allargamento_telaio===true)nAll++;
-      if(p.fornitura_ctl_int==='SI')nCTLFI++;
-      if(p.install_ctl_int==='SI')nCTLII++;
+      // M-6C-2 FIX: conteggio CTL letto con isYes() — accetta boolean true da Supabase
+      if(isYes(p.fornitura_ctl_int))nCTLFI++;
+      if(isYes(p.install_ctl_int))nCTLII++;
       var t=p.tipo_porta||'—';tipiMap[t]=(tipiMap[t]||0)+1;
     });
     var chips='<b>'+nP+'</b> pos.';

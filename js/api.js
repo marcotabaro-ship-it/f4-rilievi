@@ -879,10 +879,25 @@ Object.assign(API, {
       const rows = await _sb.get('posizioni_porte', { id: 'eq.' + id, select: '*' });
       if (!rows || !rows.length) throw new Error('Posizione non trovata.');
       const orig = rows[0]; const user = Auth.getUser();
-      const last = await _sb.get('posizioni_porte', { id_rilievo: 'eq.' + orig.id_rilievo, stato: 'eq.attivo', select: 'numero_pos', order: 'numero_pos.desc', limit: '1' });
+      // max numero_pos
+      const last = await _sb.get('posizioni_porte', { id_rilievo: 'eq.' + orig.id_rilievo, stato: 'eq.attivo', select: 'numero_pos,ordine', order: 'numero_pos.desc', limit: '1' });
       let nextPos = last && last.length ? last[0].numero_pos + 1 : 1;
+      let maxOrdPos = last && last.length ? (last[0].ordine || last[0].numero_pos || 0) : 0;
+      // max ordine dai capitoli (ordine_fine è il più alto nelle soglie cap)
+      const caps = await _sb.get('capitoli_rilievo', { id_rilievo: 'eq.' + orig.id_rilievo, stato: 'eq.attivo', select: 'ordine_fine', order: 'ordine_fine.desc', limit: '1' });
+      const maxOrdCap = caps && caps.length ? (caps[0].ordine_fine || 0) : 0;
+      let nextOrd = Math.max(maxOrdPos, maxOrdCap) + 1;
       const n = parseInt(count) || 1;
-      for (let i = 0; i < n; i++) { const copy = Object.assign({}, orig); delete copy.id; delete copy.created_at; delete copy.updated_at; copy.numero_pos = nextPos++; copy.utente_creazione = user ? user.id : null; await _sb.post('posizioni_porte', copy); }
+      for (let i = 0; i < n; i++) {
+        const copy = Object.assign({}, orig);
+        delete copy.id; delete copy.created_at; delete copy.updated_at;
+        copy.numero_pos = nextPos++;
+        copy.ordine = nextOrd++;
+        copy.id_capitolo = null;
+        copy.numero_pos_alfa = null;
+        copy.utente_creazione = user ? user.id : null;
+        await _sb.post('posizioni_porte', copy);
+      }
       return this._ok({ copiati: n });
     } catch(e) { return this._err(e); }
   },
